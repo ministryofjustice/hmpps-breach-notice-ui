@@ -10,8 +10,11 @@
     "build": "node esbuild/esbuild.config.js --build",
     "start": "node $NODE_OPTIONS dist/server.js | bunyan -o short",
     "start:dev": "concurrently -k -p \"[{name}]\" -n \"ESBuild,Node\" -c \"yellow.bold,cyan.bold\" \"node esbuild/esbuild.config.js --build --watch\" \"node esbuild/esbuild.config.js --dev-server\"",
-    "start-feature": " node $NODE_DEBUG_OPTION --env-file=feature.env dist/server.js | bunyan -o short",
-    "start-feature:dev": "concurrently -k -p \"[{name}]\" -n \"ESBuild,Node\" -c \"yellow.bold,cyan.bold\" \"node esbuild/esbuild.config.js  --build --watch \" \"node esbuild/esbuild.config.js --dev-test-server\"",
+    "start-feature:node": " node $NODE_DEBUG_OPTION --env-file=feature.env dist/server.js | bunyan -o short",
+    "start-feature:dev": "concurrently -k -p \"[{name}]\" -n \"WireMock,ESBuild,Node\" -c \"green.bold,yellow.bold,cyan.bold\" \"npm run wiremock\" \"node esbuild/esbuild.config.js  --build --watch \" \"node esbuild/esbuild.config.js --dev-test-server\"",
+    "start-feature": "concurrently -k -p \"[{name}]\" -n \"WireMock,Node\" -c \"magenta.bold,green.bold\" \"npm run wiremock\" \"npm run start-feature:node\"",
+    "start-node-feature": "export $(cat feature.env) && node $NODE_DEBUG_OPTION dist/server.js | bunyan -o short",
+    "wiremock": "npx wiremock --port 9091 --root-dir wiremock --local-response-templating",
     "lint": "eslint . --cache --max-warnings 0",
     "lint-fix": "eslint . --cache --max-warnings 0 --fix",
     "typecheck": "tsc && tsc -p integration_tests",
@@ -151,6 +154,7 @@
     "prettier-plugin-jinja-template": "^1.5.0",
     "supertest": "^7.0.0",
     "ts-jest": "^29.2.5",
-    "typescript": "^5.6.2"
+    "typescript": "^5.6.2",
+    "wiremock": "^3.9.1"
   }
 }

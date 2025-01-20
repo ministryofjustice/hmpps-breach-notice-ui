@@ -1,0 +1,456 @@
+{% extends "../partials/layout.njk" %}
+
+{% set pageTitle = applicationName + " - Home" %}
+{% set mainClasses = "app-container govuk-body" %}
+
+{% block content %}
+
+  {% from "moj/components/side-navigation/macro.njk" import mojSideNavigation %}
+  {% from "govuk/components/radios/macro.njk" import govukRadios %}
+  {% from "govuk/components/select/macro.njk" import govukSelect %}
+  {% from "moj/components/button-menu/macro.njk" import mojButtonMenu %}
+  {% from "govuk/components/phase-banner/macro.njk" import govukPhaseBanner %}
+  {% from "moj/components/date-picker/macro.njk" import mojDatePicker %}
+  {% from "govuk/components/table/macro.njk" import govukTable %}
+  {% from "govuk/components/input/macro.njk" import govukInput %}
+  {% from "govuk/components/checkboxes/macro.njk" import govukCheckboxes %}
+
+  {% set phoneHtml %}
+    {{ govukInput({
+      id: "contact-by-phone",
+      name: "contactByPhone",
+      type: "tel",
+      autocomplete: "tel",
+      classes: "govuk-!-width-one-third",
+      label: {
+        text: "Phone number"
+      }
+    }) }}
+  {% endset -%}
+
+  {% set govselectHtml %}
+    {{ govukSelect({
+      id: "sort",
+      name: "sort",
+      label: {
+        text: "Reason"
+      },
+      items: [
+        {
+          value: "failed",
+          text: "Failed to attend"
+        },
+        {
+          value: "late",
+          text: "Attended Late",
+          selected: true
+        },
+        {
+          value: "failedcomply",
+          text: "Failed to comply"
+        },
+        {
+          value: "touch",
+          text: "Failed to keep in touch"
+        }
+      ]
+    }) }}
+  {% endset -%}
+
+
+  <div class="govuk-grid-row">
+    {{ govukPhaseBanner({
+      tag: {
+        text: "Beta"
+      },
+      html: 'This is a new service. Help us improve it and <a class="govuk-link" href="#">give your feedback by email</a>.'
+    }) }}
+
+    <div class="govuk-grid-column-one-third">
+
+      {{ mojSideNavigation({
+        label: 'Side navigation',
+        items: [{
+          text: 'Basic details',
+          href: '/basic-details'
+        }, {
+          text: 'Warning type',
+          href: '/warning-type'
+        }, {
+          text: 'Warning details',
+          href: '/warning-details',
+          active: true
+        }, {
+          text: 'Next appointment',
+          href: '/next-appointment'
+        }, {
+          text: 'Check Your answers',
+          href: '/check-your-report'
+        }]
+      }) }}
+
+    </div>
+
+    <div class="govuk-grid-column-two-thirds">
+      <h1 class="govuk-heading-x1">Breach Notice - Breach Warning Details</h1>
+
+
+
+
+
+{#      {{ govukRadios({#}
+{#        name: "warningType",#}
+{#        fieldset: {#}
+{#          legend: {#}
+{#            text: "Select a Warning Type",#}
+{#            isPageHeading: true,#}
+{#            classes: "govuk-fieldset__legend--m"#}
+{#          }#}
+{#        },#}
+{#        items: [#}
+{#          {#}
+{#            value: "final-warning",#}
+{#            text: "Final Warning"#}
+{#          },#}
+{#          {#}
+{#            value: "breach-warning",#}
+{#            text: "Breach Warning"#}
+{#          }#}
+{#        ]#}
+{#      }) }}#}
+
+
+
+      {{ govukSelect({
+        id: "sort",
+        name: "sort",
+        label: {
+          text: "Sentence Type being enforced",
+          classes: "govuk-fieldset__legend--m"
+        },
+        items: [
+          {
+            value: "community-order",
+            text: "Community Order"
+          },
+          {
+            value: "another-type",
+            text: "Another Type",
+            selected: true
+          }
+        ]
+      }) }}
+
+
+      <h1 class="govuk-fieldset__legend--m">
+        Condition being enforced
+      </h1>
+
+      2 occasions during a 12 month period
+
+      <br/><br/>
+
+      <div class="govuk-form-group">
+        <fieldset class="govuk-fieldset" aria-describedby="waste-hint">
+          <legend class="govuk-fieldset__legend govuk-fieldset__legend--m">
+            <h1 class="govuk-fieldset__heading">
+              Failures recorded on this order
+            </h1>
+          </legend>
+          <div id="waste-hint" class="govuk-hint">
+            Select all that apply
+          </div>
+          <div class="govuk-checkboxes" data-module="govuk-checkboxes">
+            <div class="govuk-checkboxes__item">
+              <input class="govuk-checkboxes__input" id="waste" name="waste" type="checkbox" value="carcasses">
+              <label class="govuk-label govuk-checkboxes__label" for="waste">
+                02/10/2004, Rehabilitation Activity Requirement (RAR) - Rehabilitation Activity Requirement (RAR), Planned Office Visit (NS), Unacceptable Absenc
+              </label>
+                            <div id="signIn-item-hint" class="govuk-hint govuk-radios__hint">
+                              {% from "govuk/components/details/macro.njk" import govukDetails %}
+
+                              {{ govukDetails({
+                                summaryText: "View requirement notes",
+                                text: "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat."
+                              }) }}
+                            </div>
+            </div>
+            <div class="govuk-checkboxes__item">
+              <input class="govuk-checkboxes__input" id="waste-2" name="waste" type="checkbox" value="mines">
+              <label class="govuk-label govuk-checkboxes__label" for="waste-2">
+                01/08/2024, Unpaid Work - Regular, CP/UPW Appointment (NS), Sent Home (Behaviour)
+              </label>
+                            <div id="signIn-item-hint" class="govuk-hint govuk-radios__hint">
+                              {% from "govuk/components/details/macro.njk" import govukDetails %}
+
+                              {{ govukDetails({
+                                summaryText: "View requirement notes",
+                                text: "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat."
+                              }) }}
+                            </div>
+            </div>
+          </div>
+        </fieldset>
+      </div>
+
+
+{#      {{ govukCheckboxes({#}
+{#        name: "waste",#}
+{#        fieldset: {#}
+{#          legend: {#}
+{#            text: "Failures recorded on this order",#}
+{#            isPageHeading: true,#}
+{#            classes: "govuk-fieldset__legend--m"#}
+{#          }#}
+{#        },#}
+{#        hint: {#}
+{#          text: "Select all that apply"#}
+{#        },#}
+{#        items: [#}
+{#          {#}
+{#            value: "carcasses",#}
+{#            text: "02/10/2004, Rehabilitation Activity Requirement (RAR) - Rehabilitation Activity Requirement (RAR), Planned Office Visit (NS), Unacceptable Absenc",#}
+{#            conditional: {#}
+{#            html: govselectHtml#}
+{#          }#}
+{#          },#}
+{#          {#}
+{#            value: "mines",#}
+{#            text: "01/08/2024, Unpaid Work - Regular, CP/UPW Appointment (NS), Sent Home (Behaviour)",#}
+{#            conditional: {#}
+{#            html: govselectHtml#}
+{#          }#}
+{#          }#}
+{#        ]#}
+{#      }) }}#}
+
+
+
+
+
+{#      <div class="govuk-form-group">#}
+{#        <fieldset class="govuk-fieldset" aria-describedby="signIn-hint">#}
+{#          <legend class="govuk-fieldset__legend govuk-fieldset__legend--m">#}
+{#            <h1 class="govuk-fieldset__heading">#}
+{#              Failures recorded on this order#}
+{#            </h1>#}
+{#          </legend>#}
+{#          <div id="signIn-hint" class="govuk-hint">#}
+
+{#          </div>#}
+{#          <div class="govuk-radios" data-module="govuk-radios">#}
+{#            <div class="govuk-radios__item">#}
+{#              <input class="govuk-radios__input" id="signIn" name="signIn" type="radio" value="government-gateway" aria-describedby="signIn-item-hint">#}
+{#              <label class="govuk-label govuk-radios__label" for="signIn">#}
+{#                02/10/2004, Rehabilitation Activity Requirement (RAR) - Rehabilitation Activity Requirement (RAR), Planned Office Visit (NS), Unacceptable Absence#}
+{#              </label>#}
+{#              <div id="signIn-item-hint" class="govuk-hint govuk-radios__hint">#}
+{#                {% from "govuk/components/details/macro.njk" import govukDetails %}#}
+
+{#                {{ govukDetails({#}
+{#                  summaryText: "View requirement notes",#}
+{#                  text: "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat."#}
+{#                }) }}#}
+{#              </div>#}
+{#            </div>#}
+{#            <div class="govuk-radios__item">#}
+{#              <input class="govuk-radios__input" id="signIn-2" name="signIn" type="radio" value="govuk-one-login" aria-describedby="signIn-2-item-hint">#}
+{#              <label class="govuk-label govuk-radios__label" for="signIn-2">#}
+{#                01/08/2024, Unpaid Work - Regular, CP/UPW Appointment (NS), Sent Home (Behaviour)#}
+{#              </label>#}
+{#              <div id="signIn-2-item-hint" class="govuk-hint govuk-radios__hint">#}
+
+{#                {{ govukDetails({#}
+{#                  summaryText: "View requirement notes",#}
+{#                  text: "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat."#}
+{#                }) }}#}
+{#              </div>#}
+{#            </div>#}
+{#          </div>#}
+{#        </fieldset>#}
+{#      </div>#}
+
+
+
+{#      {% set phoneHtml %}#}
+{#        {{ govukInput({#}
+{#          id: "contact-by-phone",#}
+{#          name: "contactByPhone",#}
+{#          type: "tel",#}
+{#          autocomplete: "tel",#}
+{#          classes: "govuk-!-width-one-third",#}
+{#          label: {#}
+{#            text: "Phone number"#}
+{#          }#}
+{#        }) }}#}
+{#      {% endset -%}#}
+
+
+
+
+
+
+
+
+
+      {{ govukCheckboxes({
+        name: "waste",
+        fieldset: {
+          legend: {
+            text: "Select the failures being enforced",
+            isPageHeading: true,
+            classes: "govuk-fieldset__legend--m"
+          }
+        },
+        hint: {
+          text: "Select all that apply"
+        },
+        items: [
+          {
+            value: "carcasses",
+            text: "Attendance Centre - Attendance Centre",
+            conditional: {
+            html: govselectHtml
+          }
+          },
+          {
+            value: "mines",
+            text: "Rehabilitation Activity Requirement (RAR) - Rehabilitation Activity Requirement (RAR)",
+            conditional: {
+            html: govselectHtml
+          }
+          },
+          {
+            value: "farm",
+            text: "Unpaid Work - Regular",
+            conditional: {
+            html: govselectHtml
+          }
+          }
+        ]
+      }) }}
+
+
+
+
+
+      {% from "govuk/components/table/macro.njk" import govukTable %}
+{#      #}
+{#      {{ govukTable({#}
+{#        caption: "Select the failures being enforced",#}
+{#        captionClasses: "govuk-table__caption--m",#}
+{#        firstCellIsHeader: true,#}
+{#        head: [#}
+{#          {#}
+{#            text:""#}
+{#          },#}
+{#          {#}
+{#            text: "Date"#}
+{#          },#}
+{#          {#}
+{#            text: "Contact Type"#}
+{#          },#}
+{#          {#}
+{#            text: "Outcome"#}
+{#          }#}
+{#        ],#}
+{#        rows: [#}
+{#          [#}
+{#            {#}
+{#              html:'        <div class="govuk-checkboxes__item govuk-checkboxes--small moj-multi-select__checkbox">#}
+{#          <input type="checkbox" class="govuk-checkboxes__input" id="one">#}
+{#          <label class="govuk-label govuk-checkboxes__label" for="mountain-aconcagua">#}
+{#            <span class="govuk-visually-hidden">Select Aconcagua</span>#}
+{#          </label>#}
+{#        </div>'#}
+{#            },#}
+{#            {#}
+{#              text: "17/02/1985"#}
+{#            },#}
+{#            {#}
+{#              text: "Planned Office Visit (NS)"#}
+{#            },#}
+{#            {#}
+{#              text: "Unacceptable Absence"#}
+{#            }#}
+{#          ],#}
+{#          [#}
+{#            {#}
+{#              html:'        <div class="govuk-checkboxes__item govuk-checkboxes--small moj-multi-select__checkbox">#}
+{#          <input type="checkbox" class="govuk-checkboxes__input" id="two">#}
+{#          <label class="govuk-label govuk-checkboxes__label" for="mountain-aconcagua">#}
+{#            <span class="govuk-visually-hidden">Select Aconcagua</span>#}
+{#          </label>#}
+{#        </div>'#}
+{#            },#}
+{#            {#}
+{#              text: "17/02/1985"#}
+{#            },#}
+{#            {#}
+{#              text: "CP/UPW Appointment"#}
+{#            },#}
+{#            {#}
+{#              text: "Sent Home (behaviour)"#}
+{#            }#}
+{#          ],#}
+{#          [#}
+{#            {#}
+{#              html:'        <div class="govuk-checkboxes__item govuk-checkboxes--small moj-multi-select__checkbox">#}
+{#          <input type="checkbox" class="govuk-checkboxes__input" id=three">#}
+{#          <label class="govuk-label govuk-checkboxes__label" for="three">#}
+{#            <span class="govuk-visually-hidden">Select Aconcagua</span>#}
+{#          </label>#}
+{#        </div>'#}
+{#            },#}
+{#            {#}
+{#              text: "17/02/1985"#}
+{#            },#}
+{#            {#}
+{#              text: "CP/UPW Appointment"#}
+{#            },#}
+{#            {#}
+{#              text: "Sent Home (behaviour)"#}
+{#            }#}
+{#          ]#}
+{#        ]#}
+{#      }) }}#}
+
+      {{ mojDatePicker({
+        id: "response-required-by",
+        name: "response-required-by",
+        label: {
+          text: "Response Required By",
+          classes: "govuk-fieldset__legend--m"
+        },
+        hint: {
+          text: "For example, 17/5/2024."
+        }
+      }) }}
+
+      {{ mojButtonMenu({
+        items: [{
+          text: "Continue",
+          href: "/next-appointment",
+          preventDoubleClick: "true"
+        }, {
+          text: "View Draft Report",
+          href: "#",
+          classes: "govuk-button--secondary",
+          preventDoubleClick: "true"
+        }, {
+            text: "Refresh from Delius",
+            href: "#",
+            classes: "govuk-button--secondary",
+            preventDoubleClick: "true"
+          }, {
+          text: "Close",
+          href: "/basic-details",
+          classes: "govuk-button--secondary",
+          preventDoubleClick: "true"
+        }]
+      }) }}
+
+    </div>
+  </div>
+
+{% endblock %}

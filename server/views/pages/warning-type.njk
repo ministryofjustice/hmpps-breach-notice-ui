@@ -1,0 +1,101 @@
+{% extends "../partials/layout.njk" %}
+
+{% set pageTitle = applicationName + " - Home" %}
+{% set mainClasses = "app-container govuk-body" %}
+
+{% block content %}
+
+  {% from "moj/components/side-navigation/macro.njk" import mojSideNavigation %}
+  {% from "govuk/components/radios/macro.njk" import govukRadios %}
+  {% from "govuk/components/select/macro.njk" import govukSelect %}
+  {% from "moj/components/button-menu/macro.njk" import mojButtonMenu %}
+  {% from "govuk/components/phase-banner/macro.njk" import govukPhaseBanner %}
+  {% from "moj/components/date-picker/macro.njk" import mojDatePicker %}
+  {% from "govuk/components/table/macro.njk" import govukTable %}
+
+
+  <div class="govuk-grid-row">
+    {{ govukPhaseBanner({
+      tag: {
+        text: "Beta"
+      },
+      html: 'This is a new service. Help us improve it and <a class="govuk-link" href="#">give your feedback by email</a>.'
+    }) }}
+
+    <div class="govuk-grid-column-one-third">
+
+      {{ mojSideNavigation({
+        label: 'Side navigation',
+        items: [{
+          text: 'Basic details',
+          href: '/basic-details'
+        }, {
+          text: 'Warning type',
+          href: '/warning-type',
+          active: true
+        }, {
+          text: 'Warning details',
+          href: '/warning-details'
+        }, {
+          text: 'Next appointment',
+          href: '/next-appointment'
+        }, {
+          text: 'Check your answers',
+          href: '/check-your-report'
+        }]
+      }) }}
+
+    </div>
+
+    <div class="govuk-grid-column-two-thirds">
+      <h1 class="govuk-heading-x1">Breach Notice - Warning Type</h1>
+
+      {{ govukRadios({
+        name: "warningType",
+        fieldset: {
+          legend: {
+            text: "Select a Warning Type",
+            isPageHeading: true,
+            classes: "govuk-fieldset__legend--m"
+          }
+        },
+        items: [
+          {
+            value: "breach-warning",
+            text: "Breach Warning"
+          },
+          {
+            value: "final-warning",
+            text: "Final Warning"
+          },
+          {
+            value: "formal-warning",
+            text: "Formal Warning"
+          }
+        ]
+      }) }}
+
+
+
+      {{ mojButtonMenu({
+        items: [{
+          text: "Continue",
+          href: "/warning-details",
+          preventDoubleClick: "true"
+        }, {
+          text: "View Draft Report",
+          href: "#",
+          classes: "govuk-button--secondary",
+          preventDoubleClick: "true"
+        }, {
+          text: "Close",
+          href: "/basic-details",
+          classes: "govuk-button--secondary",
+          preventDoubleClick: "true"
+        }]
+      }) }}
+
+    </div>
+  </div>
+
+{% endblock %}

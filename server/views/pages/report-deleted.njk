@@ -1,0 +1,39 @@
+{% extends "../partials/layout.njk" %}
+
+{% set pageTitle = applicationName + " - Home" %}
+{% set mainClasses = "app-container govuk-body" %}
+
+{% block content %}
+  {% from "moj/components/side-navigation/macro.njk" import mojSideNavigation %}
+  {% from "govuk/components/phase-banner/macro.njk" import govukPhaseBanner %}
+  {% from "govuk/components/panel/macro.njk" import govukPanel %}
+  {% from "govuk/components/panel/macro.njk" import govukPanel %}
+
+
+  <div class="govuk-grid-row">
+    {{ govukPhaseBanner({
+      tag: {
+        text: "Beta"
+      },
+      html: 'This is a new service. Help us improve it and <a class="govuk-link" href="#">give your feedback by email</a>.'
+    }) }}
+
+
+    <div class="govuk-grid-column-two-thirds">
+      {% set mainClasses = "govuk-main-wrapper--l" %}
+
+            {{ govukPanel({
+              titleText: "Report Deleted",
+              html: "Your Breach Report has been permanently deleted"
+            }) }}
+
+            <h2 class="govuk-heading-m">What to do next</h2>
+
+            <p class="govuk-body">
+                Close this letter<br>
+                <a href="#" class="govuk-link">Return back to the main Delius Screen</a>
+            </p>
+    </div>
+  </div>
+
+{% endblock %}
