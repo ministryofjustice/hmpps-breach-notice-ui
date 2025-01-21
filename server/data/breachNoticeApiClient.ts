@@ -16,3 +16,28 @@ export default class BreachNoticeApiClient extends RestClient {
 export interface BreachNotice {
   id: string
 }
+
+export interface BasicDetails {
+  title: string
+  name: Name
+  addresses: AddressList
+  replyAddresses: AddressList
+}
+
+export interface Name {
+  forename: string
+  middleName: string
+  surname: string
+}
+
+export interface Address {
+  buildingName: string
+  buildingNumber: string
+  streetName: string
+  townCity: string
+  district: string
+  county: string
+  postcode: string
+}
+
+export type AddressList = Array<Address>
