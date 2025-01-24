@@ -11,7 +11,8 @@
   {% from "govuk/components/select/macro.njk" import govukSelect %}
   {% from "moj/components/button-menu/macro.njk" import mojButtonMenu %}
   {% from "moj/components/date-picker/macro.njk" import mojDatePicker %}
-
+<form method="post">
+  <input type="hidden" name="_csrf" value="{{ csrfToken }}">
   <div class="govuk-grid-row">
 
     {{ govukPhaseBanner({
@@ -48,23 +49,23 @@
 
     <div class="govuk-grid-column-two-thirds">
       <h1 class="govuk-heading-x1">Breach Notice - Basic Details</h1>
-      <br><br>
-      TEST CALL REPLY: {{ breachNotice.id }} <br><br>
-      CRN Used:  {{ breachNotice.crn }}<br><br>
-      FROM BASIC DETAILS: {{ basicDetails.title }}
-      <br><br>
+      <b class="govuk-fieldset__legend--m">Title and Full Name
+      </b><br/>
+      {{ breachNotice.titleAndFullName }}
+      <p/><br>
 
-      <b class="govuk-fieldset__legend--m">Title and Full Name</b><br/>
-      Mr Mitchell Walker<p/><br>
-
-      <b class="govuk-fieldset__legend--m">CRN</b><br/>
-      X123456<p/>
+      <b class="govuk-fieldset__legend--m">CRN
+      </b><br/>
+      {{ breachNotice.crn }}
+      <p/>
 
       <b class="govuk-fieldset__legend--m">Postal Address</b><br/>
-      1 The Road <br>
-      Newcastle Upon Tyne<br>
-      Tyne and Wear<br>
-      NE1 2SW
+      {{ breachNotice.offenderAddress.buildingName }}<br>
+      {{ breachNotice.offenderAddress.buildingNumber }} {{ breachNotice.offenderAddress.streetName }}<br>
+      {{ breachNotice.offenderAddress.district }}<br>
+      {{ breachNotice.offenderAddress.townCity }}<br>
+      {{ breachNotice.offenderAddress.county }}<br>
+      {{ breachNotice.offenderAddress.postcode }}<br>
 
       {{ govukSelect({
         id: "alternate-address",
@@ -130,7 +131,7 @@
 
       {{ mojDatePicker({
         id: "date-of-letter",
-        name: "date-of-letter",
+        name: "dateOfLetter",
         label: {
           text: "Date of letter",
           classes: "govuk-fieldset__legend--m"
@@ -153,7 +154,7 @@
       {{ mojButtonMenu({
         items: [{
           text: "Continue",
-          href: "/warning-details"
+          type: "submit"
         }, {
           text: "View draft",
           href: "#",
@@ -167,5 +168,6 @@
 
     </div>
   </div>
+</form>
 
 {% endblock %}
