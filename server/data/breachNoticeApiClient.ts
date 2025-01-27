@@ -68,4 +68,10 @@ export interface Address {
   postcode: string
 }
 
+export interface SelectItem {
+  value: string
+  text: string
+  selected: boolean
+}
+
 export type AddressList = Array<Address>

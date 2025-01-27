@@ -4,7 +4,13 @@ import { convert, DateTimeFormatter, LocalDate } from '@js-joda/core'
 import asyncMiddleware from '../middleware/asyncMiddleware'
 import type { Services } from '../services'
 import { Page } from '../services/auditService'
-import BreachNoticeApiClient, { Address, BasicDetails, BreachNotice, Name } from '../data/breachNoticeApiClient'
+import BreachNoticeApiClient, {
+  Address,
+  BasicDetails,
+  BreachNotice,
+  Name,
+  SelectItem,
+} from '../data/breachNoticeApiClient'
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 export default function routes({ auditService, hmppsAuthClient }: Services): Router {
@@ -32,7 +38,9 @@ export default function routes({ auditService, hmppsAuthClient }: Services): Rou
     let breachNotice: BreachNotice = null
     breachNotice = await breachNoticeApiClient.getBreachNoticeById(breachNoticeId as string)
     checkBreachNoticeAndApplyDefaults(breachNotice, basicDetails)
-    res.render('pages/basic-details', { breachNotice, basicDetails })
+    const alternateAddressOptions = initiatePostalAddressSelectItemList(basicDetails)
+    // const replyAddressList: Array<Address> = [] as Array<SelectItem>
+    res.render('pages/basic-details', { breachNotice, basicDetails, alternateAddressOptions })
   })
 
   post('/basic-details/:id', async (req, res, next) => {
@@ -43,6 +51,8 @@ export default function routes({ auditService, hmppsAuthClient }: Services): Rou
     let breachNotice: BreachNotice = null
     breachNotice = await breachNoticeApiClient.getBreachNoticeById(breachNoticeId as string)
     checkBreachNoticeAndApplyDefaults(breachNotice, basicDetails)
+
+    console.log(`${req.body}`)
     // breachNotice.offenderAddress = req.body.alternateAddress ?? breachNotice.offenderAddress
     breachNotice.dateOfLetter = convert(
       LocalDate.parse(req.body.dateOfLetter, DateTimeFormatter.ofPattern('d/M/yyyy')),
@@ -55,9 +65,9 @@ export default function routes({ auditService, hmppsAuthClient }: Services): Rou
 
   get('/warning-details', async (req, res, next) => {
     await auditService.logPageView(Page.EXAMPLE_PAGE, { who: res.locals.user.username, correlationId: req.id })
-    const breachNoticeApiClient = new BreachNoticeApiClient(await hmppsAuthClient.getSystemClientToken())
-    const breachNotice = await breachNoticeApiClient.getBreachNoticeById('14b526a6-dec8-4a44-9c1c-435fa024820c')
-    res.render('pages/warning-details', { breachNotice })
+    // const breachNoticeApiClient = new BreachNoticeApiClient(await hmppsAuthClient.getSystemClientToken())
+    // const breachNotice = await breachNoticeApiClient.getBreachNoticeById('14b526a6-dec8-4a44-9c1c-435fa024820c')
+    res.render('pages/warning-details')
   })
 
   get('/warning-type/:id', async (req, res, next) => {
@@ -117,6 +127,21 @@ export default function routes({ auditService, hmppsAuthClient }: Services): Rou
       // eslint-disable-next-line no-param-reassign
       breachNotice.offenderAddress = offenderPostalAddress
     }
+  }
+
+  function initiatePostalAddressSelectItemList(basicDetails: BasicDetails): SelectItem[] {
+    return [
+      {
+        text: 'Please Select',
+        value: '-1',
+        selected: true,
+      },
+      ...basicDetails.addresses.map(address => ({
+        text: [address.townCity, address.streetName].filter(item => item).join(', '),
+        value: '1',
+        selected: false,
+      })),
+    ]
   }
 
   function findDefaultAddressInAddressList(addressList: Array<Address>): Address {
