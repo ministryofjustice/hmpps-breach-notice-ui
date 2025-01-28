@@ -58,9 +58,10 @@ export interface Name {
 }
 
 export interface Address {
+  addressId: number
   type: string
   buildingName: string
-  buildingNumber: string
+  addressNumber: string
   streetName: string
   townCity: string
   district: string

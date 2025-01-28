@@ -11,6 +11,8 @@
   {% from "govuk/components/select/macro.njk" import govukSelect %}
   {% from "moj/components/button-menu/macro.njk" import mojButtonMenu %}
   {% from "moj/components/date-picker/macro.njk" import mojDatePicker %}
+  {% from "govuk/components/radios/macro.njk" import govukRadios %}
+
 <form method="post">
   <input type="hidden" name="_csrf" value="{{ csrfToken }}">
   <div class="govuk-grid-row">
@@ -23,6 +25,29 @@
     }) }}
 
     <div class="govuk-grid-column-one-third">
+      {% set alternateAddressHtml %}
+        {{ govukSelect({
+          id: "alternate-address",
+          name: "alternateAddress",
+          label: {
+            text: "Please pick an alternative postal address",
+            classes: "govuk-fieldset__legend--m"
+          },
+          items: alternateAddressOptions
+        }) }}
+      {% endset -%}
+
+      {% set replyAddressHtml %}
+        {{ govukSelect({
+          id: "alternate-reply-address",
+          name: "alternateReplyAddress",
+          label: {
+            text: "Or pick alternative address",
+            classes: "govuk-fieldset__legend--m"
+          },
+          items: replyAddressOptions
+        }) }}
+      {% endset -%}
 
       {{ mojSideNavigation({
         label: 'Side navigation',
@@ -61,52 +86,70 @@
 
       <b class="govuk-fieldset__legend--m">Postal Address</b><br/>
       {{ breachNotice.offenderAddress.buildingName }}<br>
-      {{ breachNotice.offenderAddress.buildingNumber }} {{ breachNotice.offenderAddress.streetName }}<br>
+      {{ breachNotice.offenderAddress.addressNumber }} {{ breachNotice.offenderAddress.streetName }}<br>
       {{ breachNotice.offenderAddress.district }}<br>
       {{ breachNotice.offenderAddress.townCity }}<br>
       {{ breachNotice.offenderAddress.county }}<br>
       {{ breachNotice.offenderAddress.postcode }}<br>
 
-      {{ govukSelect({
-        id: "alternate-address",
-        name: "alternateAddress",
-        label: {
-          text: "Or pick alternative address",
-          classes: "govuk-fieldset__legend--m"
+      {{ govukRadios({
+        name: "offenderAddressSelectOne",
+        fieldset: {
+          legend: {
+            text: "Would you like to use the postal address above for this breach notice?",
+            isPageHeading: true,
+            classes: "govuk-fieldset__legend--m"
+          }
         },
-        items: alternateAddressOptions
-      }) }}
-
-      <b class="govuk-fieldset__legend--m">Reply Address</b><br/>
-      Reply House<br>
-      Newcastle Upon Tyne<br>
-      Tyne and Wear<br>
-      NE1 2SW<br><br>
-
-      {{ govukSelect({
-        id: "alternate-reply-address",
-        name: "alternateReplyAddress",
-        label: {
-          text: "Or pick alternative address",
-          classes: "govuk-fieldset__legend--m"
+        hint: {
+          text: "Select one option"
         },
         items: [
           {
-            value: "Address 1",
-            text: "First address"
+            value: "Yes",
+            text: "Yes"
           },
           {
-            value: "Address 2",
-            text: "Second Address",
-            selected: true
+            value: "No",
+            text: "No, I would like to use a different postal address ",
+            conditional: {
+            html: alternateAddressHtml
+          }
+          }
+        ]
+      }) }}
+
+      <b class="govuk-fieldset__legend--m">Reply Address</b><br/>
+      {{ breachNotice.replyAddress.buildingName }}<br>
+      {{ breachNotice.replyAddress.addressNumber }} {{ breachNotice.replyAddress.streetName }}<br>
+      {{ breachNotice.replyAddress.district }}<br>
+      {{ breachNotice.replyAddress.townCity }}<br>
+      {{ breachNotice.replyAddress.county }}<br>
+      {{ breachNotice.replyAddress.postcode }}<br>
+      <br>
+      {{ govukRadios({
+        name: "replyAddressSelectOne",
+        fieldset: {
+          legend: {
+            text: "Would you like to use the reply address above for this breach notice?",
+            isPageHeading: true,
+            classes: "govuk-fieldset__legend--m"
+          }
+        },
+        hint: {
+          text: "Select one option"
+        },
+        items: [
+          {
+            value: "Yes",
+            text: "Yes"
           },
           {
-            value: "Address 3",
-            text: "Third Address"
-          },
-          {
-            value: "Address 4",
-            text: "Fourth Address"
+            value: "No",
+            text: "No, I would like to use a different reply address ",
+            conditional: {
+            html: replyAddressHtml
+          }
           }
         ]
       }) }}
@@ -114,6 +157,7 @@
       {{ mojDatePicker({
         id: "date-of-letter",
         name: "dateOfLetter",
+        value: breachNotice.dateOfLetter,
         label: {
           text: "Date of letter",
           classes: "govuk-fieldset__legend--m"
@@ -130,6 +174,7 @@
           isPageHeading: true
         },
         id: "office-reference",
+        value: breachNotice.referenceNumber,
         name: "officeReference"
       }) }}
 
