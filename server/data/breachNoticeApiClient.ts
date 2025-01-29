@@ -42,6 +42,8 @@ export interface BreachNotice {
   warningTypeSaved: boolean
   warningDetailsSaved: boolean
   nextAppointmentSaved: boolean
+  useDefaultAddress: boolean
+  useDefaultReplyAddress: boolean
 }
 
 export interface BasicDetails {

@@ -35,8 +35,8 @@ export default function routes({ auditService, hmppsAuthClient }: Services): Rou
     let breachNotice: BreachNotice = null
     breachNotice = await breachNoticeApiClient.getBreachNoticeById(breachNoticeId as string)
     checkBreachNoticeAndApplyDefaults(breachNotice, basicDetails)
-    const alternateAddressOptions = initiateAlternateAddressSelectItemList(basicDetails)
-    const replyAddressOptions = initiateReplyAddressSelectItemList(basicDetails)
+    const alternateAddressOptions = initiateAlternateAddressSelectItemList(basicDetails, breachNotice)
+    const replyAddressOptions = initiateReplyAddressSelectItemList(basicDetails, breachNotice)
     res.render('pages/basic-details', { breachNotice, basicDetails, alternateAddressOptions, replyAddressOptions })
   })
 
@@ -48,6 +48,7 @@ export default function routes({ auditService, hmppsAuthClient }: Services): Rou
     let breachNotice: BreachNotice = null
     breachNotice = await breachNoticeApiClient.getBreachNoticeById(breachNoticeId as string)
     checkBreachNoticeAndApplyDefaults(breachNotice, basicDetails)
+    console.log(req.body)
     // input variables passed in req.body
     breachNotice.dateOfLetter = convert(
       LocalDate.parse(req.body.dateOfLetter, DateTimeFormatter.ofPattern('d/M/yyyy')),
@@ -58,11 +59,23 @@ export default function routes({ auditService, hmppsAuthClient }: Services): Rou
     if (req.body.offenderAddressSelectOne === 'No') {
       // we are using a selected address. Find it in the list
       breachNotice.offenderAddress = getSelectedAddress(basicDetails.addresses, req.body.alternateAddress)
+      breachNotice.useDefaultAddress = false
+    } else if (req.body.offenderAddressSelectOne === 'Yes') {
+      breachNotice.useDefaultAddress = true
+    } else {
+      breachNotice.useDefaultAddress = null
     }
 
+    // reply address
     if (req.body.replyAddressSelectOne === 'No') {
       breachNotice.replyAddress = getSelectedAddress(basicDetails.replyAddresses, req.body.alternateReplyAddress)
+      breachNotice.useDefaultReplyAddress = false
+    } else if (req.body.replyAddressSelectOne === 'Yes') {
+      breachNotice.useDefaultReplyAddress = true
+    } else {
+      breachNotice.useDefaultReplyAddress = null
     }
+    // mark that a USER has saved the document at least once
     breachNotice.basicDetailsSaved = true
     await breachNoticeApiClient.updateBreachNotice(breachNoticeId, breachNotice)
     res.redirect(`/warning-type/${req.params.id}`)
@@ -125,8 +138,11 @@ export default function routes({ auditService, hmppsAuthClient }: Services): Rou
     }
   }
 
-  function initiateAlternateAddressSelectItemList(basicDetails: BasicDetails): SelectItem[] {
-    return [
+  function initiateAlternateAddressSelectItemList(
+    basicDetails: BasicDetails,
+    breachNotice: BreachNotice,
+  ): SelectItem[] {
+    const alternateAddressSelectItemList: SelectItem[] = [
       {
         text: 'Please Select',
         value: '-1',
@@ -147,10 +163,29 @@ export default function routes({ auditService, hmppsAuthClient }: Services): Rou
         selected: false,
       })),
     ]
+
+    if (breachNotice.basicDetailsSaved) {
+      alternateAddressSelectItemList.forEach((selectItem: SelectItem) => {
+        if (breachNotice.offenderAddress && breachNotice.offenderAddress.addressId) {
+          if (breachNotice.offenderAddress.addressId !== -1) {
+            const selectItemValueNumber: number = +selectItem.value
+            if (breachNotice.offenderAddress.addressId === selectItemValueNumber) {
+              // eslint-disable-next-line no-param-reassign
+              selectItem.selected = true
+            } else {
+              // eslint-disable-next-line no-param-reassign
+              selectItem.selected = false
+            }
+          }
+        }
+      })
+    }
+
+    return alternateAddressSelectItemList
   }
 
-  function initiateReplyAddressSelectItemList(basicDetails: BasicDetails): SelectItem[] {
-    return [
+  function initiateReplyAddressSelectItemList(basicDetails: BasicDetails, breachNotice: BreachNotice): SelectItem[] {
+    const alternateReplyAddressSelectItemList: SelectItem[] = [
       {
         text: 'Please Select',
         value: '-1',
@@ -171,6 +206,25 @@ export default function routes({ auditService, hmppsAuthClient }: Services): Rou
         selected: false,
       })),
     ]
+
+    if (breachNotice.basicDetailsSaved) {
+      alternateReplyAddressSelectItemList.forEach((selectItem: SelectItem) => {
+        if (breachNotice.replyAddress && breachNotice.replyAddress.addressId) {
+          if (breachNotice.replyAddress.addressId !== -1) {
+            const selectItemValueNumber: number = +selectItem.value
+            if (breachNotice.replyAddress.addressId === selectItemValueNumber) {
+              // eslint-disable-next-line no-param-reassign
+              selectItem.selected = true
+            } else {
+              // eslint-disable-next-line no-param-reassign
+              selectItem.selected = false
+            }
+          }
+        }
+      })
+    }
+
+    return alternateReplyAddressSelectItemList
   }
 
   function findDefaultAddressInAddressList(addressList: Array<Address>): Address {

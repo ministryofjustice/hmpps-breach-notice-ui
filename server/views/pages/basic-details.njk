@@ -107,11 +107,13 @@
         items: [
           {
             value: "Yes",
-            text: "Yes"
+            text: "Yes",
+            checked: breachNotice.useDefaultAddress
           },
           {
             value: "No",
             text: "No, I would like to use a different postal address ",
+            checked: breachNotice.useDefaultAddress === false,
             conditional: {
             html: alternateAddressHtml
           }
@@ -142,11 +144,13 @@
         items: [
           {
             value: "Yes",
-            text: "Yes"
+            text: "Yes",
+            checked: breachNotice.useDefaultReplyAddress === true
           },
           {
             value: "No",
             text: "No, I would like to use a different reply address ",
+            checked: breachNotice.useDefaultReplyAddress === false,
             conditional: {
             html: replyAddressHtml
           }
