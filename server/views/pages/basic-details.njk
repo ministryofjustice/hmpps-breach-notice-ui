@@ -16,14 +16,6 @@
 <form method="post">
   <input type="hidden" name="_csrf" value="{{ csrfToken }}">
   <div class="govuk-grid-row">
-
-    {{ govukPhaseBanner({
-      tag: {
-        text: "Beta"
-      },
-      html: 'This is a new service. Help us improve it and <a class="govuk-link" href="#">give your feedback by email</a>.'
-    }) }}
-
     <div class="govuk-grid-column-one-third">
       {% set alternateAddressHtml %}
         {{ govukSelect({
@@ -42,7 +34,7 @@
           id: "alternate-reply-address",
           name: "alternateReplyAddress",
           label: {
-            text: "Or pick alternative address",
+            text: "Please pick an alternative reply address",
             classes: "govuk-fieldset__legend--m"
           },
           items: replyAddressOptions
@@ -53,20 +45,20 @@
         label: 'Side navigation',
         items: [{
           text: 'Basic details',
-          href: '/basic-details',
+          href: '/basic-details/'+breachNotice.id,
           active: true
         }, {
           text: 'Warning type',
-          href: '/warning-type'
+          href: '/warning-type/'+breachNotice.id
         }, {
           text: 'Warning details',
-          href: '/warning-details'
+          href: '/warning-details/'+breachNotice.id
         }, {
           text: 'Next appointment',
-          href: '/next-appointment'
+          href: '/next-appointment/'+breachNotice.id
         }, {
           text: 'Check your answers',
-          href: '/check-your-report'
+          href: '/check-your-report/'+breachNotice.id
         }]
       }) }}
 
@@ -82,15 +74,15 @@
       <b class="govuk-fieldset__legend--m">CRN
       </b><br/>
       {{ breachNotice.crn }}
-      <p/>
+      <br/><br/>
 
-      <b class="govuk-fieldset__legend--m">Postal Address</b><br/>
-      {{ breachNotice.offenderAddress.buildingName }}<br>
-      {{ breachNotice.offenderAddress.addressNumber }} {{ breachNotice.offenderAddress.streetName }}<br>
-      {{ breachNotice.offenderAddress.district }}<br>
-      {{ breachNotice.offenderAddress.townCity }}<br>
-      {{ breachNotice.offenderAddress.county }}<br>
-      {{ breachNotice.offenderAddress.postcode }}<br>
+      <b class="govuk-fieldset__legend--m">Postal Address</b>
+      {{ defaultOffenderAddress.buildingName }}<br>
+      {{ defaultOffenderAddress.addressNumber }} {{ defaultOffenderAddress.streetName }}<br>
+      {{ defaultOffenderAddress.district }}<br>
+      {{ defaultOffenderAddress.townCity }}<br>
+      {{ defaultOffenderAddress.county }}<br>
+      {{ defaultOffenderAddress.postcode }}<br>
 
       {{ govukRadios({
         name: "offenderAddressSelectOne",
@@ -121,13 +113,13 @@
         ]
       }) }}
 
-      <b class="govuk-fieldset__legend--m">Reply Address</b><br/>
-      {{ breachNotice.replyAddress.buildingName }}<br>
-      {{ breachNotice.replyAddress.addressNumber }} {{ breachNotice.replyAddress.streetName }}<br>
-      {{ breachNotice.replyAddress.district }}<br>
-      {{ breachNotice.replyAddress.townCity }}<br>
-      {{ breachNotice.replyAddress.county }}<br>
-      {{ breachNotice.replyAddress.postcode }}<br>
+      <b class="govuk-fieldset__legend--m">Reply Address</b>
+      {{ defaultReplyAddress.buildingName }}<br>
+      {{ defaultReplyAddress.addressNumber }} {{ defaultReplyAddress.streetName }}<br>
+      {{ defaultReplyAddress.district }}<br>
+      {{ defaultReplyAddress.townCity }}<br>
+      {{ defaultReplyAddress.county }}<br>
+      {{ defaultReplyAddress.postcode }}<br>
       <br>
       {{ govukRadios({
         name: "replyAddressSelectOne",
@@ -161,7 +153,7 @@
       {{ mojDatePicker({
         id: "date-of-letter",
         name: "dateOfLetter",
-        value: breachNotice.dateOfLetter,
+        value: basicDetailsDateOfLetter,
         label: {
           text: "Date of letter",
           classes: "govuk-fieldset__legend--m"

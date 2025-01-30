@@ -37,8 +37,33 @@ export default function routes({ auditService, hmppsAuthClient }: Services): Rou
     checkBreachNoticeAndApplyDefaults(breachNotice, basicDetails)
     const alternateAddressOptions = initiateAlternateAddressSelectItemList(basicDetails, breachNotice)
     const replyAddressOptions = initiateReplyAddressSelectItemList(basicDetails, breachNotice)
-    res.render('pages/basic-details', { breachNotice, basicDetails, alternateAddressOptions, replyAddressOptions })
+    const defaultOffenderAddress: Address = findDefaultAddressInAddressList(basicDetails.addresses)
+    const defaultReplyAddress: Address = findDefaultAddressInAddressList(basicDetails.replyAddresses)
+    const basicDetailsDateOfLetter: string = toUserDate(breachNotice.dateOfLetter)
+    res.render('pages/basic-details', {
+      breachNotice,
+      basicDetails,
+      alternateAddressOptions,
+      replyAddressOptions,
+      defaultOffenderAddress,
+      defaultReplyAddress,
+      basicDetailsDateOfLetter,
+    })
   })
+
+  function fromUserDate(str: string): string {
+    if (str) {
+      return DateTimeFormatter.ISO_LOCAL_DATE.format(DateTimeFormatter.ofPattern('d/M/yyyy').parse(str))
+    }
+    return ''
+  }
+
+  function toUserDate(str: string): string {
+    if (str) {
+      return DateTimeFormatter.ofPattern('d/M/yyyy').format(DateTimeFormatter.ISO_LOCAL_DATE.parse(str))
+    }
+    return ''
+  }
 
   post('/basic-details/:id', async (req, res, next) => {
     await auditService.logPageView(Page.EXAMPLE_PAGE, { who: res.locals.user.username, correlationId: req.id })
@@ -50,9 +75,7 @@ export default function routes({ auditService, hmppsAuthClient }: Services): Rou
     checkBreachNoticeAndApplyDefaults(breachNotice, basicDetails)
     console.log(req.body)
     // input variables passed in req.body
-    breachNotice.dateOfLetter = convert(
-      LocalDate.parse(req.body.dateOfLetter, DateTimeFormatter.ofPattern('d/M/yyyy')),
-    ).toDate()
+    breachNotice.dateOfLetter = fromUserDate(req.body.dateOfLetter)
     breachNotice.referenceNumber = req.body.officeReference
 
     // get the selected offender postal address
@@ -86,23 +109,48 @@ export default function routes({ auditService, hmppsAuthClient }: Services): Rou
     return addressList.find(address => address.addressId === addressIdentifierNumber)
   }
 
-  get('/warning-details', async (req, res, next) => {
+  get('/warning-details/:id', async (req, res, next) => {
     await auditService.logPageView(Page.EXAMPLE_PAGE, { who: res.locals.user.username, correlationId: req.id })
-    res.render('pages/warning-details')
+    const breachNoticeApiClient = new BreachNoticeApiClient(await hmppsAuthClient.getSystemClientToken())
+    const breachNoticeId = req.params.id
+    let breachNotice: BreachNotice = null
+    breachNotice = await breachNoticeApiClient.getBreachNoticeById(breachNoticeId as string)
+    res.render(`pages/warning-details`, {
+      breachNotice,
+    })
   })
 
   get('/warning-type/:id', async (req, res, next) => {
-    res.render('pages/warning-type')
+    await auditService.logPageView(Page.EXAMPLE_PAGE, { who: res.locals.user.username, correlationId: req.id })
+    const breachNoticeApiClient = new BreachNoticeApiClient(await hmppsAuthClient.getSystemClientToken())
+    const breachNoticeId = req.params.id
+    let breachNotice: BreachNotice = null
+    breachNotice = await breachNoticeApiClient.getBreachNoticeById(breachNoticeId as string)
+    res.render('pages/warning-type', {
+      breachNotice,
+    })
   })
 
-  get('/next-appointment', async (req, res, next) => {
+  get('/next-appointment/:id', async (req, res, next) => {
     await auditService.logPageView(Page.EXAMPLE_PAGE, { who: res.locals.user.username, correlationId: req.id })
-    res.render('pages/next-appointment')
+    const breachNoticeApiClient = new BreachNoticeApiClient(await hmppsAuthClient.getSystemClientToken())
+    const breachNoticeId = req.params.id
+    let breachNotice: BreachNotice = null
+    breachNotice = await breachNoticeApiClient.getBreachNoticeById(breachNoticeId as string)
+    res.render('pages/next-appointment', {
+      breachNotice,
+    })
   })
 
-  get('/check-your-report', async (req, res, next) => {
+  get('/check-your-report/:id', async (req, res, next) => {
     await auditService.logPageView(Page.EXAMPLE_PAGE, { who: res.locals.user.username, correlationId: req.id })
-    res.render('pages/check-your-report')
+    const breachNoticeApiClient = new BreachNoticeApiClient(await hmppsAuthClient.getSystemClientToken())
+    const breachNoticeId = req.params.id
+    let breachNotice: BreachNotice = null
+    breachNotice = await breachNoticeApiClient.getBreachNoticeById(breachNoticeId as string)
+    res.render('pages/check-your-report', {
+      breachNotice,
+    })
   })
 
   get('/basic-details', async (req, res, next) => {
@@ -110,32 +158,34 @@ export default function routes({ auditService, hmppsAuthClient }: Services): Rou
     res.render('pages/basic-details')
   })
 
-  get('/report-completed', async (req, res, next) => {
+  get('/report-completed/:id', async (req, res, next) => {
     await auditService.logPageView(Page.EXAMPLE_PAGE, { who: res.locals.user.username, correlationId: req.id })
-    res.render('pages/report-completed')
+    const breachNoticeApiClient = new BreachNoticeApiClient(await hmppsAuthClient.getSystemClientToken())
+    const breachNoticeId = req.params.id
+    let breachNotice: BreachNotice = null
+    breachNotice = await breachNoticeApiClient.getBreachNoticeById(breachNoticeId as string)
+    res.render('pages/report-completed', {
+      breachNotice,
+    })
   })
 
-  get('/report-deleted', async (req, res, next) => {
+  get('/report-deleted/:id', async (req, res, next) => {
     await auditService.logPageView(Page.EXAMPLE_PAGE, { who: res.locals.user.username, correlationId: req.id })
-    res.render('pages/report-deleted')
+    const breachNoticeApiClient = new BreachNoticeApiClient(await hmppsAuthClient.getSystemClientToken())
+    const breachNoticeId = req.params.id
+    let breachNotice: BreachNotice = null
+    breachNotice = await breachNoticeApiClient.getBreachNoticeById(breachNoticeId as string)
+    res.render('pages/report-deleted', {
+      breachNotice,
+    })
   })
 
   // if this page hasnt been saved we want to go through and apply defaults otherwise dont do this
   function checkBreachNoticeAndApplyDefaults(breachNotice: BreachNotice, basicDetails: BasicDetails) {
-    if (!breachNotice.basicDetailsSaved) {
-      // eslint-disable-next-line no-param-reassign
-      breachNotice.titleAndFullName = `${basicDetails.title} ${basicDetails.name.forename} ${basicDetails.name.middleName} ${
-        basicDetails.name.surname
-      }`
-
-      // This will be overwritten if the user has selected an alternate address
-      // eslint-disable-next-line no-param-reassign
-      breachNotice.offenderAddress = findDefaultAddressInAddressList(basicDetails.addresses)
-
-      // This will be overwritten if the user has selected an alternate address
-      // eslint-disable-next-line no-param-reassign
-      breachNotice.replyAddress = findDefaultReplyInAddressList(basicDetails.replyAddresses)
-    }
+    // eslint-disable-next-line no-param-reassign
+    breachNotice.titleAndFullName = `${basicDetails.title} ${basicDetails.name.forename} ${basicDetails.name.middleName} ${
+      basicDetails.name.surname
+    }`
   }
 
   function initiateAlternateAddressSelectItemList(
@@ -275,7 +325,7 @@ export default function routes({ auditService, hmppsAuthClient }: Services): Rou
     const postalAddress: Address = {
       addressId: 12345,
       type: 'Postal',
-      buildingName: 'PostalName',
+      buildingName: null,
       addressNumber: '21',
       county: 'Postal County',
       district: 'Postal District',
@@ -287,7 +337,7 @@ export default function routes({ auditService, hmppsAuthClient }: Services): Rou
     const mainAddress: Address = {
       addressId: 67891,
       type: 'Main',
-      buildingName: 'MainBuildingName',
+      buildingName: null,
       addressNumber: '666',
       county: 'Some County',
       district: 'Some District',
@@ -303,7 +353,7 @@ export default function routes({ auditService, hmppsAuthClient }: Services): Rou
     const postalAddress: Address = {
       addressId: 33333,
       type: 'Postal',
-      buildingName: 'PostalReplyName',
+      buildingName: null,
       addressNumber: '21',
       county: 'Reply County',
       district: 'Reply District',
@@ -315,7 +365,7 @@ export default function routes({ auditService, hmppsAuthClient }: Services): Rou
     const mainAddress: Address = {
       addressId: 44444,
       type: 'Main',
-      buildingName: 'MainReplyName',
+      buildingName: null,
       addressNumber: '77',
       county: 'Tyne and Wear',
       district: 'Lake District',

@@ -7,41 +7,32 @@
 
   {% from "moj/components/side-navigation/macro.njk" import mojSideNavigation %}
   {% from "moj/components/button-menu/macro.njk" import mojButtonMenu %}
-  {% from "govuk/components/phase-banner/macro.njk" import govukPhaseBanner %}
   {% from "govuk/components/radios/macro.njk" import govukRadios %}
   {% from "govuk/components/input/macro.njk" import govukInput %}
   {% from "govuk/components/table/macro.njk" import govukTable %}
 
 
   <div class="govuk-grid-row">
-
-    {{ govukPhaseBanner({
-      tag: {
-        text: "Beta"
-      },
-      html: 'This is a new service. Help us improve it and <a class="govuk-link" href="#">give your feedback by email</a>.'
-    }) }}
-
     <div class="govuk-grid-column-one-third">
 
       {{ mojSideNavigation({
         label: 'Side navigation',
         items: [{
           text: 'Basic details',
-          href: '/basic-details'
+          href: '/basic-details/'+breachNotice.id
         }, {
           text: 'Warning type',
-          href: '/warning-type'
+          href: '/warning-type/'+breachNotice.id
         }, {
           text: 'Warning details',
-          href: '/warning-details'
+          href: '/warning-details/'+breachNotice.id
         }, {
           text: 'Next appointment',
-          href: '/next-appointment',
+          href: '/next-appointment/'+breachNotice.id,
           active: true
         }, {
           text: 'Check Your answers',
-          href: '/check-your-report'
+          href: '/check-your-report/'+breachNotice.id
         }]
       }) }}
 

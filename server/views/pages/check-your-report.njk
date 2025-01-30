@@ -6,37 +6,29 @@
 {% block content %}
 
   {% from "moj/components/side-navigation/macro.njk" import mojSideNavigation %}
-  {% from "govuk/components/phase-banner/macro.njk" import govukPhaseBanner %}
   {% from "govuk/components/summary-list/macro.njk" import govukSummaryList %}
   {% from "moj/components/button-menu/macro.njk" import mojButtonMenu %}
 
   <div class="govuk-grid-row">
-    {{ govukPhaseBanner({
-      tag: {
-        text: "Beta"
-      },
-      html: 'This is a new service. Help us improve it and <a class="govuk-link" href="#">give your feedback by email</a>.'
-    }) }}
-
     <div class="govuk-grid-column-one-third">
 
       {{ mojSideNavigation({
         label: 'Side navigation',
         items: [{
           text: 'Basic details',
-          href: '/basic-details'
+          href: '/basic-details/'+breachNotice.id
         }, {
           text: 'Warning type',
-          href: '/warning-type'
+          href: '/warning-type/'+breachNotice.id
         }, {
           text: 'Warning details',
-          href: '/warning-details'
+          href: '/warning-details/'+breachNotice.id
         }, {
           text: 'Next appointment',
-          href: '/next-appointment'
+          href: '/next-appointment/'+breachNotice.id
         }, {
           text: 'Check your answers',
-          href: '/check-your-report',
+          href: '/check-your-report/'+breachNotice.id,
           active: true
         }]
       }) }}

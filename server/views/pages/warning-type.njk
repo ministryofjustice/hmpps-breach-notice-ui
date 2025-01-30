@@ -9,39 +9,31 @@
   {% from "govuk/components/radios/macro.njk" import govukRadios %}
   {% from "govuk/components/select/macro.njk" import govukSelect %}
   {% from "moj/components/button-menu/macro.njk" import mojButtonMenu %}
-  {% from "govuk/components/phase-banner/macro.njk" import govukPhaseBanner %}
   {% from "moj/components/date-picker/macro.njk" import mojDatePicker %}
   {% from "govuk/components/table/macro.njk" import govukTable %}
 
 
   <div class="govuk-grid-row">
-    {{ govukPhaseBanner({
-      tag: {
-        text: "Beta"
-      },
-      html: 'This is a new service. Help us improve it and <a class="govuk-link" href="#">give your feedback by email</a>.'
-    }) }}
-
     <div class="govuk-grid-column-one-third">
 
       {{ mojSideNavigation({
         label: 'Side navigation',
         items: [{
           text: 'Basic details',
-          href: '/basic-details'
+          href: '/basic-details/'+breachNotice.id
         }, {
           text: 'Warning type',
-          href: '/warning-type',
+          href: '/warning-type/'+breachNotice.id,
           active: true
         }, {
           text: 'Warning details',
-          href: '/warning-details'
+          href: '/warning-details/'+breachNotice.id
         }, {
           text: 'Next appointment',
-          href: '/next-appointment'
+          href: '/next-appointment/'+breachNotice.id
         }, {
           text: 'Check your answers',
-          href: '/check-your-report'
+          href: '/check-your-report/'+breachNotice.id
         }]
       }) }}
 
@@ -80,7 +72,7 @@
       {{ mojButtonMenu({
         items: [{
           text: "Continue",
-          href: "/warning-details",
+          href: "/warning-details/"+breachNotice.id,
           preventDoubleClick: "true"
         }, {
           text: "View Draft Report",
@@ -89,7 +81,7 @@
           preventDoubleClick: "true"
         }, {
           text: "Close",
-          href: "/basic-details",
+          href: "/basic-details/"+breachNotice.id,
           classes: "govuk-button--secondary",
           preventDoubleClick: "true"
         }]
