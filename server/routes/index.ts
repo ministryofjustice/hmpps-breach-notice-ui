@@ -76,13 +76,16 @@ export default function routes({ auditService, hmppsAuthClient }: Services): Rou
     let breachNotice: BreachNotice = null
     breachNotice = await breachNoticeApiClient.getBreachNoticeById(breachNoticeId as string)
     checkBreachNoticeAndApplyDefaults(breachNotice, basicDetails)
+    const defaultOffenderAddress: Address = findDefaultAddressInAddressList(basicDetails.addresses)
+    const defaultReplyAddress: Address = findDefaultAddressInAddressList(basicDetails.replyAddresses)
     breachNotice.referenceNumber = req.body.officeReference
-    // get the selected offender postal address
     if (req.body.offenderAddressSelectOne === 'No') {
       // we are using a selected address. Find it in the list
       breachNotice.offenderAddress = getSelectedAddress(basicDetails.addresses, req.body.alternateAddress)
       breachNotice.useDefaultAddress = false
     } else if (req.body.offenderAddressSelectOne === 'Yes') {
+      // otherwise use default
+      breachNotice.offenderAddress = defaultOffenderAddress
       breachNotice.useDefaultAddress = true
     } else {
       breachNotice.useDefaultAddress = null
@@ -92,18 +95,20 @@ export default function routes({ auditService, hmppsAuthClient }: Services): Rou
       breachNotice.replyAddress = getSelectedAddress(basicDetails.replyAddresses, req.body.alternateReplyAddress)
       breachNotice.useDefaultReplyAddress = false
     } else if (req.body.replyAddressSelectOne === 'Yes') {
+      breachNotice.replyAddress = defaultReplyAddress
       breachNotice.useDefaultReplyAddress = true
     } else {
       breachNotice.useDefaultReplyAddress = null
     }
+
+    const combinedName: string = `${basicDetails.title} ${basicDetails.name.forename} ${basicDetails.name.middleName} ${basicDetails.name.surname}`
+    breachNotice.titleAndFullName = combinedName.trim().replace('  ', ' ')
 
     // validation
     const errorMessages: ErrorMessages = validateBasicDetails(breachNotice, req.body.dateOfLetter)
     const hasErrors: boolean = Object.keys(errorMessages).length > 0
 
     if (hasErrors) {
-      const defaultOffenderAddress: Address = findDefaultAddressInAddressList(basicDetails.addresses)
-      const defaultReplyAddress: Address = findDefaultAddressInAddressList(basicDetails.replyAddresses)
       const alternateAddressOptions = initiateAlternateAddressSelectItemList(basicDetails, breachNotice)
       const replyAddressOptions = initiateReplyAddressSelectItemList(basicDetails, breachNotice)
       const basicDetailsDateOfLetter: string = req.body.dateOfLetter
@@ -259,9 +264,11 @@ export default function routes({ auditService, hmppsAuthClient }: Services): Rou
   // if this page hasnt been saved we want to go through and apply defaults otherwise dont do this
   function checkBreachNoticeAndApplyDefaults(breachNotice: BreachNotice, basicDetails: BasicDetails) {
     // eslint-disable-next-line no-param-reassign
-    breachNotice.titleAndFullName = `${basicDetails.title} ${basicDetails.name.forename} ${basicDetails.name.middleName} ${
-      basicDetails.name.surname
-    }`
+    breachNotice.titleAndFullName = `${basicDetails.title} ${basicDetails.name.forename} ${basicDetails.name.middleName} ${basicDetails.name.surname}`
+    // if(!breachNotice.basicDetailsSaved) {
+    //   //default the radios
+    //
+    // }
   }
 
   function initiateAlternateAddressSelectItemList(
