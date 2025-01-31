@@ -263,12 +263,17 @@ export default function routes({ auditService, hmppsAuthClient }: Services): Rou
 
   // if this page hasnt been saved we want to go through and apply defaults otherwise dont do this
   function checkBreachNoticeAndApplyDefaults(breachNotice: BreachNotice, basicDetails: BasicDetails) {
-    // eslint-disable-next-line no-param-reassign
-    breachNotice.titleAndFullName = `${basicDetails.title} ${basicDetails.name.forename} ${basicDetails.name.middleName} ${basicDetails.name.surname}`
-    // if(!breachNotice.basicDetailsSaved) {
-    //   //default the radios
-    //
-    // }
+    // we havent saved the page yet so default
+    if (!breachNotice.basicDetailsSaved) {
+      // load offender name from integration details
+      // eslint-disable-next-line no-param-reassign
+      breachNotice.titleAndFullName = `${basicDetails.title} ${basicDetails.name.forename} ${basicDetails.name.middleName} ${basicDetails.name.surname}`
+      // default the radio buttons to true
+      // eslint-disable-next-line no-param-reassign
+      breachNotice.useDefaultAddress = true
+      // eslint-disable-next-line no-param-reassign
+      breachNotice.useDefaultReplyAddress = true
+    }
   }
 
   function initiateAlternateAddressSelectItemList(
