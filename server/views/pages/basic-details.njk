@@ -14,6 +14,19 @@
   {% from "govuk/components/radios/macro.njk" import govukRadios %}
 
 <form method="post">
+
+  {% set errorList =[
+    { text: errorMessages.dateOfLetter.text, href: "#date-of-letter" } if errorMessages.dateOfLetter else None,
+    { text: errorMessages.officeReferenceNumber.text, href: "#office-reference" } if errorMessages.officeReferenceNumber else None
+  ] | reject("undefined") %}
+
+  {% if errorMessages | length > 0 %}
+    {% from "govuk/components/error-summary/macro.njk" import govukErrorSummary %}
+
+    {{ govukErrorSummary({ titleText: "There is a problem", errorList: errorList }) }}
+  {% endif %}
+
+
   <input type="hidden" name="_csrf" value="{{ csrfToken }}">
   <div class="govuk-grid-row">
     <div class="govuk-grid-column-one-third">
@@ -160,7 +173,10 @@
         },
         hint: {
           text: "For example, 17/5/2024."
-        }
+        },
+        errorMessage: {
+          text: errorMessages.dateOfLetter.text
+        } if errorMessages.dateOfLetter.text
       }) }}
 
       {{ govukInput({
@@ -171,7 +187,12 @@
         },
         id: "office-reference",
         value: breachNotice.referenceNumber,
-        name: "officeReference"
+        classes: "govuk-input--width-30",
+        maxlength: "30",
+        name: "officeReference",
+        errorMessage: {
+          text: errorMessages.officeReferenceNumber.text
+        } if errorMessages.officeReferenceNumber.text
       }) }}
 
       {{ mojButtonMenu({

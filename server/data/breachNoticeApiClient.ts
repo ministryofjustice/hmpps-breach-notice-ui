@@ -77,4 +77,8 @@ export interface SelectItem {
   selected: boolean
 }
 
+export interface ErrorMessages {
+  [key: string]: { text: string }
+}
+
 export type AddressList = Array<Address>

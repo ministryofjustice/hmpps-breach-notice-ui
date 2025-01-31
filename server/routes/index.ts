@@ -1,6 +1,5 @@
 import { type RequestHandler, Router } from 'express'
-
-import { convert, DateTimeFormatter, LocalDate } from '@js-joda/core'
+import { DateTimeFormatter, LocalDate, LocalDateTime } from '@js-joda/core'
 import asyncMiddleware from '../middleware/asyncMiddleware'
 import type { Services } from '../services'
 import { Page } from '../services/auditService'
@@ -9,6 +8,7 @@ import BreachNoticeApiClient, {
   AddressList,
   BasicDetails,
   BreachNotice,
+  ErrorMessages,
   Name,
   SelectItem,
 } from '../data/breachNoticeApiClient'
@@ -28,8 +28,10 @@ export default function routes({ auditService, hmppsAuthClient }: Services): Rou
   })
 
   get('/basic-details/:id', async (req, res, next) => {
-    await auditService.logPageView(Page.EXAMPLE_PAGE, { who: res.locals.user.username, correlationId: req.id })
-    const breachNoticeApiClient = new BreachNoticeApiClient(await hmppsAuthClient.getSystemClientToken())
+    await auditService.logPageView(Page.BASIC_DETAILS, { who: res.locals.user.username, correlationId: req.id })
+    const breachNoticeApiClient = new BreachNoticeApiClient(
+      await hmppsAuthClient.getSystemClientToken(res.locals.user.username),
+    )
     const breachNoticeId = req.params.id
     const basicDetails: BasicDetails = createDummyBasicDetails()
     let breachNotice: BreachNotice = null
@@ -66,18 +68,15 @@ export default function routes({ auditService, hmppsAuthClient }: Services): Rou
   }
 
   post('/basic-details/:id', async (req, res, next) => {
-    await auditService.logPageView(Page.EXAMPLE_PAGE, { who: res.locals.user.username, correlationId: req.id })
-    const breachNoticeApiClient = new BreachNoticeApiClient(await hmppsAuthClient.getSystemClientToken())
+    const breachNoticeApiClient = new BreachNoticeApiClient(
+      await hmppsAuthClient.getSystemClientToken(res.locals.user.username),
+    )
     const breachNoticeId = req.params.id
     const basicDetails: BasicDetails = createDummyBasicDetails()
     let breachNotice: BreachNotice = null
     breachNotice = await breachNoticeApiClient.getBreachNoticeById(breachNoticeId as string)
     checkBreachNoticeAndApplyDefaults(breachNotice, basicDetails)
-    console.log(req.body)
-    // input variables passed in req.body
-    breachNotice.dateOfLetter = fromUserDate(req.body.dateOfLetter)
     breachNotice.referenceNumber = req.body.officeReference
-
     // get the selected offender postal address
     if (req.body.offenderAddressSelectOne === 'No') {
       // we are using a selected address. Find it in the list
@@ -88,7 +87,6 @@ export default function routes({ auditService, hmppsAuthClient }: Services): Rou
     } else {
       breachNotice.useDefaultAddress = null
     }
-
     // reply address
     if (req.body.replyAddressSelectOne === 'No') {
       breachNotice.replyAddress = getSelectedAddress(basicDetails.replyAddresses, req.body.alternateReplyAddress)
@@ -98,11 +96,77 @@ export default function routes({ auditService, hmppsAuthClient }: Services): Rou
     } else {
       breachNotice.useDefaultReplyAddress = null
     }
-    // mark that a USER has saved the document at least once
-    breachNotice.basicDetailsSaved = true
-    await breachNoticeApiClient.updateBreachNotice(breachNoticeId, breachNotice)
-    res.redirect(`/warning-type/${req.params.id}`)
+
+    // validation
+    const errorMessages: ErrorMessages = validateBasicDetails(breachNotice, req.body.dateOfLetter)
+    const hasErrors: boolean = Object.keys(errorMessages).length > 0
+
+    if (hasErrors) {
+      const defaultOffenderAddress: Address = findDefaultAddressInAddressList(basicDetails.addresses)
+      const defaultReplyAddress: Address = findDefaultAddressInAddressList(basicDetails.replyAddresses)
+      const alternateAddressOptions = initiateAlternateAddressSelectItemList(basicDetails, breachNotice)
+      const replyAddressOptions = initiateReplyAddressSelectItemList(basicDetails, breachNotice)
+      const basicDetailsDateOfLetter: string = req.body.dateOfLetter
+      res.render(`pages/basic-details`, {
+        errorMessages,
+        breachNotice,
+        basicDetails,
+        defaultOffenderAddress,
+        defaultReplyAddress,
+        alternateAddressOptions,
+        replyAddressOptions,
+        basicDetailsDateOfLetter,
+      })
+    } else {
+      // mark that a USER has saved the document at least once
+      breachNotice.basicDetailsSaved = true
+      await breachNoticeApiClient.updateBreachNotice(breachNoticeId, breachNotice)
+      res.redirect(`/warning-type/${req.params.id}`)
+    }
   })
+
+  function validateBasicDetails(breachNotice: BreachNotice, userEnteredDateOfLetter: string): ErrorMessages {
+    const errorMessages: ErrorMessages = {}
+    const currentDateAtStartOfTheDay: LocalDateTime = LocalDate.now().atStartOfDay()
+    if (breachNotice.referenceNumber) {
+      if (breachNotice.referenceNumber.trim().length > 30) {
+        errorMessages.officeReferenceNumber = {
+          text: 'The Office Reference entered is greater than the 30 character limit.',
+        }
+      }
+    }
+
+    try {
+      // eslint-disable-next-line no-param-reassign
+      breachNotice.dateOfLetter = fromUserDate(userEnteredDateOfLetter)
+    } catch (error: unknown) {
+      // eslint-disable-next-line no-param-reassign
+      breachNotice.dateOfLetter = userEnteredDateOfLetter
+      errorMessages.dateOfLetter = {
+        text: 'The proposed date for this letter is in an invalid format, please use the correct format e.g 17/5/2024',
+      }
+      // we cant continue with date validation
+      return errorMessages
+    }
+
+    if (breachNotice) {
+      // check date of letter is not before today
+      if (breachNotice.dateOfLetter) {
+        const localDateOfLetterAtStartOfDay = LocalDate.parse(breachNotice.dateOfLetter).atStartOfDay()
+        if (localDateOfLetterAtStartOfDay.isBefore(currentDateAtStartOfTheDay)) {
+          errorMessages.dateOfLetter = {
+            text: 'The letter has not been completed and so the date cannot be before today',
+          }
+        }
+        if (localDateOfLetterAtStartOfDay.minusDays(7).isAfter(currentDateAtStartOfTheDay)) {
+          errorMessages.dateOfLetter = {
+            text: 'The proposed date for this letter is a week in the future. Breach letters need to be timely in order to allow evidence to be presented. Please complete the letter in a timely way or update the contact outcome to be acceptable.',
+          }
+        }
+      }
+    }
+    return errorMessages
+  }
 
   function getSelectedAddress(addressList: AddressList, addressIdentifier: string): Address {
     const addressIdentifierNumber: number = +addressIdentifier
@@ -110,8 +174,10 @@ export default function routes({ auditService, hmppsAuthClient }: Services): Rou
   }
 
   get('/warning-details/:id', async (req, res, next) => {
-    await auditService.logPageView(Page.EXAMPLE_PAGE, { who: res.locals.user.username, correlationId: req.id })
-    const breachNoticeApiClient = new BreachNoticeApiClient(await hmppsAuthClient.getSystemClientToken())
+    await auditService.logPageView(Page.WARNING_DETAILS, { who: res.locals.user.username, correlationId: req.id })
+    const breachNoticeApiClient = new BreachNoticeApiClient(
+      await hmppsAuthClient.getSystemClientToken(res.locals.user.username),
+    )
     const breachNoticeId = req.params.id
     let breachNotice: BreachNotice = null
     breachNotice = await breachNoticeApiClient.getBreachNoticeById(breachNoticeId as string)
@@ -121,8 +187,10 @@ export default function routes({ auditService, hmppsAuthClient }: Services): Rou
   })
 
   get('/warning-type/:id', async (req, res, next) => {
-    await auditService.logPageView(Page.EXAMPLE_PAGE, { who: res.locals.user.username, correlationId: req.id })
-    const breachNoticeApiClient = new BreachNoticeApiClient(await hmppsAuthClient.getSystemClientToken())
+    await auditService.logPageView(Page.WARNING_TYPE, { who: res.locals.user.username, correlationId: req.id })
+    const breachNoticeApiClient = new BreachNoticeApiClient(
+      await hmppsAuthClient.getSystemClientToken(res.locals.user.username),
+    )
     const breachNoticeId = req.params.id
     let breachNotice: BreachNotice = null
     breachNotice = await breachNoticeApiClient.getBreachNoticeById(breachNoticeId as string)
@@ -132,8 +200,10 @@ export default function routes({ auditService, hmppsAuthClient }: Services): Rou
   })
 
   get('/next-appointment/:id', async (req, res, next) => {
-    await auditService.logPageView(Page.EXAMPLE_PAGE, { who: res.locals.user.username, correlationId: req.id })
-    const breachNoticeApiClient = new BreachNoticeApiClient(await hmppsAuthClient.getSystemClientToken())
+    await auditService.logPageView(Page.NEXT_APPOINTMENT, { who: res.locals.user.username, correlationId: req.id })
+    const breachNoticeApiClient = new BreachNoticeApiClient(
+      await hmppsAuthClient.getSystemClientToken(res.locals.user.username),
+    )
     const breachNoticeId = req.params.id
     let breachNotice: BreachNotice = null
     breachNotice = await breachNoticeApiClient.getBreachNoticeById(breachNoticeId as string)
@@ -143,8 +213,10 @@ export default function routes({ auditService, hmppsAuthClient }: Services): Rou
   })
 
   get('/check-your-report/:id', async (req, res, next) => {
-    await auditService.logPageView(Page.EXAMPLE_PAGE, { who: res.locals.user.username, correlationId: req.id })
-    const breachNoticeApiClient = new BreachNoticeApiClient(await hmppsAuthClient.getSystemClientToken())
+    await auditService.logPageView(Page.CHECK_YOUR_REPORT, { who: res.locals.user.username, correlationId: req.id })
+    const breachNoticeApiClient = new BreachNoticeApiClient(
+      await hmppsAuthClient.getSystemClientToken(res.locals.user.username),
+    )
     const breachNoticeId = req.params.id
     let breachNotice: BreachNotice = null
     breachNotice = await breachNoticeApiClient.getBreachNoticeById(breachNoticeId as string)
@@ -154,13 +226,15 @@ export default function routes({ auditService, hmppsAuthClient }: Services): Rou
   })
 
   get('/basic-details', async (req, res, next) => {
-    await auditService.logPageView(Page.EXAMPLE_PAGE, { who: res.locals.user.username, correlationId: req.id })
+    await auditService.logPageView(Page.BASIC_DETAILS, { who: res.locals.user.username, correlationId: req.id })
     res.render('pages/basic-details')
   })
 
   get('/report-completed/:id', async (req, res, next) => {
-    await auditService.logPageView(Page.EXAMPLE_PAGE, { who: res.locals.user.username, correlationId: req.id })
-    const breachNoticeApiClient = new BreachNoticeApiClient(await hmppsAuthClient.getSystemClientToken())
+    await auditService.logPageView(Page.REPORT_COMPLETED, { who: res.locals.user.username, correlationId: req.id })
+    const breachNoticeApiClient = new BreachNoticeApiClient(
+      await hmppsAuthClient.getSystemClientToken(res.locals.user.username),
+    )
     const breachNoticeId = req.params.id
     let breachNotice: BreachNotice = null
     breachNotice = await breachNoticeApiClient.getBreachNoticeById(breachNoticeId as string)
@@ -170,8 +244,10 @@ export default function routes({ auditService, hmppsAuthClient }: Services): Rou
   })
 
   get('/report-deleted/:id', async (req, res, next) => {
-    await auditService.logPageView(Page.EXAMPLE_PAGE, { who: res.locals.user.username, correlationId: req.id })
-    const breachNoticeApiClient = new BreachNoticeApiClient(await hmppsAuthClient.getSystemClientToken())
+    await auditService.logPageView(Page.REPORT_DELETED, { who: res.locals.user.username, correlationId: req.id })
+    const breachNoticeApiClient = new BreachNoticeApiClient(
+      await hmppsAuthClient.getSystemClientToken(res.locals.user.username),
+    )
     const breachNoticeId = req.params.id
     let breachNotice: BreachNotice = null
     breachNotice = await breachNoticeApiClient.getBreachNoticeById(breachNoticeId as string)
@@ -278,24 +354,6 @@ export default function routes({ auditService, hmppsAuthClient }: Services): Rou
   }
 
   function findDefaultAddressInAddressList(addressList: Array<Address>): Address {
-    let defaultAddress: Address = null
-
-    addressList.forEach((address: Address) => {
-      if (address.type === 'Postal') {
-        defaultAddress = address
-      }
-
-      if (defaultAddress === null) {
-        if (address.type === 'Main') {
-          defaultAddress = address
-        }
-      }
-    })
-    return defaultAddress
-  }
-
-  function findDefaultReplyInAddressList(addressList: Array<Address>): Address {
-    // this functionality will change once we have the default reply address code
     let defaultAddress: Address = null
 
     addressList.forEach((address: Address) => {
