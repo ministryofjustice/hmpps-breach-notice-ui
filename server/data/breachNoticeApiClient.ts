@@ -28,6 +28,7 @@ export interface BreachNotice {
   referenceNumber: string
   responseRequiredByDate: Date
   breachNoticeTypeCode: string
+  breachNoticeTypeDescription: string
   breachConditionTypeCode: string
   responsibleOfficer: string
   contactNumber: string
@@ -53,6 +54,10 @@ export interface BasicDetails {
   replyAddresses: AddressList
 }
 
+export interface WarningTypeDetails {
+  warningTypes: RadioButtonList
+}
+
 export interface Name {
   forename: string
   middleName: string
@@ -71,10 +76,17 @@ export interface Address {
   postcode: string
 }
 
+// these must be value, text, boolean so they can be fed into MOJ components
 export interface SelectItem {
   value: string
   text: string
   selected: boolean
+}
+
+export interface RadioButton {
+  value: string
+  text: string
+  checked: boolean
 }
 
 export interface ErrorMessages {
@@ -82,3 +94,7 @@ export interface ErrorMessages {
 }
 
 export type AddressList = Array<Address>
+
+export type SelectItemList = Array<SelectItem>
+
+export type RadioButtonList = Array<RadioButton>

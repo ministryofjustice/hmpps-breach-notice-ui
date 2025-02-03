@@ -10,7 +10,11 @@ import BreachNoticeApiClient, {
   BreachNotice,
   ErrorMessages,
   Name,
+  RadioButton,
+  RadioButtonList,
   SelectItem,
+  SelectItemList,
+  WarningTypeDetails,
 } from '../data/breachNoticeApiClient'
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -199,10 +203,66 @@ export default function routes({ auditService, hmppsAuthClient }: Services): Rou
     const breachNoticeId = req.params.id
     let breachNotice: BreachNotice = null
     breachNotice = await breachNoticeApiClient.getBreachNoticeById(breachNoticeId as string)
+    // const radioButtonsFromIntegration = initiateWarningTypeRadioButtons
+    const warningTypeRadioButtons: Array<RadioButton> = initiateWarningTypeRadioButtonsAndApplySavedSelections(
+      createDummyWarningTypeDetails(),
+      breachNotice,
+    )
+
     res.render('pages/warning-type', {
       breachNotice,
+      warningTypeRadioButtons,
     })
   })
+
+  post('/warning-type/:id', async (req, res, next) => {
+    const breachNoticeApiClient = new BreachNoticeApiClient(
+      await hmppsAuthClient.getSystemClientToken(res.locals.user.username),
+    )
+    const breachNoticeId = req.params.id
+    const warningTypeDetails: WarningTypeDetails = createDummyWarningTypeDetails()
+    let breachNotice: BreachNotice = null
+    breachNotice = await breachNoticeApiClient.getBreachNoticeById(breachNoticeId as string)
+
+    // add new details
+    breachNotice.breachNoticeTypeCode = req.body.warningType
+    // find the ref data from the integration response
+    warningTypeDetails.warningTypes.forEach((radioButton: RadioButton) => {
+      if (breachNotice.breachNoticeTypeCode && breachNotice.breachNoticeTypeCode === radioButton.value) {
+        // eslint-disable-next-line no-param-reassign
+        breachNotice.breachNoticeTypeDescription = radioButton.text
+      }
+    })
+    // mark that a USER has saved the document at least once
+    breachNotice.warningTypeSaved = true
+    await breachNoticeApiClient.updateBreachNotice(breachNoticeId, breachNotice)
+    res.redirect(`/warning-details/${req.params.id}`)
+  })
+
+  // receive warningTypeDetails via an integration
+  // query this data against our saved breach notice
+  // to see if we need to apply a previous Selection
+  function initiateWarningTypeRadioButtonsAndApplySavedSelections(
+    warningTypeDetails: WarningTypeDetails,
+    breachNotice: BreachNotice,
+  ): RadioButton[] {
+    const warningTypeRadioButtons: Array<RadioButton> = warningTypeDetails.warningTypes
+    // return warningTypeRadioButtons
+    // find currently selected code in breach notice and apply to the radio buttons
+    if (breachNotice.breachNoticeTypeCode) {
+      warningTypeRadioButtons.forEach((radioButton: RadioButton) => {
+        console.log('values')
+        console.log(radioButton.value)
+        console.log(radioButton.text)
+        console.log(radioButton.checked)
+        if (breachNotice.breachNoticeTypeCode && breachNotice.breachNoticeTypeCode === radioButton.value) {
+          // eslint-disable-next-line no-param-reassign
+          radioButton.checked = true
+        }
+      })
+    }
+    return warningTypeRadioButtons
+  }
 
   get('/next-appointment/:id', async (req, res, next) => {
     await auditService.logPageView(Page.NEXT_APPOINTMENT, { who: res.locals.user.username, correlationId: req.id })
@@ -382,6 +442,7 @@ export default function routes({ auditService, hmppsAuthClient }: Services): Rou
     return defaultAddress
   }
 
+  // Will call integration point once available
   function createDummyBasicDetails(): BasicDetails {
     return {
       title: 'Mr',
@@ -389,6 +450,36 @@ export default function routes({ auditService, hmppsAuthClient }: Services): Rou
       addresses: createDummyAddressList(),
       replyAddresses: createDummyReplyAddressList(),
     }
+  }
+
+  // Will call integration point once available
+  function createDummyWarningTypeDetails(): WarningTypeDetails {
+    const warningTypeDetails: WarningTypeDetails = {
+      warningTypes: createDummyWarningTypeList(),
+    }
+    return warningTypeDetails
+  }
+
+  function createDummyWarningTypeList(): RadioButtonList {
+    const breachWarning: RadioButton = {
+      value: 'BW',
+      text: 'Breach Warning',
+      checked: false,
+    }
+
+    const finalWarning: RadioButton = {
+      value: 'FW',
+      text: 'Final Warning',
+      checked: false,
+    }
+
+    const formalWarning: RadioButton = {
+      value: 'FOW',
+      text: 'Formal Warning',
+      checked: false,
+    }
+
+    return [breachWarning, finalWarning, formalWarning]
   }
 
   function createDummyAddressList(): Array<Address> {

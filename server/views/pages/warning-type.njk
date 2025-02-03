@@ -12,7 +12,8 @@
   {% from "moj/components/date-picker/macro.njk" import mojDatePicker %}
   {% from "govuk/components/table/macro.njk" import govukTable %}
 
-
+<form method="post">
+  <input type="hidden" name="_csrf" value="{{ csrfToken }}">
   <div class="govuk-grid-row">
     <div class="govuk-grid-column-one-third">
 
@@ -51,20 +52,7 @@
             classes: "govuk-fieldset__legend--m"
           }
         },
-        items: [
-          {
-            value: "breach-warning",
-            text: "Breach Warning"
-          },
-          {
-            value: "final-warning",
-            text: "Final Warning"
-          },
-          {
-            value: "formal-warning",
-            text: "Formal Warning"
-          }
-        ]
+        items: warningTypeRadioButtons
       }) }}
 
 
@@ -72,7 +60,7 @@
       {{ mojButtonMenu({
         items: [{
           text: "Continue",
-          href: "/warning-details/"+breachNotice.id,
+          type: "submit",
           preventDoubleClick: "true"
         }, {
           text: "View Draft Report",
@@ -89,5 +77,5 @@
 
     </div>
   </div>
-
+</form>
 {% endblock %}
