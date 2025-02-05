@@ -8,12 +8,19 @@ import BreachNoticeApiClient, {
   AddressList,
   BasicDetails,
   BreachNotice,
+  EnforceableContact,
+  EnforceableContactList,
   ErrorMessages,
   Name,
   RadioButton,
   RadioButtonList,
+  ReferenceData,
+  Requirement,
   SelectItem,
   SelectItemList,
+  SentenceType,
+  SentenceTypeList,
+  WarningDetails,
   WarningTypeDetails,
 } from '../data/breachNoticeApiClient'
 
@@ -190,10 +197,28 @@ export default function routes({ auditService, hmppsAuthClient }: Services): Rou
     const breachNoticeId = req.params.id
     let breachNotice: BreachNotice = null
     breachNotice = await breachNoticeApiClient.getBreachNoticeById(breachNoticeId as string)
+    const warningDetails: WarningDetails = createDummyWarningDetails()
+    const failuresRecorded: SelectItemList = createSelectItemListFromEnforceableContacts(
+      warningDetails.enforceableContactList,
+    )
     res.render(`pages/warning-details`, {
       breachNotice,
+      warningDetails,
+      failuresRecorded,
     })
   })
+  function createSelectItemListFromEnforceableContacts(enforceableContactList: EnforceableContactList): SelectItemList {
+    const selectItemList: SelectItem[] = []
+    enforceableContactList.forEach((enforceableContact: EnforceableContact) => {
+      const selectItem: SelectItem = {
+        text: enforceableContact.description,
+        value: enforceableContact.id.toString(),
+        selected: false,
+      }
+      selectItemList.push(selectItem)
+    })
+    return selectItemList
+  }
 
   get('/warning-type/:id', async (req, res, next) => {
     await auditService.logPageView(Page.WARNING_TYPE, { who: res.locals.user.username, correlationId: req.id })
@@ -202,16 +227,24 @@ export default function routes({ auditService, hmppsAuthClient }: Services): Rou
     )
     const breachNoticeId = req.params.id
     let breachNotice: BreachNotice = null
+    const warningTypeDetails: WarningTypeDetails = createDummyWarningTypeDetails()
     breachNotice = await breachNoticeApiClient.getBreachNoticeById(breachNoticeId as string)
+    // need to load in the select items for the sentence type dropdown
     // const radioButtonsFromIntegration = initiateWarningTypeRadioButtons
     const warningTypeRadioButtons: Array<RadioButton> = initiateWarningTypeRadioButtonsAndApplySavedSelections(
-      createDummyWarningTypeDetails(),
+      warningTypeDetails,
+      breachNotice,
+    )
+
+    const sentenceTypeSelectItems: Array<SelectItem> = initiateSentenceTypeSelectItemsAndApplySavedSelections(
+      warningTypeDetails,
       breachNotice,
     )
 
     res.render('pages/warning-type', {
       breachNotice,
       warningTypeRadioButtons,
+      sentenceTypeSelectItems,
     })
   })
 
@@ -226,11 +259,19 @@ export default function routes({ auditService, hmppsAuthClient }: Services): Rou
 
     // add new details
     breachNotice.breachNoticeTypeCode = req.body.warningType
-    // find the ref data from the integration response
+    breachNotice.breachSentenceTypeCode = req.body.sentenceType
+    // find the warning type ref data from the integration response
     warningTypeDetails.warningTypes.forEach((radioButton: RadioButton) => {
       if (breachNotice.breachNoticeTypeCode && breachNotice.breachNoticeTypeCode === radioButton.value) {
         // eslint-disable-next-line no-param-reassign
         breachNotice.breachNoticeTypeDescription = radioButton.text
+      }
+    })
+    // find the sentenceTypeRefData from the integration response
+    warningTypeDetails.sentenceTypes.forEach((sentenceType: SentenceType) => {
+      if (breachNotice.breachSentenceTypeCode && breachNotice.breachSentenceTypeCode === sentenceType.code) {
+        // eslint-disable-next-line no-param-reassign
+        breachNotice.breachSentenceTypeDescription = sentenceType.description
       }
     })
     // mark that a USER has saved the document at least once
@@ -262,6 +303,38 @@ export default function routes({ auditService, hmppsAuthClient }: Services): Rou
       })
     }
     return warningTypeRadioButtons
+  }
+
+  function initiateSentenceTypeSelectItemsAndApplySavedSelections(
+    warningTypeDetails: WarningTypeDetails,
+    breachNotice: BreachNotice,
+  ): SelectItem[] {
+    const sentenceTypeSelectItems: SelectItem[] = [
+      {
+        text: 'Please Select',
+        value: '-1',
+        selected: true,
+      },
+      ...warningTypeDetails.sentenceTypes.map(sentenceType => ({
+        text: `${sentenceType.description}`,
+        value: `${sentenceType.code}`,
+        selected: false,
+      })),
+    ]
+
+    if (breachNotice.breachSentenceTypeCode) {
+      sentenceTypeSelectItems.forEach((sentenceTypeSelectItem: SelectItem) => {
+        if (
+          breachNotice.breachSentenceTypeCode &&
+          breachNotice.breachSentenceTypeCode === sentenceTypeSelectItem.value
+        ) {
+          // eslint-disable-next-line no-param-reassign
+          sentenceTypeSelectItem.selected = true
+        }
+      })
+    }
+
+    return sentenceTypeSelectItems
   }
 
   get('/next-appointment/:id', async (req, res, next) => {
@@ -443,6 +516,80 @@ export default function routes({ auditService, hmppsAuthClient }: Services): Rou
   }
 
   // Will call integration point once available
+  function createDummyWarningDetails(): WarningDetails {
+    return {
+      breachReasons: createDummyBreachReasonList(),
+      defaultSentenceTypeCode: 'BR1',
+      enforceableContactList: createDummyEnforceableContactList(),
+      sentenceTypes: createDummySentenceTypeList(),
+    }
+  }
+
+  function createDummyEnforceableContactList() {
+    const enforceableContact1: EnforceableContact = {
+      description: 'enforceableContactOne',
+      datetime: LocalDateTime.now(),
+      id: 1,
+      notes: 'Test Note 1',
+      outcome: createDummyReferenceData(),
+      type: createDummyReferenceData(),
+      requirement: createDummyRequirement(),
+    }
+
+    const enforceableContact2: EnforceableContact = {
+      description: 'enforceableContactTwo',
+      datetime: LocalDateTime.now(),
+      id: 2,
+      notes: 'Test Note 2',
+      outcome: createDummyReferenceData(),
+      type: createDummyReferenceData(),
+      requirement: createDummyRequirement(),
+    }
+
+    return [enforceableContact1, enforceableContact2]
+  }
+
+  function createDummyBreachReasonList() {
+    const breachReason1: ReferenceData = {
+      code: '2IN12',
+      description: '2 occasions in a 12 month period',
+    }
+
+    const breachReason2: ReferenceData = {
+      code: '3TOTAL',
+      description: '3 occasions during your supervision period',
+    }
+
+    return [breachReason1, breachReason2]
+  }
+  function createDummyReferenceData(): ReferenceData {
+    return {
+      code: 'DUM1',
+      description: 'Dummy 1',
+    }
+  }
+  function createDummySentenceType(): SentenceType {
+    return {
+      code: `SEN${Math.random()}`,
+      description: 'sentenceType1',
+      conditionBeingEnforced: 'Test Condition',
+    }
+  }
+  function createDummySentenceTypeList(): SentenceTypeList {
+    const sentenceType1: SentenceType = {
+      code: `CO`,
+      description: 'Community Order(s)',
+      conditionBeingEnforced: 'Test Condition CO',
+    }
+    const sentenceType2: SentenceType = {
+      code: `SSO`,
+      description: 'Suspended Supervision Order(s)',
+      conditionBeingEnforced: 'Test Condition SSO',
+    }
+    return [sentenceType1, sentenceType2]
+  }
+
+  // Will call integration point once available
   function createDummyBasicDetails(): BasicDetails {
     return {
       title: 'Mr',
@@ -456,8 +603,16 @@ export default function routes({ auditService, hmppsAuthClient }: Services): Rou
   function createDummyWarningTypeDetails(): WarningTypeDetails {
     const warningTypeDetails: WarningTypeDetails = {
       warningTypes: createDummyWarningTypeList(),
+      sentenceTypes: createDummySentenceTypeList(),
     }
     return warningTypeDetails
+  }
+
+  function createDummyRequirement(): Requirement {
+    return {
+      type: createDummyReferenceData(),
+      subType: createDummyReferenceData(),
+    }
   }
 
   function createDummyWarningTypeList(): RadioButtonList {

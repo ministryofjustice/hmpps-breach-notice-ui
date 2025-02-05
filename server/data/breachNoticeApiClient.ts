@@ -1,3 +1,4 @@
+import { LocalDateTime } from '@js-joda/core'
 import config from '../config'
 import RestClient from './restClient'
 
@@ -30,6 +31,9 @@ export interface BreachNotice {
   breachNoticeTypeCode: string
   breachNoticeTypeDescription: string
   breachConditionTypeCode: string
+  breachConditionTypeDescription: string
+  breachSentenceTypeCode: string
+  breachSentenceTypeDescription: string
   responsibleOfficer: string
   contactNumber: string
   nextAppointmentType: string
@@ -54,8 +58,16 @@ export interface BasicDetails {
   replyAddresses: AddressList
 }
 
+export interface WarningDetails {
+  breachReasons: ReferenceDataList
+  sentenceTypes: SentenceTypeList
+  defaultSentenceTypeCode: string
+  enforceableContactList: EnforceableContactList
+}
+
 export interface WarningTypeDetails {
   warningTypes: RadioButtonList
+  sentenceTypes: SentenceTypeList
 }
 
 export interface Name {
@@ -83,10 +95,38 @@ export interface SelectItem {
   selected: boolean
 }
 
+// Reference Data
+export interface ReferenceData {
+  code: string
+  description: string
+}
+
+// Reference Data
+export interface SentenceType {
+  code: string
+  description: string
+  conditionBeingEnforced: string
+}
+
 export interface RadioButton {
   value: string
   text: string
   checked: boolean
+}
+
+export interface EnforceableContact {
+  id: number
+  datetime: LocalDateTime
+  description: string
+  type: ReferenceData
+  outcome: ReferenceData
+  notes: string
+  requirement: Requirement
+}
+
+export interface Requirement {
+  type: ReferenceData
+  subType: ReferenceData
 }
 
 export interface ErrorMessages {
@@ -98,3 +138,9 @@ export type AddressList = Array<Address>
 export type SelectItemList = Array<SelectItem>
 
 export type RadioButtonList = Array<RadioButton>
+
+export type ReferenceDataList = Array<ReferenceData>
+
+export type SentenceTypeList = Array<SentenceType>
+
+export type EnforceableContactList = Array<EnforceableContact>
