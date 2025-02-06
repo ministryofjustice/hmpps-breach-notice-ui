@@ -124,14 +124,36 @@ export interface EnforceableContact {
   requirement: Requirement
 }
 
+export interface EnforceableContactRadioButton {
+  datetime: LocalDateTime
+  type: ReferenceData
+  outcome: ReferenceData
+  notes: string
+  requirement: Requirement
+  checked: boolean
+  value: string
+  text: string
+}
+
 export interface Requirement {
   type: ReferenceData
   subType: ReferenceData
 }
 
+export interface WarningDetailsRequirementSelectItem {
+  value: string
+  text: string
+  selected: boolean
+  requirements: SelectItemList
+}
+
 export interface ErrorMessages {
   [key: string]: { text: string }
 }
+
+export type WarningDetailsRequirementSelectItemsList = Array<WarningDetailsRequirementSelectItem>
+
+export type EnforceableContactRadioButtonList = Array<EnforceableContactRadioButton>
 
 export type AddressList = Array<Address>
 
@@ -144,3 +166,5 @@ export type ReferenceDataList = Array<ReferenceData>
 export type SentenceTypeList = Array<SentenceType>
 
 export type EnforceableContactList = Array<EnforceableContact>
+
+export type RequirementList = Array<Requirement>

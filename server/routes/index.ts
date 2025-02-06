@@ -1,5 +1,5 @@
 import { type RequestHandler, Router } from 'express'
-import { DateTimeFormatter, LocalDate, LocalDateTime } from '@js-joda/core'
+import { DateTimeFormatter, LocalDate, LocalDateTime, TemporalQueries } from '@js-joda/core'
 import asyncMiddleware from '../middleware/asyncMiddleware'
 import type { Services } from '../services'
 import { Page } from '../services/auditService'
@@ -10,19 +10,26 @@ import BreachNoticeApiClient, {
   BreachNotice,
   EnforceableContact,
   EnforceableContactList,
+  EnforceableContactRadioButton,
+  EnforceableContactRadioButtonList,
   ErrorMessages,
   Name,
   RadioButton,
   RadioButtonList,
   ReferenceData,
+  ReferenceDataList,
   Requirement,
+  RequirementList,
   SelectItem,
   SelectItemList,
   SentenceType,
   SentenceTypeList,
   WarningDetails,
+  WarningDetailsRequirementSelectItem,
+  WarningDetailsRequirementSelectItemsList,
   WarningTypeDetails,
 } from '../data/breachNoticeApiClient'
+import localDate = TemporalQueries.localDate
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 export default function routes({ auditService, hmppsAuthClient }: Services): Router {
@@ -141,6 +148,18 @@ export default function routes({ auditService, hmppsAuthClient }: Services): Rou
     }
   })
 
+  post('/warning-details/:id', async (req, res, next) => {
+    console.log('params passed in')
+    console.log(req.body)
+    const breachNoticeApiClient = new BreachNoticeApiClient(
+      await hmppsAuthClient.getSystemClientToken(res.locals.user.username),
+    )
+    const breachNoticeId = req.params.id
+    const warningDetails: WarningDetails = createDummyWarningDetails()
+    const breachNotice: BreachNotice = await breachNoticeApiClient.getBreachNoticeById(breachNoticeId as string)
+    res.redirect(`/next-appointment/${req.params.id}`)
+  })
+
   function validateBasicDetails(breachNotice: BreachNotice, userEnteredDateOfLetter: string): ErrorMessages {
     const errorMessages: ErrorMessages = {}
     const currentDateAtStartOfTheDay: LocalDateTime = LocalDate.now().atStartOfDay()
@@ -198,6 +217,15 @@ export default function routes({ auditService, hmppsAuthClient }: Services): Rou
     let breachNotice: BreachNotice = null
     breachNotice = await breachNoticeApiClient.getBreachNoticeById(breachNoticeId as string)
     const warningDetails: WarningDetails = createDummyWarningDetails()
+    const enforceableContactRadioButtonList = createEnforceableContactRadioButtonListFromEnforceableContacts(
+      warningDetails.enforceableContactList,
+    )
+    const breachReasons = convertReferenceDataListToSelectItemList(warningDetails.breachReasons)
+    const failuresBeingEnforcedList = createFailuresBeingEnforcedRequirementSelectList(
+      warningDetails.enforceableContactList,
+      warningDetails.breachReasons,
+    )
+
     const failuresRecorded: SelectItemList = createSelectItemListFromEnforceableContacts(
       warningDetails.enforceableContactList,
     )
@@ -205,8 +233,70 @@ export default function routes({ auditService, hmppsAuthClient }: Services): Rou
       breachNotice,
       warningDetails,
       failuresRecorded,
+      enforceableContactRadioButtonList,
+      breachReasons,
+      failuresBeingEnforcedList,
     })
   })
+  function convertReferenceDataListToSelectItemList(referenceDataList: ReferenceDataList): SelectItemList {
+    const arrayOfSelectItems: SelectItem[] = referenceDataList.map(refData => ({
+      selected: false,
+      text: refData.description,
+      value: refData.code,
+    }))
+    return arrayOfSelectItems
+  }
+  function createEnforceableContactRadioButtonListFromEnforceableContacts(
+    enforceableContactList: EnforceableContactList,
+  ): EnforceableContactRadioButtonList {
+    const arrayOfRadios: EnforceableContactRadioButton[] = enforceableContactList.map(enforceableContact => ({
+      text: enforceableContact.description,
+      value: enforceableContact.id.toString(),
+      checked: false,
+      datetime: enforceableContact.datetime,
+      notes: enforceableContact.notes,
+      type: enforceableContact.type,
+      outcome: enforceableContact.outcome,
+      requirement: enforceableContact.requirement,
+    }))
+    return arrayOfRadios
+  }
+
+  // we need this to return a list of WarningDetailsRequirementSelectItem wselect items with cusdtomised requirement list
+  function createFailuresBeingEnforcedRequirementSelectList(
+    enforceableContactList: EnforceableContactList,
+    breachReasons: ReferenceDataList,
+  ): WarningDetailsRequirementSelectItem[] {
+    const returnItems: WarningDetailsRequirementSelectItem[] = []
+    enforceableContactList.forEach((enforceableContact: EnforceableContact) => {
+      const linkedSelectItem: WarningDetailsRequirementSelectItem = {
+        text: enforceableContact.description,
+        value: enforceableContact.id.toString(),
+        selected: false,
+        requirements: craftTheBreachReasonSelectItems(breachReasons, enforceableContact.id.toString()),
+      }
+      returnItems.push(linkedSelectItem)
+    })
+    return returnItems
+  }
+
+  // this is done DO NOT TOUCH
+  function craftTheBreachReasonSelectItems(
+    refDataList: ReferenceDataList,
+    enforceableContactId: string,
+  ): SelectItemList {
+    const selectItemListToReturn: SelectItem[] = []
+    refDataList.forEach((referenceData: ReferenceData) => {
+      const selectItem: SelectItem = {
+        text: referenceData.description,
+        value: `contactId:${enforceableContactId},breachReasonCode:${referenceData.code}`,
+        selected: false,
+      }
+      selectItemListToReturn.push(selectItem)
+    })
+    return selectItemListToReturn
+  }
+
   function createSelectItemListFromEnforceableContacts(enforceableContactList: EnforceableContactList): SelectItemList {
     const selectItemList: SelectItem[] = []
     enforceableContactList.forEach((enforceableContact: EnforceableContact) => {
@@ -345,7 +435,7 @@ export default function routes({ auditService, hmppsAuthClient }: Services): Rou
     const breachNoticeId = req.params.id
     let breachNotice: BreachNotice = null
     breachNotice = await breachNoticeApiClient.getBreachNoticeById(breachNoticeId as string)
-    res.render('pages/next-appointment', {
+    res.render(`pages/next-appointment/${req.params.id}`, {
       breachNotice,
     })
   })
@@ -527,20 +617,23 @@ export default function routes({ auditService, hmppsAuthClient }: Services): Rou
 
   function createDummyEnforceableContactList() {
     const enforceableContact1: EnforceableContact = {
-      description: 'enforceableContactOne',
+      description:
+        '02/10/2024, Rehabilitation Activity Requirement (RAR) - Rehabilitation Activity Requirement (RAR), Planned Office Visit (NS), Unacceptable absence',
       datetime: LocalDateTime.now(),
       id: 1,
-      notes: 'Test Note 1',
+      notes:
+        'Lorem 1 ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum',
       outcome: createDummyReferenceData(),
       type: createDummyReferenceData(),
       requirement: createDummyRequirement(),
     }
 
     const enforceableContact2: EnforceableContact = {
-      description: 'enforceableContactTwo',
+      description: '01/08/2024, Unpaid Work - Regular, CP/UPW Appointment (NS), Sent Home (behavior)',
       datetime: LocalDateTime.now(),
       id: 2,
-      notes: 'Test Note 2',
+      notes:
+        'Lorem 2 ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum',
       outcome: createDummyReferenceData(),
       type: createDummyReferenceData(),
       requirement: createDummyRequirement(),
