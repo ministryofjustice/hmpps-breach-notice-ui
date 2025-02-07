@@ -267,13 +267,14 @@ export default function routes({ auditService, hmppsAuthClient }: Services): Rou
     enforceableContactList: EnforceableContactList,
     breachReasons: ReferenceDataList,
   ): WarningDetailsRequirementSelectItem[] {
+    const breachReasonSelectItems: SelectItemList = craftTheBreachReasonSelectItems(breachReasons)
     const returnItems: WarningDetailsRequirementSelectItem[] = []
     enforceableContactList.forEach((enforceableContact: EnforceableContact) => {
       const linkedSelectItem: WarningDetailsRequirementSelectItem = {
         text: enforceableContact.description,
         value: enforceableContact.id.toString(),
         selected: false,
-        requirements: craftTheBreachReasonSelectItems(breachReasons, enforceableContact.id.toString()),
+        requirements: breachReasonSelectItems,
       }
       returnItems.push(linkedSelectItem)
     })
@@ -281,15 +282,12 @@ export default function routes({ auditService, hmppsAuthClient }: Services): Rou
   }
 
   // this is done DO NOT TOUCH
-  function craftTheBreachReasonSelectItems(
-    refDataList: ReferenceDataList,
-    enforceableContactId: string,
-  ): SelectItemList {
+  function craftTheBreachReasonSelectItems(refDataList: ReferenceDataList): SelectItemList {
     const selectItemListToReturn: SelectItem[] = []
     refDataList.forEach((referenceData: ReferenceData) => {
       const selectItem: SelectItem = {
         text: referenceData.description,
-        value: `contactId:${enforceableContactId},breachReasonCode:${referenceData.code}`,
+        value: referenceData.code,
         selected: false,
       }
       selectItemListToReturn.push(selectItem)
@@ -428,6 +426,7 @@ export default function routes({ auditService, hmppsAuthClient }: Services): Rou
   }
 
   get('/next-appointment/:id', async (req, res, next) => {
+    console.log('########## In the next appointment section')
     await auditService.logPageView(Page.NEXT_APPOINTMENT, { who: res.locals.user.username, correlationId: req.id })
     const breachNoticeApiClient = new BreachNoticeApiClient(
       await hmppsAuthClient.getSystemClientToken(res.locals.user.username),
@@ -435,7 +434,7 @@ export default function routes({ auditService, hmppsAuthClient }: Services): Rou
     const breachNoticeId = req.params.id
     let breachNotice: BreachNotice = null
     breachNotice = await breachNoticeApiClient.getBreachNoticeById(breachNoticeId as string)
-    res.render(`pages/next-appointment/${req.params.id}`, {
+    res.render(`pages/next-appointment`, {
       breachNotice,
     })
   })

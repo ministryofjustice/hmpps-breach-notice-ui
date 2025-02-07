@@ -225,7 +225,6 @@
 
           </div>
           <div class="govuk-radios" data-module="govuk-radios">
-
             {% for failure in enforceableContactRadioButtonList %}
               <div class="govuk-radios__item">
                 <input class="govuk-radios__input"
@@ -251,27 +250,9 @@
           </div>
         </fieldset>
       </div>
-
-
-
-{#      {% set phoneHtml %}#}
-{#        {{ govukInput({#}
-{#          id: "contact-by-phone",#}
-{#          name: "contactByPhone",#}
-{#          type: "tel",#}
-{#          autocomplete: "tel",#}
-{#          classes: "govuk-!-width-one-third",#}
-{#          label: {#}
-{#            text: "Phone number"#}
-{#          }#}
-{#        }) }}#}
-{#      {% endset -%}#}
-
-
-
       <div class="govuk-form-group">
         <fieldset class="govuk-fieldset" aria-describedby="waste-hint">
-          <legend class="govuk-fieldset__legend govuk-fieldset__legend--l">
+          <legend class="govuk-fieldset__legend govuk-fieldset__legend--m">
             <h1 class="govuk-fieldset__heading">
               Select the Failures being enforced
             </h1>
@@ -280,10 +261,6 @@
             Select all that apply
           </div>
           <div class="govuk-checkboxes" data-module="govuk-checkboxes">
-
-
-
-
             {% for failure in failuresBeingEnforcedList %}
             <div class="govuk-checkboxes__item">
               <input class="govuk-checkboxes__input"
@@ -299,8 +276,8 @@
             <div class="govuk-checkboxes__conditional govuk-checkboxes__conditional--hidden"
                  id="hidden{{ failure.value }}">
               {{ govukSelect({
-                id: "sort",
-                name: failure.value + "breachreason",
+                id: "breachreason-"+failure.value,
+                name: "breachreason-"+failure.value,
                 label: {
                   text: "Reason"
                 },
@@ -311,12 +288,6 @@
           </div>
         </fieldset>
       </div>
-
-
-
-
-
-
 
 {#      {{ govukCheckboxes({#}
 
