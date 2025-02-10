@@ -228,16 +228,16 @@
             {% for failure in enforceableContactRadioButtonList %}
               <div class="govuk-radios__item">
                 <input class="govuk-radios__input"
-                       id="signIn"
-                       name="signIn"
+                       id="checkbox-{{ failure.value }}"
+                       name="checkbox-{{ failure.value }}"
                        type="radio"
-                       value="government-gateway"
-                       aria-describedby="signIn-item-hint"
-                       checked={{ faliure.checked }}>
-                <label class="govuk-label govuk-radios__label" for="signIn">
+                       value="{{ failure.value }}"
+                       aria-describedby="enforceablecontact-item-hint"
+                       {{ faliure.checked }}>
+                <label class="govuk-label govuk-radios__label" for="contact-{{ failure.value }}">
                   {{ failure.text }}
                 </label>
-                <div id="signIn-item-hint" class="govuk-hint govuk-radios__hint">
+                <div id="enforceablecontact-item-hint" class="govuk-hint govuk-radios__hint">
                   {{ govukDetails({
                     summaryText: "View requirement notes",
                     text: failure.notes
@@ -251,13 +251,13 @@
         </fieldset>
       </div>
       <div class="govuk-form-group">
-        <fieldset class="govuk-fieldset" aria-describedby="waste-hint">
+        <fieldset class="govuk-fieldset" aria-describedby="contact-hint">
           <legend class="govuk-fieldset__legend govuk-fieldset__legend--m">
             <h1 class="govuk-fieldset__heading">
               Select the Failures being enforced
             </h1>
           </legend>
-          <div id="waste-hint" class="govuk-hint">
+          <div id="contact-hint" class="govuk-hint">
             Select all that apply
           </div>
           <div class="govuk-checkboxes" data-module="govuk-checkboxes">
@@ -265,11 +265,11 @@
             <div class="govuk-checkboxes__item">
               <input class="govuk-checkboxes__input"
                      id="checkbox{{ failure.value }}"
-                     name="waste"
+                     name="failuresBeingEnforcedRequirements"
                      type="checkbox"
                      value="{{ failure.value }}"
                      data-aria-controls="hidden{{ failure.value }}" >
-              <label class="govuk-label govuk-checkboxes__label" for="waste">
+              <label class="govuk-label govuk-checkboxes__label" for="checkbox{{ failure.value }}">
                 {{ failure.text }}
               </label>
             </div>

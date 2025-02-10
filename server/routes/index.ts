@@ -157,6 +157,11 @@ export default function routes({ auditService, hmppsAuthClient }: Services): Rou
     const breachNoticeId = req.params.id
     const warningDetails: WarningDetails = createDummyWarningDetails()
     const breachNotice: BreachNotice = await breachNoticeApiClient.getBreachNoticeById(breachNoticeId as string)
+
+    // we need to create the contacts
+    const contactIdSelected = req.body.checkbox - 1
+
+    // we need to create requirements
     res.redirect(`/next-appointment/${req.params.id}`)
   })
 
@@ -250,14 +255,14 @@ export default function routes({ auditService, hmppsAuthClient }: Services): Rou
     enforceableContactList: EnforceableContactList,
   ): EnforceableContactRadioButtonList {
     const arrayOfRadios: EnforceableContactRadioButton[] = enforceableContactList.map(enforceableContact => ({
-      text: enforceableContact.description,
-      value: enforceableContact.id.toString(),
-      checked: false,
       datetime: enforceableContact.datetime,
-      notes: enforceableContact.notes,
       type: enforceableContact.type,
       outcome: enforceableContact.outcome,
+      notes: enforceableContact.notes,
       requirement: enforceableContact.requirement,
+      checked: 'checked',
+      value: enforceableContact.id.toString(),
+      text: enforceableContact.description,
     }))
     return arrayOfRadios
   }
