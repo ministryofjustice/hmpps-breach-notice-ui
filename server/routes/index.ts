@@ -130,7 +130,19 @@ export default function routes({ auditService, hmppsAuthClient }: Services): Rou
       // mark that a USER has saved the document at least once
       breachNotice.basicDetailsSaved = true
       await breachNoticeApiClient.updateBreachNotice(breachNoticeId, breachNotice)
-      res.redirect(`/warning-type/${req.params.id}`)
+
+      if (req.body.action === 'viewDraft') {
+        const stream: ArrayBuffer = await breachNoticeApiClient.getDraftPdfById(breachNotice.id as string)
+
+        res.setHeader('Content-Type', 'application/pdf')
+        res.setHeader(
+          'Content-Disposition',
+          `attachment; filename="breach_notice_${breachNotice.crn}_${breachNotice.referenceNumber}_draft.pdf"`,
+        )
+        res.send(stream)
+      } else {
+        res.redirect(`/warning-type/${req.params.id}`)
+      }
     }
   })
 
@@ -301,6 +313,32 @@ export default function routes({ auditService, hmppsAuthClient }: Services): Rou
       await hmppsAuthClient.getSystemClientToken(res.locals.user.username),
     )
     const breachNoticeId = req.params.id
+    let breachNotice: BreachNotice = null
+    breachNotice = await breachNoticeApiClient.getBreachNoticeById(breachNoticeId as string)
+    res.render('pages/report-completed', {
+      breachNotice,
+    })
+  })
+
+  get('/report-completed', async (req, res, next) => {
+    await auditService.logPageView(Page.REPORT_COMPLETED, { who: res.locals.user.username, correlationId: req.id })
+    const breachNoticeApiClient = new BreachNoticeApiClient(
+      await hmppsAuthClient.getSystemClientToken(res.locals.user.username),
+    )
+    // const breachNoticeId = req.params.id
+    const breachNoticeId = '91992e76-54bc-4530-8775-fd8031d982c0'
+    const stream: ArrayBuffer = await breachNoticeApiClient.getPdfById(breachNoticeId as string)
+
+    await auditService.logPageView(Page.REPORT_DELETED, {
+      who: res.locals.user.username,
+      correlationId: req.id,
+      details: stream,
+    })
+
+    // res.setHeader('Content-Type', 'application/pdf')
+    // res.setHeader('Content-Disposition', 'attachment; filename="test.pdf"')
+    // res.send(stream)
+
     let breachNotice: BreachNotice = null
     breachNotice = await breachNoticeApiClient.getBreachNoticeById(breachNoticeId as string)
     res.render('pages/report-completed', {

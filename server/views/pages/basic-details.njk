@@ -202,8 +202,11 @@
           type: "submit"
         }, {
           text: "View draft",
-          href: "#",
-          classes: "govuk-button--secondary"
+          classes: "govuk-button--secondary",
+          preventDoubleClick: "true",
+          type: "submit",
+          name: "action",
+          value: "viewDraft"
         }, {
           text: "Close",
           href: "/basic-details",
