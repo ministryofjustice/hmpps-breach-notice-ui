@@ -19,6 +19,18 @@ export default class BreachNoticeApiClient extends RestClient {
       data: breachNotice as unknown as Record<string, unknown>,
     })
   }
+
+  async deleteBreachNotice(id: string) {
+    await this.delete({
+      path: `/breach-notice/${id}`,
+    })
+  }
+
+  async breachNoticePdf(id: string): Promise<ArrayBuffer> {
+    return this.get({
+      path: `/breach-notice/${id}/pdf`,
+    })
+  }
 }
 
 export interface BreachNotice {

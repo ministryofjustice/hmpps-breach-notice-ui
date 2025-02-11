@@ -14,15 +14,15 @@
       {% set mainClasses = "govuk-main-wrapper--l" %}
 
             {{ govukPanel({
-              titleText: "Breach Notice - Report Completed",
-              html: "Your Breach Report has been completed."
+              titleText: breachNotice.id + " Report Published",
+              html: "Your Breach Report has been completed and uploaded."
             }) }}
 
             <h2 class="govuk-heading-m">What to do next</h2>
 
             <p class="govuk-body">
               Review and print your Breach Notice letter<br>
-              <a href="#" class="govuk-link">View your completed PDF letter</a>
+              <a href="{{ '/report-print/' + breachNotice.id }}" class="govuk-link">View your completed PDF letter</a>
             </p>
 
             <p class="govuk-body">
@@ -32,12 +32,7 @@
 
             <p class="govuk-body">
                 Delete this report<br>
-                <a href="#" class="govuk-link">Delete this report</a>
-            </p>
-
-            <p class="govuk-body">
-                Close this letter<br>
-                <a href="#" class="govuk-link">Return back to the main Delius Screen</a>
+                <a href="{{ '/report-deleted/' + breachNotice.id }}" class="govuk-link">Delete this report</a>
             </p>
 
     </div>

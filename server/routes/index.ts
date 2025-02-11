@@ -541,6 +541,22 @@ export default function routes({ auditService, hmppsAuthClient }: Services): Rou
     })
   })
 
+  get('/report-print/:id', async (req, res, next) => {
+    await auditService.logPageView(Page.REPORT_PRINTED, { who: res.locals.user.username, correlationId: req.id })
+    const breachNoticeApiClient = new BreachNoticeApiClient(
+      await hmppsAuthClient.getSystemClientToken(res.locals.user.username),
+    )
+    const breachNoticeId = req.params.id
+    const breachNotice = await breachNoticeApiClient.getBreachNoticeById(breachNoticeId as string)
+    const completedPdf = await breachNoticeApiClient.breachNoticePdf(breachNoticeId as string)
+    res.setHeader('Content-Type', 'application/pdf')
+    res.setHeader(
+      'Content-Disposition',
+      `attachment; filename="breach_notice_${breachNotice.crn}_${breachNotice.referenceNumber}.pdf`,
+    )
+    res.send(completedPdf)
+  })
+
   get('/report-deleted/:id', async (req, res, next) => {
     await auditService.logPageView(Page.REPORT_DELETED, { who: res.locals.user.username, correlationId: req.id })
     const breachNoticeApiClient = new BreachNoticeApiClient(
@@ -549,6 +565,9 @@ export default function routes({ auditService, hmppsAuthClient }: Services): Rou
     const breachNoticeId = req.params.id
     let breachNotice: BreachNotice = null
     breachNotice = await breachNoticeApiClient.getBreachNoticeById(breachNoticeId as string)
+    await breachNoticeApiClient.deleteBreachNotice(breachNoticeId as string)
+    // Add Delete from ND
+    // Add Delete from Alfresco
     res.render('pages/report-deleted', {
       breachNotice,
     })
