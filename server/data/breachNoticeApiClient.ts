@@ -27,7 +27,7 @@ export interface BreachNotice {
   titleAndFullName: string
   dateOfLetter: string
   referenceNumber: string
-  responseRequiredByDate: Date
+  responseRequiredByDate: string
   breachNoticeTypeCode: string
   breachNoticeTypeDescription: string
   breachConditionTypeCode: string

@@ -157,13 +157,79 @@ export default function routes({ auditService, hmppsAuthClient }: Services): Rou
     const breachNoticeId = req.params.id
     const warningDetails: WarningDetails = createDummyWarningDetails()
     const breachNotice: BreachNotice = await breachNoticeApiClient.getBreachNoticeById(breachNoticeId as string)
-
     // we need to create the contacts
-    const contactIdSelected = req.body.checkbox - 1
+    // const contactIdSelected = req.body.failureRecordedContact
+    // loop through the list of selected contacts, find the real one in the list, add breach notice id
 
-    // we need to create requirements
-    res.redirect(`/next-appointment/${req.params.id}`)
+    // ##Tomorrow here, need to save all the contacts
+
+    const warningDetailsErrorMessages: ErrorMessages = validateWarningDetails(
+      breachNotice,
+      req.body.responseRequiredByDate,
+    )
+
+    const warningDetailsHasErrors: boolean = Object.keys(warningDetailsErrorMessages).length > 0
+    if (warningDetailsHasErrors) {
+      console.log('warningDetailsHasErrors')
+      const failuresRecorded: SelectItemList = createSelectItemListFromEnforceableContacts(
+        warningDetails.enforceableContactList,
+      )
+      const enforceableContactRadioButtonList = createEnforceableContactRadioButtonListFromEnforceableContacts(
+        warningDetails.enforceableContactList,
+      )
+
+      const breachReasons = convertReferenceDataListToSelectItemList(warningDetails.breachReasons)
+      const failuresBeingEnforcedList = createFailuresBeingEnforcedRequirementSelectList(
+        warningDetails.enforceableContactList,
+        warningDetails.breachReasons,
+      )
+      res.render(`pages/basic-details`, {
+        breachNotice,
+        warningDetails,
+        failuresRecorded,
+        enforceableContactRadioButtonList,
+        breachReasons,
+        failuresBeingEnforcedList,
+      })
+    } else {
+      // mark that a USER has saved the document at least once
+      breachNotice.warningDetailsSaved = true
+      await breachNoticeApiClient.updateBreachNotice(breachNoticeId, breachNotice)
+      // we need to create requirements
+      res.redirect(`/next-appointment/${req.params.id}`)
+    }
   })
+
+  function validateWarningDetails(breachNotice: BreachNotice, responseRequiredByDate: string): ErrorMessages {
+    const errorMessages: ErrorMessages = {}
+    const currentDateAtStartOfTheDay: LocalDateTime = LocalDate.now().atStartOfDay()
+
+    try {
+      // eslint-disable-next-line no-param-reassign
+      breachNotice.responseRequiredByDate = fromUserDate(responseRequiredByDate)
+    } catch (error: unknown) {
+      // eslint-disable-next-line no-param-reassign
+      breachNotice.responseRequiredByDate = responseRequiredByDate
+      errorMessages.dateOfLetter = {
+        text: 'The proposed date for this letter is in an invalid format, please use the correct format e.g 17/5/2024',
+      }
+      // we cant continue with date validation
+      return errorMessages
+    }
+
+    if (breachNotice) {
+      // check date of letter is not before today
+      if (breachNotice.responseRequiredByDate) {
+        const localDateOfResponseRequiredByDate = LocalDate.parse(breachNotice.responseRequiredByDate).atStartOfDay()
+        if (localDateOfResponseRequiredByDate.isBefore(currentDateAtStartOfTheDay)) {
+          errorMessages.responseRequiredByDate = {
+            text: 'The Response Required By Date can not be before today',
+          }
+        }
+      }
+    }
+    return errorMessages
+  }
 
   function validateBasicDetails(breachNotice: BreachNotice, userEnteredDateOfLetter: string): ErrorMessages {
     const errorMessages: ErrorMessages = {}
