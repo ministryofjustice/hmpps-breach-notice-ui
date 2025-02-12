@@ -8,6 +8,8 @@ import BreachNoticeApiClient, {
   AddressList,
   BasicDetails,
   BreachNotice,
+  BreachNoticeContact,
+  BreachNoticeRequirement,
   EnforceableContact,
   EnforceableContactList,
   EnforceableContactRadioButton,
@@ -50,10 +52,9 @@ export default function routes({ auditService, hmppsAuthClient }: Services): Rou
     const breachNoticeApiClient = new BreachNoticeApiClient(
       await hmppsAuthClient.getSystemClientToken(res.locals.user.username),
     )
-    const breachNoticeId = req.params.id
-    const basicDetails: BasicDetails = createDummyBasicDetails()
-    let breachNotice: BreachNotice = null
-    breachNotice = await breachNoticeApiClient.getBreachNoticeById(breachNoticeId as string)
+    const { id } = req.params
+    const basicDetails = createDummyBasicDetails()
+    const breachNotice = await breachNoticeApiClient.getBreachNoticeById(id)
     checkBreachNoticeAndApplyDefaults(breachNotice, basicDetails)
     const alternateAddressOptions = initiateAlternateAddressSelectItemList(basicDetails, breachNotice)
     const replyAddressOptions = initiateReplyAddressSelectItemList(basicDetails, breachNotice)
@@ -194,20 +195,68 @@ export default function routes({ auditService, hmppsAuthClient }: Services): Rou
   }
 
   post('/warning-details/:id', async (req, res, next) => {
-    console.log('params passed in')
-    console.log(req.body)
     const breachNoticeApiClient = new BreachNoticeApiClient(
       await hmppsAuthClient.getSystemClientToken(res.locals.user.username),
     )
+
+    console.log('params')
+    console.log(req.body)
     const breachNoticeId = req.params.id
     const warningDetails: WarningDetails = createDummyWarningDetails()
     const breachNotice: BreachNotice = await breachNoticeApiClient.getBreachNoticeById(breachNoticeId as string)
-    // we need to create the contacts
-    // const contactIdSelected = req.body.failureRecordedContact
-    // loop through the list of selected contacts, find the real one in the list, add breach notice id
+    // failures recorded on this order
+    const contactList: BreachNoticeContact[] = []
+    // select the failures being enforced
+    const requirementList: BreachNoticeRequirement[] = []
 
-    // ##Tomorrow here, need to save all the contacts
+    // for final warning theres only 1 of these for first warning screen
+    const failureRecordedContactId: string = req.body.failureRecordedContact
+    if (failureRecordedContactId) {
+      // loop through the original contact list
+      warningDetails.enforceableContactList.forEach((enforceableContact: EnforceableContact) => {
+        const breachNoticeContact: BreachNoticeContact = {
+          id: null,
+          breachNoticeId: breachNotice.id,
+          contactDate: enforceableContact.datetime,
+          contactType: enforceableContact.type.description,
+          contactOutcome: enforceableContact.outcome.description,
+          contactId: enforceableContact.id,
+        }
+        contactList.push(breachNoticeContact)
+      })
+    }
 
+    // we have failures recorded found at this point
+    // we need to deal with requirements now from screen (failures being enforced)
+    breachNotice.breachNoticeContactList = contactList
+
+    // we need to create requirements
+    // this is actually a list of contacts the requirements belong to
+    // get failuresBeingEnforcedRequirements from body
+    const { failuresBeingEnforcedRequirements } = req.body
+    // for each contact in the list get the requirements, set the breach reason then add to our list
+    failuresBeingEnforcedRequirements.forEach((contactId: string) => {
+      // first find the contact
+
+      // go through the original list again
+      warningDetails.enforceableContactList.forEach((enforceableContact: EnforceableContact) => {
+        if (enforceableContact.id.toString() === contactId) {
+          const bodyParamBreachReason: string = `breachreason${contactId}`
+          const contactRequirement = enforceableContact.requirement
+          const breachNoticeRequirement: BreachNoticeRequirement = {
+            id: null,
+            breachNoticeId: breachNotice.id,
+            requirementId: contactRequirement.id,
+            mainCategoryDescription: contactRequirement.type.description,
+            subCategoryDescription: contactRequirement.subType.description,
+            rejectionReason: req.body[bodyParamBreachReason],
+          }
+          requirementList.push(breachNoticeRequirement)
+        }
+      })
+    })
+
+    breachNotice.breachNoticeRequirementList = requirementList
     const warningDetailsErrorMessages: ErrorMessages = validateWarningDetails(
       breachNotice,
       req.body.responseRequiredByDate,
@@ -215,7 +264,6 @@ export default function routes({ auditService, hmppsAuthClient }: Services): Rou
 
     const warningDetailsHasErrors: boolean = Object.keys(warningDetailsErrorMessages).length > 0
     if (warningDetailsHasErrors) {
-      console.log('warningDetailsHasErrors')
       const failuresRecorded: SelectItemList = createSelectItemListFromEnforceableContacts(
         warningDetails.enforceableContactList,
       )
@@ -989,6 +1037,7 @@ export default function routes({ auditService, hmppsAuthClient }: Services): Rou
 
   function createDummyRequirement(): Requirement {
     return {
+      id: 1,
       type: createDummyReferenceData(),
       subType: createDummyReferenceData(),
     }
