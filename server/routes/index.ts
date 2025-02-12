@@ -41,6 +41,11 @@ export default function routes({ auditService, hmppsAuthClient }: Services): Rou
     res.render('pages/error')
   })
 
+  get('/close', async (req, res, next) => {
+    res.setHeader('Content-Security-Policy', "script-src-elem 'unsafe-inline'")
+    res.send('<script>window.close();</script>')
+  })
+
   get('/breach-notice/:id', async (req, res, next) => {
     res.redirect(`/basic-details/${req.params.id}`)
   })
