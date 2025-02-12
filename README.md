@@ -20,7 +20,7 @@ You'll need to install:
 **To simplify switching between Java versions it is advisable to use [sdkman](https://sdkman.io/install)
 
 ### Dependencies
-![img.png](img.png)
+
 Install NPM package dependencies (from the root of the project):
 
 ```shell
