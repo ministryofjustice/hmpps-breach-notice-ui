@@ -1,4 +1,4 @@
-import { type RequestHandler, Router } from 'express'
+import { type RequestHandler, Router, Response } from 'express'
 import { DateTimeFormatter, LocalDate, LocalDateTime, TemporalQueries } from '@js-joda/core'
 import asyncMiddleware from '../middleware/asyncMiddleware'
 import type { Services } from '../services'
@@ -144,9 +144,54 @@ export default function routes({ auditService, hmppsAuthClient }: Services): Rou
       // mark that a USER has saved the document at least once
       breachNotice.basicDetailsSaved = true
       await breachNoticeApiClient.updateBreachNotice(breachNoticeId, breachNotice)
-      res.redirect(`/warning-type/${req.params.id}`)
+
+      if (req.body.action === 'viewDraft') {
+        try {
+          await showDraftPdf(breachNotice, res, breachNoticeApiClient)
+        } catch (err) {
+          // Render the page with the new error
+          errorMessages.pdfRenderError = {
+            text: 'There was an issue generating the draft report. Please try again or contact support.',
+          }
+
+          const alternateAddressOptions = initiateAlternateAddressSelectItemList(basicDetails, breachNotice)
+          const replyAddressOptions = initiateReplyAddressSelectItemList(basicDetails, breachNotice)
+          const basicDetailsDateOfLetter: string = req.body.dateOfLetter
+          res.render(`pages/basic-details`, {
+            errorMessages,
+            breachNotice,
+            basicDetails,
+            defaultOffenderAddress,
+            defaultReplyAddress,
+            alternateAddressOptions,
+            replyAddressOptions,
+            basicDetailsDateOfLetter,
+          })
+        }
+      } else {
+        res.redirect(`/warning-type/${req.params.id}`)
+      }
     }
   })
+
+  async function showDraftPdf(breachNotice: BreachNotice, res: Response, breachNoticeApiClient: BreachNoticeApiClient) {
+    res.redirect(`/pdf/${breachNotice.id}`)
+  }
+
+  async function downloadDraftPdf(
+    breachNotice: BreachNotice,
+    res: Response,
+    breachNoticeApiClient: BreachNoticeApiClient,
+  ) {
+    const stream: ArrayBuffer = await breachNoticeApiClient.getDraftPdfById(breachNotice.id as string)
+
+    res.setHeader('Content-Type', 'application/pdf')
+    res.setHeader(
+      'Content-Disposition',
+      `attachment; filename="breach_notice_${breachNotice.crn}_${breachNotice.referenceNumber}_draft.pdf"`,
+    )
+    res.send(stream)
+  }
 
   post('/warning-details/:id', async (req, res, next) => {
     console.log('params passed in')
@@ -196,6 +241,43 @@ export default function routes({ auditService, hmppsAuthClient }: Services): Rou
       breachNotice.warningDetailsSaved = true
       await breachNoticeApiClient.updateBreachNotice(breachNoticeId, breachNotice)
       // we need to create requirements
+
+      if (req.body.action === 'viewDraft') {
+        try {
+          await showDraftPdf(breachNotice, res, breachNoticeApiClient)
+        } catch (err) {
+          const errorMessages: ErrorMessages = {}
+          errorMessages.pdfRenderError = {
+            text: 'There was an issue generating the draft report. Please try again or contact support.',
+          }
+
+          const failuresRecorded: SelectItemList = createSelectItemListFromEnforceableContacts(
+            warningDetails.enforceableContactList,
+          )
+          const enforceableContactRadioButtonList = createEnforceableContactRadioButtonListFromEnforceableContacts(
+            warningDetails.enforceableContactList,
+          )
+
+          const breachReasons = convertReferenceDataListToSelectItemList(warningDetails.breachReasons)
+          const failuresBeingEnforcedList = createFailuresBeingEnforcedRequirementSelectList(
+            warningDetails.enforceableContactList,
+            warningDetails.breachReasons,
+          )
+
+          res.render(`pages/basic-details`, {
+            errorMessages,
+            breachNotice,
+            warningDetails,
+            failuresRecorded,
+            enforceableContactRadioButtonList,
+            breachReasons,
+            failuresBeingEnforcedList,
+          })
+        }
+      } else {
+        res.redirect(`/next-appointment/${req.params.id}`)
+      }
+
       res.redirect(`/next-appointment/${req.params.id}`)
     }
   })
@@ -287,6 +369,7 @@ export default function routes({ auditService, hmppsAuthClient }: Services): Rou
     const breachNoticeId = req.params.id
     let breachNotice: BreachNotice = null
     breachNotice = await breachNoticeApiClient.getBreachNoticeById(breachNoticeId as string)
+
     const warningDetails: WarningDetails = createDummyWarningDetails()
     const enforceableContactRadioButtonList = createEnforceableContactRadioButtonListFromEnforceableContacts(
       warningDetails.enforceableContactList,
@@ -309,6 +392,7 @@ export default function routes({ auditService, hmppsAuthClient }: Services): Rou
       failuresBeingEnforcedList,
     })
   })
+
   function convertReferenceDataListToSelectItemList(referenceDataList: ReferenceDataList): SelectItemList {
     const arrayOfSelectItems: SelectItem[] = referenceDataList.map(refData => ({
       selected: false,
@@ -400,12 +484,23 @@ export default function routes({ auditService, hmppsAuthClient }: Services): Rou
       breachNotice,
     )
 
+    renderWarningTypes(breachNotice, res, warningTypeRadioButtons, {}, sentenceTypeSelectItems)
+  })
+
+  async function renderWarningTypes(
+    breachNotice: BreachNotice,
+    res: Response,
+    warningTypeRadioButtons: Array<RadioButton>,
+    errorMessages: ErrorMessages,
+    sentenceTypeSelectItems: Array<SelectItem>,
+  ) {
     res.render('pages/warning-type', {
+      errorMessages,
       breachNotice,
       warningTypeRadioButtons,
       sentenceTypeSelectItems,
     })
-  })
+  }
 
   post('/warning-type/:id', async (req, res, next) => {
     const breachNoticeApiClient = new BreachNoticeApiClient(
@@ -436,7 +531,24 @@ export default function routes({ auditService, hmppsAuthClient }: Services): Rou
     // mark that a USER has saved the document at least once
     breachNotice.warningTypeSaved = true
     await breachNoticeApiClient.updateBreachNotice(breachNoticeId, breachNotice)
-    res.redirect(`/warning-details/${req.params.id}`)
+
+    if (req.body.action === 'viewDraft') {
+      try {
+        await showDraftPdf(breachNotice, res, breachNoticeApiClient)
+      } catch (err) {
+        const errorMessages: ErrorMessages = {}
+        errorMessages.pdfRenderError = {
+          text: 'There was an issue generating the draft report. Please try again or contact support.',
+        }
+        const sentenceTypeSelectItems: Array<SelectItem> = initiateSentenceTypeSelectItemsAndApplySavedSelections(
+          warningTypeDetails,
+          breachNotice,
+        )
+        renderWarningTypes(breachNotice, res, warningTypeDetails.warningTypes, errorMessages, sentenceTypeSelectItems)
+      }
+    } else {
+      res.redirect(`/warning-details/${req.params.id}`)
+    }
   })
 
   // receive warningTypeDetails via an integration
@@ -505,9 +617,40 @@ export default function routes({ auditService, hmppsAuthClient }: Services): Rou
     const breachNoticeId = req.params.id
     let breachNotice: BreachNotice = null
     breachNotice = await breachNoticeApiClient.getBreachNoticeById(breachNoticeId as string)
-    res.render(`pages/next-appointment`, {
+    renderNextAppointment(breachNotice, res, {})
+  })
+
+  async function renderNextAppointment(breachNotice: BreachNotice, res: Response, errorMessages: ErrorMessages) {
+    res.render('pages/next-appointment', {
+      errorMessages,
       breachNotice,
     })
+  }
+
+  post('/next-appointment/:id', async (req, res, next) => {
+    const breachNoticeApiClient = new BreachNoticeApiClient(
+      await hmppsAuthClient.getSystemClientToken(res.locals.user.username),
+    )
+    await auditService.logPageView(Page.NEXT_APPOINTMENT, { who: res.locals.user.username, correlationId: req.id })
+    const breachNoticeId = req.params.id
+    let breachNotice: BreachNotice = null
+    breachNotice = await breachNoticeApiClient.getBreachNoticeById(breachNoticeId as string)
+
+    // TODO Post Logic
+
+    if (req.body.action === 'viewDraft') {
+      try {
+        await showDraftPdf(breachNotice, res, breachNoticeApiClient)
+      } catch (err) {
+        const errorMessages: ErrorMessages = {}
+        errorMessages.pdfRenderError = {
+          text: 'There was an issue generating the draft report. Please try again or contact support.',
+        }
+        renderNextAppointment(breachNotice, res, errorMessages)
+      }
+    } else {
+      res.redirect(`/check-your-report/${req.params.id}`)
+    }
   })
 
   get('/check-your-report/:id', async (req, res, next) => {
@@ -518,9 +661,42 @@ export default function routes({ auditService, hmppsAuthClient }: Services): Rou
     const breachNoticeId = req.params.id
     let breachNotice: BreachNotice = null
     breachNotice = await breachNoticeApiClient.getBreachNoticeById(breachNoticeId as string)
+
+    await renderCheckYourReport(breachNotice, res, {})
+  })
+
+  async function renderCheckYourReport(breachNotice: BreachNotice, res: Response, errorMessages: ErrorMessages) {
     res.render('pages/check-your-report', {
+      errorMessages,
       breachNotice,
     })
+  }
+
+  post('/check-your-report/:id', async (req, res, next) => {
+    await auditService.logPageView(Page.CHECK_YOUR_REPORT, { who: res.locals.user.username, correlationId: req.id })
+    const breachNoticeApiClient = new BreachNoticeApiClient(
+      await hmppsAuthClient.getSystemClientToken(res.locals.user.username),
+    )
+    const breachNoticeId = req.params.id
+    let breachNotice: BreachNotice = null
+    breachNotice = await breachNoticeApiClient.getBreachNoticeById(breachNoticeId as string)
+
+    // TODO Post Logic
+
+    if (req.body.action === 'viewDraft') {
+      try {
+        await showDraftPdf(breachNotice, res, breachNoticeApiClient)
+      } catch (err) {
+        const errorMessages: ErrorMessages = {}
+        errorMessages.pdfRenderError = {
+          text: 'There was an issue generating the draft report. Please try again or contact support.',
+        }
+        await renderCheckYourReport(breachNotice, res, errorMessages)
+      }
+    } else {
+      // Correct redirect
+      res.redirect(`/check-your-report/${req.params.id}`)
+    }
   })
 
   get('/basic-details', async (req, res, next) => {
@@ -541,6 +717,28 @@ export default function routes({ auditService, hmppsAuthClient }: Services): Rou
     })
   })
 
+  get('/report-completed', async (req, res, next) => {
+    await auditService.logPageView(Page.REPORT_COMPLETED, { who: res.locals.user.username, correlationId: req.id })
+    const breachNoticeApiClient = new BreachNoticeApiClient(
+      await hmppsAuthClient.getSystemClientToken(res.locals.user.username),
+    )
+    // const breachNoticeId = req.params.id
+    const breachNoticeId = '91992e76-54bc-4530-8775-fd8031d982c0'
+    const stream: ArrayBuffer = await breachNoticeApiClient.getPdfById(breachNoticeId as string)
+
+    await auditService.logPageView(Page.REPORT_DELETED, {
+      who: res.locals.user.username,
+      correlationId: req.id,
+      details: stream,
+    })
+
+    let breachNotice: BreachNotice = null
+    breachNotice = await breachNoticeApiClient.getBreachNoticeById(breachNoticeId as string)
+    res.render('pages/report-completed', {
+      breachNotice,
+    })
+  })
+
   get('/report-deleted/:id', async (req, res, next) => {
     await auditService.logPageView(Page.REPORT_DELETED, { who: res.locals.user.username, correlationId: req.id })
     const breachNoticeApiClient = new BreachNoticeApiClient(
@@ -552,6 +750,24 @@ export default function routes({ auditService, hmppsAuthClient }: Services): Rou
     res.render('pages/report-deleted', {
       breachNotice,
     })
+  })
+
+  get('/pdf/:id', async (req, res, next) => {
+    await auditService.logPageView(Page.REPORT_DELETED, { who: res.locals.user.username, correlationId: req.id })
+    const breachNoticeApiClient = new BreachNoticeApiClient(
+      await hmppsAuthClient.getSystemClientToken(res.locals.user.username),
+    )
+    const breachNoticeId = req.params.id
+    let breachNotice: BreachNotice = null
+    breachNotice = await breachNoticeApiClient.getBreachNoticeById(breachNoticeId as string)
+    const stream: ArrayBuffer = await breachNoticeApiClient.getDraftPdfById(breachNotice.id as string)
+
+    res.setHeader('Content-Type', 'application/pdf')
+    res.setHeader(
+      'Content-Disposition',
+      `filename="breach_notice_${breachNotice.crn}_${breachNotice.referenceNumber}_draft.pdf"`,
+    )
+    res.send(stream)
   })
 
   // if this page hasnt been saved we want to go through and apply defaults otherwise dont do this

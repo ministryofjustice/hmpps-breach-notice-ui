@@ -19,6 +19,20 @@ export default class BreachNoticeApiClient extends RestClient {
       data: breachNotice as unknown as Record<string, unknown>,
     })
   }
+
+  async getPdfById(uuid: string): Promise<ArrayBuffer> {
+    return this.get({
+      path: `/breach-notice/${uuid}/pdf`,
+      responseType: 'arraybuffer',
+    })
+  }
+
+  async getDraftPdfById(uuid: string): Promise<ArrayBuffer> {
+    return this.get({
+      path: `/breach-notice/${uuid}/pdf`,
+      responseType: 'arraybuffer',
+    })
+  }
 }
 
 export interface BreachNotice {
