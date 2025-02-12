@@ -64,9 +64,11 @@
           preventDoubleClick: "true"
         }, {
           text: "View Draft Report",
-          href: "#",
           classes: "govuk-button--secondary",
-          preventDoubleClick: "true"
+          preventDoubleClick: "true",
+          type: "submit",
+          name: "action",
+          value: "viewDraft"
         }, {
           text: "Close",
           href: "/basic-details/"+breachNotice.id,

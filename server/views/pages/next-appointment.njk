@@ -11,6 +11,8 @@
   {% from "govuk/components/input/macro.njk" import govukInput %}
   {% from "govuk/components/table/macro.njk" import govukTable %}
 
+  <form method="post">
+<input type="hidden" name="_csrf" value="{{ csrfToken }}">
 
   <div class="govuk-grid-row">
     <div class="govuk-grid-column-one-third">
@@ -273,8 +275,11 @@
           href: "/check-your-report"
         }, {
           text: "View Draft Report",
-          href: "#",
-          classes: "govuk-button--secondary"
+          classes: "govuk-button--secondary",
+          preventDoubleClick: "true",
+          type: "submit",
+          name: "action",
+          value: "viewDraft"
         }, {
           text: "Refresh from Delius",
           href: "#",
@@ -289,4 +294,5 @@
     </div>
   </div>
 
+</form>
 {% endblock %}

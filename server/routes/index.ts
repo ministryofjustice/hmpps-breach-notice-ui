@@ -1,4 +1,4 @@
-import { type RequestHandler, Router } from 'express'
+import { type RequestHandler, Router, Response } from 'express'
 import { DateTimeFormatter, LocalDate, LocalDateTime } from '@js-joda/core'
 import asyncMiddleware from '../middleware/asyncMiddleware'
 import type { Services } from '../services'
@@ -132,19 +132,23 @@ export default function routes({ auditService, hmppsAuthClient }: Services): Rou
       await breachNoticeApiClient.updateBreachNotice(breachNoticeId, breachNotice)
 
       if (req.body.action === 'viewDraft') {
-        const stream: ArrayBuffer = await breachNoticeApiClient.getDraftPdfById(breachNotice.id as string)
-
-        res.setHeader('Content-Type', 'application/pdf')
-        res.setHeader(
-          'Content-Disposition',
-          `attachment; filename="breach_notice_${breachNotice.crn}_${breachNotice.referenceNumber}_draft.pdf"`,
-        )
-        res.send(stream)
+        await showDraftPdf(breachNotice, res, breachNoticeApiClient)
       } else {
         res.redirect(`/warning-type/${req.params.id}`)
       }
     }
   })
+
+  async function showDraftPdf(breachNotice: BreachNotice, res: Response, breachNoticeApiClient: BreachNoticeApiClient) {
+    const stream: ArrayBuffer = await breachNoticeApiClient.getDraftPdfById(breachNotice.id as string)
+
+    res.setHeader('Content-Type', 'application/pdf')
+    res.setHeader(
+      'Content-Disposition',
+      `attachment; filename="breach_notice_${breachNotice.crn}_${breachNotice.referenceNumber}_draft.pdf"`,
+    )
+    res.send(stream)
+  }
 
   function validateBasicDetails(breachNotice: BreachNotice, userEnteredDateOfLetter: string): ErrorMessages {
     const errorMessages: ErrorMessages = {}
@@ -207,6 +211,24 @@ export default function routes({ auditService, hmppsAuthClient }: Services): Rou
     })
   })
 
+  post('/warning-details/:id', async (req, res, next) => {
+    const breachNoticeApiClient = new BreachNoticeApiClient(
+      await hmppsAuthClient.getSystemClientToken(res.locals.user.username),
+    )
+    await auditService.logPageView(Page.WARNING_DETAILS, { who: res.locals.user.username, correlationId: req.id })
+    const breachNoticeId = req.params.id
+    let breachNotice: BreachNotice = null
+    breachNotice = await breachNoticeApiClient.getBreachNoticeById(breachNoticeId as string)
+
+    // TODO Post Logic
+
+    if (req.body.action === 'viewDraft') {
+      await showDraftPdf(breachNotice, res, breachNoticeApiClient)
+    } else {
+      res.redirect(`/next-appointment/${req.params.id}`)
+    }
+  })
+
   get('/warning-type/:id', async (req, res, next) => {
     await auditService.logPageView(Page.WARNING_TYPE, { who: res.locals.user.username, correlationId: req.id })
     const breachNoticeApiClient = new BreachNoticeApiClient(
@@ -248,7 +270,12 @@ export default function routes({ auditService, hmppsAuthClient }: Services): Rou
     // mark that a USER has saved the document at least once
     breachNotice.warningTypeSaved = true
     await breachNoticeApiClient.updateBreachNotice(breachNoticeId, breachNotice)
-    res.redirect(`/warning-details/${req.params.id}`)
+
+    if (req.body.action === 'viewDraft') {
+      await showDraftPdf(breachNotice, res, breachNoticeApiClient)
+    } else {
+      res.redirect(`/warning-details/${req.params.id}`)
+    }
   })
 
   // receive warningTypeDetails via an integration
@@ -289,6 +316,24 @@ export default function routes({ auditService, hmppsAuthClient }: Services): Rou
     })
   })
 
+  post('/next-appointment/:id', async (req, res, next) => {
+    const breachNoticeApiClient = new BreachNoticeApiClient(
+      await hmppsAuthClient.getSystemClientToken(res.locals.user.username),
+    )
+    await auditService.logPageView(Page.NEXT_APPOINTMENT, { who: res.locals.user.username, correlationId: req.id })
+    const breachNoticeId = req.params.id
+    let breachNotice: BreachNotice = null
+    breachNotice = await breachNoticeApiClient.getBreachNoticeById(breachNoticeId as string)
+
+    // TODO Post Logic
+
+    if (req.body.action === 'viewDraft') {
+      await showDraftPdf(breachNotice, res, breachNoticeApiClient)
+    } else {
+      res.redirect(`/check-your-report/${req.params.id}`)
+    }
+  })
+
   get('/check-your-report/:id', async (req, res, next) => {
     await auditService.logPageView(Page.CHECK_YOUR_REPORT, { who: res.locals.user.username, correlationId: req.id })
     const breachNoticeApiClient = new BreachNoticeApiClient(
@@ -297,9 +342,29 @@ export default function routes({ auditService, hmppsAuthClient }: Services): Rou
     const breachNoticeId = req.params.id
     let breachNotice: BreachNotice = null
     breachNotice = await breachNoticeApiClient.getBreachNoticeById(breachNoticeId as string)
+
     res.render('pages/check-your-report', {
       breachNotice,
     })
+  })
+
+  post('/check-your-report/:id', async (req, res, next) => {
+    await auditService.logPageView(Page.CHECK_YOUR_REPORT, { who: res.locals.user.username, correlationId: req.id })
+    const breachNoticeApiClient = new BreachNoticeApiClient(
+      await hmppsAuthClient.getSystemClientToken(res.locals.user.username),
+    )
+    const breachNoticeId = req.params.id
+    let breachNotice: BreachNotice = null
+    breachNotice = await breachNoticeApiClient.getBreachNoticeById(breachNoticeId as string)
+
+    // TODO Post Logic
+
+    if (req.body.action === 'viewDraft') {
+      await showDraftPdf(breachNotice, res, breachNoticeApiClient)
+    } else {
+      // Correct redirect
+      res.redirect(`/check-your-report/${req.params.id}`)
+    }
   })
 
   get('/basic-details', async (req, res, next) => {
