@@ -10,6 +10,17 @@
   {% from "moj/components/button-menu/macro.njk" import mojButtonMenu %}
 
   <form method="post">
+
+  {% set errorList =[
+      { text: errorMessages.pdfRenderError.text } if errorMessages.pdfRenderError else None
+    ] | reject("undefined") %}
+
+    {% if errorMessages | length > 0 %}
+      {% from "govuk/components/error-summary/macro.njk" import govukErrorSummary %}
+
+      {{ govukErrorSummary({ titleText: "There is a problem", errorList: errorList }) }}
+    {% endif %}
+
   <input type="hidden" name="_csrf" value="{{ csrfToken }}">
 
   <div class="govuk-grid-row">
