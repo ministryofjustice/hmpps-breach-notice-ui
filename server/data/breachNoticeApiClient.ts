@@ -1,3 +1,4 @@
+import { LocalDateTime } from '@js-joda/core'
 import config from '../config'
 import RestClient from './restClient'
 
@@ -40,10 +41,13 @@ export interface BreachNotice {
   titleAndFullName: string
   dateOfLetter: string
   referenceNumber: string
-  responseRequiredByDate: Date
+  responseRequiredByDate: string
   breachNoticeTypeCode: string
   breachNoticeTypeDescription: string
   breachConditionTypeCode: string
+  breachConditionTypeDescription: string
+  breachSentenceTypeCode: string
+  breachSentenceTypeDescription: string
   responsibleOfficer: string
   contactNumber: string
   nextAppointmentType: string
@@ -68,8 +72,16 @@ export interface BasicDetails {
   replyAddresses: AddressList
 }
 
+export interface WarningDetails {
+  breachReasons: ReferenceDataList
+  sentenceTypes: SentenceTypeList
+  defaultSentenceTypeCode: string
+  enforceableContactList: EnforceableContactList
+}
+
 export interface WarningTypeDetails {
   warningTypes: RadioButtonList
+  sentenceTypes: SentenceTypeList
 }
 
 export interface Name {
@@ -97,18 +109,76 @@ export interface SelectItem {
   selected: boolean
 }
 
+// Reference Data
+export interface ReferenceData {
+  code: string
+  description: string
+}
+
+// Reference Data
+export interface SentenceType {
+  code: string
+  description: string
+  conditionBeingEnforced: string
+}
+
 export interface RadioButton {
   value: string
   text: string
   checked: boolean
 }
 
+export interface EnforceableContact {
+  id: number
+  datetime: LocalDateTime
+  description: string
+  type: ReferenceData
+  outcome: ReferenceData
+  notes: string
+  requirement: Requirement
+}
+
+export interface EnforceableContactRadioButton {
+  datetime: LocalDateTime
+  type: ReferenceData
+  outcome: ReferenceData
+  notes: string
+  requirement: Requirement
+  checked: string
+  value: string
+  text: string
+}
+
+export interface Requirement {
+  type: ReferenceData
+  subType: ReferenceData
+}
+
+export interface WarningDetailsRequirementSelectItem {
+  value: string
+  text: string
+  selected: boolean
+  requirements: SelectItemList
+}
+
 export interface ErrorMessages {
   [key: string]: { text: string }
 }
+
+export type WarningDetailsRequirementSelectItemsList = Array<WarningDetailsRequirementSelectItem>
+
+export type EnforceableContactRadioButtonList = Array<EnforceableContactRadioButton>
 
 export type AddressList = Array<Address>
 
 export type SelectItemList = Array<SelectItem>
 
 export type RadioButtonList = Array<RadioButton>
+
+export type ReferenceDataList = Array<ReferenceData>
+
+export type SentenceTypeList = Array<SentenceType>
+
+export type EnforceableContactList = Array<EnforceableContact>
+
+export type RequirementList = Array<Requirement>

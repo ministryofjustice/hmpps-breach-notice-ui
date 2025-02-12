@@ -1,6 +1,6 @@
 {% extends "../partials/layout.njk" %}
 
-{% set pageTitle = applicationName + " - Home" %}
+{% set pageTitle = applicationName + " - " + breachNotice.breachNoticeTypeDescription + " Details" %}
 {% set mainClasses = "app-container govuk-body" %}
 
 {% block content %}
@@ -13,18 +13,19 @@
   {% from "govuk/components/table/macro.njk" import govukTable %}
   {% from "govuk/components/input/macro.njk" import govukInput %}
   {% from "govuk/components/checkboxes/macro.njk" import govukCheckboxes %}
+  {% from "govuk/components/details/macro.njk" import govukDetails %}
 
-  <form method="post">
+<form method="post">
 
   {% set errorList =[
-      { text: errorMessages.pdfRenderError.text } if errorMessages.pdfRenderError else None
-    ] | reject("undefined") %}
+    { text: errorMessages.responseRequiredByDate.text, href: "#date-of-letter" } if errorMessages.dateOfLetter else None,
+    { text: errorMessages.pdfRenderError.text } if errorMessages.pdfRenderError else None
+  ] | reject("undefined") %}
 
-    {% if errorMessages | length > 0 %}
-      {% from "govuk/components/error-summary/macro.njk" import govukErrorSummary %}
-
-      {{ govukErrorSummary({ titleText: "There is a problem", errorList: errorList }) }}
-    {% endif %}
+  {% if errorMessages | length > 0 %}
+    {% from "govuk/components/error-summary/macro.njk" import govukErrorSummary %}
+    {{ govukErrorSummary({ titleText: "There is a problem", errorList: errorList }) }}
+  {% endif %}
 
   <input type="hidden" name="_csrf" value="{{ csrfToken }}">
 
@@ -70,7 +71,7 @@
     }) }}
   {% endset -%}
 
-
+  <input type="hidden" name="_csrf" value="{{ csrfToken }}">
   <div class="govuk-grid-row">
     <div class="govuk-grid-column-one-third">
 
@@ -98,7 +99,7 @@
     </div>
 
     <div class="govuk-grid-column-two-thirds">
-      <h1 class="govuk-heading-x1">Breach Notice - Breach Warning Details</h1>
+      <h1 class="govuk-heading-x1">{{ applicationName + " - " + breachNotice.breachNoticeTypeDescription + " Details" }}</h1>
 
 
 
@@ -113,39 +114,30 @@
 {#            classes: "govuk-fieldset__legend--m"#}
 {#          }#}
 {#        },#}
-{#        items: [#}
-{#          {#}
-{#            value: "final-warning",#}
-{#            text: "Final Warning"#}
-{#          },#}
-{#          {#}
-{#            value: "breach-warning",#}
-{#            text: "Breach Warning"#}
-{#          }#}
-{#        ]#}
+{#        items: failuresRecorded#}
 {#      }) }}#}
 
 
 
-      {{ govukSelect({
-        id: "sort",
-        name: "sort",
-        label: {
-          text: "Sentence Type being enforced",
-          classes: "govuk-fieldset__legend--m"
-        },
-        items: [
-          {
-            value: "community-order",
-            text: "Community Order"
-          },
-          {
-            value: "another-type",
-            text: "Another Type",
-            selected: true
-          }
-        ]
-      }) }}
+{#      {{ govukSelect({#}
+{#        id: "sort",#}
+{#        name: "sort",#}
+{#        label: {#}
+{#          text: "Sentence Type being enforced",#}
+{#          classes: "govuk-fieldset__legend--m"#}
+{#        },#}
+{#        items: [#}
+{#          {#}
+{#            value: "community-order",#}
+{#            text: "Community Order"#}
+{#          },#}
+{#          {#}
+{#            value: "another-type",#}
+{#            text: "Another Type",#}
+{#            selected: true#}
+{#          }#}
+{#        ]#}
+{#      }) }}#}
 
 
       <h1 class="govuk-fieldset__legend--m">
@@ -156,48 +148,48 @@
 
       <br/><br/>
 
-      <div class="govuk-form-group">
-        <fieldset class="govuk-fieldset" aria-describedby="waste-hint">
-          <legend class="govuk-fieldset__legend govuk-fieldset__legend--m">
-            <h1 class="govuk-fieldset__heading">
-              Failures recorded on this order
-            </h1>
-          </legend>
-          <div id="waste-hint" class="govuk-hint">
-            Select all that apply
-          </div>
-          <div class="govuk-checkboxes" data-module="govuk-checkboxes">
-            <div class="govuk-checkboxes__item">
-              <input class="govuk-checkboxes__input" id="waste" name="waste" type="checkbox" value="carcasses">
-              <label class="govuk-label govuk-checkboxes__label" for="waste">
-                02/10/2004, Rehabilitation Activity Requirement (RAR) - Rehabilitation Activity Requirement (RAR), Planned Office Visit (NS), Unacceptable Absenc
-              </label>
-                            <div id="signIn-item-hint" class="govuk-hint govuk-radios__hint">
-                              {% from "govuk/components/details/macro.njk" import govukDetails %}
+{#      <div class="govuk-form-group">#}
+{#        <fieldset class="govuk-fieldset" aria-describedby="waste-hint">#}
+{#          <legend class="govuk-fieldset__legend govuk-fieldset__legend--m">#}
+{#            <h1 class="govuk-fieldset__heading">#}
+{#              Failures recorded on this order#}
+{#            </h1>#}
+{#          </legend>#}
+{#          <div id="waste-hint" class="govuk-hint">#}
+{#            Select all that apply#}
+{#          </div>#}
+{#          <div class="govuk-checkboxes" data-module="govuk-checkboxes">#}
+{#            <div class="govuk-checkboxes__item">#}
+{#              <input class="govuk-checkboxes__input" id="waste" name="waste" type="checkbox" value="carcasses">#}
+{#              <label class="govuk-label govuk-checkboxes__label" for="waste">#}
+{#                02/10/2004, Rehabilitation Activity Requirement (RAR) - Rehabilitation Activity Requirement (RAR), Planned Office Visit (NS), Unacceptable Absenc#}
+{#              </label>#}
+{#                            <div id="signIn-item-hint" class="govuk-hint govuk-radios__hint">#}
+{#                              {% from "govuk/components/details/macro.njk" import govukDetails %}#}
 
-                              {{ govukDetails({
-                                summaryText: "View requirement notes",
-                                text: "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat."
-                              }) }}
-                            </div>
-            </div>
-            <div class="govuk-checkboxes__item">
-              <input class="govuk-checkboxes__input" id="waste-2" name="waste" type="checkbox" value="mines">
-              <label class="govuk-label govuk-checkboxes__label" for="waste-2">
-                01/08/2024, Unpaid Work - Regular, CP/UPW Appointment (NS), Sent Home (Behaviour)
-              </label>
-                            <div id="signIn-item-hint" class="govuk-hint govuk-radios__hint">
-                              {% from "govuk/components/details/macro.njk" import govukDetails %}
+{#                              {{ govukDetails({#}
+{#                                summaryText: "View requirement notes",#}
+{#                                text: "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat."#}
+{#                              }) }}#}
+{#                            </div>#}
+{#            </div>#}
+{#            <div class="govuk-checkboxes__item">#}
+{#              <input class="govuk-checkboxes__input" id="waste-2" name="waste" type="checkbox" value="mines">#}
+{#              <label class="govuk-label govuk-checkboxes__label" for="waste-2">#}
+{#                01/08/2024, Unpaid Work - Regular, CP/UPW Appointment (NS), Sent Home (Behaviour)#}
+{#              </label>#}
+{#                            <div id="signIn-item-hint" class="govuk-hint govuk-radios__hint">#}
+{#                              {% from "govuk/components/details/macro.njk" import govukDetails %}#}
 
-                              {{ govukDetails({
-                                summaryText: "View requirement notes",
-                                text: "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat."
-                              }) }}
-                            </div>
-            </div>
-          </div>
-        </fieldset>
-      </div>
+{#                              {{ govukDetails({#}
+{#                                summaryText: "View requirement notes",#}
+{#                                text: "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat."#}
+{#                              }) }}#}
+{#                            </div>#}
+{#            </div>#}
+{#          </div>#}
+{#        </fieldset>#}
+{#      </div>#}
 
 
 {#      {{ govukCheckboxes({#}
@@ -234,107 +226,117 @@
 
 
 
-{#      <div class="govuk-form-group">#}
-{#        <fieldset class="govuk-fieldset" aria-describedby="signIn-hint">#}
-{#          <legend class="govuk-fieldset__legend govuk-fieldset__legend--m">#}
-{#            <h1 class="govuk-fieldset__heading">#}
-{#              Failures recorded on this order#}
-{#            </h1>#}
-{#          </legend>#}
-{#          <div id="signIn-hint" class="govuk-hint">#}
+      <div class="govuk-form-group">
+        <fieldset class="govuk-fieldset" aria-describedby="signIn-hint">
+          <legend class="govuk-fieldset__legend govuk-fieldset__legend--m">
+            <h1 class="govuk-fieldset__heading">
+              Failures recorded on this order
+            </h1>
+          </legend>
+          <div id="signIn-hint" class="govuk-hint">
 
-{#          </div>#}
-{#          <div class="govuk-radios" data-module="govuk-radios">#}
-{#            <div class="govuk-radios__item">#}
-{#              <input class="govuk-radios__input" id="signIn" name="signIn" type="radio" value="government-gateway" aria-describedby="signIn-item-hint">#}
-{#              <label class="govuk-label govuk-radios__label" for="signIn">#}
-{#                02/10/2004, Rehabilitation Activity Requirement (RAR) - Rehabilitation Activity Requirement (RAR), Planned Office Visit (NS), Unacceptable Absence#}
-{#              </label>#}
-{#              <div id="signIn-item-hint" class="govuk-hint govuk-radios__hint">#}
-{#                {% from "govuk/components/details/macro.njk" import govukDetails %}#}
+          </div>
+          <div class="govuk-radios" data-module="govuk-radios">
+            {% for failure in enforceableContactRadioButtonList %}
+              <div class="govuk-radios__item">
+                <input class="govuk-radios__input"
+                       id="contact-{{ failure.value }}"
+                       name="failureRecordedContact"
+                       type="radio"
+                       value="{{ failure.value }}"
+                       aria-describedby="enforceablecontact-item-hint"
+                       {{ faliure.checked }}>
+                <label class="govuk-label govuk-radios__label" for="contact-{{ failure.value }}">
+                  {{ failure.text }}
+                </label>
+                <div id="enforceablecontact-item-hint" class="govuk-hint govuk-radios__hint">
+                  {{ govukDetails({
+                    summaryText: "View requirement notes",
+                    text: failure.notes
+                  }) }}
+                </div>
+              </div>
+            {% else %}
+              <li>There are no failures recorded to display</li>
+            {% endfor %}
+          </div>
+        </fieldset>
+      </div>
+      <div class="govuk-form-group">
+        <fieldset class="govuk-fieldset" aria-describedby="contact-hint">
+          <legend class="govuk-fieldset__legend govuk-fieldset__legend--m">
+            <h1 class="govuk-fieldset__heading">
+              Select the Failures being enforced
+            </h1>
+          </legend>
+          <div id="contact-hint" class="govuk-hint">
+            Select all that apply
+          </div>
+          <div class="govuk-checkboxes" data-module="govuk-checkboxes">
+            {% for failure in failuresBeingEnforcedList %}
+            <div class="govuk-checkboxes__item">
+              <input class="govuk-checkboxes__input"
+                     id="checkbox{{ failure.value }}"
+                     name="failuresBeingEnforcedRequirements"
+                     type="checkbox"
+                     value="{{ failure.value }}"
+                     data-aria-controls="hidden{{ failure.value }}" >
+              <label class="govuk-label govuk-checkboxes__label" for="checkbox{{ failure.value }}">
+                {{ failure.text }}
+              </label>
+            </div>
+            <div class="govuk-checkboxes__conditional govuk-checkboxes__conditional--hidden"
+                 id="hidden{{ failure.value }}">
+              {{ govukSelect({
+                id: "breachreason-"+failure.value,
+                name: "breachreason-"+failure.value,
+                label: {
+                  text: "Reason"
+                },
+                items: failure.requirements
+              }) }}
+            </div>
+            {% endfor %}
+          </div>
+        </fieldset>
+      </div>
 
-{#                {{ govukDetails({#}
-{#                  summaryText: "View requirement notes",#}
-{#                  text: "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat."#}
-{#                }) }}#}
-{#              </div>#}
-{#            </div>#}
-{#            <div class="govuk-radios__item">#}
-{#              <input class="govuk-radios__input" id="signIn-2" name="signIn" type="radio" value="govuk-one-login" aria-describedby="signIn-2-item-hint">#}
-{#              <label class="govuk-label govuk-radios__label" for="signIn-2">#}
-{#                01/08/2024, Unpaid Work - Regular, CP/UPW Appointment (NS), Sent Home (Behaviour)#}
-{#              </label>#}
-{#              <div id="signIn-2-item-hint" class="govuk-hint govuk-radios__hint">#}
-
-{#                {{ govukDetails({#}
-{#                  summaryText: "View requirement notes",#}
-{#                  text: "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat."#}
-{#                }) }}#}
-{#              </div>#}
-{#            </div>#}
-{#          </div>#}
-{#        </fieldset>#}
-{#      </div>#}
+{#      {{ govukCheckboxes({#}
 
 
 
-{#      {% set phoneHtml %}#}
-{#        {{ govukInput({#}
-{#          id: "contact-by-phone",#}
-{#          name: "contactByPhone",#}
-{#          type: "tel",#}
-{#          autocomplete: "tel",#}
-{#          classes: "govuk-!-width-one-third",#}
-{#          label: {#}
-{#            text: "Phone number"#}
+{#        name: "failuresBeingEnforced",#}
+{#        fieldset: {#}
+{#          legend: {#}
+{#            text: "Select the failures being enforced",#}
+{#            isPageHeading: true,#}
+{#            classes: "govuk-fieldset__legend--m"#}
 {#          }#}
-{#        }) }}#}
-{#      {% endset -%}#}
+{#        },#}
+{#        hint: {#}
+{#          text: "Select all that apply"#}
+{#        },#}
+{#        items: [#}
+
+{#          {#}
+{#            value: "hello",#}
+{#            text: "Attendance Centre - Attendance Centre",#}
+{#            conditional: {#}
+{#            html: govukSelect({#}
+{#              id: "sort",#}
+{#              name: "sort",#}
+{#              label: {#}
+{#                text: "Moo"#}
+{#              },#}
+{#              items: breachReasons#}
+{#            })#}
+{#          }#}
+{#          }#}
 
 
+{#        ]#}
 
-
-
-
-
-
-
-      {{ govukCheckboxes({
-        name: "waste",
-        fieldset: {
-          legend: {
-            text: "Select the failures being enforced",
-            isPageHeading: true,
-            classes: "govuk-fieldset__legend--m"
-          }
-        },
-        hint: {
-          text: "Select all that apply"
-        },
-        items: [
-          {
-            value: "carcasses",
-            text: "Attendance Centre - Attendance Centre",
-            conditional: {
-            html: govselectHtml
-          }
-          },
-          {
-            value: "mines",
-            text: "Rehabilitation Activity Requirement (RAR) - Rehabilitation Activity Requirement (RAR)",
-            conditional: {
-            html: govselectHtml
-          }
-          },
-          {
-            value: "farm",
-            text: "Unpaid Work - Regular",
-            conditional: {
-            html: govselectHtml
-          }
-          }
-        ]
-      }) }}
+{#      }) }}#}
 
 
 
@@ -422,22 +424,25 @@
 {#      }) }}#}
 
       {{ mojDatePicker({
-        id: "response-required-by",
-        name: "response-required-by",
+        id: "responseRequiredByDate",
+        name: "responseRequiredByDate",
         label: {
           text: "Response Required By",
           classes: "govuk-fieldset__legend--m"
         },
         hint: {
           text: "For example, 17/5/2024."
-        }
+        },
+        errorMessage: {
+          text: errorMessages.responseRequiredByDate.text
+        } if errorMessages.responseRequiredByDate.text
       }) }}
 
       {{ mojButtonMenu({
         items: [{
           text: "Continue",
-          href: "/next-appointment",
-          preventDoubleClick: "true"
+          preventDoubleClick: "true",
+          type: "submit"
         }, {
           text: "View Draft Report",
           classes: "govuk-button--secondary",
@@ -461,4 +466,5 @@
     </div>
   </div>
 </form>
+
 {% endblock %}

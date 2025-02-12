@@ -1,5 +1,5 @@
 import { type RequestHandler, Router, Response } from 'express'
-import { DateTimeFormatter, LocalDate, LocalDateTime } from '@js-joda/core'
+import { DateTimeFormatter, LocalDate, LocalDateTime, TemporalQueries } from '@js-joda/core'
 import asyncMiddleware from '../middleware/asyncMiddleware'
 import type { Services } from '../services'
 import { Page } from '../services/auditService'
@@ -8,14 +8,28 @@ import BreachNoticeApiClient, {
   AddressList,
   BasicDetails,
   BreachNotice,
+  EnforceableContact,
+  EnforceableContactList,
+  EnforceableContactRadioButton,
+  EnforceableContactRadioButtonList,
   ErrorMessages,
   Name,
   RadioButton,
   RadioButtonList,
+  ReferenceData,
+  ReferenceDataList,
+  Requirement,
+  RequirementList,
   SelectItem,
   SelectItemList,
+  SentenceType,
+  SentenceTypeList,
+  WarningDetails,
+  WarningDetailsRequirementSelectItem,
+  WarningDetailsRequirementSelectItemsList,
   WarningTypeDetails,
 } from '../data/breachNoticeApiClient'
+import localDate = TemporalQueries.localDate
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 export default function routes({ auditService, hmppsAuthClient }: Services): Router {
@@ -171,6 +185,126 @@ export default function routes({ auditService, hmppsAuthClient }: Services): Rou
     res.send(stream)
   }
 
+  post('/warning-details/:id', async (req, res, next) => {
+    console.log('params passed in')
+    console.log(req.body)
+    const breachNoticeApiClient = new BreachNoticeApiClient(
+      await hmppsAuthClient.getSystemClientToken(res.locals.user.username),
+    )
+    const breachNoticeId = req.params.id
+    const warningDetails: WarningDetails = createDummyWarningDetails()
+    const breachNotice: BreachNotice = await breachNoticeApiClient.getBreachNoticeById(breachNoticeId as string)
+    // we need to create the contacts
+    // const contactIdSelected = req.body.failureRecordedContact
+    // loop through the list of selected contacts, find the real one in the list, add breach notice id
+
+    // ##Tomorrow here, need to save all the contacts
+
+    const warningDetailsErrorMessages: ErrorMessages = validateWarningDetails(
+      breachNotice,
+      req.body.responseRequiredByDate,
+    )
+
+    const warningDetailsHasErrors: boolean = Object.keys(warningDetailsErrorMessages).length > 0
+    if (warningDetailsHasErrors) {
+      console.log('warningDetailsHasErrors')
+      const failuresRecorded: SelectItemList = createSelectItemListFromEnforceableContacts(
+        warningDetails.enforceableContactList,
+      )
+      const enforceableContactRadioButtonList = createEnforceableContactRadioButtonListFromEnforceableContacts(
+        warningDetails.enforceableContactList,
+      )
+
+      const breachReasons = convertReferenceDataListToSelectItemList(warningDetails.breachReasons)
+      const failuresBeingEnforcedList = createFailuresBeingEnforcedRequirementSelectList(
+        warningDetails.enforceableContactList,
+        warningDetails.breachReasons,
+      )
+      res.render(`pages/basic-details`, {
+        breachNotice,
+        warningDetails,
+        failuresRecorded,
+        enforceableContactRadioButtonList,
+        breachReasons,
+        failuresBeingEnforcedList,
+      })
+    } else {
+      // mark that a USER has saved the document at least once
+      breachNotice.warningDetailsSaved = true
+      await breachNoticeApiClient.updateBreachNotice(breachNoticeId, breachNotice)
+      // we need to create requirements
+
+      if (req.body.action === 'viewDraft') {
+        try {
+          await showDraftPdf(breachNotice, res, breachNoticeApiClient)
+        } catch (err) {
+          const errorMessages: ErrorMessages = {}
+          errorMessages.pdfRenderError = {
+            text: 'There was an issue generating the draft report. Please try again or contact support.',
+          }
+
+          const failuresRecorded: SelectItemList = createSelectItemListFromEnforceableContacts(
+            warningDetails.enforceableContactList,
+          )
+          const enforceableContactRadioButtonList = createEnforceableContactRadioButtonListFromEnforceableContacts(
+            warningDetails.enforceableContactList,
+          )
+
+          const breachReasons = convertReferenceDataListToSelectItemList(warningDetails.breachReasons)
+          const failuresBeingEnforcedList = createFailuresBeingEnforcedRequirementSelectList(
+            warningDetails.enforceableContactList,
+            warningDetails.breachReasons,
+          )
+
+          res.render(`pages/basic-details`, {
+            errorMessages,
+            breachNotice,
+            warningDetails,
+            failuresRecorded,
+            enforceableContactRadioButtonList,
+            breachReasons,
+            failuresBeingEnforcedList,
+          })
+        }
+      } else {
+        res.redirect(`/next-appointment/${req.params.id}`)
+      }
+
+      res.redirect(`/next-appointment/${req.params.id}`)
+    }
+  })
+
+  function validateWarningDetails(breachNotice: BreachNotice, responseRequiredByDate: string): ErrorMessages {
+    const errorMessages: ErrorMessages = {}
+    const currentDateAtStartOfTheDay: LocalDateTime = LocalDate.now().atStartOfDay()
+
+    try {
+      // eslint-disable-next-line no-param-reassign
+      breachNotice.responseRequiredByDate = fromUserDate(responseRequiredByDate)
+    } catch (error: unknown) {
+      // eslint-disable-next-line no-param-reassign
+      breachNotice.responseRequiredByDate = responseRequiredByDate
+      errorMessages.dateOfLetter = {
+        text: 'The proposed date for this letter is in an invalid format, please use the correct format e.g 17/5/2024',
+      }
+      // we cant continue with date validation
+      return errorMessages
+    }
+
+    if (breachNotice) {
+      // check date of letter is not before today
+      if (breachNotice.responseRequiredByDate) {
+        const localDateOfResponseRequiredByDate = LocalDate.parse(breachNotice.responseRequiredByDate).atStartOfDay()
+        if (localDateOfResponseRequiredByDate.isBefore(currentDateAtStartOfTheDay)) {
+          errorMessages.responseRequiredByDate = {
+            text: 'The Response Required By Date can not be before today',
+          }
+        }
+      }
+    }
+    return errorMessages
+  }
+
   function validateBasicDetails(breachNotice: BreachNotice, userEnteredDateOfLetter: string): ErrorMessages {
     const errorMessages: ErrorMessages = {}
     const currentDateAtStartOfTheDay: LocalDateTime = LocalDate.now().atStartOfDay()
@@ -227,41 +361,99 @@ export default function routes({ auditService, hmppsAuthClient }: Services): Rou
     const breachNoticeId = req.params.id
     let breachNotice: BreachNotice = null
     breachNotice = await breachNoticeApiClient.getBreachNoticeById(breachNoticeId as string)
-    await renderWarningDetails(breachNotice, res, {})
+
+    const warningDetails: WarningDetails = createDummyWarningDetails()
+    const enforceableContactRadioButtonList = createEnforceableContactRadioButtonListFromEnforceableContacts(
+      warningDetails.enforceableContactList,
+    )
+    const breachReasons = convertReferenceDataListToSelectItemList(warningDetails.breachReasons)
+    const failuresBeingEnforcedList = createFailuresBeingEnforcedRequirementSelectList(
+      warningDetails.enforceableContactList,
+      warningDetails.breachReasons,
+    )
+
+    const failuresRecorded: SelectItemList = createSelectItemListFromEnforceableContacts(
+      warningDetails.enforceableContactList,
+    )
+    res.render(`pages/warning-details`, {
+      breachNotice,
+      warningDetails,
+      failuresRecorded,
+      enforceableContactRadioButtonList,
+      breachReasons,
+      failuresBeingEnforcedList,
+    })
   })
 
-  async function renderWarningDetails(breachNotice: BreachNotice, res: Response, errorMessages: ErrorMessages) {
-    res.render(`pages/warning-details`, {
-      errorMessages,
-      breachNotice,
-    })
+  function convertReferenceDataListToSelectItemList(referenceDataList: ReferenceDataList): SelectItemList {
+    const arrayOfSelectItems: SelectItem[] = referenceDataList.map(refData => ({
+      selected: false,
+      text: refData.description,
+      value: refData.code,
+    }))
+    return arrayOfSelectItems
+  }
+  function createEnforceableContactRadioButtonListFromEnforceableContacts(
+    enforceableContactList: EnforceableContactList,
+  ): EnforceableContactRadioButtonList {
+    const arrayOfRadios: EnforceableContactRadioButton[] = enforceableContactList.map(enforceableContact => ({
+      datetime: enforceableContact.datetime,
+      type: enforceableContact.type,
+      outcome: enforceableContact.outcome,
+      notes: enforceableContact.notes,
+      requirement: enforceableContact.requirement,
+      checked: 'checked',
+      value: enforceableContact.id.toString(),
+      text: enforceableContact.description,
+    }))
+    return arrayOfRadios
   }
 
-  post('/warning-details/:id', async (req, res, next) => {
-    const breachNoticeApiClient = new BreachNoticeApiClient(
-      await hmppsAuthClient.getSystemClientToken(res.locals.user.username),
-    )
-    await auditService.logPageView(Page.WARNING_DETAILS, { who: res.locals.user.username, correlationId: req.id })
-    const breachNoticeId = req.params.id
-    let breachNotice: BreachNotice = null
-    breachNotice = await breachNoticeApiClient.getBreachNoticeById(breachNoticeId as string)
-
-    // TODO Post Logic
-
-    if (req.body.action === 'viewDraft') {
-      try {
-        await showDraftPdf(breachNotice, res, breachNoticeApiClient)
-      } catch (err) {
-        const errorMessages: ErrorMessages = {}
-        errorMessages.pdfRenderError = {
-          text: 'There was an issue generating the draft report. Please try again or contact support.',
-        }
-        await renderWarningDetails(breachNotice, res, errorMessages)
+  // we need this to return a list of WarningDetailsRequirementSelectItem wselect items with cusdtomised requirement list
+  function createFailuresBeingEnforcedRequirementSelectList(
+    enforceableContactList: EnforceableContactList,
+    breachReasons: ReferenceDataList,
+  ): WarningDetailsRequirementSelectItem[] {
+    const breachReasonSelectItems: SelectItemList = craftTheBreachReasonSelectItems(breachReasons)
+    const returnItems: WarningDetailsRequirementSelectItem[] = []
+    enforceableContactList.forEach((enforceableContact: EnforceableContact) => {
+      const linkedSelectItem: WarningDetailsRequirementSelectItem = {
+        text: enforceableContact.description,
+        value: enforceableContact.id.toString(),
+        selected: false,
+        requirements: breachReasonSelectItems,
       }
-    } else {
-      res.redirect(`/next-appointment/${req.params.id}`)
-    }
-  })
+      returnItems.push(linkedSelectItem)
+    })
+    return returnItems
+  }
+
+  // this is done DO NOT TOUCH
+  function craftTheBreachReasonSelectItems(refDataList: ReferenceDataList): SelectItemList {
+    const selectItemListToReturn: SelectItem[] = []
+    refDataList.forEach((referenceData: ReferenceData) => {
+      const selectItem: SelectItem = {
+        text: referenceData.description,
+        value: referenceData.code,
+        selected: false,
+      }
+      selectItemListToReturn.push(selectItem)
+    })
+    return selectItemListToReturn
+  }
+
+  function createSelectItemListFromEnforceableContacts(enforceableContactList: EnforceableContactList): SelectItemList {
+    const selectItemList: SelectItem[] = []
+    enforceableContactList.forEach((enforceableContact: EnforceableContact) => {
+      const selectItem: SelectItem = {
+        text: enforceableContact.description,
+        value: enforceableContact.id.toString(),
+        selected: false,
+      }
+      selectItemList.push(selectItem)
+    })
+    return selectItemList
+  }
 
   get('/warning-type/:id', async (req, res, next) => {
     await auditService.logPageView(Page.WARNING_TYPE, { who: res.locals.user.username, correlationId: req.id })
@@ -270,14 +462,21 @@ export default function routes({ auditService, hmppsAuthClient }: Services): Rou
     )
     const breachNoticeId = req.params.id
     let breachNotice: BreachNotice = null
+    const warningTypeDetails: WarningTypeDetails = createDummyWarningTypeDetails()
     breachNotice = await breachNoticeApiClient.getBreachNoticeById(breachNoticeId as string)
+    // need to load in the select items for the sentence type dropdown
     // const radioButtonsFromIntegration = initiateWarningTypeRadioButtons
     const warningTypeRadioButtons: Array<RadioButton> = initiateWarningTypeRadioButtonsAndApplySavedSelections(
-      createDummyWarningTypeDetails(),
+      warningTypeDetails,
       breachNotice,
     )
 
-    renderWarningTypes(breachNotice, res, warningTypeRadioButtons, {})
+    const sentenceTypeSelectItems: Array<SelectItem> = initiateSentenceTypeSelectItemsAndApplySavedSelections(
+      warningTypeDetails,
+      breachNotice,
+    )
+
+    renderWarningTypes(breachNotice, res, warningTypeRadioButtons, {}, sentenceTypeSelectItems)
   })
 
   async function renderWarningTypes(
@@ -285,11 +484,13 @@ export default function routes({ auditService, hmppsAuthClient }: Services): Rou
     res: Response,
     warningTypeRadioButtons: Array<RadioButton>,
     errorMessages: ErrorMessages,
+    sentenceTypeSelectItems: Array<SelectItem>,
   ) {
     res.render('pages/warning-type', {
       errorMessages,
       breachNotice,
       warningTypeRadioButtons,
+      sentenceTypeSelectItems,
     })
   }
 
@@ -304,11 +505,19 @@ export default function routes({ auditService, hmppsAuthClient }: Services): Rou
 
     // add new details
     breachNotice.breachNoticeTypeCode = req.body.warningType
-    // find the ref data from the integration response
+    breachNotice.breachSentenceTypeCode = req.body.sentenceType
+    // find the warning type ref data from the integration response
     warningTypeDetails.warningTypes.forEach((radioButton: RadioButton) => {
       if (breachNotice.breachNoticeTypeCode && breachNotice.breachNoticeTypeCode === radioButton.value) {
         // eslint-disable-next-line no-param-reassign
         breachNotice.breachNoticeTypeDescription = radioButton.text
+      }
+    })
+    // find the sentenceTypeRefData from the integration response
+    warningTypeDetails.sentenceTypes.forEach((sentenceType: SentenceType) => {
+      if (breachNotice.breachSentenceTypeCode && breachNotice.breachSentenceTypeCode === sentenceType.code) {
+        // eslint-disable-next-line no-param-reassign
+        breachNotice.breachSentenceTypeDescription = sentenceType.description
       }
     })
     // mark that a USER has saved the document at least once
@@ -323,7 +532,11 @@ export default function routes({ auditService, hmppsAuthClient }: Services): Rou
         errorMessages.pdfRenderError = {
           text: 'There was an issue generating the draft report. Please try again or contact support.',
         }
-        renderWarningTypes(breachNotice, res, warningTypeDetails.warningTypes, errorMessages)
+        const sentenceTypeSelectItems: Array<SelectItem> = initiateSentenceTypeSelectItemsAndApplySavedSelections(
+          warningTypeDetails,
+          breachNotice,
+        )
+        renderWarningTypes(breachNotice, res, warningTypeDetails.warningTypes, errorMessages, sentenceTypeSelectItems)
       }
     } else {
       res.redirect(`/warning-details/${req.params.id}`)
@@ -355,7 +568,40 @@ export default function routes({ auditService, hmppsAuthClient }: Services): Rou
     return warningTypeRadioButtons
   }
 
+  function initiateSentenceTypeSelectItemsAndApplySavedSelections(
+    warningTypeDetails: WarningTypeDetails,
+    breachNotice: BreachNotice,
+  ): SelectItem[] {
+    const sentenceTypeSelectItems: SelectItem[] = [
+      {
+        text: 'Please Select',
+        value: '-1',
+        selected: true,
+      },
+      ...warningTypeDetails.sentenceTypes.map(sentenceType => ({
+        text: `${sentenceType.description}`,
+        value: `${sentenceType.code}`,
+        selected: false,
+      })),
+    ]
+
+    if (breachNotice.breachSentenceTypeCode) {
+      sentenceTypeSelectItems.forEach((sentenceTypeSelectItem: SelectItem) => {
+        if (
+          breachNotice.breachSentenceTypeCode &&
+          breachNotice.breachSentenceTypeCode === sentenceTypeSelectItem.value
+        ) {
+          // eslint-disable-next-line no-param-reassign
+          sentenceTypeSelectItem.selected = true
+        }
+      })
+    }
+
+    return sentenceTypeSelectItems
+  }
+
   get('/next-appointment/:id', async (req, res, next) => {
+    console.log('########## In the next appointment section')
     await auditService.logPageView(Page.NEXT_APPOINTMENT, { who: res.locals.user.username, correlationId: req.id })
     const breachNoticeApiClient = new BreachNoticeApiClient(
       await hmppsAuthClient.getSystemClientToken(res.locals.user.username),
@@ -620,6 +866,83 @@ export default function routes({ auditService, hmppsAuthClient }: Services): Rou
   }
 
   // Will call integration point once available
+  function createDummyWarningDetails(): WarningDetails {
+    return {
+      breachReasons: createDummyBreachReasonList(),
+      defaultSentenceTypeCode: 'BR1',
+      enforceableContactList: createDummyEnforceableContactList(),
+      sentenceTypes: createDummySentenceTypeList(),
+    }
+  }
+
+  function createDummyEnforceableContactList() {
+    const enforceableContact1: EnforceableContact = {
+      description:
+        '02/10/2024, Rehabilitation Activity Requirement (RAR) - Rehabilitation Activity Requirement (RAR), Planned Office Visit (NS), Unacceptable absence',
+      datetime: LocalDateTime.now(),
+      id: 1,
+      notes:
+        'Lorem 1 ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum',
+      outcome: createDummyReferenceData(),
+      type: createDummyReferenceData(),
+      requirement: createDummyRequirement(),
+    }
+
+    const enforceableContact2: EnforceableContact = {
+      description: '01/08/2024, Unpaid Work - Regular, CP/UPW Appointment (NS), Sent Home (behavior)',
+      datetime: LocalDateTime.now(),
+      id: 2,
+      notes:
+        'Lorem 2 ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum',
+      outcome: createDummyReferenceData(),
+      type: createDummyReferenceData(),
+      requirement: createDummyRequirement(),
+    }
+
+    return [enforceableContact1, enforceableContact2]
+  }
+
+  function createDummyBreachReasonList() {
+    const breachReason1: ReferenceData = {
+      code: '2IN12',
+      description: '2 occasions in a 12 month period',
+    }
+
+    const breachReason2: ReferenceData = {
+      code: '3TOTAL',
+      description: '3 occasions during your supervision period',
+    }
+
+    return [breachReason1, breachReason2]
+  }
+  function createDummyReferenceData(): ReferenceData {
+    return {
+      code: 'DUM1',
+      description: 'Dummy 1',
+    }
+  }
+  function createDummySentenceType(): SentenceType {
+    return {
+      code: `SEN${Math.random()}`,
+      description: 'sentenceType1',
+      conditionBeingEnforced: 'Test Condition',
+    }
+  }
+  function createDummySentenceTypeList(): SentenceTypeList {
+    const sentenceType1: SentenceType = {
+      code: `CO`,
+      description: 'Community Order(s)',
+      conditionBeingEnforced: 'Test Condition CO',
+    }
+    const sentenceType2: SentenceType = {
+      code: `SSO`,
+      description: 'Suspended Supervision Order(s)',
+      conditionBeingEnforced: 'Test Condition SSO',
+    }
+    return [sentenceType1, sentenceType2]
+  }
+
+  // Will call integration point once available
   function createDummyBasicDetails(): BasicDetails {
     return {
       title: 'Mr',
@@ -633,8 +956,16 @@ export default function routes({ auditService, hmppsAuthClient }: Services): Rou
   function createDummyWarningTypeDetails(): WarningTypeDetails {
     const warningTypeDetails: WarningTypeDetails = {
       warningTypes: createDummyWarningTypeList(),
+      sentenceTypes: createDummySentenceTypeList(),
     }
     return warningTypeDetails
+  }
+
+  function createDummyRequirement(): Requirement {
+    return {
+      type: createDummyReferenceData(),
+      subType: createDummyReferenceData(),
+    }
   }
 
   function createDummyWarningTypeList(): RadioButtonList {
