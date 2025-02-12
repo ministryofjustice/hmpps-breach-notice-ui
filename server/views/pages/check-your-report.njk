@@ -284,9 +284,10 @@
           text: "View Draft Report",
           classes: "govuk-button--secondary",
           preventDoubleClick: "true",
-          type: "submit",
-          name: "action",
-          value: "viewDraft"
+          href: '/pdf/'+breachNotice.id,
+          attributes: {
+                    target: "_blank"
+                    }
         }, {
           text: "Delete draft",
           href: "/report-deleted",

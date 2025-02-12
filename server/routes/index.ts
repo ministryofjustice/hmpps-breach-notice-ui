@@ -175,6 +175,14 @@ export default function routes({ auditService, hmppsAuthClient }: Services): Rou
   })
 
   async function showDraftPdf(breachNotice: BreachNotice, res: Response, breachNoticeApiClient: BreachNoticeApiClient) {
+    res.redirect(`/pdf/${breachNotice.id}`)
+  }
+
+  async function downloadDraftPdf(
+    breachNotice: BreachNotice,
+    res: Response,
+    breachNoticeApiClient: BreachNoticeApiClient,
+  ) {
     const stream: ArrayBuffer = await breachNoticeApiClient.getDraftPdfById(breachNotice.id as string)
 
     res.setHeader('Content-Type', 'application/pdf')
@@ -742,6 +750,24 @@ export default function routes({ auditService, hmppsAuthClient }: Services): Rou
     res.render('pages/report-deleted', {
       breachNotice,
     })
+  })
+
+  get('/pdf/:id', async (req, res, next) => {
+    await auditService.logPageView(Page.REPORT_DELETED, { who: res.locals.user.username, correlationId: req.id })
+    const breachNoticeApiClient = new BreachNoticeApiClient(
+      await hmppsAuthClient.getSystemClientToken(res.locals.user.username),
+    )
+    const breachNoticeId = req.params.id
+    let breachNotice: BreachNotice = null
+    breachNotice = await breachNoticeApiClient.getBreachNoticeById(breachNoticeId as string)
+    const stream: ArrayBuffer = await breachNoticeApiClient.getDraftPdfById(breachNotice.id as string)
+
+    res.setHeader('Content-Type', 'application/pdf')
+    res.setHeader(
+      'Content-Disposition',
+      `filename="breach_notice_${breachNotice.crn}_${breachNotice.referenceNumber}_draft.pdf"`,
+    )
+    res.send(stream)
   })
 
   // if this page hasnt been saved we want to go through and apply defaults otherwise dont do this
