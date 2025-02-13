@@ -195,7 +195,9 @@
           </h2>
           <ul class="govuk-summary-card__actions">
             <li class="govuk-summary-card__action">
+            {% if breachNotice.basicDetailsSaved %}
               <a class="govuk-link" href="/warning-type/{{breachNotice.id}}">Change<span class="govuk-visually-hidden">Change</span></a>
+              {% endif %}
             </li>
           </ul>
         </div>
@@ -206,7 +208,7 @@
                 Warning Type
               </dt>
               <dd class="govuk-summary-list__value">
-                {% if breachNotice.breachNoticeTypeDescription == null %}
+                {% if breachNotice.breachNoticeTypeDescription == null and breachNotice.basicDetailsSaved %}
                                               <a href="/warning-type/{{breachNotice.id}}" class="govuk-link">enter required information</a>
                                               {% else %}
                                                 {{breachNotice.breachNoticeTypeDescription}}
@@ -226,7 +228,7 @@
                             Sentence Type
                           </dt>
                           <dd class="govuk-summary-list__value">
-                            {% if breachNotice.breachSentenceTypeDescription == null %}
+                            {% if breachNotice.breachSentenceTypeDescription == null and breachNotice.basicDetailsSaved %}
                                                           <a href="/warning-type/{{breachNotice.id}}" class="govuk-link">enter required information</a>
                                                           {% else %}
                                                             {{breachNotice.breachSentenceTypeDescription}}
@@ -251,7 +253,9 @@
           </h2>
           <ul class="govuk-summary-card__actions">
             <li class="govuk-summary-card__action">
+            {% if breachNotice.warningTypeSaved %}
               <a class="govuk-link" href="/warning-details/{{breachNotice.id}}">Change<span class="govuk-visually-hidden">Change</span></a>
+              {% endif %}
             </li>
           </ul>
         </div>
@@ -262,7 +266,7 @@
                 Sentence Type
               </dt>
               <dd class="govuk-summary-list__value">
-                                                                      {% if breachNotice.breachNoticeRequirementList == null %}
+                                                                      {% if breachNotice.breachNoticeRequirementList == null and breachNotice.warningTypeSaved %}
                                                                                                     <a href="/warning-details/{{breachNotice.id}}" class="govuk-link">enter required information</a>
                                                                                                     {% else %}
                                                                                                       [ Requirement Details ]
@@ -281,7 +285,7 @@
                 Failures Being Enforced
               </dt>
               <dd class="govuk-summary-list__value">
-                                                        {% if breachNotice.breachNoticeContactList == null %}
+                                                        {% if breachNotice.breachNoticeContactList == null and breachNotice.warningTypeSaved %}
                                                                                       <a href="/warning-details/{{breachNotice.id}}" class="govuk-link">enter required information</a>
                                                                                       {% else %}
                                                                                         [ Contact Details ]
@@ -300,7 +304,7 @@
                 Response Required By
               </dt>
               <dd class="govuk-summary-list__value">
-                                          {% if breachNotice.responseRequiredByDate == null %}
+                                          {% if breachNotice.responseRequiredByDate == null and breachNotice.warningTypeSaved %}
                                                                         <a href="/warning-details/{{breachNotice.id}}" class="govuk-link">enter required information</a>
                                                                         {% else %}
                                                                           {{responseRequiredByDate}}
@@ -325,7 +329,9 @@
           </h2>
           <ul class="govuk-summary-card__actions">
             <li class="govuk-summary-card__action">
+            {% if breachNotice.warningDetailsSaved %}
               <a class="govuk-link" href="/next-appointment/{{breachNotice.id}}">Change<span class="govuk-visually-hidden">Change</span></a>
+              {% endif %}
             </li>
           </ul>
         </div>
@@ -336,7 +342,7 @@
                 Responsible Officer
               </dt>
               <dd class="govuk-summary-list__value">
-                                                        {% if breachNotice.responsibleOfficer == null %}
+                                                        {% if breachNotice.responsibleOfficer == null and breachNotice.warningDetailsSaved %}
                                                                                       <a href="/next-appointment/{{breachNotice.id}}" class="govuk-link">enter required information</a>
                                                                                       {% else %}
                                                                                         {{breachNotice.responsibleOfficer}}
@@ -355,7 +361,7 @@
                 Contact Number
               </dt>
               <dd class="govuk-summary-list__value">
-                                                        {% if breachNotice.contactNumber == null %}
+                                                        {% if breachNotice.contactNumber == null and breachNotice.warningDetailsSaved %}
                                                                                       <a href="/next-appointment/{{breachNotice.id}}" class="govuk-link">enter required information</a>
                                                                                       {% else %}
                                                                                         {{breachNotice.contactNumber}}
@@ -374,7 +380,7 @@
                 Next Appointment Type
               </dt>
               <dd class="govuk-summary-list__value">
-                                                        {% if breachNotice.nextAppointmentType == null %}
+                                                        {% if breachNotice.nextAppointmentType == null and breachNotice.warningDetailsSaved %}
                                                                                       <a href="/next-appointment/{{breachNotice.id}}" class="govuk-link">enter required information</a>
                                                                                       {% else %}
                                                                                         {{breachNotice.nextAppointmentType}}
@@ -393,7 +399,7 @@
                 Next Appointment Date
               </dt>
               <dd class="govuk-summary-list__value">
-                                                        {% if breachNotice.nextAppointmentDate == null %}
+                                                        {% if breachNotice.nextAppointmentDate == null and breachNotice.warningDetailsSaved %}
                                                                                       <a href="/next-appointment/{{breachNotice.id}}" class="govuk-link">enter required information</a>
                                                                                       {% else %}
                                                                                         {{nextAppointmentDate}}
@@ -412,7 +418,7 @@
                 Next Appointment Time
               </dt>
               <dd class="govuk-summary-list__value">
-                                                        {% if breachNotice.nextAppointmentDate == null %}
+                                                        {% if breachNotice.nextAppointmentDate == null and breachNotice.warningDetailsSaved %}
                                                                                       <a href="/next-appointment/{{breachNotice.id}}" class="govuk-link">enter required information</a>
                                                                                       {% else %}
                                                                                         {{nextAppointmentTime}}
@@ -431,7 +437,7 @@
                 Next Appointment Location
               </dt>
               <dd class="govuk-summary-list__value">
-                                                                      {% if breachNotice.nextAppointmentLocation == null %}
+                                                                      {% if breachNotice.nextAppointmentLocation == null and breachNotice.warningDetailsSaved %}
                                                                                                     <a href="/next-appointment/{{breachNotice.id}}" class="govuk-link">enter required information</a>
                                                                                                     {% else %}
                                                                                                       {{breachNotice.nextAppointmentLocation}}
@@ -450,7 +456,7 @@
                 Next Appointment Officer
               </dt>
               <dd class="govuk-summary-list__value">
-                                                        {% if breachNotice.nextAppointmentOfficer == null %}
+                                                        {% if breachNotice.nextAppointmentOfficer == null and breachNotice.warningDetailsSaved %}
                                                                                       <a href="/next-appointment/{{breachNotice.id}}" class="govuk-link">enter required information</a>
                                                                                       {% else %}
                                                                                         {{breachNotice.nextAppointmentOfficer}}
@@ -468,31 +474,61 @@
         </div>
       </div>
 
-      {{ mojButtonMenu({
-        items: [{
-          text: "Publish",
-          href: "/report-completed",
-          preventDoubleClick: "true"
-        }, {
-          text: "View Draft Report",
-          classes: "govuk-button--secondary",
-          preventDoubleClick: "true",
-          href: '/pdf/'+breachNotice.id,
-          attributes: {
-                    target: "_blank"
-                    }
-        }, {
-          text: "Delete draft",
-          href: "/report-deleted",
-          classes: "govuk-button--secondary",
-          preventDoubleClick: "true"
-        }, {
-          text: "Close",
-          href: "/basic-details",
-          classes: "govuk-button--secondary",
-          preventDoubleClick: "true"
-        }]
-      }) }}
+      {% if reportValidated %}
+
+        {{ mojButtonMenu({
+              items: [
+              {
+                text: "Publish",
+                preventDoubleClick: "true",
+                type: "submit"
+              }, {
+                text: "View Draft Report",
+                classes: "govuk-button--secondary",
+                preventDoubleClick: "true",
+                href: '/pdf/'+breachNotice.id,
+                attributes: {
+                          target: "_blank"
+                          }
+              }, {
+                text: "Delete draft",
+                href: "/report-deleted",
+                classes: "govuk-button--secondary",
+                preventDoubleClick: "true"
+              }, {
+                text: "Close",
+                href: "/basic-details",
+                classes: "govuk-button--secondary",
+                preventDoubleClick: "true"
+              }]
+            }) }}
+
+      {% else %}
+
+        {{ mojButtonMenu({
+                items: [
+                {
+                  text: "View Draft Report",
+                  classes: "govuk-button--secondary",
+                  preventDoubleClick: "true",
+                  href: '/pdf/'+breachNotice.id,
+                  attributes: {
+                            target: "_blank"
+                            }
+                }, {
+                  text: "Delete draft",
+                  href: "/report-deleted",
+                  classes: "govuk-button--secondary",
+                  preventDoubleClick: "true"
+                }, {
+                  text: "Close",
+                  href: "/close",
+                  classes: "govuk-button--secondary",
+                  preventDoubleClick: "true"
+                }]
+              }) }}
+
+      {% endif %}
 
     </div>
   </div>

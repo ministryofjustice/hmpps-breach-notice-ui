@@ -43,6 +43,19 @@ npm run start:dev
 
 Open http://localhost:3000 in your browser.
 
+### Using LocalStack for local SNS Topics
+
+install awscli
+LocalStack is included in the docker-compose file
+Create Topic
+
+To confirm it works
+Create Queue
+Subscribe Queue to Topic
+Read From Queue
+
+Purge Queue
+
 ### Integrate with dev services running on MOJ Cloud Platform
 
 Alternatively, you can integrate your local UI with the dev/test services deployed on MOJ Cloud Platform.

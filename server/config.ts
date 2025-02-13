@@ -48,6 +48,19 @@ const auditConfig = () => {
   }
 }
 
+const snsConfig = () => {
+  const snsEnabled = get('SNS_ENABLED', 'false') === 'true'
+  return {
+    enabled: snsEnabled,
+    topicArn: get('BREACH_NOTICE_PUBLISH_SNS_TOPIC_ARN', '', snsEnabled && requiredInProduction),
+    serviceName: get('BREACH_NOTICE_PUBLISH_SERVICE_NAME', 'UNASSIGNED', snsEnabled && requiredInProduction),
+    region: get('BREACH_NOTICE_PUBLISH_SQS_REGION', 'eu-west-2'),
+    snsHost: get('BREACH_NOTICE_PUBLISH_SNS_HOST', ''),
+    key: get('BREACH_NOTICE_PUBLISH_SNS_KEY', ''),
+    secret: get('BREACH_NOTICE_PUBLISH_SNS_SECRET', ''),
+  }
+}
+
 export default {
   buildNumber: get('BUILD_NUMBER', '1_0_0', requiredInProduction),
   productId: get('PRODUCT_ID', 'UNASSIGNED', requiredInProduction),
@@ -101,6 +114,9 @@ export default {
   },
   sqs: {
     audit: auditConfig(),
+  },
+  sns: {
+    publish: snsConfig(),
   },
   ingressUrl: get('INGRESS_URL', 'http://localhost:3000', requiredInProduction),
   environmentName: get('ENVIRONMENT_NAME', ''),

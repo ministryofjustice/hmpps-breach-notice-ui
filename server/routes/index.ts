@@ -34,7 +34,7 @@ import BreachNoticeApiClient, {
 import localDate = TemporalQueries.localDate
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
-export default function routes({ auditService, hmppsAuthClient }: Services): Router {
+export default function routes({ auditService, hmppsAuthClient, snsService }: Services): Router {
   const router = Router()
   const get = (path: string | string[], handler: RequestHandler) => router.get(path, asyncMiddleware(handler))
   const post = (path: string | string[], handler: RequestHandler) => router.post(path, asyncMiddleware(handler))
@@ -749,6 +749,7 @@ export default function routes({ auditService, hmppsAuthClient }: Services): Rou
     nextAppointmentDate: string,
     nextAppointmentTime: string,
   ) {
+    const reportValidated = validateCheckYourReport(breachNotice)
     res.render('pages/check-your-report', {
       errorMessages,
       breachNotice,
@@ -756,6 +757,7 @@ export default function routes({ auditService, hmppsAuthClient }: Services): Rou
       responseRequiredByDate,
       nextAppointmentDate,
       nextAppointmentTime,
+      reportValidated,
     })
   }
 
@@ -767,36 +769,43 @@ export default function routes({ auditService, hmppsAuthClient }: Services): Rou
     const breachNoticeId = req.params.id
     let breachNotice: BreachNotice = null
     breachNotice = await breachNoticeApiClient.getBreachNoticeById(breachNoticeId as string)
-    const basicDetailsDateOfLetter: string = toUserDate(breachNotice.dateOfLetter)
-    const responseRequiredByDate: string = toUserDate(breachNotice.responseRequiredByDate)
-    const nextAppointmentDate: string = toUserDateFromDateTime(breachNotice.nextAppointmentDate)
-    const nextAppointmentTime: string = toUserTime(breachNotice.nextAppointmentDate)
 
-    // TODO Post Logic
+    // TODO Validation
 
-    if (req.body.action === 'viewDraft') {
-      try {
-        await showDraftPdf(breachNotice, res, breachNoticeApiClient)
-      } catch (err) {
-        const errorMessages: ErrorMessages = {}
-        errorMessages.pdfRenderError = {
-          text: 'There was an issue generating the draft report. Please try again or contact support.',
-        }
-        await renderCheckYourReport(
-          breachNotice,
-          res,
-          errorMessages,
-          basicDetailsDateOfLetter,
-          responseRequiredByDate,
-          nextAppointmentDate,
-          nextAppointmentTime,
-        )
-      }
-    } else {
-      // Correct redirect
-      res.redirect(`/check-your-report/${req.params.id}`)
-    }
+    breachNotice.completedDate = new Date()
+    await breachNoticeApiClient.updateBreachNotice(breachNoticeId, breachNotice)
+
+    snsService.sendMessage({ crn: breachNotice.crn, id: breachNotice.id })
+
+    res.render('pages/report-completed', {
+      breachNotice,
+    })
   })
+
+  function validateCheckYourReport(breachNotice: BreachNotice): boolean {
+    if (
+      breachNotice.crn != null &&
+      breachNotice.titleAndFullName != null &&
+      breachNotice.offenderAddress != null &&
+      breachNotice.dateOfLetter != null &&
+      breachNotice.replyAddress != null &&
+      breachNotice.breachNoticeTypeDescription != null &&
+      breachNotice.breachSentenceTypeDescription &&
+      breachNotice.breachNoticeContactList != null &&
+      breachNotice.breachNoticeContactList.length > 0 &&
+      breachNotice.breachNoticeRequirementList != null &&
+      breachNotice.breachNoticeRequirementList.length > 0 &&
+      breachNotice.responseRequiredByDate != null &&
+      breachNotice.nextAppointmentType != null &&
+      breachNotice.nextAppointmentDate != null &&
+      breachNotice.nextAppointmentLocation != null &&
+      breachNotice.nextAppointmentOfficer != null &&
+      breachNotice.responsibleOfficer != null
+    ) {
+      return true
+    }
+    return false
+  }
 
   get('/basic-details', async (req, res, next) => {
     await auditService.logPageView(Page.BASIC_DETAILS, { who: res.locals.user.username, correlationId: req.id })
@@ -852,7 +861,7 @@ export default function routes({ auditService, hmppsAuthClient }: Services): Rou
   })
 
   get('/pdf/:id', async (req, res, next) => {
-    await auditService.logPageView(Page.REPORT_DELETED, { who: res.locals.user.username, correlationId: req.id })
+    await auditService.logPageView(Page.VIEW_PDF, { who: res.locals.user.username, correlationId: req.id })
     const breachNoticeApiClient = new BreachNoticeApiClient(
       await hmppsAuthClient.getSystemClientToken(res.locals.user.username),
     )
@@ -861,11 +870,14 @@ export default function routes({ auditService, hmppsAuthClient }: Services): Rou
     breachNotice = await breachNoticeApiClient.getBreachNoticeById(breachNoticeId as string)
     const stream: ArrayBuffer = await breachNoticeApiClient.getDraftPdfById(breachNotice.id as string)
 
+    let fileName: string = `filename="breach_notice_${breachNotice.crn}_${breachNotice.referenceNumber}`
+    if (breachNotice.completedDate != null) {
+      fileName += '_draft'
+    }
+    fileName += '.pdf'
+
     res.setHeader('Content-Type', 'application/pdf')
-    res.setHeader(
-      'Content-Disposition',
-      `filename="breach_notice_${breachNotice.crn}_${breachNotice.referenceNumber}_draft.pdf"`,
-    )
+    res.setHeader('Content-Disposition', fileName)
     res.send(stream)
   })
 
