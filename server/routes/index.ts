@@ -86,6 +86,20 @@ export default function routes({ auditService, hmppsAuthClient }: Services): Rou
     return ''
   }
 
+  function toUserTime(str: Date): string {
+    if (str) {
+      return DateTimeFormatter.ofPattern('HH:mm').format(DateTimeFormatter.ISO_LOCAL_DATE_TIME.parse(str.toString()))
+    }
+    return ''
+  }
+
+  function toUserDateFromDateTime(str: Date): string {
+    if (str) {
+      return DateTimeFormatter.ofPattern('d/M/yyyy').format(DateTimeFormatter.ISO_LOCAL_DATE_TIME.parse(str.toString()))
+    }
+    return ''
+  }
+
   post('/basic-details/:id', async (req, res, next) => {
     const breachNoticeApiClient = new BreachNoticeApiClient(
       await hmppsAuthClient.getSystemClientToken(res.locals.user.username),
@@ -710,13 +724,38 @@ export default function routes({ auditService, hmppsAuthClient }: Services): Rou
     let breachNotice: BreachNotice = null
     breachNotice = await breachNoticeApiClient.getBreachNoticeById(breachNoticeId as string)
 
-    await renderCheckYourReport(breachNotice, res, {})
+    const basicDetailsDateOfLetter: string = toUserDate(breachNotice.dateOfLetter)
+    const responseRequiredByDate: string = toUserDate(breachNotice.responseRequiredByDate)
+    const nextAppointmentDate: string = toUserDateFromDateTime(breachNotice.nextAppointmentDate)
+    const nextAppointmentTime: string = toUserTime(breachNotice.nextAppointmentDate)
+
+    await renderCheckYourReport(
+      breachNotice,
+      res,
+      {},
+      basicDetailsDateOfLetter,
+      responseRequiredByDate,
+      nextAppointmentDate,
+      nextAppointmentTime,
+    )
   })
 
-  async function renderCheckYourReport(breachNotice: BreachNotice, res: Response, errorMessages: ErrorMessages) {
+  async function renderCheckYourReport(
+    breachNotice: BreachNotice,
+    res: Response,
+    errorMessages: ErrorMessages,
+    dateOfLetter: string,
+    responseRequiredByDate: string,
+    nextAppointmentDate: string,
+    nextAppointmentTime: string,
+  ) {
     res.render('pages/check-your-report', {
       errorMessages,
       breachNotice,
+      dateOfLetter,
+      responseRequiredByDate,
+      nextAppointmentDate,
+      nextAppointmentTime,
     })
   }
 
@@ -728,6 +767,10 @@ export default function routes({ auditService, hmppsAuthClient }: Services): Rou
     const breachNoticeId = req.params.id
     let breachNotice: BreachNotice = null
     breachNotice = await breachNoticeApiClient.getBreachNoticeById(breachNoticeId as string)
+    const basicDetailsDateOfLetter: string = toUserDate(breachNotice.dateOfLetter)
+    const responseRequiredByDate: string = toUserDate(breachNotice.responseRequiredByDate)
+    const nextAppointmentDate: string = toUserDateFromDateTime(breachNotice.nextAppointmentDate)
+    const nextAppointmentTime: string = toUserTime(breachNotice.nextAppointmentDate)
 
     // TODO Post Logic
 
@@ -739,7 +782,15 @@ export default function routes({ auditService, hmppsAuthClient }: Services): Rou
         errorMessages.pdfRenderError = {
           text: 'There was an issue generating the draft report. Please try again or contact support.',
         }
-        await renderCheckYourReport(breachNotice, res, errorMessages)
+        await renderCheckYourReport(
+          breachNotice,
+          res,
+          errorMessages,
+          basicDetailsDateOfLetter,
+          responseRequiredByDate,
+          nextAppointmentDate,
+          nextAppointmentTime,
+        )
       }
     } else {
       // Correct redirect
