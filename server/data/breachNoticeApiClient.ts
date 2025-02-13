@@ -20,6 +20,20 @@ export default class BreachNoticeApiClient extends RestClient {
     })
   }
 
+  async getPdfById(uuid: string): Promise<ArrayBuffer> {
+    return this.get({
+      path: `/breach-notice/${uuid}/pdf`,
+      responseType: 'arraybuffer',
+    })
+  }
+
+  async getDraftPdfById(uuid: string): Promise<ArrayBuffer> {
+    return this.get({
+      path: `/breach-notice/${uuid}/pdf`,
+      responseType: 'arraybuffer',
+    })
+  }
+
   async deleteBreachNotice(id: string) {
     await this.delete({
       path: `/breach-notice/${id}`,
@@ -61,6 +75,36 @@ export interface BreachNotice {
   nextAppointmentSaved: boolean
   useDefaultAddress: boolean
   useDefaultReplyAddress: boolean
+  breachNoticeContactList: BreachNoticeContactList
+  breachNoticeRequirementList: BreachNoticeRequirementList
+}
+
+export interface BreachNoticeContact {
+  id: string
+  breachNoticeId: string
+  contactDate: LocalDateTime
+  contactType: string
+  contactOutcome: string
+  contactId: number
+}
+
+export interface BreachNoticeRequirement {
+  id: string
+  breachNoticeId: string
+  requirementId: number
+  mainCategoryDescription: string
+  subCategoryDescription: string
+  rejectionReason: string
+}
+
+export interface EnforceableContact {
+  id: number
+  datetime: LocalDateTime
+  description: string
+  type: ReferenceData
+  outcome: ReferenceData
+  notes: string
+  requirement: Requirement
 }
 
 export interface BasicDetails {
@@ -126,16 +170,6 @@ export interface RadioButton {
   checked: boolean
 }
 
-export interface EnforceableContact {
-  id: number
-  datetime: LocalDateTime
-  description: string
-  type: ReferenceData
-  outcome: ReferenceData
-  notes: string
-  requirement: Requirement
-}
-
 export interface EnforceableContactRadioButton {
   datetime: LocalDateTime
   type: ReferenceData
@@ -148,6 +182,7 @@ export interface EnforceableContactRadioButton {
 }
 
 export interface Requirement {
+  id: number
   type: ReferenceData
   subType: ReferenceData
 }
@@ -180,3 +215,7 @@ export type SentenceTypeList = Array<SentenceType>
 export type EnforceableContactList = Array<EnforceableContact>
 
 export type RequirementList = Array<Requirement>
+
+export type BreachNoticeContactList = Array<BreachNoticeContact>
+
+export type BreachNoticeRequirementList = Array<BreachNoticeRequirement>

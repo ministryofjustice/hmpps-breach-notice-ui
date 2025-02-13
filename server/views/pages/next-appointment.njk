@@ -11,6 +11,19 @@
   {% from "govuk/components/input/macro.njk" import govukInput %}
   {% from "govuk/components/table/macro.njk" import govukTable %}
 
+  <form method="post">
+
+  {% set errorList =[
+      { text: errorMessages.pdfRenderError.text } if errorMessages.pdfRenderError else None
+    ] | reject("undefined") %}
+
+    {% if errorMessages | length > 0 %}
+      {% from "govuk/components/error-summary/macro.njk" import govukErrorSummary %}
+
+      {{ govukErrorSummary({ titleText: "There is a problem", errorList: errorList }) }}
+    {% endif %}
+
+<input type="hidden" name="_csrf" value="{{ csrfToken }}">
 
   <div class="govuk-grid-row">
     <div class="govuk-grid-column-one-third">
@@ -31,7 +44,7 @@
           href: '/next-appointment/'+breachNotice.id,
           active: true
         }, {
-          text: 'Check Your answers',
+          text: 'Check your answers',
           href: '/check-your-report/'+breachNotice.id
         }]
       }) }}
@@ -273,8 +286,11 @@
           href: "/check-your-report/"+breachNotice.id,
         }, {
           text: "View Draft Report",
-          href: "#",
-          classes: "govuk-button--secondary"
+          classes: "govuk-button--secondary",
+          preventDoubleClick: "true",
+          type: "submit",
+          name: "action",
+          value: "viewDraft"
         }, {
           text: "Refresh from Delius",
           href: "#",
@@ -289,4 +305,5 @@
     </div>
   </div>
 
+</form>
 {% endblock %}

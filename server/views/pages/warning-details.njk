@@ -18,13 +18,16 @@
 <form method="post">
 
   {% set errorList =[
-    { text: errorMessages.responseRequiredByDate.text, href: "#date-of-letter" } if errorMessages.dateOfLetter else None
+    { text: errorMessages.responseRequiredByDate.text, href: "#date-of-letter" } if errorMessages.dateOfLetter else None,
+    { text: errorMessages.pdfRenderError.text } if errorMessages.pdfRenderError else None
   ] | reject("undefined") %}
 
   {% if errorMessages | length > 0 %}
     {% from "govuk/components/error-summary/macro.njk" import govukErrorSummary %}
     {{ govukErrorSummary({ titleText: "There is a problem", errorList: errorList }) }}
   {% endif %}
+
+  <input type="hidden" name="_csrf" value="{{ csrfToken }}">
 
   {% set phoneHtml %}
     {{ govukInput({
@@ -88,7 +91,7 @@
           text: 'Next appointment',
           href: '/next-appointment/'+breachNotice.id
         }, {
-          text: 'Check Your answers',
+          text: 'Check your answers',
           href: '/check-your-report/'+breachNotice.id
         }]
       }) }}
@@ -285,8 +288,8 @@
             <div class="govuk-checkboxes__conditional govuk-checkboxes__conditional--hidden"
                  id="hidden{{ failure.value }}">
               {{ govukSelect({
-                id: "breachreason-"+failure.value,
-                name: "breachreason-"+failure.value,
+                id: "breachReason"+failure.value,
+                name: "breachreason"+failure.value,
                 label: {
                   text: "Reason"
                 },
@@ -442,9 +445,11 @@
           type: "submit"
         }, {
           text: "View Draft Report",
-          href: "#",
           classes: "govuk-button--secondary",
-          preventDoubleClick: "true"
+          preventDoubleClick: "true",
+          type: "submit",
+          name: "action",
+          value: "viewDraft"
         }, {
             text: "Refresh from Delius",
             href: "#",

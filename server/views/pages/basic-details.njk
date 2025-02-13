@@ -17,7 +17,8 @@
 
   {% set errorList =[
     { text: errorMessages.dateOfLetter.text, href: "#date-of-letter" } if errorMessages.dateOfLetter else None,
-    { text: errorMessages.officeReferenceNumber.text, href: "#office-reference" } if errorMessages.officeReferenceNumber else None
+    { text: errorMessages.officeReferenceNumber.text, href: "#office-reference" } if errorMessages.officeReferenceNumber else None,
+    { text: errorMessages.pdfRenderError.text } if errorMessages.pdfRenderError else None
   ] | reject("undefined") %}
 
   {% if errorMessages | length > 0 %}
@@ -201,9 +202,15 @@
           preventDoubleClick: "true",
           type: "submit"
         }, {
-          text: "View draft",
-          href: "#",
-          classes: "govuk-button--secondary"
+          text: "View Draft Report",
+          classes: "govuk-button--secondary",
+          preventDoubleClick: "true",
+          type: "submit",
+          name: "action",
+          value: "viewDraft",
+          attributes: {
+          target: "_blank"
+          }
         }, {
           text: "Close",
           href: "/basic-details",

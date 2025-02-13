@@ -24,11 +24,6 @@ You'll need to install:
 Install NPM package dependencies (from the root of the project):
 
 ```shell
-npm install
-```
-
-
-### Run the service locally
 
 First - Create a .env file in the root of the project (only on first run copy the example env file by running the following command)
 
