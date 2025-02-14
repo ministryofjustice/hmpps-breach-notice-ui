@@ -16,7 +16,7 @@
   {% from "govuk/components/details/macro.njk" import govukDetails %}
 
 <form method="post">
-
+  <input type="hidden" name="_csrf" value="{{ csrfToken }}">
   {% set errorList =[
     { text: errorMessages.responseRequiredByDate.text, href: "#date-of-letter" } if errorMessages.dateOfLetter else None,
     { text: errorMessages.pdfRenderError.text } if errorMessages.pdfRenderError else None
@@ -27,7 +27,7 @@
     {{ govukErrorSummary({ titleText: "There is a problem", errorList: errorList }) }}
   {% endif %}
 
-  <input type="hidden" name="_csrf" value="{{ csrfToken }}">
+
 
   {% set phoneHtml %}
     {{ govukInput({
