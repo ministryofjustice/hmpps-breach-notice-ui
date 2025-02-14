@@ -39,12 +39,6 @@ export default class BreachNoticeApiClient extends RestClient {
       path: `/breach-notice/${id}`,
     })
   }
-
-  async breachNoticePdf(id: string): Promise<ArrayBuffer> {
-    return this.get({
-      path: `/breach-notice/${id}/pdf`,
-    })
-  }
 }
 
 export interface BreachNotice {
