@@ -8,6 +8,7 @@ export enum Page {
   REPORT_COMPLETED = 'REPORT_COMPLETED',
   REPORT_DELETED = 'REPORT_DELETED',
   WARNING_DETAILS = 'WARNING_DETAILS',
+  REPORT_PRINTED = 'REPORT_PRINTED',
 }
 
 export interface PageViewEventDetails {

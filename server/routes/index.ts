@@ -846,6 +846,9 @@ export default function routes({ auditService, hmppsAuthClient }: Services): Rou
     const breachNoticeId = req.params.id
     let breachNotice: BreachNotice = null
     breachNotice = await breachNoticeApiClient.getBreachNoticeById(breachNoticeId as string)
+    await breachNoticeApiClient.deleteBreachNotice(breachNoticeId as string)
+    // Add Delete from ND
+    // Add Delete from Alfresco
     res.render('pages/report-deleted', {
       breachNotice,
     })

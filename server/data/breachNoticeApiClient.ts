@@ -33,6 +33,12 @@ export default class BreachNoticeApiClient extends RestClient {
       responseType: 'arraybuffer',
     })
   }
+
+  async deleteBreachNotice(id: string) {
+    await this.delete({
+      path: `/breach-notice/${id}`,
+    })
+  }
 }
 
 export interface BreachNotice {
