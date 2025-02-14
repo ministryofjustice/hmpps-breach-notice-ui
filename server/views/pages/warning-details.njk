@@ -75,26 +75,7 @@
   <div class="govuk-grid-row">
     <div class="govuk-grid-column-one-third">
 
-      {{ mojSideNavigation({
-        label: 'Side navigation',
-        items: [{
-          text: 'Basic details',
-          href: '/basic-details/'+breachNotice.id
-        }, {
-          text: 'Warning type',
-          href: '/warning-type/'+breachNotice.id
-        }, {
-          text: 'Warning details',
-          href: '/warning-details/'+breachNotice.id,
-          active: true
-        }, {
-          text: 'Next appointment',
-          href: '/next-appointment/'+breachNotice.id
-        }, {
-          text: 'Check Your answers',
-          href: '/check-your-report/'+breachNotice.id
-        }]
-      }) }}
+      {% include "pages/side-nav.njk" %}
 
     </div>
 
