@@ -750,6 +750,7 @@ export default function routes({ auditService, hmppsAuthClient, snsService }: Se
     nextAppointmentTime: string,
   ) {
     const reportValidated = validateCheckYourReport(breachNotice)
+    const currentPage = 'check-your-report'
     res.render('pages/check-your-report', {
       errorMessages,
       breachNotice,
@@ -758,6 +759,7 @@ export default function routes({ auditService, hmppsAuthClient, snsService }: Se
       nextAppointmentDate,
       nextAppointmentTime,
       reportValidated,
+      currentPage,
     })
   }
 
