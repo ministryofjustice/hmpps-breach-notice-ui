@@ -1,0 +1,72 @@
+{
+  "mappings": [
+    {
+      "request": {
+        "urlPattern": "/basic-details/(.*?)/(.*?)",
+        "method": "GET"
+      },
+      "response": {
+        "status": 200,
+        "jsonBody": {
+          "title": "Mr",
+          "name": {
+            "forename": "Billy",
+            "middleName": "The",
+            "surname": "Kid"
+          },
+          "addresses": [
+            {
+              "addressId": 1,
+              "type": "Postal",
+              "buildingName": null,
+              "buildingNumber": "25",
+              "streetName": "Post Street",
+              "townCity": "Postinton",
+              "district": "Postrict",
+              "county": "County Post",
+              "postcode": "PO1 2ST"
+            },
+            {
+              "addressId": 2,
+              "type": "Postal",
+              "buildingName": "Postal Manor",
+              "buildingNumber": "177",
+              "streetName": "Postal Blvd",
+              "townCity": "Upper Posty",
+              "district": "POHO",
+              "county": "North Posts",
+              "postcode": "PO4 5ST"
+            }
+          ],
+          "replyAddresses": [
+            {
+              "addressId": 3,
+              "type": "Reply",
+              "buildingName": null,
+              "buildingNumber": "25",
+              "streetName": "Reply Street",
+              "townCity": "Replyinton",
+              "district": "Replyrict",
+              "county": "County Reply",
+              "postcode": "RE1 2PL"
+            },
+            {
+              "addressId": 4,
+              "type": "Reply",
+              "buildingName": "Replay Manor",
+              "buildingNumber": "79",
+              "streetName": "Reply Blvd",
+              "townCity": "Upper Reply",
+              "district": "REHO",
+              "county": "North Reply",
+              "postcode": "RE4 5PL"
+            }
+          ]
+        },
+        "headers": {
+          "Content-Type": "application/json;charset=UTF-8"
+        }
+      }
+    }
+  ]
+}
