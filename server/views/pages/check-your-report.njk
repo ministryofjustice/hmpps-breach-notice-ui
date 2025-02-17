@@ -84,7 +84,7 @@
                               <a href="/basic-details/{{breachNotice.id}}" class="govuk-link">enter required information</a>
                               {% else %}
                                 {% if breachNotice.offenderAddress.buildingName != null %} {{ breachNotice.offenderAddress.buildingName }}<br> {% endif %}
-                                                      {% if breachNotice.offenderAddress.addressNumber != null or breachNotice.offenderAddress.streetName != null %} {{ breachNotice.offenderAddress.addressNumber }} {{ breachNotice.offenderAddress.streetName }}<br> {% endif %}
+                                                      {% if breachNotice.offenderAddress.buildingNumber != null or breachNotice.offenderAddress.streetName != null %} {{ breachNotice.offenderAddress.buildingNumber }} {{ breachNotice.offenderAddress.streetName }}<br> {% endif %}
                                                       {% if breachNotice.offenderAddress.district != null %} {{ breachNotice.offenderAddress.district }}<br> {% endif %}
                                                       {% if breachNotice.offenderAddress.townCity != null %} {{ breachNotice.offenderAddress.townCity }}<br> {% endif %}
                                                       {% if breachNotice.offenderAddress.county != null %} {{ breachNotice.offenderAddress.county }}<br> {% endif %}
@@ -108,7 +108,7 @@
                                           <a href="/basic-details/{{breachNotice.id}}" class="govuk-link">enter required information</a>
                                           {% else %}
                                              {% if breachNotice.replyAddress.buildingName != null %} {{ breachNotice.replyAddress.buildingName }}<br> {% endif %}
-                                                                              {% if breachNotice.replyAddress.addressNumber != null or breachNotice.replyAddress.streetName != null %} {{ breachNotice.replyAddress.addressNumber }} {{ breachNotice.replyAddress.streetName }}<br> {% endif %}
+                                                                              {% if breachNotice.replyAddress.buildingNumber != null or breachNotice.replyAddress.streetName != null %} {{ breachNotice.replyAddress.buildingNumber }} {{ breachNotice.replyAddress.streetName }}<br> {% endif %}
                                                                               {% if breachNotice.replyAddress.district != null %} {{ breachNotice.replyAddress.district }}<br> {% endif %}
                                                                               {% if breachNotice.replyAddress.townCity != null %} {{ breachNotice.replyAddress.townCity }}<br> {% endif %}
                                                                               {% if breachNotice.replyAddress.county != null %} {{ breachNotice.replyAddress.county }}<br> {% endif %}

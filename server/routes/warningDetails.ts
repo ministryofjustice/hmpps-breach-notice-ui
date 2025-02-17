@@ -27,6 +27,8 @@ export default function warningDetailsRoutes(
   auditService: AuditService,
   hmppsAuthClient: HmppsAuthClient,
 ): Router {
+  const currentPage = 'warning-details'
+
   router.post('/warning-details/:id', async (req, res, next) => {
     const breachNoticeApiClient = new BreachNoticeApiClient(
       await hmppsAuthClient.getSystemClientToken(res.locals.user.username),
@@ -114,6 +116,7 @@ export default function warningDetailsRoutes(
         enforceableContactRadioButtonList,
         breachReasons,
         failuresBeingEnforcedList,
+        currentPage,
       })
     } else {
       // mark that a USER has saved the document at least once
@@ -151,6 +154,7 @@ export default function warningDetailsRoutes(
             enforceableContactRadioButtonList,
             breachReasons,
             failuresBeingEnforcedList,
+            currentPage,
           })
         }
       } else {
@@ -221,6 +225,7 @@ export default function warningDetailsRoutes(
       enforceableContactRadioButtonList,
       breachReasons,
       failuresBeingEnforcedList,
+      currentPage,
     })
   })
 

@@ -11,8 +11,8 @@
           "title": "Mr",
           "name": {
             "forename": "Billy",
-            "middleName": "The",
-            "surname": "Kid"
+            "middleName": null,
+            "surname": "Kiddo"
           },
           "addresses": [
             {
@@ -41,7 +41,7 @@
           "replyAddresses": [
             {
               "addressId": 3,
-              "type": "Reply",
+              "type": "Postal",
               "buildingName": null,
               "buildingNumber": "25",
               "streetName": "Reply Street",
@@ -60,6 +60,89 @@
               "district": "REHO",
               "county": "North Reply",
               "postcode": "RE4 5PL"
+            }
+          ]
+        },
+        "headers": {
+          "Content-Type": "application/json;charset=UTF-8"
+        }
+      }
+    },
+    {
+      "request": {
+        "urlPattern": "/warning-types",
+        "method": "GET"
+      },
+      "response": {
+        "status": 200,
+        "jsonBody": {
+          "content": [
+            {
+              "code": "FOW",
+              "description": "Formal Warning"
+            },
+            {
+              "code": "BW",
+              "description": "Breach Warning"
+            },
+            {
+              "code": "FW",
+              "description": "Final Warning"
+            }
+          ]
+        },
+        "headers": {
+          "Content-Type": "application/json;charset=UTF-8"
+        }
+      }
+    },
+    {
+      "request": {
+        "urlPattern": "/warning-details/(.*?)",
+        "method": "GET"
+      },
+      "response": {
+        "status": 200,
+        "jsonBody": {
+          "breachReasons": [
+            {
+              "code": "BR03",
+              "description": "Attended late"
+            }
+          ],
+          "sentenceTypes": [
+            {
+              "code": "ABC",
+              "description": "Community Order",
+              "conditionBeingEnforced": "string"
+            }
+          ],
+          "defaultSentenceTypeCode": "ABC",
+          "enforceableContacts": [
+            {
+              "id": 0,
+              "datetime": "2025-01-01T12:34:56",
+              "description": "string",
+              "type": {
+                "code": "string",
+                "description": "string"
+              },
+              "outcome": {
+                "code": "string",
+                "description": "string"
+              },
+              "notes": "string",
+              "requirement": {
+                "id": 0,
+                "type": {
+                  "code": "string",
+                  "description": "string"
+                },
+                "subType": {
+                  "code": "string",
+                  "description": "string"
+                }
+              }
             }
           ]
         },

@@ -61,6 +61,21 @@ const snsConfig = () => {
   }
 }
 
+const ndeliusIntegrationConfig = () => {
+  const ndeliusIntegrationEnabled = get('NDELIUS_INTEGRATION_ENABLED', 'false', requiredInProduction) === 'true'
+  return {
+    url: get('NDELIUS_INTEGRATION_URL', 'http://localhost:9091', requiredInProduction),
+    timeout: {
+      response: Number(get('NDELIUS_INTEGRATION_TIMEOUT_RESPONSE', 10000)),
+      deadline: Number(get('NDELIUS_INTEGRATION_TIMEOUT_DEADLINE', 10000)),
+    },
+    agent: new AgentConfig(Number(get('NDELIUS_INTEGRATION_TIMEOUT_RESPONSE', 10000))),
+    authClientId: get('NDELIUS_INTEGRATION_KEY', 'clientid', requiredInProduction),
+    authClientSecret: get('NDELIUS_INTEGRATION_SECRET', 'clientsecret', requiredInProduction),
+    enabled: ndeliusIntegrationEnabled,
+  }
+}
+
 export default {
   buildNumber: get('BUILD_NUMBER', '1_0_0', requiredInProduction),
   productId: get('PRODUCT_ID', 'UNASSIGNED', requiredInProduction),
@@ -94,6 +109,7 @@ export default {
       systemClientId: get('CLIENT_CREDS_CLIENT_ID', 'clientid', requiredInProduction),
       systemClientSecret: get('CLIENT_CREDS_CLIENT_SECRET', 'clientsecret', requiredInProduction),
     },
+    ndeliusIntegration: ndeliusIntegrationConfig(),
     tokenVerification: {
       url: get('TOKEN_VERIFICATION_API_URL', 'http://localhost:8100', requiredInProduction),
       timeout: {
