@@ -169,7 +169,7 @@ export default function basicDetailsRoutes(
         const localDateOfLetterAtStartOfDay = LocalDate.parse(breachNotice.dateOfLetter).atStartOfDay()
         if (localDateOfLetterAtStartOfDay.isBefore(currentDateAtStartOfTheDay)) {
           errorMessages.dateOfLetter = {
-            text: 'The letter has not been completed and so the date cannot be before today',
+            text: 'The letter has not been completed and so the date cannot be before today.',
           }
         }
         if (localDateOfLetterAtStartOfDay.minusDays(7).isAfter(currentDateAtStartOfTheDay)) {

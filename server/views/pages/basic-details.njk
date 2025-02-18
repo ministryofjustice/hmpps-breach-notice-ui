@@ -204,7 +204,10 @@
         items: [{
           text: "Continue",
           preventDoubleClick: "true",
-          type: "submit"
+          type: "submit",
+          attributes: {
+            id: "continue-button"
+          }
         }, {
           text: "View Draft Report",
           classes: "govuk-button--secondary",
@@ -213,12 +216,16 @@
           name: "action",
           value: "viewDraft",
           attributes: {
-          target: "_blank"
+            target: "_blank",
+            id: "view-draft-button"
           }
         }, {
-          text: "Close",
+          text: "Save Progress and Close",
           href: "/basic-details",
-          classes: "govuk-button--secondary"
+          classes: "govuk-button--secondary",
+          attributes: {
+            id: "close-button"
+          }
         }]
       }) }}
 
