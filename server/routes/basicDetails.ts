@@ -13,10 +13,6 @@ export default function basicDetailsRoutes(
   hmppsAuthClient: HmppsAuthClient,
   commonUtils: CommonUtils,
 ): Router {
-  // const router = Router()
-  // const get = (path: string | string[], handler: RequestHandler) => router.get(path, asyncMiddleware(handler))
-  // const post = (path: string | string[], handler: RequestHandler) => router.post(path, asyncMiddleware(handler))
-
   const currentPage = 'basic-details'
 
   router.get('/basic-details/:id', async (req, res, next) => {
@@ -126,7 +122,12 @@ export default function basicDetailsRoutes(
       breachNotice.basicDetailsSaved = true
       await breachNoticeApiClient.updateBreachNotice(breachNoticeId, breachNotice)
 
-      res.redirect(`/warning-type/${req.params.id}`)
+      if (req.body.action === 'saveProgressAndClose') {
+        res.setHeader('Content-Security-Policy', "script-src-elem 'unsafe-inline'")
+        res.send('<script>window.close();</script>')
+      } else {
+        res.redirect(`/warning-type/${req.params.id}`)
+      }
     }
   })
 
@@ -160,7 +161,7 @@ export default function basicDetailsRoutes(
         const localDateOfLetterAtStartOfDay = LocalDate.parse(breachNotice.dateOfLetter).atStartOfDay()
         if (localDateOfLetterAtStartOfDay.isBefore(currentDateAtStartOfTheDay)) {
           errorMessages.dateOfLetter = {
-            text: 'The letter has not been completed and so the date cannot be before today',
+            text: 'The letter has not been completed and so the date cannot be before today.',
           }
         }
         if (localDateOfLetterAtStartOfDay.minusDays(7).isAfter(currentDateAtStartOfTheDay)) {

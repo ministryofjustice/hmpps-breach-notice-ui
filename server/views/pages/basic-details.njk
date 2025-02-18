@@ -71,13 +71,15 @@
       {{ breachNotice.crn }}
       <br/><br/>
 
-      <b class="govuk-fieldset__legend--m">Postal Address</b></br>
-      {{ defaultOffenderAddress.buildingName }}<br>
-      {{ defaultOffenderAddress.buildingNumber }} {{ defaultOffenderAddress.streetName }}<br>
-      {{ defaultOffenderAddress.district }}<br>
-      {{ defaultOffenderAddress.townCity }}<br>
-      {{ defaultOffenderAddress.county }}<br>
-      {{ defaultOffenderAddress.postcode }}<br>
+      <b class="govuk-fieldset__legend--m">Postal Address</b>
+      <span id="postal-address"><br>
+        {% if defaultOffenderAddress.buildingName %} {{ defaultOffenderAddress.buildingName }}<br>{% endif %}
+        {% if defaultOffenderAddress.buildingNumber or defaultOffenderAddress.streetName %} {{ defaultOffenderAddress.buildingNumber }} {{ defaultOffenderAddress.streetName }}<br>{% endif %}
+        {% if defaultOffenderAddress.district %} {{ defaultOffenderAddress.district }}<br>{% endif %}
+        {% if defaultOffenderAddress.townCity %} {{ defaultOffenderAddress.townCity }}<br>{% endif %}
+        {% if defaultOffenderAddress.county %} {{ defaultOffenderAddress.county }}<br>{% endif %}
+        {% if defaultOffenderAddress.postcode %} {{ defaultOffenderAddress.postcode }}<br>{% endif %}
+      </span>
 
       {{ govukRadios({
         name: "offenderAddressSelectOne",
@@ -108,13 +110,16 @@
         ]
       }) }}
 
-      <b class="govuk-fieldset__legend--m">Reply Address</b></br>
-      {{ defaultReplyAddress.buildingName }}<br>
-      {{ defaultReplyAddress.buildingNumber }} {{ defaultReplyAddress.streetName }}<br>
-      {{ defaultReplyAddress.district }}<br>
-      {{ defaultReplyAddress.townCity }}<br>
-      {{ defaultReplyAddress.county }}<br>
-      {{ defaultReplyAddress.postcode }}<br>
+      <b class="govuk-fieldset__legend--m">Reply Address</b><br>
+      <span id="reply-address">
+        {% if defaultReplyAddress.buildingName %} {{ defaultReplyAddress.buildingName }}<br>{% endif %}
+        {% if defaultReplyAddress.buildingNumber or  defaultReplyAddress.streetName %}{{ defaultReplyAddress.buildingNumber }} {{ defaultReplyAddress.streetName }}<br>{% endif %}
+        {% if defaultReplyAddress.district %} {{ defaultReplyAddress.district }}<br>{% endif %}
+        {% if defaultReplyAddress.townCity %} {{ defaultReplyAddress.townCity }}<br>{% endif %}
+        {% if defaultReplyAddress.county %} {{ defaultReplyAddress.county }}<br>{% endif %}
+        {% if defaultReplyAddress.postcode %} {{ defaultReplyAddress.postcode }}<br>{% endif %}
+      </span>
+
       <br>
       {{ govukRadios({
         name: "replyAddressSelectOne",
@@ -181,7 +186,10 @@
         items: [{
           text: "Continue",
           preventDoubleClick: "true",
-          type: "submit"
+          type: "submit",
+          attributes: {
+            id: "continue-button"
+          }
         }, {
           text: "View Draft Report",
           classes: "govuk-button--secondary",
@@ -190,12 +198,18 @@
           name: "action",
           value: "viewDraft",
           attributes: {
-          target: "_blank"
+            target: "_blank",
+            id: "view-draft-button"
           }
         }, {
-          text: "Close",
-          href: "/basic-details",
-          classes: "govuk-button--secondary"
+          text: "Save Progress and Close",
+          type: "submit",
+          name: "action",
+          value: "saveProgressAndClose",
+          classes: "govuk-button--secondary",
+          attributes: {
+            id: "close-button"
+          }
         }]
       }) }}
 
