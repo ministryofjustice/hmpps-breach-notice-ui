@@ -16,7 +16,7 @@ export default function routes({ auditService, hmppsAuthClient, snsService, comm
   const get = (path: string | string[], handler: RequestHandler) => router.get(path, asyncMiddleware(handler))
 
   get('/', async (req, res, next) => {
-    res.render('pages/error')
+    res.render('pages/index')
   })
 
   get('/breach-notice/:id', async (req, res, next) => {
