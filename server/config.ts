@@ -70,8 +70,6 @@ const ndeliusIntegrationConfig = () => {
       deadline: Number(get('NDELIUS_INTEGRATION_TIMEOUT_DEADLINE', 10000)),
     },
     agent: new AgentConfig(Number(get('NDELIUS_INTEGRATION_TIMEOUT_RESPONSE', 10000))),
-    authClientId: get('NDELIUS_INTEGRATION_KEY', 'clientid', requiredInProduction),
-    authClientSecret: get('NDELIUS_INTEGRATION_SECRET', 'clientsecret', requiredInProduction),
     enabled: ndeliusIntegrationEnabled,
   }
 }

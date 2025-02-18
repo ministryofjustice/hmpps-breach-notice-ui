@@ -1,3 +1,5 @@
+import { Name } from '../data/ndeliusIntegrationApiClient'
+
 const properCase = (word: string): string =>
   word.length >= 1 ? word[0].toUpperCase() + word.toLowerCase().slice(1) : word
 
@@ -20,4 +22,8 @@ export const initialiseName = (fullName?: string): string | null => {
 
   const array = fullName.split(' ')
   return `${array[0][0]}. ${array.reverse()[0]}`
+}
+
+export function combineName(title: string, name: Name) {
+  return [title, name.forename, name.middleName, name.surname].filter(n => n).join(' ')
 }

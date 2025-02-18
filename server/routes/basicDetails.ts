@@ -6,6 +6,7 @@ import NdeliusIntegrationApiClient, { Address, AddressList, BasicDetails } from 
 import { fromUserDate, toUserDate } from '../utils/dateUtils'
 import { HmppsAuthClient } from '../data'
 import CommonUtils from '../services/commonUtils'
+import { combineName } from '../utils/utils'
 
 export default function basicDetailsRoutes(
   router: Router,
@@ -17,18 +18,14 @@ export default function basicDetailsRoutes(
 
   router.get('/basic-details/:id', async (req, res, next) => {
     await auditService.logPageView(Page.BASIC_DETAILS, { who: res.locals.user.username, correlationId: req.id })
-    const breachNoticeApiClient = new BreachNoticeApiClient(
-      await hmppsAuthClient.getSystemClientToken(res.locals.user.username),
-    )
-    const ndeliusIntegrationApiClient = new NdeliusIntegrationApiClient(
-      await hmppsAuthClient.getSystemClientToken(res.locals.user.username),
-    )
+    const token = await hmppsAuthClient.getSystemClientToken(res.locals.user.username)
+    const breachNoticeApiClient = new BreachNoticeApiClient(token)
+    const ndeliusIntegrationApiClient = new NdeliusIntegrationApiClient(token)
     const { id } = req.params
     const breachNotice = await breachNoticeApiClient.getBreachNoticeById(id)
-    const redirect = await commonUtils.redirectOnStatusChange(breachNotice, res)
-    if (redirect) {
-      return
-    }
+
+    if (await commonUtils.redirectRequired(breachNotice, res)) return
+
     const basicDetails = await ndeliusIntegrationApiClient.getBasicDetails(breachNotice.crn, req.user.username)
     checkBreachNoticeAndApplyDefaults(breachNotice, basicDetails)
     const alternateAddressOptions = initiateAlternateAddressSelectItemList(basicDetails, breachNotice)
@@ -49,20 +46,15 @@ export default function basicDetailsRoutes(
   })
 
   router.post('/basic-details/:id', async (req, res, next) => {
-    const breachNoticeApiClient = new BreachNoticeApiClient(
-      await hmppsAuthClient.getSystemClientToken(res.locals.user.username),
-    )
-    const ndeliusIntegrationApiClient = new NdeliusIntegrationApiClient(
-      await hmppsAuthClient.getSystemClientToken(res.locals.user.username),
-    )
+    const token = await hmppsAuthClient.getSystemClientToken(res.locals.user.username)
+    const breachNoticeApiClient = new BreachNoticeApiClient(token)
+    const ndeliusIntegrationApiClient = new NdeliusIntegrationApiClient(token)
+
     const breachNoticeId = req.params.id
     let breachNotice: BreachNotice = null
     breachNotice = await breachNoticeApiClient.getBreachNoticeById(breachNoticeId as string)
 
-    const redirect = await commonUtils.redirectOnStatusChange(breachNotice, res)
-    if (redirect) {
-      return
-    }
+    if (await commonUtils.redirectRequired(breachNotice, res)) return
 
     const basicDetails = await ndeliusIntegrationApiClient.getBasicDetails(breachNotice.crn, req.user.username)
     checkBreachNoticeAndApplyDefaults(breachNotice, basicDetails)
@@ -91,11 +83,9 @@ export default function basicDetailsRoutes(
       breachNotice.useDefaultReplyAddress = null
     }
 
-    let combinedName: string = `${basicDetails.title} ${basicDetails.name.forename} `
-    if (basicDetails.name.middleName != null) {
-      combinedName += `${basicDetails.name.middleName} `
-    }
-    combinedName += `${basicDetails.name.surname}`
+    const { title, name } = basicDetails
+    const combinedName = combineName(title, name)
+
     breachNotice.titleAndFullName = combinedName.trim().replace('  ', ' ')
 
     // validation
@@ -189,11 +179,8 @@ export default function basicDetailsRoutes(
     // we havent saved the page yet so default
     if (!breachNotice.basicDetailsSaved) {
       // load offender name from integration details
-      let combinedName: string = `${basicDetails.title} ${basicDetails.name.forename} `
-      if (basicDetails.name.middleName != null) {
-        combinedName += `${basicDetails.name.middleName} `
-      }
-      combinedName += `${basicDetails.name.surname}`
+      const { title, name } = basicDetails
+      const combinedName = combineName(title, name)
       // eslint-disable-next-line no-param-reassign
       breachNotice.titleAndFullName = `${combinedName}`
       // default the radio buttons to true

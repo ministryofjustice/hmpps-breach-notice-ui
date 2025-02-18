@@ -1,9 +1,9 @@
-import HmppsSnsClient, { BreachNoticePublishEvent } from '../data/hmppsSnsClient'
+import HmppsSnsClient, { HmppsDomainEvent } from '../data/hmppsSnsClient'
 
 export default class SnsService {
   constructor(private readonly hmppsSnsClient: HmppsSnsClient) {}
 
-  async sendMessage(event: BreachNoticePublishEvent) {
+  async sendMessage(event: HmppsDomainEvent) {
     await this.hmppsSnsClient.sendMessage(event)
   }
 }

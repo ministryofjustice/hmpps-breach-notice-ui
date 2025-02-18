@@ -1,9 +1,23 @@
 import { SNSClient, PublishCommand } from '@aws-sdk/client-sns'
 import logger from '../../logger'
 
-export interface BreachNoticePublishEvent {
-  crn: string
-  id: string
+export interface HmppsDomainEvent {
+  eventType: 'probation.breach-notice.completed' // TBC - see Slack
+  version: 1
+  description: 'A breach notice has been completed for a person on probation'
+  detailUrl: string // This should be set to the PDF URL for the breach notice
+  occurredAt: string // Current timestamp in ISO format
+  additionalInformation: {
+    breachNoticeId: string
+  }
+  personReference: {
+    identifiers: [
+      {
+        type: 'CRN'
+        value: string
+      },
+    ]
+  }
 }
 
 export interface SnsClientConfig {
@@ -36,16 +50,21 @@ export default class HmppsSnsClient {
     })
   }
 
-  async sendMessage(event: BreachNoticePublishEvent, throwOnError: boolean = true) {
+  async sendMessage(event: HmppsDomainEvent, throwOnError: boolean = true) {
     if (this.enabled) {
       try {
         const publishParams = {
           TopicArn: this.topicArn,
           Message: JSON.stringify(event),
+          MessageAttributes: {
+            eventType: { DataType: 'String', StringValue: event.eventType },
+          },
         }
 
         const response = await this.snsClient.send(new PublishCommand(publishParams))
-        logger.info(`HMPPS Breach Notice Publish SNS message sent (${event.crn}, ${event.id}, ${response})`)
+        logger.info(
+          `HMPPS Breach Notice Publish SNS message sent (${event.personReference.identifiers[0].value}, ${event.additionalInformation.breachNoticeId}, ${response})`,
+        )
       } catch (error) {
         logger.error('Error sending HMPPS Breach Notice Publish SNS message, ', error)
         if (throwOnError) throw error
