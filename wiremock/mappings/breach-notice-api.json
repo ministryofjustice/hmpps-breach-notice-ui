@@ -67,7 +67,8 @@
     },
     {
       "request": {
-        "urlPattern": "/delius/health/ping"
+        "url": "/breach-notice-api/breach-notice/00000000-0000-0000-0000-000000000001",
+        "method": "PUT"
       },
       "response": {
         "status": 200

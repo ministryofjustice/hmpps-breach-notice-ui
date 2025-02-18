@@ -21,10 +21,6 @@ export default function basicDetailsRoutes(
   auditService: AuditService,
   hmppsAuthClient: HmppsAuthClient,
 ): Router {
-  // const router = Router()
-  // const get = (path: string | string[], handler: RequestHandler) => router.get(path, asyncMiddleware(handler))
-  // const post = (path: string | string[], handler: RequestHandler) => router.post(path, asyncMiddleware(handler))
-
   router.get('/basic-details/:id', async (req, res, next) => {
     await auditService.logPageView(Page.BASIC_DETAILS, { who: res.locals.user.username, correlationId: req.id })
     const breachNoticeApiClient = new BreachNoticeApiClient(
@@ -109,6 +105,8 @@ export default function basicDetailsRoutes(
       // mark that a USER has saved the document at least once
       breachNotice.basicDetailsSaved = true
       await breachNoticeApiClient.updateBreachNotice(breachNoticeId, breachNotice)
+      console.log(req.body)
+      console.log(`action is ${req.body.action}`)
 
       if (req.body.action === 'viewDraft') {
         try {
@@ -133,6 +131,9 @@ export default function basicDetailsRoutes(
             basicDetailsDateOfLetter,
           })
         }
+      } else if (req.body.action === 'saveProgressAndClose') {
+        res.setHeader('Content-Security-Policy', "script-src-elem 'unsafe-inline'")
+        res.send('<script>window.close();</script>')
       } else {
         res.redirect(`/warning-type/${req.params.id}`)
       }

@@ -50,7 +50,6 @@ context('Basic Details page', () => {
       .should('contain.text', 'The proposed date for this letter is in an invalid format')
   })
 
-  // office-reference
   it('entering an Office Reference with more than 30 characterst causes a validation error', () => {
     cy.visit('/basic-details/00000000-0000-0000-0000-000000000001')
     cy.get('#office-reference').type('1234567891-1234567891-1234567891')
