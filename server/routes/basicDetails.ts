@@ -1,4 +1,4 @@
-import { type Router } from 'express'
+import { type Response, Router } from 'express'
 import { LocalDate, LocalDateTime } from '@js-joda/core'
 import AuditService, { Page } from '../services/auditService'
 import BreachNoticeApiClient, {
