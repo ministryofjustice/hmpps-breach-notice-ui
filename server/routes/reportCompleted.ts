@@ -1,4 +1,4 @@
-import { Response, Router } from 'express'
+import { Router } from 'express'
 import AuditService, { Page } from '../services/auditService'
 import BreachNoticeApiClient, { BreachNotice } from '../data/breachNoticeApiClient'
 import { HmppsAuthClient } from '../data'
@@ -43,8 +43,5 @@ export default function reportCompletedRoutes(
     })
   })
 
-  async function showDraftPdf(id: string, res: Response) {
-    res.redirect(`/pdf/${id}`)
-  }
   return router
 }

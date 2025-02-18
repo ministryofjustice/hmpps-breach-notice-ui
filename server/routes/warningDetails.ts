@@ -1,4 +1,4 @@
-import { Response, Router } from 'express'
+import { Router } from 'express'
 import { LocalDate, LocalDateTime } from '@js-joda/core'
 import BreachNoticeApiClient, {
   BreachNotice,
@@ -121,42 +121,6 @@ export default function warningDetailsRoutes(
       await breachNoticeApiClient.updateBreachNotice(breachNoticeId, breachNotice)
       // we need to create requirements
 
-      if (req.body.action === 'viewDraft') {
-        try {
-          await showDraftPdf(breachNotice, res, breachNoticeApiClient)
-        } catch (err) {
-          const errorMessages: ErrorMessages = {}
-          errorMessages.pdfRenderError = {
-            text: 'There was an issue generating the draft report. Please try again or contact support.',
-          }
-
-          const failuresRecorded: SelectItemList = createSelectItemListFromEnforceableContacts(
-            warningDetails.enforceableContactList,
-          )
-          const enforceableContactRadioButtonList = createEnforceableContactRadioButtonListFromEnforceableContacts(
-            warningDetails.enforceableContactList,
-          )
-
-          const breachReasons = convertReferenceDataListToSelectItemList(warningDetails.breachReasons)
-          const failuresBeingEnforcedList = createFailuresBeingEnforcedRequirementSelectList(
-            warningDetails.enforceableContactList,
-            warningDetails.breachReasons,
-          )
-
-          res.render(`pages/basic-details`, {
-            errorMessages,
-            breachNotice,
-            warningDetails,
-            failuresRecorded,
-            enforceableContactRadioButtonList,
-            breachReasons,
-            failuresBeingEnforcedList,
-          })
-        }
-      } else {
-        res.redirect(`/next-appointment/${req.params.id}`)
-      }
-
       res.redirect(`/next-appointment/${req.params.id}`)
     }
   })
@@ -168,7 +132,7 @@ export default function warningDetailsRoutes(
     try {
       // eslint-disable-next-line no-param-reassign
       breachNotice.responseRequiredByDate = fromUserDate(responseRequiredByDate)
-    } catch (error: unknown) {
+    } catch {
       // eslint-disable-next-line no-param-reassign
       breachNotice.responseRequiredByDate = responseRequiredByDate
       errorMessages.dateOfLetter = {
@@ -371,10 +335,6 @@ export default function warningDetailsRoutes(
       value: refData.code,
     }))
     return arrayOfSelectItems
-  }
-
-  async function showDraftPdf(breachNotice: BreachNotice, res: Response, breachNoticeApiClient: BreachNoticeApiClient) {
-    res.redirect(`/pdf/${breachNotice.id}`)
   }
 
   return router

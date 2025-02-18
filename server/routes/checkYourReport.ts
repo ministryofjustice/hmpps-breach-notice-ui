@@ -38,24 +38,8 @@ export default function checkYourReportRoutes(
 
     // TODO Post Logic
 
-    if (req.body.action === 'viewDraft') {
-      try {
-        await showDraftPdf(breachNotice.id, res)
-      } catch (err) {
-        const errorMessages: ErrorMessages = {}
-        errorMessages.pdfRenderError = {
-          text: 'There was an issue generating the draft report. Please try again or contact support.',
-        }
-        await renderCheckYourReport(breachNotice, res, errorMessages)
-      }
-    } else {
-      // Correct redirect
-      res.redirect(`/check-your-report/${req.params.id}`)
-    }
+    await renderCheckYourReport(breachNotice, res, {})
   })
 
-  async function showDraftPdf(id: string, res: Response) {
-    res.redirect(`/pdf/${id}`)
-  }
   return router
 }

@@ -1,7 +1,5 @@
-import { type RequestHandler, Response, Router } from 'express'
+import { type Router } from 'express'
 import { LocalDate, LocalDateTime } from '@js-joda/core'
-import asyncMiddleware from '../middleware/asyncMiddleware'
-import type { Services } from '../services'
 import AuditService, { Page } from '../services/auditService'
 import BreachNoticeApiClient, {
   Address,
@@ -10,7 +8,6 @@ import BreachNoticeApiClient, {
   BreachNotice,
   ErrorMessages,
   Name,
-  RadioButton,
   SelectItem,
 } from '../data/breachNoticeApiClient'
 import { fromUserDate, toUserDate } from '../utils/dateUtils'
@@ -105,13 +102,11 @@ export default function basicDetailsRoutes(
       // mark that a USER has saved the document at least once
       breachNotice.basicDetailsSaved = true
       await breachNoticeApiClient.updateBreachNotice(breachNoticeId, breachNotice)
-      console.log(req.body)
-      console.log(`action is ${req.body.action}`)
 
       if (req.body.action === 'viewDraft') {
         try {
           await showDraftPdf(breachNotice.id, res)
-        } catch (err) {
+        } catch {
           // Render the page with the new error
           errorMessages.pdfRenderError = {
             text: 'There was an issue generating the draft report. Please try again or contact support.',
@@ -154,7 +149,7 @@ export default function basicDetailsRoutes(
     try {
       // eslint-disable-next-line no-param-reassign
       breachNotice.dateOfLetter = fromUserDate(userEnteredDateOfLetter)
-    } catch (error: unknown) {
+    } catch {
       // eslint-disable-next-line no-param-reassign
       breachNotice.dateOfLetter = userEnteredDateOfLetter
       errorMessages.dateOfLetter = {
@@ -186,21 +181,6 @@ export default function basicDetailsRoutes(
   function getSelectedAddress(addressList: AddressList, addressIdentifier: string): Address {
     const addressIdentifierNumber: number = +addressIdentifier
     return addressList.find(address => address.addressId === addressIdentifierNumber)
-  }
-
-  async function renderWarningTypes(
-    breachNotice: BreachNotice,
-    res: Response,
-    warningTypeRadioButtons: Array<RadioButton>,
-    errorMessages: ErrorMessages,
-    sentenceTypeSelectItems: Array<SelectItem>,
-  ) {
-    res.render('pages/warning-type', {
-      errorMessages,
-      breachNotice,
-      warningTypeRadioButtons,
-      sentenceTypeSelectItems,
-    })
   }
 
   router.get('/basic-details', async (req, res, next) => {
