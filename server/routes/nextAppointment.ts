@@ -2,11 +2,13 @@ import { Response, Router } from 'express'
 import AuditService, { Page } from '../services/auditService'
 import BreachNoticeApiClient, { BreachNotice, ErrorMessages } from '../data/breachNoticeApiClient'
 import { HmppsAuthClient } from '../data'
+import CommonUtils from '../services/commonUtils'
 
 export default function nextAppointmentRoutes(
   router: Router,
   auditService: AuditService,
   hmppsAuthClient: HmppsAuthClient,
+  commonUtils: CommonUtils,
 ): Router {
   const currentPage = 'next-appointment'
 
@@ -18,6 +20,12 @@ export default function nextAppointmentRoutes(
     const breachNoticeId = req.params.id
     let breachNotice: BreachNotice = null
     breachNotice = await breachNoticeApiClient.getBreachNoticeById(breachNoticeId as string)
+
+    const redirect = await commonUtils.redirectOnStatusChange(breachNotice, res)
+    if (redirect) {
+      return
+    }
+
     renderNextAppointment(breachNotice, res, {})
   })
 
@@ -29,6 +37,11 @@ export default function nextAppointmentRoutes(
     const breachNoticeId = req.params.id
     let breachNotice: BreachNotice = null
     breachNotice = await breachNoticeApiClient.getBreachNoticeById(breachNoticeId as string)
+
+    const redirect = await commonUtils.redirectOnStatusChange(breachNotice, res)
+    if (redirect) {
+      return
+    }
 
     // TODO Post Logic
 

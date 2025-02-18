@@ -17,11 +17,13 @@ import NdeliusIntegrationApiClient, {
   WarningDetails,
 } from '../data/ndeliusIntegrationApiClient'
 import { HmppsAuthClient } from '../data'
+import CommonUtils from '../services/commonUtils'
 
 export default function warningTypeRoutes(
   router: Router,
   auditService: AuditService,
   hmppsAuthClient: HmppsAuthClient,
+  commonUtils: CommonUtils,
 ): Router {
   const currentPage = 'warning-type'
 
@@ -36,6 +38,12 @@ export default function warningTypeRoutes(
     const breachNoticeId = req.params.id
     let breachNotice: BreachNotice = null
     breachNotice = await breachNoticeApiClient.getBreachNoticeById(breachNoticeId as string)
+
+    const redirect = await commonUtils.redirectOnStatusChange(breachNotice, res)
+    if (redirect) {
+      return
+    }
+
     const warningTypes: WarningTypeWrapper = await ndeliusIntegrationApiClient.getWarningTypes()
     const warningDetails: WarningDetails = await ndeliusIntegrationApiClient.getWarningDetails(breachNotice.crn)
     // need to load in the select items for the sentence type dropdown
@@ -63,6 +71,12 @@ export default function warningTypeRoutes(
     const breachNoticeId = req.params.id
     let breachNotice: BreachNotice = null
     breachNotice = await breachNoticeApiClient.getBreachNoticeById(breachNoticeId as string)
+
+    const redirect = await commonUtils.redirectOnStatusChange(breachNotice, res)
+    if (redirect) {
+      return
+    }
+
     const warningTypes: WarningTypeWrapper = await ndeliusIntegrationApiClient.getWarningTypes()
     const warningDetails: WarningDetails = await ndeliusIntegrationApiClient.getWarningDetails(breachNotice.crn)
 

@@ -17,11 +17,13 @@ import NdeliusIntegrationApiClient, {
 } from '../data/ndeliusIntegrationApiClient'
 import { fromUserDate, toUserDate } from '../utils/dateUtils'
 import { HmppsAuthClient } from '../data'
+import CommonUtils from '../services/commonUtils'
 
 export default function basicDetailsRoutes(
   router: Router,
   auditService: AuditService,
   hmppsAuthClient: HmppsAuthClient,
+  commonUtils: CommonUtils,
 ): Router {
   // const router = Router()
   // const get = (path: string | string[], handler: RequestHandler) => router.get(path, asyncMiddleware(handler))
@@ -39,6 +41,10 @@ export default function basicDetailsRoutes(
     )
     const { id } = req.params
     const breachNotice = await breachNoticeApiClient.getBreachNoticeById(id)
+    const redirect = await commonUtils.redirectOnStatusChange(breachNotice, res)
+    if (redirect) {
+      return
+    }
     const basicDetails = await ndeliusIntegrationApiClient.getBasicDetails(breachNotice.crn, req.user.username)
     checkBreachNoticeAndApplyDefaults(breachNotice, basicDetails)
     const alternateAddressOptions = initiateAlternateAddressSelectItemList(basicDetails, breachNotice)
@@ -68,6 +74,12 @@ export default function basicDetailsRoutes(
     const breachNoticeId = req.params.id
     let breachNotice: BreachNotice = null
     breachNotice = await breachNoticeApiClient.getBreachNoticeById(breachNoticeId as string)
+
+    const redirect = await commonUtils.redirectOnStatusChange(breachNotice, res)
+    if (redirect) {
+      return
+    }
+
     const basicDetails = await ndeliusIntegrationApiClient.getBasicDetails(breachNotice.crn, req.user.username)
     checkBreachNoticeAndApplyDefaults(breachNotice, basicDetails)
     const defaultOffenderAddress: Address = findDefaultAddressInAddressList(basicDetails.addresses)

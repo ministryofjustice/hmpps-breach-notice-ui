@@ -11,7 +11,7 @@ import warningDetailsRoutes from './warningDetails'
 import warningTypeRoutes from './warningType'
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
-export default function routes({ auditService, hmppsAuthClient, snsService }: Services): Router {
+export default function routes({ auditService, hmppsAuthClient, snsService, commonUtils }: Services): Router {
   const router = Router()
   const get = (path: string | string[], handler: RequestHandler) => router.get(path, asyncMiddleware(handler))
 
@@ -23,14 +23,14 @@ export default function routes({ auditService, hmppsAuthClient, snsService }: Se
     res.redirect(`/basic-details/${req.params.id}`)
   })
 
-  basicDetailsRoutes(router, auditService, hmppsAuthClient)
-  checkYourReportRoutes(router, auditService, hmppsAuthClient, snsService)
-  nextAppointmentRoutes(router, auditService, hmppsAuthClient)
+  basicDetailsRoutes(router, auditService, hmppsAuthClient, commonUtils)
+  checkYourReportRoutes(router, auditService, hmppsAuthClient, snsService, commonUtils)
+  nextAppointmentRoutes(router, auditService, hmppsAuthClient, commonUtils)
   pdfMaintenanceRoutes(router, auditService, hmppsAuthClient)
   reportCompletedRoutes(router, auditService, hmppsAuthClient)
   reportDeletedRoutes(router, auditService, hmppsAuthClient)
-  warningDetailsRoutes(router, auditService, hmppsAuthClient)
-  warningTypeRoutes(router, auditService, hmppsAuthClient)
+  warningDetailsRoutes(router, auditService, hmppsAuthClient, commonUtils)
+  warningTypeRoutes(router, auditService, hmppsAuthClient, commonUtils)
 
   return router
 }

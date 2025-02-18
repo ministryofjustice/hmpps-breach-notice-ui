@@ -4,12 +4,14 @@ import AuditService, { Page } from '../services/auditService'
 import BreachNoticeApiClient, { BreachNotice, ErrorMessages } from '../data/breachNoticeApiClient'
 import { HmppsAuthClient } from '../data'
 import SnsService from '../services/snsService'
+import CommonUtils from '../services/commonUtils'
 
 export default function checkYourReportRoutes(
   router: Router,
   auditService: AuditService,
   hmppsAuthClient: HmppsAuthClient,
   snsService: SnsService,
+  commonUtils: CommonUtils,
 ): Router {
   router.get('/check-your-report/:id', async (req, res, next) => {
     await auditService.logPageView(Page.CHECK_YOUR_REPORT, { who: res.locals.user.username, correlationId: req.id })
@@ -19,6 +21,11 @@ export default function checkYourReportRoutes(
     const breachNoticeId = req.params.id
     let breachNotice: BreachNotice = null
     breachNotice = await breachNoticeApiClient.getBreachNoticeById(breachNoticeId as string)
+
+    const redirect = await commonUtils.redirectOnStatusChange(breachNotice, res)
+    if (redirect) {
+      return
+    }
 
     const basicDetailsDateOfLetter: string = toUserDate(breachNotice.dateOfLetter)
     const responseRequiredByDate: string = toUserDate(breachNotice.responseRequiredByDate)
@@ -68,7 +75,10 @@ export default function checkYourReportRoutes(
     let breachNotice: BreachNotice = null
     breachNotice = await breachNoticeApiClient.getBreachNoticeById(breachNoticeId as string)
 
-    // TODO Validation
+    const redirect = await commonUtils.redirectOnStatusChange(breachNotice, res)
+    if (redirect) {
+      return
+    }
 
     breachNotice.completedDate = new Date()
     await breachNoticeApiClient.updateBreachNotice(breachNoticeId, breachNotice)
