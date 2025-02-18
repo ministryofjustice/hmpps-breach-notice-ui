@@ -21,11 +21,13 @@ import BreachNoticeApiClient, {
 import AuditService, { Page } from '../services/auditService'
 import { fromUserDate } from '../utils/dateUtils'
 import { HmppsAuthClient } from '../data'
+import CommonUtils from '../services/commonUtils'
 
 export default function warningDetailsRoutes(
   router: Router,
   auditService: AuditService,
   hmppsAuthClient: HmppsAuthClient,
+  commonUtils: CommonUtils,
 ): Router {
   const currentPage = 'warning-details'
 
@@ -37,6 +39,12 @@ export default function warningDetailsRoutes(
     const breachNoticeId = req.params.id
     const warningDetails: WarningDetails = createDummyWarningDetails()
     const breachNotice: BreachNotice = await breachNoticeApiClient.getBreachNoticeById(breachNoticeId as string)
+
+    const redirect = await commonUtils.redirectOnStatusChange(breachNotice, res)
+    if (redirect) {
+      return
+    }
+
     // failures recorded on this order
     const contactList: BreachNoticeContact[] = []
     // select the failures being enforced
@@ -204,6 +212,11 @@ export default function warningDetailsRoutes(
     const breachNoticeId = req.params.id
     let breachNotice: BreachNotice = null
     breachNotice = await breachNoticeApiClient.getBreachNoticeById(breachNoticeId as string)
+
+    const redirect = await commonUtils.redirectOnStatusChange(breachNotice, res)
+    if (redirect) {
+      return
+    }
 
     const warningDetails: WarningDetails = createDummyWarningDetails()
     const enforceableContactRadioButtonList = createEnforceableContactRadioButtonListFromEnforceableContacts(
