@@ -55,26 +55,7 @@
         }) }}
       {% endset -%}
 
-      {{ mojSideNavigation({
-        label: 'Side navigation',
-        items: [{
-          text: 'Basic details',
-          href: '/basic-details/'+breachNotice.id,
-          active: true
-        }, {
-          text: 'Warning type',
-          href: '/warning-type/'+breachNotice.id
-        }, {
-          text: 'Warning details',
-          href: '/warning-details/'+breachNotice.id
-        }, {
-          text: 'Next appointment',
-          href: '/next-appointment/'+breachNotice.id
-        }, {
-          text: 'Check your answers',
-          href: '/check-your-report/'+breachNotice.id
-        }]
-      }) }}
+     {% include "pages/side-nav.njk" %}
 
     </div>
 
@@ -82,23 +63,21 @@
       <h1 class="govuk-heading-x1">Breach Notice - Basic Details</h1>
       <b class="govuk-fieldset__legend--m">Title and Full Name
       </b><br/>
-      <span id="title-and-full-name">{{ breachNotice.titleAndFullName }}</span>
+      {{ breachNotice.titleAndFullName }}
       <p/><br>
 
       <b class="govuk-fieldset__legend--m">CRN
       </b><br/>
-      <span id="crn">{{ breachNotice.crn }}</span>
+      {{ breachNotice.crn }}
       <br/><br/>
 
-      <b class="govuk-fieldset__legend--m">Postal Address</b>
-      <span id="postal-address">
+      <b class="govuk-fieldset__legend--m">Postal Address</b></br>
       {{ defaultOffenderAddress.buildingName }}<br>
-      {{ defaultOffenderAddress.addressNumber }} {{ defaultOffenderAddress.streetName }}<br>
+      {{ defaultOffenderAddress.buildingNumber }} {{ defaultOffenderAddress.streetName }}<br>
       {{ defaultOffenderAddress.district }}<br>
       {{ defaultOffenderAddress.townCity }}<br>
       {{ defaultOffenderAddress.county }}<br>
       {{ defaultOffenderAddress.postcode }}<br>
-      </span>
 
       {{ govukRadios({
         name: "offenderAddressSelectOne",
@@ -129,15 +108,13 @@
         ]
       }) }}
 
-      <b class="govuk-fieldset__legend--m">Reply Address</b>
-      <span id="reply-address">
+      <b class="govuk-fieldset__legend--m">Reply Address</b></br>
       {{ defaultReplyAddress.buildingName }}<br>
-      {{ defaultReplyAddress.addressNumber }} {{ defaultReplyAddress.streetName }}<br>
+      {{ defaultReplyAddress.buildingNumber }} {{ defaultReplyAddress.streetName }}<br>
       {{ defaultReplyAddress.district }}<br>
       {{ defaultReplyAddress.townCity }}<br>
       {{ defaultReplyAddress.county }}<br>
       {{ defaultReplyAddress.postcode }}<br>
-      </span>
       <br>
       {{ govukRadios({
         name: "replyAddressSelectOne",

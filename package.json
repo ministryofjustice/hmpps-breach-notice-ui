@@ -80,6 +80,7 @@
   },
   "dependencies": {
     "@aws-sdk/client-sqs": "^3.658.0",
+    "@aws-sdk/client-sns": "^3.744.0",
     "@js-joda/core": "^5.6.4",
     "@ministryofjustice/frontend": "^2.2.4",
     "agentkeepalive": "^4.5.0",
@@ -127,7 +128,7 @@
     "aws-sdk-client-mock": "^4.0.2",
     "chokidar": "^3.6.0",
     "concurrently": "^9.0.1",
-    "cypress": "^14.0.3",
+    "cypress": "^13.14.2",
     "cypress-multi-reporters": "^1.6.4",
     "esbuild": "^0.23.1",
     "esbuild-plugin-clean": "^1.0.1",

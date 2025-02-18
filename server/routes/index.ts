@@ -10,19 +10,20 @@ import reportDeletedRoutes from './reportDeleted'
 import warningDetailsRoutes from './warningDetails'
 import warningTypeRoutes from './warningType'
 
-export default function routes({ auditService, hmppsAuthClient }: Services): Router {
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+export default function routes({ auditService, hmppsAuthClient, snsService, commonUtils }: Services): Router {
   const router = Router()
   const get = (path: string | string[], handler: RequestHandler) => router.get(path, asyncMiddleware(handler))
 
   get('/', async (req, res, next) => {
-    res.render('pages/index')
+    res.render('pages/error')
   })
 
   get('/breach-notice/:id', async (req, res, next) => {
     res.redirect(`/basic-details/${req.params.id}`)
   })
 
-  basicDetailsRoutes(router, auditService, hmppsAuthClient)
+  basicDetailsRoutes(router, auditService, hmppsAuthClient, commonUtils)
   checkYourReportRoutes(router, auditService, hmppsAuthClient)
   nextAppointmentRoutes(router, auditService, hmppsAuthClient)
   pdfMaintenanceRoutes(router, auditService, hmppsAuthClient)
