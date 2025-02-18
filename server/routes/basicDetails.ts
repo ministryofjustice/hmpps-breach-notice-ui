@@ -1,12 +1,7 @@
-import { type Response, Router } from 'express'
+import { type Router } from 'express'
 import { LocalDate, LocalDateTime } from '@js-joda/core'
 import AuditService, { Page } from '../services/auditService'
-import BreachNoticeApiClient, {
-  BreachNotice,
-  ErrorMessages,
-  RadioButton,
-  SelectItem,
-} from '../data/breachNoticeApiClient'
+import BreachNoticeApiClient, { BreachNotice, ErrorMessages, SelectItem } from '../data/breachNoticeApiClient'
 import NdeliusIntegrationApiClient, { Address, AddressList, BasicDetails } from '../data/ndeliusIntegrationApiClient'
 import { fromUserDate, toUserDate } from '../utils/dateUtils'
 import { HmppsAuthClient } from '../data'
@@ -131,34 +126,7 @@ export default function basicDetailsRoutes(
       breachNotice.basicDetailsSaved = true
       await breachNoticeApiClient.updateBreachNotice(breachNoticeId, breachNotice)
 
-      if (req.body.action === 'viewDraft') {
-        try {
-          await showDraftPdf(breachNotice.id, res)
-        } catch (err) {
-          // Render the page with the new error
-          console.log(err)
-          errorMessages.pdfRenderError = {
-            text: 'There was an issue generating the draft report. Please try again or contact support.',
-          }
-
-          const alternateAddressOptions = initiateAlternateAddressSelectItemList(basicDetails, breachNotice)
-          const replyAddressOptions = initiateReplyAddressSelectItemList(basicDetails, breachNotice)
-          const basicDetailsDateOfLetter: string = req.body.dateOfLetter
-          res.render(`pages/basic-details`, {
-            errorMessages,
-            breachNotice,
-            basicDetails,
-            defaultOffenderAddress,
-            defaultReplyAddress,
-            alternateAddressOptions,
-            replyAddressOptions,
-            basicDetailsDateOfLetter,
-            currentPage,
-          })
-        }
-      } else {
-        res.redirect(`/warning-type/${req.params.id}`)
-      }
+      res.redirect(`/warning-type/${req.params.id}`)
     }
   })
 
@@ -176,8 +144,7 @@ export default function basicDetailsRoutes(
     try {
       // eslint-disable-next-line no-param-reassign
       breachNotice.dateOfLetter = fromUserDate(userEnteredDateOfLetter)
-    } catch (error: unknown) {
-      console.log(error)
+    } catch {
       // eslint-disable-next-line no-param-reassign
       breachNotice.dateOfLetter = userEnteredDateOfLetter
       errorMessages.dateOfLetter = {
@@ -340,10 +307,6 @@ export default function basicDetailsRoutes(
       }
     })
     return defaultAddress
-  }
-
-  async function showDraftPdf(id: string, res: Response) {
-    res.redirect(`/pdf/${id}`)
   }
 
   return router

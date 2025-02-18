@@ -41,7 +41,7 @@ export default function checkYourReportRoutes(
     if (req.body.action === 'viewDraft') {
       try {
         await showDraftPdf(breachNotice.id, res)
-      } catch (err) {
+      } catch {
         const errorMessages: ErrorMessages = {}
         errorMessages.pdfRenderError = {
           text: 'There was an issue generating the draft report. Please try again or contact support.',

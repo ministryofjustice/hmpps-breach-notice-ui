@@ -45,7 +45,7 @@ export default class HmppsSnsClient {
         }
 
         const response = await this.snsClient.send(new PublishCommand(publishParams))
-        logger.info(`HMPPS Breach Notice Publish SNS message sent (${event.crn}, ${event.id})`)
+        logger.info(`HMPPS Breach Notice Publish SNS message sent (${event.crn}, ${event.id}, ${response})`)
       } catch (error) {
         logger.error('Error sending HMPPS Breach Notice Publish SNS message, ', error)
         if (throwOnError) throw error

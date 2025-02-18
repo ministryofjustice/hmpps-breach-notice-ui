@@ -74,7 +74,7 @@ export default function warningTypeRoutes(
     if (req.body.action === 'viewDraft') {
       try {
         await showDraftPdf(breachNotice.id, res)
-      } catch (err) {
+      } catch {
         const errorMessages: ErrorMessages = {}
         errorMessages.pdfRenderError = {
           text: 'There was an issue generating the draft report. Please try again or contact support.',
@@ -102,10 +102,6 @@ export default function warningTypeRoutes(
     // find currently selected code in breach notice and apply to the radio buttons
     if (breachNotice.breachNoticeTypeCode) {
       warningTypeRadioButtons.forEach((radioButton: RadioButton) => {
-        console.log('values')
-        console.log(radioButton.value)
-        console.log(radioButton.text)
-        console.log(radioButton.checked)
         if (breachNotice.breachNoticeTypeCode && breachNotice.breachNoticeTypeCode === radioButton.value) {
           // eslint-disable-next-line no-param-reassign
           radioButton.checked = true

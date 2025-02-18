@@ -1,6 +1,3 @@
-import Page from '../pages/page'
-import IndexPage from '../pages'
-
 context('Basic Details page', () => {
   it('can default readonly fields', () => {
     cy.visit('/basic-details/00000000-0000-0000-0000-000000000001')
