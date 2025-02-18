@@ -8,6 +8,8 @@ export default function nextAppointmentRoutes(
   auditService: AuditService,
   hmppsAuthClient: HmppsAuthClient,
 ): Router {
+  const currentPage = 'next-appointment'
+
   router.get('/next-appointment/:id', async (req, res, next) => {
     await auditService.logPageView(Page.NEXT_APPOINTMENT, { who: res.locals.user.username, correlationId: req.id })
     const breachNoticeApiClient = new BreachNoticeApiClient(
@@ -49,6 +51,7 @@ export default function nextAppointmentRoutes(
     res.render('pages/next-appointment', {
       errorMessages,
       breachNotice,
+      currentPage,
     })
   }
 

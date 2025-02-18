@@ -124,7 +124,7 @@ export interface Address {
   addressId: number
   type: string
   buildingName: string
-  addressNumber: string
+  buildingNumber: string
   streetName: string
   townCity: string
   district: string

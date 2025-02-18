@@ -4,15 +4,17 @@ import asyncMiddleware from '../middleware/asyncMiddleware'
 import type { Services } from '../services'
 import AuditService, { Page } from '../services/auditService'
 import BreachNoticeApiClient, {
-  Address,
-  AddressList,
-  BasicDetails,
   BreachNotice,
   ErrorMessages,
-  Name,
   RadioButton,
   SelectItem,
 } from '../data/breachNoticeApiClient'
+import NdeliusIntegrationApiClient, {
+  Address,
+  AddressList,
+  BasicDetails,
+  Name,
+} from '../data/ndeliusIntegrationApiClient'
 import { fromUserDate, toUserDate } from '../utils/dateUtils'
 import { HmppsAuthClient } from '../data'
 
@@ -25,14 +27,19 @@ export default function basicDetailsRoutes(
   // const get = (path: string | string[], handler: RequestHandler) => router.get(path, asyncMiddleware(handler))
   // const post = (path: string | string[], handler: RequestHandler) => router.post(path, asyncMiddleware(handler))
 
+  const currentPage = 'basic-details'
+
   router.get('/basic-details/:id', async (req, res, next) => {
     await auditService.logPageView(Page.BASIC_DETAILS, { who: res.locals.user.username, correlationId: req.id })
     const breachNoticeApiClient = new BreachNoticeApiClient(
       await hmppsAuthClient.getSystemClientToken(res.locals.user.username),
     )
+    const ndeliusIntegrationApiClient = new NdeliusIntegrationApiClient(
+      await hmppsAuthClient.getSystemClientToken(res.locals.user.username),
+    )
     const { id } = req.params
-    const basicDetails = createDummyBasicDetails()
     const breachNotice = await breachNoticeApiClient.getBreachNoticeById(id)
+    const basicDetails = await ndeliusIntegrationApiClient.getBasicDetails(breachNotice.crn, req.user.username)
     checkBreachNoticeAndApplyDefaults(breachNotice, basicDetails)
     const alternateAddressOptions = initiateAlternateAddressSelectItemList(basicDetails, breachNotice)
     const replyAddressOptions = initiateReplyAddressSelectItemList(basicDetails, breachNotice)
@@ -47,6 +54,7 @@ export default function basicDetailsRoutes(
       defaultOffenderAddress,
       defaultReplyAddress,
       basicDetailsDateOfLetter,
+      currentPage,
     })
   })
 
@@ -54,10 +62,13 @@ export default function basicDetailsRoutes(
     const breachNoticeApiClient = new BreachNoticeApiClient(
       await hmppsAuthClient.getSystemClientToken(res.locals.user.username),
     )
+    const ndeliusIntegrationApiClient = new NdeliusIntegrationApiClient(
+      await hmppsAuthClient.getSystemClientToken(res.locals.user.username),
+    )
     const breachNoticeId = req.params.id
-    const basicDetails: BasicDetails = createDummyBasicDetails()
     let breachNotice: BreachNotice = null
     breachNotice = await breachNoticeApiClient.getBreachNoticeById(breachNoticeId as string)
+    const basicDetails = await ndeliusIntegrationApiClient.getBasicDetails(breachNotice.crn, req.user.username)
     checkBreachNoticeAndApplyDefaults(breachNotice, basicDetails)
     const defaultOffenderAddress: Address = findDefaultAddressInAddressList(basicDetails.addresses)
     const defaultReplyAddress: Address = findDefaultAddressInAddressList(basicDetails.replyAddresses)
@@ -84,7 +95,11 @@ export default function basicDetailsRoutes(
       breachNotice.useDefaultReplyAddress = null
     }
 
-    const combinedName: string = `${basicDetails.title} ${basicDetails.name.forename} ${basicDetails.name.middleName} ${basicDetails.name.surname}`
+    let combinedName: string = `${basicDetails.title} ${basicDetails.name.forename} `
+    if (basicDetails.name.middleName != null) {
+      combinedName += `${basicDetails.name.middleName} `
+    }
+    combinedName += `${basicDetails.name.surname}`
     breachNotice.titleAndFullName = combinedName.trim().replace('  ', ' ')
 
     // validation
@@ -104,6 +119,7 @@ export default function basicDetailsRoutes(
         alternateAddressOptions,
         replyAddressOptions,
         basicDetailsDateOfLetter,
+        currentPage,
       })
     } else {
       // mark that a USER has saved the document at least once
@@ -131,6 +147,7 @@ export default function basicDetailsRoutes(
             alternateAddressOptions,
             replyAddressOptions,
             basicDetailsDateOfLetter,
+            currentPage,
           })
         }
       } else {
@@ -212,8 +229,13 @@ export default function basicDetailsRoutes(
     // we havent saved the page yet so default
     if (!breachNotice.basicDetailsSaved) {
       // load offender name from integration details
+      let combinedName: string = `${basicDetails.title} ${basicDetails.name.forename} `
+      if (basicDetails.name.middleName != null) {
+        combinedName += `${basicDetails.name.middleName} `
+      }
+      combinedName += `${basicDetails.name.surname}`
       // eslint-disable-next-line no-param-reassign
-      breachNotice.titleAndFullName = `${basicDetails.title} ${basicDetails.name.forename} ${basicDetails.name.middleName} ${basicDetails.name.surname}`
+      breachNotice.titleAndFullName = `${combinedName}`
       // default the radio buttons to true
       // eslint-disable-next-line no-param-reassign
       breachNotice.useDefaultAddress = true
@@ -235,7 +257,7 @@ export default function basicDetailsRoutes(
       ...basicDetails.addresses.map(address => ({
         text: [
           address.buildingName,
-          address.addressNumber.concat(` ${address.streetName}`).trim(),
+          address.buildingNumber.concat(` ${address.streetName}`).trim(),
           address.district,
           address.townCity,
           address.county,
@@ -278,7 +300,7 @@ export default function basicDetailsRoutes(
       ...basicDetails.replyAddresses.map(address => ({
         text: [
           address.buildingName,
-          address.addressNumber.concat(` ${address.streetName}`).trim(),
+          address.buildingNumber.concat(` ${address.streetName}`).trim(),
           address.district,
           address.townCity,
           address.county,
@@ -326,80 +348,6 @@ export default function basicDetailsRoutes(
       }
     })
     return defaultAddress
-  }
-
-  // Will call integration point once available
-  function createDummyBasicDetails(): BasicDetails {
-    return {
-      title: 'Mr',
-      name: createDummyName(),
-      addresses: createDummyAddressList(),
-      replyAddresses: createDummyReplyAddressList(),
-    }
-  }
-  function createDummyAddressList(): Array<Address> {
-    const postalAddress: Address = {
-      addressId: 12345,
-      type: 'Postal',
-      buildingName: null,
-      addressNumber: '21',
-      county: 'Postal County',
-      district: 'Postal District',
-      postcode: 'NE30 3ZZ',
-      streetName: 'Postal Street',
-      townCity: 'PostCity',
-    }
-
-    const mainAddress: Address = {
-      addressId: 67891,
-      type: 'Main',
-      buildingName: null,
-      addressNumber: '666',
-      county: 'Some County',
-      district: 'Some District',
-      postcode: 'NE30 3AB',
-      streetName: 'The Street',
-      townCity: 'Newcastle',
-    }
-
-    return [postalAddress, mainAddress]
-  }
-
-  function createDummyReplyAddressList(): Array<Address> {
-    const postalAddress: Address = {
-      addressId: 33333,
-      type: 'Postal',
-      buildingName: null,
-      addressNumber: '21',
-      county: 'Reply County',
-      district: 'Reply District',
-      postcode: 'NE22 3AA',
-      streetName: 'Reply Street',
-      townCity: 'Reply City',
-    }
-
-    const mainAddress: Address = {
-      addressId: 44444,
-      type: 'Main',
-      buildingName: null,
-      addressNumber: '77',
-      county: 'Tyne and Wear',
-      district: 'Lake District',
-      postcode: 'NE30 3CC',
-      streetName: 'The Street',
-      townCity: 'Newcastle',
-    }
-
-    return [postalAddress, mainAddress]
-  }
-
-  function createDummyName(): Name {
-    const dummyName: Name = {
-      forename: 'Billy',
-      middleName: 'The',
-      surname: 'Kid',
-    }
-    return dummyName
   }
 
   async function showDraftPdf(id: string, res: Response) {
