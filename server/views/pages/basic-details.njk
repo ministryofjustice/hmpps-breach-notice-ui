@@ -91,13 +91,13 @@
       <br/><br/>
 
       <b class="govuk-fieldset__legend--m">Postal Address</b>
-      <span id="postal-address">
-      {{ defaultOffenderAddress.buildingName }}<br>
-      {{ defaultOffenderAddress.addressNumber }} {{ defaultOffenderAddress.streetName }}<br>
-      {{ defaultOffenderAddress.district }}<br>
-      {{ defaultOffenderAddress.townCity }}<br>
-      {{ defaultOffenderAddress.county }}<br>
-      {{ defaultOffenderAddress.postcode }}<br>
+      <span id="postal-address"><br>
+        {% if defaultOffenderAddress.buildingName %} {{ defaultOffenderAddress.buildingName }}<br>{% endif %}
+        {% if defaultOffenderAddress.buildingName or defaultOffenderAddress.streetName %} {{ defaultOffenderAddress.addressNumber }} {{ defaultOffenderAddress.streetName }}<br>{% endif %}
+        {% if defaultOffenderAddress.district %} {{ defaultOffenderAddress.district }}<br>{% endif %}
+        {% if defaultOffenderAddress.townCity %} {{ defaultOffenderAddress.townCity }}<br>{% endif %}
+        {% if defaultOffenderAddress.county %} {{ defaultOffenderAddress.county }}<br>{% endif %}
+        {% if defaultOffenderAddress.postcode %} {{ defaultOffenderAddress.postcode }}<br>{% endif %}
       </span>
 
       {{ govukRadios({
@@ -129,14 +129,14 @@
         ]
       }) }}
 
-      <b class="govuk-fieldset__legend--m">Reply Address</b>
+      <b class="govuk-fieldset__legend--m">Reply Address</b><br>
       <span id="reply-address">
-      {{ defaultReplyAddress.buildingName }}<br>
-      {{ defaultReplyAddress.addressNumber }} {{ defaultReplyAddress.streetName }}<br>
-      {{ defaultReplyAddress.district }}<br>
-      {{ defaultReplyAddress.townCity }}<br>
-      {{ defaultReplyAddress.county }}<br>
-      {{ defaultReplyAddress.postcode }}<br>
+        {% if defaultReplyAddress.buildingName %} {{ defaultReplyAddress.buildingName }}<br>{% endif %}
+        {% if defaultReplyAddress.addressNumber or  defaultReplyAddress.streetName %}{{ defaultReplyAddress.addressNumber }} {{ defaultReplyAddress.streetName }}<br>{% endif %}
+        {% if defaultReplyAddress.district %} {{ defaultReplyAddress.district }}<br>{% endif %}
+        {% if defaultReplyAddress.townCity %} {{ defaultReplyAddress.townCity }}<br>{% endif %}
+        {% if defaultReplyAddress.county %} {{ defaultReplyAddress.county }}<br>{% endif %}
+        {% if defaultReplyAddress.postcode %} {{ defaultReplyAddress.postcode }}<br>{% endif %}
       </span>
       <br>
       {{ govukRadios({
