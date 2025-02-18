@@ -1,4 +1,5 @@
-import { convertToTitleCase, initialiseName } from './utils'
+import { convertToTitleCase, initialiseName, combineName } from './utils'
+import { Name } from '../data/ndeliusIntegrationApiClient'
 
 describe('convert to title case', () => {
   it.each([
@@ -26,5 +27,15 @@ describe('initialise name', () => {
     ['Double barrelled', 'Robert-John Smith-Jones-Wilson', 'R. Smith-Jones-Wilson'],
   ])('%s initialiseName(%s, %s)', (_: string, a: string, expected: string) => {
     expect(initialiseName(a)).toEqual(expected)
+  })
+})
+
+describe('Combine name', () => {
+  it.each([
+    ['Mr', { forename: 'Test', middleName: null, surname: 'Test' }, 'Mr Test Test'],
+    ['Mr', { forename: 'Test', middleName: 'Test', surname: 'Test' }, 'Mr Test Test Test'],
+    [null, { forename: 'Test', middleName: 'Test', surname: 'Test' }, 'Test Test Test'],
+  ])('%s combineName(%s, %s)', (_: string, a: Name, expected: string) => {
+    expect(combineName(_, a)).toEqual(expected)
   })
 })
