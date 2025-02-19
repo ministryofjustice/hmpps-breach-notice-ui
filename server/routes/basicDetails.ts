@@ -26,8 +26,17 @@ export default function basicDetailsRoutes(
     const { id } = req.params
     const basicDetails = createDummyBasicDetails()
     const breachNotice = applyDefaults(await breachNoticeApiClient.getBreachNoticeById(id as string), basicDetails)
-    const alternateAddressOptions = initiateAlternateAddressSelectItemList(basicDetails, breachNotice)
-    const replyAddressOptions = initiateReplyAddressSelectItemList(basicDetails, breachNotice)
+    const alternateAddressOptions = addressListToSelectItemList(
+      basicDetails.addresses,
+      breachNotice.basicDetailsSaved,
+      breachNotice.offenderAddress?.addressId,
+    )
+    const replyAddressOptions = addressListToSelectItemList(
+      basicDetails.replyAddresses,
+      breachNotice.basicDetailsSaved,
+      breachNotice.replyAddress?.addressId,
+    )
+
     const defaultOffenderAddress: Address = findDefaultAddressInAddressList(basicDetails.addresses)
     const defaultReplyAddress: Address = findDefaultAddressInAddressList(basicDetails.replyAddresses)
     const basicDetailsDateOfLetter: string = toUserDate(breachNotice.dateOfLetter)
@@ -79,23 +88,9 @@ export default function basicDetailsRoutes(
 
     // validation
     const errorMessages: ErrorMessages = validateBasicDetails(breachNotice, req.body.dateOfLetter)
-    const hasErrors: boolean = Object.keys(errorMessages).length > 0
+    let hasErrors: boolean = Object.keys(errorMessages).length > 0
 
-    if (hasErrors) {
-      const alternateAddressOptions = initiateAlternateAddressSelectItemList(basicDetails, breachNotice)
-      const replyAddressOptions = initiateReplyAddressSelectItemList(basicDetails, breachNotice)
-      const basicDetailsDateOfLetter: string = req.body.dateOfLetter
-      res.render(`pages/basic-details`, {
-        errorMessages,
-        breachNotice,
-        basicDetails,
-        defaultOffenderAddress,
-        defaultReplyAddress,
-        alternateAddressOptions,
-        replyAddressOptions,
-        basicDetailsDateOfLetter,
-      })
-    } else {
+    if (!hasErrors) {
       // mark that a USER has saved the document at least once
       breachNotice.basicDetailsSaved = true
       await breachNoticeApiClient.updateBreachNotice(id, breachNotice)
@@ -109,25 +104,38 @@ export default function basicDetailsRoutes(
             text: 'There was an issue generating the draft report. Please try again or contact support.',
           }
 
-          const alternateAddressOptions = initiateAlternateAddressSelectItemList(basicDetails, breachNotice)
-          const replyAddressOptions = initiateReplyAddressSelectItemList(basicDetails, breachNotice)
-          const basicDetailsDateOfLetter: string = req.body.dateOfLetter
-          res.render(`pages/basic-details`, {
-            errorMessages,
-            breachNotice,
-            basicDetails,
-            defaultOffenderAddress,
-            defaultReplyAddress,
-            alternateAddressOptions,
-            replyAddressOptions,
-            basicDetailsDateOfLetter,
-          })
+          hasErrors = true
         }
       } else if (req.body.action === 'saveProgressAndClose') {
         res.send(`<script nonce="${res.locals.cspNonce}">window.close()</script>`)
       } else {
         res.redirect(`/warning-type/${req.params.id}`)
       }
+    }
+
+    if (hasErrors) {
+      const alternateAddressOptions = addressListToSelectItemList(
+        basicDetails.addresses,
+        breachNotice.basicDetailsSaved,
+        breachNotice.offenderAddress?.addressId,
+      )
+      const replyAddressOptions = addressListToSelectItemList(
+        basicDetails.replyAddresses,
+        breachNotice.basicDetailsSaved,
+        breachNotice.replyAddress?.addressId,
+      )
+
+      const basicDetailsDateOfLetter: string = req.body.dateOfLetter
+      res.render(`pages/basic-details`, {
+        errorMessages,
+        breachNotice,
+        basicDetails,
+        defaultOffenderAddress,
+        defaultReplyAddress,
+        alternateAddressOptions,
+        replyAddressOptions,
+        basicDetailsDateOfLetter,
+      })
     }
   })
 
@@ -192,20 +200,21 @@ export default function basicDetailsRoutes(
     return breachNotice
   }
 
-  function initiateAlternateAddressSelectItemList(
-    basicDetails: BasicDetails,
-    breachNotice: BreachNotice,
+  function addressListToSelectItemList(
+    addresses: AddressList,
+    breachNoticeSaved: boolean,
+    selectedAddressId: number,
   ): SelectItem[] {
-    const alternateAddressSelectItemList: SelectItem[] = [
+    return [
       {
         text: 'Please Select',
         value: '-1',
         selected: true,
       },
-      ...basicDetails.addresses.map(address => ({
+      ...addresses.map(address => ({
         text: [
           address.buildingName,
-          address.addressNumber.concat(` ${address.streetName}`).trim(),
+          `${address.addressNumber} ${address.streetName}`.trim(),
           address.district,
           address.townCity,
           address.county,
@@ -214,61 +223,9 @@ export default function basicDetailsRoutes(
           .filter(item => item)
           .join(', '),
         value: `${address.addressId}`,
-        selected: false,
+        selected: breachNoticeSaved && address.addressId === selectedAddressId,
       })),
     ]
-
-    if (breachNotice.basicDetailsSaved) {
-      alternateAddressSelectItemList.forEach((selectItem: SelectItem) => {
-        if (breachNotice.offenderAddress && breachNotice.offenderAddress.addressId) {
-          if (breachNotice.offenderAddress.addressId !== -1) {
-            const selectItemValueNumber: number = +selectItem.value
-            // eslint-disable-next-line no-param-reassign
-            selectItem.selected = breachNotice.offenderAddress.addressId === selectItemValueNumber
-          }
-        }
-      })
-    }
-
-    return alternateAddressSelectItemList
-  }
-
-  function initiateReplyAddressSelectItemList(basicDetails: BasicDetails, breachNotice: BreachNotice): SelectItem[] {
-    const alternateReplyAddressSelectItemList: SelectItem[] = [
-      {
-        text: 'Please Select',
-        value: '-1',
-        selected: true,
-      },
-      ...basicDetails.replyAddresses.map(address => ({
-        text: [
-          address.buildingName,
-          address.addressNumber.concat(` ${address.streetName}`).trim(),
-          address.district,
-          address.townCity,
-          address.county,
-          address.postcode,
-        ]
-          .filter(item => item)
-          .join(', '),
-        value: `${address.addressId}`,
-        selected: false,
-      })),
-    ]
-
-    if (breachNotice.basicDetailsSaved) {
-      alternateReplyAddressSelectItemList.forEach((selectItem: SelectItem) => {
-        if (breachNotice.replyAddress && breachNotice.replyAddress.addressId) {
-          if (breachNotice.replyAddress.addressId !== -1) {
-            const selectItemValueNumber: number = +selectItem.value
-            // eslint-disable-next-line no-param-reassign
-            selectItem.selected = breachNotice.replyAddress.addressId === selectItemValueNumber
-          }
-        }
-      })
-    }
-
-    return alternateReplyAddressSelectItemList
   }
 
   function findDefaultAddressInAddressList(addressList: Array<Address>): Address {
