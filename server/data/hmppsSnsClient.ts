@@ -2,7 +2,7 @@ import { SNSClient, PublishCommand } from '@aws-sdk/client-sns'
 import logger from '../../logger'
 
 export interface HmppsDomainEvent {
-  eventType: 'probation.breach-notice.completed' // TBC - see Slack
+  eventType: 'probation-case.breach-notice.created'
   version: 1
   description: 'A breach notice has been completed for a person on probation'
   detailUrl: string // This should be set to the PDF URL for the breach notice
