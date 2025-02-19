@@ -17,6 +17,6 @@ export default function routes({ auditService, hmppsAuthClient }: Services): Rou
   })
 
   basicDetailsRoutes(router, auditService, hmppsAuthClient)
-  warningTypeRoutes(router, auditService, hmppsAuthClient)
+  warningTypeRoutes(router, auditService)
   return router
 }
