@@ -1,12 +1,12 @@
-import { type Router } from 'express'
+import { Response, type Router } from 'express'
 import { LocalDate, LocalDateTime } from '@js-joda/core'
 import AuditService, { Page } from '../services/auditService'
-import BreachNoticeApiClient, { BreachNotice, ErrorMessages, SelectItem } from '../data/breachNoticeApiClient'
-import NdeliusIntegrationApiClient, { Address, AddressList, BasicDetails } from '../data/ndeliusIntegrationApiClient'
 import { fromUserDate, toUserDate } from '../utils/dateUtils'
 import { HmppsAuthClient } from '../data'
 import CommonUtils from '../services/commonUtils'
 import { combineName } from '../utils/utils'
+import BreachNoticeApiClient, { BreachNotice, ErrorMessages, SelectItem } from '../data/breachNoticeApiClient'
+import NdeliusIntegrationApiClient, { Address, AddressList, BasicDetails } from '../data/ndeliusIntegrationApiClient'
 
 export default function basicDetailsRoutes(
   router: Router,
@@ -21,22 +21,27 @@ export default function basicDetailsRoutes(
     const token = await hmppsAuthClient.getSystemClientToken(res.locals.user.username)
     const breachNoticeApiClient = new BreachNoticeApiClient(token)
     const ndeliusIntegrationApiClient = new NdeliusIntegrationApiClient(token)
-    const { id } = req.params
-    let breachNotice = await breachNoticeApiClient.getBreachNoticeById(id)
 
+    const breachNotice = await breachNoticeApiClient.getBreachNoticeById(req.params.id as string)
+    const basicDetails = await ndeliusIntegrationApiClient.getBasicDetails(breachNotice.crn, req.user.username)
     if (await commonUtils.redirectRequired(breachNotice, res)) return
 
-    const basicDetails = await ndeliusIntegrationApiClient.getBasicDetails(breachNotice.crn, req.user.username)
+    const alternateAddressOptions = addressListToSelectItemList(
+      basicDetails.addresses,
+      breachNotice.basicDetailsSaved,
+      breachNotice.offenderAddress?.addressId,
+    )
+    const replyAddressOptions = addressListToSelectItemList(
+      basicDetails.replyAddresses,
+      breachNotice.basicDetailsSaved,
+      breachNotice.replyAddress?.addressId,
+    )
 
-    breachNotice = applyDefaults(await breachNoticeApiClient.getBreachNoticeById(id as string), basicDetails)
-
-    const alternateAddressOptions = initiateAlternateAddressSelectItemList(basicDetails, breachNotice)
-    const replyAddressOptions = initiateReplyAddressSelectItemList(basicDetails, breachNotice)
     const defaultOffenderAddress: Address = findDefaultAddressInAddressList(basicDetails.addresses)
     const defaultReplyAddress: Address = findDefaultAddressInAddressList(basicDetails.replyAddresses)
     const basicDetailsDateOfLetter: string = toUserDate(breachNotice.dateOfLetter)
     res.render('pages/basic-details', {
-      breachNotice,
+      breachNotice: applyDefaults(breachNotice, basicDetails),
       basicDetails,
       alternateAddressOptions,
       replyAddressOptions,
@@ -53,54 +58,86 @@ export default function basicDetailsRoutes(
     const ndeliusIntegrationApiClient = new NdeliusIntegrationApiClient(token)
 
     const { id } = req.params
-    let breachNotice = await breachNoticeApiClient.getBreachNoticeById(id as string)
+    const currentBreachNotice = await breachNoticeApiClient.getBreachNoticeById(req.params.id as string)
 
-    if (await commonUtils.redirectRequired(breachNotice, res)) return
+    if (await commonUtils.redirectRequired(currentBreachNotice, res)) return
 
-    const basicDetails = await ndeliusIntegrationApiClient.getBasicDetails(breachNotice.crn, req.user.username)
-    breachNotice = applyDefaults(breachNotice, basicDetails)
+    const basicDetails = await ndeliusIntegrationApiClient.getBasicDetails(currentBreachNotice.crn, req.user.username)
+    const updatedBreachNotice = applyDefaults(currentBreachNotice, basicDetails)
 
     const defaultOffenderAddress: Address = findDefaultAddressInAddressList(basicDetails.addresses)
     const defaultReplyAddress: Address = findDefaultAddressInAddressList(basicDetails.replyAddresses)
-    breachNotice.referenceNumber = req.body.officeReference
+    updatedBreachNotice.referenceNumber = req.body.officeReference
     if (req.body.offenderAddressSelectOne === 'No') {
       // we are using a selected address. Find it in the list
-      breachNotice.offenderAddress = getSelectedAddress(basicDetails.addresses, req.body.alternateAddress)
-      breachNotice.useDefaultAddress = false
+      updatedBreachNotice.offenderAddress = getSelectedAddress(basicDetails.addresses, req.body.alternateAddress)
+      updatedBreachNotice.useDefaultAddress = false
     } else if (req.body.offenderAddressSelectOne === 'Yes') {
       // otherwise use default
-      breachNotice.offenderAddress = defaultOffenderAddress
-      breachNotice.useDefaultAddress = true
+      updatedBreachNotice.offenderAddress = defaultOffenderAddress
+      updatedBreachNotice.useDefaultAddress = true
     } else {
-      breachNotice.useDefaultAddress = null
+      updatedBreachNotice.useDefaultAddress = null
     }
     // reply address
     if (req.body.replyAddressSelectOne === 'No') {
-      breachNotice.replyAddress = getSelectedAddress(basicDetails.replyAddresses, req.body.alternateReplyAddress)
-      breachNotice.useDefaultReplyAddress = false
+      updatedBreachNotice.replyAddress = getSelectedAddress(basicDetails.replyAddresses, req.body.alternateReplyAddress)
+      updatedBreachNotice.useDefaultReplyAddress = false
     } else if (req.body.replyAddressSelectOne === 'Yes') {
-      breachNotice.replyAddress = defaultReplyAddress
-      breachNotice.useDefaultReplyAddress = true
+      updatedBreachNotice.replyAddress = defaultReplyAddress
+      updatedBreachNotice.useDefaultReplyAddress = true
     } else {
-      breachNotice.useDefaultReplyAddress = null
+      updatedBreachNotice.useDefaultReplyAddress = null
     }
 
     const { title, name } = basicDetails
     const combinedName = combineName(title, name)
 
-    breachNotice.titleAndFullName = combinedName.trim().replace('  ', ' ')
+    updatedBreachNotice.titleAndFullName = combinedName.trim().replace('  ', ' ')
 
     // validation
-    const errorMessages: ErrorMessages = validateBasicDetails(breachNotice, req.body.dateOfLetter)
-    const hasErrors: boolean = Object.keys(errorMessages).length > 0
+    const errorMessages: ErrorMessages = validateBasicDetails(updatedBreachNotice, req.body.dateOfLetter)
+    let hasErrors: boolean = Object.keys(errorMessages).length > 0
+
+    if (!hasErrors) {
+      // mark that a USER has saved the document at least once
+      updatedBreachNotice.basicDetailsSaved = true
+      await breachNoticeApiClient.updateBreachNotice(id, updatedBreachNotice)
+
+      if (req.body.action === 'viewDraft') {
+        try {
+          await showDraftPdf(updatedBreachNotice.id, res)
+        } catch {
+          // Render the page with the new error
+          errorMessages.pdfRenderError = {
+            text: 'There was an issue generating the draft report. Please try again or contact support.',
+          }
+
+          hasErrors = true
+        }
+      } else if (req.body.action === 'saveProgressAndClose') {
+        res.send(`<script nonce="${res.locals.cspNonce}">window.close()</script>`)
+      } else {
+        res.redirect(`/warning-type/${req.params.id}`)
+      }
+    }
 
     if (hasErrors) {
-      const alternateAddressOptions = initiateAlternateAddressSelectItemList(basicDetails, breachNotice)
-      const replyAddressOptions = initiateReplyAddressSelectItemList(basicDetails, breachNotice)
+      const alternateAddressOptions = addressListToSelectItemList(
+        basicDetails.addresses,
+        updatedBreachNotice.basicDetailsSaved,
+        updatedBreachNotice.offenderAddress?.addressId,
+      )
+      const replyAddressOptions = addressListToSelectItemList(
+        basicDetails.replyAddresses,
+        updatedBreachNotice.basicDetailsSaved,
+        updatedBreachNotice.replyAddress?.addressId,
+      )
+
       const basicDetailsDateOfLetter: string = req.body.dateOfLetter
       res.render(`pages/basic-details`, {
         errorMessages,
-        breachNotice,
+        breachNotice: updatedBreachNotice,
         basicDetails,
         defaultOffenderAddress,
         defaultReplyAddress,
@@ -111,8 +148,8 @@ export default function basicDetailsRoutes(
       })
     } else {
       // mark that a USER has saved the document at least once
-      breachNotice.basicDetailsSaved = true
-      await breachNoticeApiClient.updateBreachNotice(id, breachNotice)
+      updatedBreachNotice.basicDetailsSaved = true
+      await breachNoticeApiClient.updateBreachNotice(id, updatedBreachNotice)
 
       if (req.body.action === 'saveProgressAndClose') {
         res.send(`<script nonce="${res.locals.cspNonce}">window.close()</script>`)
@@ -186,20 +223,21 @@ export default function basicDetailsRoutes(
     return breachNotice
   }
 
-  function initiateAlternateAddressSelectItemList(
-    basicDetails: BasicDetails,
-    breachNotice: BreachNotice,
+  function addressListToSelectItemList(
+    addresses: AddressList,
+    breachNoticeSaved: boolean,
+    selectedAddressId: number,
   ): SelectItem[] {
-    const alternateAddressSelectItemList: SelectItem[] = [
+    return [
       {
         text: 'Please Select',
         value: '-1',
         selected: true,
       },
-      ...basicDetails.addresses.map(address => ({
+      ...addresses.map(address => ({
         text: [
           address.buildingName,
-          address.buildingNumber.concat(` ${address.streetName}`).trim(),
+          `${address.buildingNumber} ${address.streetName}`.trim(),
           address.district,
           address.townCity,
           address.county,
@@ -208,61 +246,9 @@ export default function basicDetailsRoutes(
           .filter(item => item)
           .join(', '),
         value: `${address.addressId}`,
-        selected: false,
+        selected: breachNoticeSaved && address.addressId === selectedAddressId,
       })),
     ]
-
-    if (breachNotice.basicDetailsSaved) {
-      alternateAddressSelectItemList.forEach((selectItem: SelectItem) => {
-        if (breachNotice.offenderAddress && breachNotice.offenderAddress.addressId) {
-          if (breachNotice.offenderAddress.addressId !== -1) {
-            const selectItemValueNumber: number = +selectItem.value
-            // eslint-disable-next-line no-param-reassign
-            selectItem.selected = breachNotice.offenderAddress.addressId === selectItemValueNumber
-          }
-        }
-      })
-    }
-
-    return alternateAddressSelectItemList
-  }
-
-  function initiateReplyAddressSelectItemList(basicDetails: BasicDetails, breachNotice: BreachNotice): SelectItem[] {
-    const alternateReplyAddressSelectItemList: SelectItem[] = [
-      {
-        text: 'Please Select',
-        value: '-1',
-        selected: true,
-      },
-      ...basicDetails.replyAddresses.map(address => ({
-        text: [
-          address.buildingName,
-          address.buildingNumber.concat(` ${address.streetName}`).trim(),
-          address.district,
-          address.townCity,
-          address.county,
-          address.postcode,
-        ]
-          .filter(item => item)
-          .join(', '),
-        value: `${address.addressId}`,
-        selected: false,
-      })),
-    ]
-
-    if (breachNotice.basicDetailsSaved) {
-      alternateReplyAddressSelectItemList.forEach((selectItem: SelectItem) => {
-        if (breachNotice.replyAddress && breachNotice.replyAddress.addressId) {
-          if (breachNotice.replyAddress.addressId !== -1) {
-            const selectItemValueNumber: number = +selectItem.value
-            // eslint-disable-next-line no-param-reassign
-            selectItem.selected = breachNotice.replyAddress.addressId === selectItemValueNumber
-          }
-        }
-      })
-    }
-
-    return alternateReplyAddressSelectItemList
   }
 
   function findDefaultAddressInAddressList(addressList: Array<Address>): Address {
@@ -280,6 +266,10 @@ export default function basicDetailsRoutes(
       }
     })
     return defaultAddress
+  }
+
+  async function showDraftPdf(id: string, res: Response) {
+    res.redirect(`/pdf/${id}`)
   }
 
   return router
