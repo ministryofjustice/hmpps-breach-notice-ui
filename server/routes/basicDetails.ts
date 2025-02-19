@@ -1,31 +1,32 @@
-import { type Response, Router } from 'express'
+import { Response, type Router } from 'express'
 import { LocalDate, LocalDateTime } from '@js-joda/core'
 import AuditService, { Page } from '../services/auditService'
-import BreachNoticeApiClient, {
-  Address,
-  AddressList,
-  BasicDetails,
-  BreachNotice,
-  ErrorMessages,
-  Name,
-  SelectItem,
-} from '../data/breachNoticeApiClient'
 import { fromUserDate, toUserDate } from '../utils/dateUtils'
 import { HmppsAuthClient } from '../data'
+import CommonUtils from '../services/commonUtils'
+import { combineName } from '../utils/utils'
+import BreachNoticeApiClient, { BreachNotice, ErrorMessages, SelectItem } from '../data/breachNoticeApiClient'
+import NdeliusIntegrationApiClient, { BasicDetails } from '../data/ndeliusIntegrationApiClient'
+import { Address } from '../data/commonModels'
 
 export default function basicDetailsRoutes(
   router: Router,
   auditService: AuditService,
   hmppsAuthClient: HmppsAuthClient,
+  commonUtils: CommonUtils,
 ): Router {
+  const currentPage = 'basic-details'
+
   router.get('/basic-details/:id', async (req, res, next) => {
     await auditService.logPageView(Page.BASIC_DETAILS, { who: res.locals.user.username, correlationId: req.id })
-    const breachNoticeApiClient = new BreachNoticeApiClient(
-      await hmppsAuthClient.getSystemClientToken(res.locals.user.username),
-    )
-    const { id } = req.params
-    const basicDetails = createDummyBasicDetails()
-    const breachNotice = applyDefaults(await breachNoticeApiClient.getBreachNoticeById(id as string), basicDetails)
+    const token = await hmppsAuthClient.getSystemClientToken(res.locals.user.username)
+    const breachNoticeApiClient = new BreachNoticeApiClient(token)
+    const ndeliusIntegrationApiClient = new NdeliusIntegrationApiClient(token)
+
+    const breachNotice = await breachNoticeApiClient.getBreachNoticeById(req.params.id as string)
+    const basicDetails = await ndeliusIntegrationApiClient.getBasicDetails(breachNotice.crn, req.user.username)
+    if (await commonUtils.redirectRequired(breachNotice, res)) return
+
     const alternateAddressOptions = addressListToSelectItemList(
       basicDetails.addresses,
       breachNotice.basicDetailsSaved,
@@ -41,63 +42,72 @@ export default function basicDetailsRoutes(
     const defaultReplyAddress: Address = findDefaultAddressInAddressList(basicDetails.replyAddresses)
     const basicDetailsDateOfLetter: string = toUserDate(breachNotice.dateOfLetter)
     res.render('pages/basic-details', {
-      breachNotice,
+      breachNotice: applyDefaults(breachNotice, basicDetails),
       basicDetails,
       alternateAddressOptions,
       replyAddressOptions,
       defaultOffenderAddress,
       defaultReplyAddress,
       basicDetailsDateOfLetter,
+      currentPage,
     })
   })
 
   router.post('/basic-details/:id', async (req, res, next) => {
-    const breachNoticeApiClient = new BreachNoticeApiClient(
-      await hmppsAuthClient.getSystemClientToken(res.locals.user.username),
-    )
+    const token = await hmppsAuthClient.getSystemClientToken(res.locals.user.username)
+    const breachNoticeApiClient = new BreachNoticeApiClient(token)
+    const ndeliusIntegrationApiClient = new NdeliusIntegrationApiClient(token)
+
     const { id } = req.params
-    const basicDetails = createDummyBasicDetails()
-    const breachNotice = applyDefaults(await breachNoticeApiClient.getBreachNoticeById(id as string), basicDetails)
+    const currentBreachNotice = await breachNoticeApiClient.getBreachNoticeById(req.params.id as string)
+
+    if (await commonUtils.redirectRequired(currentBreachNotice, res)) return
+
+    const basicDetails = await ndeliusIntegrationApiClient.getBasicDetails(currentBreachNotice.crn, req.user.username)
+    const updatedBreachNotice = applyDefaults(currentBreachNotice, basicDetails)
+
     const defaultOffenderAddress: Address = findDefaultAddressInAddressList(basicDetails.addresses)
     const defaultReplyAddress: Address = findDefaultAddressInAddressList(basicDetails.replyAddresses)
-    breachNotice.referenceNumber = req.body.officeReference
+    updatedBreachNotice.referenceNumber = req.body.officeReference
     if (req.body.offenderAddressSelectOne === 'No') {
       // we are using a selected address. Find it in the list
-      breachNotice.offenderAddress = getSelectedAddress(basicDetails.addresses, req.body.alternateAddress)
-      breachNotice.useDefaultAddress = false
+      updatedBreachNotice.offenderAddress = getSelectedAddress(basicDetails.addresses, req.body.alternateAddress)
+      updatedBreachNotice.useDefaultAddress = false
     } else if (req.body.offenderAddressSelectOne === 'Yes') {
       // otherwise use default
-      breachNotice.offenderAddress = defaultOffenderAddress
-      breachNotice.useDefaultAddress = true
+      updatedBreachNotice.offenderAddress = defaultOffenderAddress
+      updatedBreachNotice.useDefaultAddress = true
     } else {
-      breachNotice.useDefaultAddress = null
+      updatedBreachNotice.useDefaultAddress = null
     }
     // reply address
     if (req.body.replyAddressSelectOne === 'No') {
-      breachNotice.replyAddress = getSelectedAddress(basicDetails.replyAddresses, req.body.alternateReplyAddress)
-      breachNotice.useDefaultReplyAddress = false
+      updatedBreachNotice.replyAddress = getSelectedAddress(basicDetails.replyAddresses, req.body.alternateReplyAddress)
+      updatedBreachNotice.useDefaultReplyAddress = false
     } else if (req.body.replyAddressSelectOne === 'Yes') {
-      breachNotice.replyAddress = defaultReplyAddress
-      breachNotice.useDefaultReplyAddress = true
+      updatedBreachNotice.replyAddress = defaultReplyAddress
+      updatedBreachNotice.useDefaultReplyAddress = true
     } else {
-      breachNotice.useDefaultReplyAddress = null
+      updatedBreachNotice.useDefaultReplyAddress = null
     }
 
-    const combinedName: string = `${basicDetails.title} ${basicDetails.name.forename} ${basicDetails.name.middleName} ${basicDetails.name.surname}`
-    breachNotice.titleAndFullName = combinedName.trim().replace('  ', ' ')
+    const { title, name } = basicDetails
+    const combinedName = combineName(title, name)
+
+    updatedBreachNotice.titleAndFullName = combinedName.trim().replace('  ', ' ')
 
     // validation
-    const errorMessages: ErrorMessages = validateBasicDetails(breachNotice, req.body.dateOfLetter)
+    const errorMessages: ErrorMessages = validateBasicDetails(updatedBreachNotice, req.body.dateOfLetter)
     let hasErrors: boolean = Object.keys(errorMessages).length > 0
 
     if (!hasErrors) {
       // mark that a USER has saved the document at least once
-      breachNotice.basicDetailsSaved = true
-      await breachNoticeApiClient.updateBreachNotice(id, breachNotice)
+      updatedBreachNotice.basicDetailsSaved = true
+      await breachNoticeApiClient.updateBreachNotice(id, updatedBreachNotice)
 
       if (req.body.action === 'viewDraft') {
         try {
-          await showDraftPdf(breachNotice.id, res)
+          await showDraftPdf(updatedBreachNotice.id, res)
         } catch {
           // Render the page with the new error
           errorMessages.pdfRenderError = {
@@ -116,26 +126,37 @@ export default function basicDetailsRoutes(
     if (hasErrors) {
       const alternateAddressOptions = addressListToSelectItemList(
         basicDetails.addresses,
-        breachNotice.basicDetailsSaved,
-        breachNotice.offenderAddress?.addressId,
+        updatedBreachNotice.basicDetailsSaved,
+        updatedBreachNotice.offenderAddress?.addressId,
       )
       const replyAddressOptions = addressListToSelectItemList(
         basicDetails.replyAddresses,
-        breachNotice.basicDetailsSaved,
-        breachNotice.replyAddress?.addressId,
+        updatedBreachNotice.basicDetailsSaved,
+        updatedBreachNotice.replyAddress?.addressId,
       )
 
       const basicDetailsDateOfLetter: string = req.body.dateOfLetter
       res.render(`pages/basic-details`, {
         errorMessages,
-        breachNotice,
+        breachNotice: updatedBreachNotice,
         basicDetails,
         defaultOffenderAddress,
         defaultReplyAddress,
         alternateAddressOptions,
         replyAddressOptions,
         basicDetailsDateOfLetter,
+        currentPage,
       })
+    } else {
+      // mark that a USER has saved the document at least once
+      updatedBreachNotice.basicDetailsSaved = true
+      await breachNoticeApiClient.updateBreachNotice(id, updatedBreachNotice)
+
+      if (req.body.action === 'saveProgressAndClose') {
+        res.send(`<script nonce="${res.locals.cspNonce}">window.close()</script>`)
+      } else {
+        res.redirect(`/warning-type/${req.params.id}`)
+      }
     }
   })
 
@@ -181,7 +202,7 @@ export default function basicDetailsRoutes(
     return errorMessages
   }
 
-  function getSelectedAddress(addressList: AddressList, addressIdentifier: string): Address {
+  function getSelectedAddress(addressList: Address[], addressIdentifier: string): Address {
     const addressIdentifierNumber: number = +addressIdentifier
     return addressList.find(address => address.addressId === addressIdentifierNumber)
   }
@@ -189,10 +210,13 @@ export default function basicDetailsRoutes(
   // if this page hasnt been saved we want to go through and apply defaults otherwise dont do this
   function applyDefaults(breachNotice: BreachNotice, basicDetails: BasicDetails) {
     if (!breachNotice.basicDetailsSaved) {
+      // load offender name from integration details
+      const { title, name } = basicDetails
+      const combinedName = combineName(title, name)
       // only apply the defaults if basic details has NOT been saved by a USER
       return {
         ...breachNotice,
-        titleAndFullName: `${basicDetails.title} ${basicDetails.name.forename} ${basicDetails.name.middleName} ${basicDetails.name.surname}`,
+        titleAndFullName: combinedName,
         useDefaultAddress: true,
         useDefaultReplyAddress: true,
       }
@@ -201,7 +225,7 @@ export default function basicDetailsRoutes(
   }
 
   function addressListToSelectItemList(
-    addresses: AddressList,
+    addresses: Address[],
     breachNoticeSaved: boolean,
     selectedAddressId: number,
   ): SelectItem[] {
@@ -214,7 +238,7 @@ export default function basicDetailsRoutes(
       ...addresses.map(address => ({
         text: [
           address.buildingName,
-          `${address.addressNumber} ${address.streetName}`.trim(),
+          `${address.buildingNumber} ${address.streetName}`.trim(),
           address.district,
           address.townCity,
           address.county,
@@ -243,80 +267,6 @@ export default function basicDetailsRoutes(
       }
     })
     return defaultAddress
-  }
-
-  // Will call integration point once available
-  function createDummyBasicDetails(): BasicDetails {
-    return {
-      title: 'Mr',
-      name: createDummyName(),
-      addresses: createDummyAddressList(),
-      replyAddresses: createDummyReplyAddressList(),
-    }
-  }
-  function createDummyAddressList(): Array<Address> {
-    const postalAddress: Address = {
-      addressId: 12345,
-      type: 'Postal',
-      buildingName: null,
-      addressNumber: '21',
-      county: 'Postal County',
-      district: 'Postal District',
-      postcode: 'NE30 3ZZ',
-      streetName: 'Postal Street',
-      townCity: 'PostCity',
-    }
-
-    const mainAddress: Address = {
-      addressId: 67891,
-      type: 'Main',
-      buildingName: null,
-      addressNumber: '666',
-      county: 'Some County',
-      district: 'Some District',
-      postcode: 'NE30 3AB',
-      streetName: 'The Street',
-      townCity: 'Newcastle',
-    }
-
-    return [postalAddress, mainAddress]
-  }
-
-  function createDummyReplyAddressList(): Array<Address> {
-    const postalAddress: Address = {
-      addressId: 33333,
-      type: 'Postal',
-      buildingName: null,
-      addressNumber: '21',
-      county: 'Reply County',
-      district: 'Reply District',
-      postcode: 'NE22 3AA',
-      streetName: 'Reply Street',
-      townCity: 'Reply City',
-    }
-
-    const mainAddress: Address = {
-      addressId: 44444,
-      type: 'Main',
-      buildingName: null,
-      addressNumber: '77',
-      county: 'Tyne and Wear',
-      district: 'Lake District',
-      postcode: 'NE30 3CC',
-      streetName: 'The Street',
-      townCity: 'Newcastle',
-    }
-
-    return [postalAddress, mainAddress]
-  }
-
-  function createDummyName(): Name {
-    const dummyName: Name = {
-      forename: 'Billy',
-      middleName: 'The',
-      surname: 'Kid',
-    }
-    return dummyName
   }
 
   async function showDraftPdf(id: string, res: Response) {

@@ -1,0 +1,36 @@
+<nav class="moj-side-navigation" aria-label="Side navigation">
+    <ul class="moj-side-navigation__list">
+
+        <li class="moj-side-navigation__item {{ "moj-side-navigation__item--active" if currentPage == "basic-details" }}">
+            <a href="/basic-details/{{ breachNotice.id }}" aria-current="location">Basic details</a>
+        </li>
+
+        <li class="moj-side-navigation__item {{ "moj-side-navigation__item--active" if currentPage == "warning-type" }}">
+            {% if breachNotice.basicDetailsSaved %}
+                <a href="/warning-type/{{ breachNotice.id }}" aria-current="location">Warning type</a>
+            {% else %}
+                <a href="#" aria-current="location" class=disabled-nav>Warning Type</a>
+            {% endif %}
+        </li>
+
+        <li class="moj-side-navigation__item {{ "moj-side-navigation__item--active" if currentPage == "warning-details" }}">
+            {% if breachNotice.warningTypeSaved %}
+                <a href="/warning-details/{{ breachNotice.id }}" aria-current="location">Warning details</a>
+            {% else %}
+                <a href="#" aria-current="location" class=disabled-nav>Warning details</a>
+            {% endif %}
+        </li>
+
+        <li class="moj-side-navigation__item {{ "moj-side-navigation__item--active" if currentPage == "next-appointment" }}">
+            {% if breachNotice.warningDetailsSaved %}
+                <a href="/next-appointment/{{ breachNotice.id }}" aria-current="location">Next appointment</a>
+            {% else %}
+                <a href="#" aria-current="location" class=disabled-nav>Next appointment</a>
+            {% endif %}
+        </li>
+
+        <li class="moj-side-navigation__item {{ "moj-side-navigation__item--active" if currentPage == "check-your-report" }}">
+            <a href="/check-your-report/{{ breachNotice.id }}" aria-current="location">Check your answers</a>
+        </li>
+    </ul>
+</nav>

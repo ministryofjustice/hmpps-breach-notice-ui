@@ -4,7 +4,8 @@ import type { Services } from '../services'
 import basicDetailsRoutes from './basicDetails'
 import warningTypeRoutes from './warningType'
 
-export default function routes({ auditService, hmppsAuthClient }: Services): Router {
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+export default function routes({ auditService, hmppsAuthClient, snsService, commonUtils }: Services): Router {
   const router = Router()
   const get = (path: string | string[], handler: RequestHandler) => router.get(path, asyncMiddleware(handler))
 
@@ -16,7 +17,7 @@ export default function routes({ auditService, hmppsAuthClient }: Services): Rou
     res.redirect(`/basic-details/${req.params.id}`)
   })
 
-  basicDetailsRoutes(router, auditService, hmppsAuthClient)
+  basicDetailsRoutes(router, auditService, hmppsAuthClient, commonUtils)
   warningTypeRoutes(router, auditService)
   return router
 }
