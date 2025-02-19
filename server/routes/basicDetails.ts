@@ -25,8 +25,7 @@ export default function basicDetailsRoutes(
     )
     const { id } = req.params
     const basicDetails = createDummyBasicDetails()
-    const breachNotice = await breachNoticeApiClient.getBreachNoticeById(id)
-    checkBreachNoticeAndApplyDefaults(breachNotice, basicDetails)
+    const breachNotice = applyDefaults(await breachNoticeApiClient.getBreachNoticeById(id as string), basicDetails)
     const alternateAddressOptions = initiateAlternateAddressSelectItemList(basicDetails, breachNotice)
     const replyAddressOptions = initiateReplyAddressSelectItemList(basicDetails, breachNotice)
     const defaultOffenderAddress: Address = findDefaultAddressInAddressList(basicDetails.addresses)
@@ -47,11 +46,9 @@ export default function basicDetailsRoutes(
     const breachNoticeApiClient = new BreachNoticeApiClient(
       await hmppsAuthClient.getSystemClientToken(res.locals.user.username),
     )
-    const breachNoticeId = req.params.id
-    const basicDetails: BasicDetails = createDummyBasicDetails()
-    let breachNotice: BreachNotice = null
-    breachNotice = await breachNoticeApiClient.getBreachNoticeById(breachNoticeId as string)
-    checkBreachNoticeAndApplyDefaults(breachNotice, basicDetails)
+    const { id } = req.params
+    const basicDetails = createDummyBasicDetails()
+    const breachNotice = applyDefaults(await breachNoticeApiClient.getBreachNoticeById(id as string), basicDetails)
     const defaultOffenderAddress: Address = findDefaultAddressInAddressList(basicDetails.addresses)
     const defaultReplyAddress: Address = findDefaultAddressInAddressList(basicDetails.replyAddresses)
     breachNotice.referenceNumber = req.body.officeReference
@@ -101,7 +98,7 @@ export default function basicDetailsRoutes(
     } else {
       // mark that a USER has saved the document at least once
       breachNotice.basicDetailsSaved = true
-      await breachNoticeApiClient.updateBreachNotice(breachNoticeId, breachNotice)
+      await breachNoticeApiClient.updateBreachNotice(id, breachNotice)
 
       if (req.body.action === 'viewDraft') {
         try {
@@ -127,8 +124,7 @@ export default function basicDetailsRoutes(
           })
         }
       } else if (req.body.action === 'saveProgressAndClose') {
-        res.setHeader('Content-Security-Policy', "script-src-elem 'unsafe-inline'")
-        res.send('<script>window.close();</script>')
+        res.send(`<script nonce="${res.locals.cspNonce}">window.close()</script>`)
       } else {
         res.redirect(`/warning-type/${req.params.id}`)
       }
@@ -138,11 +134,9 @@ export default function basicDetailsRoutes(
   function validateBasicDetails(breachNotice: BreachNotice, userEnteredDateOfLetter: string): ErrorMessages {
     const errorMessages: ErrorMessages = {}
     const currentDateAtStartOfTheDay: LocalDateTime = LocalDate.now().atStartOfDay()
-    if (breachNotice.referenceNumber) {
-      if (breachNotice.referenceNumber.trim().length > 30) {
-        errorMessages.officeReferenceNumber = {
-          text: 'The Office Reference entered is greater than the 30 character limit.',
-        }
+    if (breachNotice.referenceNumber && breachNotice.referenceNumber.trim().length > 30) {
+      errorMessages.officeReferenceNumber = {
+        text: 'The Office Reference entered is greater than the 30 character limit.',
       }
     }
 
@@ -160,8 +154,9 @@ export default function basicDetailsRoutes(
     }
 
     if (breachNotice) {
-      // check date of letter is not before today
+      // only perform date validation if the user has entered a value
       if (breachNotice.dateOfLetter) {
+        // check date of letter is not before today
         const localDateOfLetterAtStartOfDay = LocalDate.parse(breachNotice.dateOfLetter).atStartOfDay()
         if (localDateOfLetterAtStartOfDay.isBefore(currentDateAtStartOfTheDay)) {
           errorMessages.dateOfLetter = {
@@ -183,24 +178,18 @@ export default function basicDetailsRoutes(
     return addressList.find(address => address.addressId === addressIdentifierNumber)
   }
 
-  router.get('/basic-details', async (req, res, next) => {
-    await auditService.logPageView(Page.BASIC_DETAILS, { who: res.locals.user.username, correlationId: req.id })
-    res.render('pages/basic-details')
-  })
-
   // if this page hasnt been saved we want to go through and apply defaults otherwise dont do this
-  function checkBreachNoticeAndApplyDefaults(breachNotice: BreachNotice, basicDetails: BasicDetails) {
-    // we havent saved the page yet so default
+  function applyDefaults(breachNotice: BreachNotice, basicDetails: BasicDetails) {
     if (!breachNotice.basicDetailsSaved) {
-      // load offender name from integration details
-      // eslint-disable-next-line no-param-reassign
-      breachNotice.titleAndFullName = `${basicDetails.title} ${basicDetails.name.forename} ${basicDetails.name.middleName} ${basicDetails.name.surname}`
-      // default the radio buttons to true
-      // eslint-disable-next-line no-param-reassign
-      breachNotice.useDefaultAddress = true
-      // eslint-disable-next-line no-param-reassign
-      breachNotice.useDefaultReplyAddress = true
+      // only apply the defaults if basic details has NOT been saved by a USER
+      return {
+        ...breachNotice,
+        titleAndFullName: `${basicDetails.title} ${basicDetails.name.forename} ${basicDetails.name.middleName} ${basicDetails.name.surname}`,
+        useDefaultAddress: true,
+        useDefaultReplyAddress: true,
+      }
     }
+    return breachNotice
   }
 
   function initiateAlternateAddressSelectItemList(
@@ -234,13 +223,8 @@ export default function basicDetailsRoutes(
         if (breachNotice.offenderAddress && breachNotice.offenderAddress.addressId) {
           if (breachNotice.offenderAddress.addressId !== -1) {
             const selectItemValueNumber: number = +selectItem.value
-            if (breachNotice.offenderAddress.addressId === selectItemValueNumber) {
-              // eslint-disable-next-line no-param-reassign
-              selectItem.selected = true
-            } else {
-              // eslint-disable-next-line no-param-reassign
-              selectItem.selected = false
-            }
+            // eslint-disable-next-line no-param-reassign
+            selectItem.selected = breachNotice.offenderAddress.addressId === selectItemValueNumber
           }
         }
       })
@@ -277,13 +261,8 @@ export default function basicDetailsRoutes(
         if (breachNotice.replyAddress && breachNotice.replyAddress.addressId) {
           if (breachNotice.replyAddress.addressId !== -1) {
             const selectItemValueNumber: number = +selectItem.value
-            if (breachNotice.replyAddress.addressId === selectItemValueNumber) {
-              // eslint-disable-next-line no-param-reassign
-              selectItem.selected = true
-            } else {
-              // eslint-disable-next-line no-param-reassign
-              selectItem.selected = false
-            }
+            // eslint-disable-next-line no-param-reassign
+            selectItem.selected = breachNotice.replyAddress.addressId === selectItemValueNumber
           }
         }
       })
