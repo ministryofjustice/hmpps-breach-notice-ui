@@ -1,6 +1,7 @@
 import { LocalDateTime } from '@js-joda/core'
 import config from '../config'
 import RestClient from './restClient'
+import { Address } from './commonModels'
 
 export default class NdeliusIntegrationApiClient extends RestClient {
   constructor(token: string) {
@@ -41,25 +42,11 @@ export interface Name {
   surname: string
 }
 
-export interface Address {
-  addressId: number
-  type: string
-  buildingName: string
-  buildingNumber: string
-  streetName: string
-  townCity: string
-  district: string
-  county: string
-  postcode: string
-}
-
-export type AddressList = Array<Address>
-
 export interface BasicDetails {
   title: string
   name: Name
-  addresses: AddressList
-  replyAddresses: AddressList
+  addresses: Address[]
+  replyAddresses: Address[]
 }
 
 // Reference Data
@@ -75,14 +62,14 @@ export interface WarningType {
 }
 
 export interface WarningTypeWrapper {
-  content: Array<WarningType>
+  content: WarningType[]
 }
 
 export interface WarningDetails {
-  breachReasons: ReferenceDataList
-  sentenceTypes: SentenceTypeList
+  breachReasons: ReferenceData[]
+  sentenceTypes: SentenceType[]
   defaultSentenceTypeCode: string
-  enforceableContactList: Array<EnforceableContact>
+  enforceableContactList: EnforceableContact[]
 }
 
 export interface ReferenceData {
@@ -123,16 +110,6 @@ export interface Requirement {
   type: ReferenceData
   subType: ReferenceData
 }
-
-export type ReferenceDataList = Array<ReferenceData>
-
-export type SentenceTypeList = Array<SentenceType>
-
-export type RequirementList = Array<Requirement>
-
-export type BreachNoticeContactList = Array<BreachNoticeContact>
-
-export type BreachNoticeRequirementList = Array<BreachNoticeRequirement>
 
 // Dummy data for running offline
 function createDummyBasicDetails(): BasicDetails {

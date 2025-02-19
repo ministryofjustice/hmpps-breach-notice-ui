@@ -1,6 +1,8 @@
 import { LocalDateTime } from '@js-joda/core'
 import config from '../config'
 import RestClient from './restClient'
+import { ReferenceData } from './ndeliusIntegrationApiClient'
+import { Address } from './commonModels'
 
 export default class BreachNoticeApiClient extends RestClient {
   constructor(token: string) {
@@ -63,8 +65,8 @@ export interface BreachNotice {
   nextAppointmentSaved: boolean
   useDefaultAddress: boolean
   useDefaultReplyAddress: boolean
-  breachNoticeContactList: BreachNoticeContactList
-  breachNoticeRequirementList: BreachNoticeRequirementList
+  breachNoticeContactList: BreachNoticeContact[]
+  breachNoticeRequirementList: BreachNoticeRequirement[]
 }
 
 export interface BreachNoticeContact {
@@ -85,71 +87,11 @@ export interface BreachNoticeRequirement {
   rejectionReason: string
 }
 
-export interface EnforceableContact {
-  id: number
-  datetime: LocalDateTime
-  description: string
-  type: ReferenceData
-  outcome: ReferenceData
-  notes: string
-  requirement: Requirement
-}
-
-export interface BasicDetails {
-  title: string
-  name: Name
-  addresses: AddressList
-  replyAddresses: AddressList
-}
-
-export interface WarningDetails {
-  breachReasons: ReferenceDataList
-  sentenceTypes: SentenceTypeList
-  defaultSentenceTypeCode: string
-  enforceableContactList: EnforceableContactList
-}
-
-export interface WarningTypeDetails {
-  warningTypes: RadioButtonList
-  sentenceTypes: SentenceTypeList
-}
-
-export interface Name {
-  forename: string
-  middleName: string
-  surname: string
-}
-
-export interface Address {
-  addressId: number
-  type: string
-  buildingName: string
-  buildingNumber: string
-  streetName: string
-  townCity: string
-  district: string
-  county: string
-  postcode: string
-}
-
 // these must be value, text, boolean so they can be fed into MOJ components
 export interface SelectItem {
   value: string
   text: string
   selected: boolean
-}
-
-// Reference Data
-export interface ReferenceData {
-  code: string
-  description: string
-}
-
-// Reference Data
-export interface SentenceType {
-  code: string
-  description: string
-  conditionBeingEnforced: string
 }
 
 export interface RadioButton {
@@ -179,31 +121,9 @@ export interface WarningDetailsRequirementSelectItem {
   value: string
   text: string
   selected: boolean
-  requirements: SelectItemList
+  requirements: SelectItem[]
 }
 
 export interface ErrorMessages {
   [key: string]: { text: string }
 }
-
-export type WarningDetailsRequirementSelectItemsList = Array<WarningDetailsRequirementSelectItem>
-
-export type EnforceableContactRadioButtonList = Array<EnforceableContactRadioButton>
-
-export type AddressList = Array<Address>
-
-export type SelectItemList = Array<SelectItem>
-
-export type RadioButtonList = Array<RadioButton>
-
-export type ReferenceDataList = Array<ReferenceData>
-
-export type SentenceTypeList = Array<SentenceType>
-
-export type EnforceableContactList = Array<EnforceableContact>
-
-export type RequirementList = Array<Requirement>
-
-export type BreachNoticeContactList = Array<BreachNoticeContact>
-
-export type BreachNoticeRequirementList = Array<BreachNoticeRequirement>

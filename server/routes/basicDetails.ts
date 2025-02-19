@@ -6,7 +6,8 @@ import { HmppsAuthClient } from '../data'
 import CommonUtils from '../services/commonUtils'
 import { combineName } from '../utils/utils'
 import BreachNoticeApiClient, { BreachNotice, ErrorMessages, SelectItem } from '../data/breachNoticeApiClient'
-import NdeliusIntegrationApiClient, { Address, AddressList, BasicDetails } from '../data/ndeliusIntegrationApiClient'
+import NdeliusIntegrationApiClient, { BasicDetails } from '../data/ndeliusIntegrationApiClient'
+import { Address } from '../data/commonModels'
 
 export default function basicDetailsRoutes(
   router: Router,
@@ -201,7 +202,7 @@ export default function basicDetailsRoutes(
     return errorMessages
   }
 
-  function getSelectedAddress(addressList: AddressList, addressIdentifier: string): Address {
+  function getSelectedAddress(addressList: Address[], addressIdentifier: string): Address {
     const addressIdentifierNumber: number = +addressIdentifier
     return addressList.find(address => address.addressId === addressIdentifierNumber)
   }
@@ -224,7 +225,7 @@ export default function basicDetailsRoutes(
   }
 
   function addressListToSelectItemList(
-    addresses: AddressList,
+    addresses: Address[],
     breachNoticeSaved: boolean,
     selectedAddressId: number,
   ): SelectItem[] {
