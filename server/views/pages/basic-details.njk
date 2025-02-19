@@ -1,0 +1,237 @@
+{% extends "../partials/layout.njk" %}
+
+{% set pageTitle = applicationName + " - Home" %}
+{% set mainClasses = "app-container govuk-body" %}
+
+{% block content %}
+
+    {% from "moj/components/side-navigation/macro.njk" import mojSideNavigation %}
+    {% from "govuk/components/phase-banner/macro.njk" import govukPhaseBanner %}
+    {% from "govuk/components/input/macro.njk" import govukInput %}
+    {% from "govuk/components/select/macro.njk" import govukSelect %}
+    {% from "moj/components/button-menu/macro.njk" import mojButtonMenu %}
+    {% from "moj/components/date-picker/macro.njk" import mojDatePicker %}
+    {% from "govuk/components/radios/macro.njk" import govukRadios %}
+
+    <form method="post">
+
+        {% set errorList =[
+            { text: errorMessages.dateOfLetter.text, href: "#date-of-letter" } if errorMessages.dateOfLetter else None,
+            { text: errorMessages.officeReferenceNumber.text, href: "#office-reference" } if errorMessages.officeReferenceNumber else None,
+            { text: errorMessages.pdfRenderError.text } if errorMessages.pdfRenderError else None
+        ] | reject("undefined") %}
+
+        {% if errorMessages | length > 0 %}
+            {% from "govuk/components/error-summary/macro.njk" import govukErrorSummary %}
+
+            {{ govukErrorSummary({ titleText: "There is a problem", errorList: errorList }) }}
+        {% endif %}
+
+
+        <input type="hidden" name="_csrf" value="{{ csrfToken }}">
+        <div class="govuk-grid-row">
+            <div class="govuk-grid-column-one-third">
+                {% set alternateAddressHtml %}
+                    {{ govukSelect({
+                        id: "alternate-address",
+                        name: "alternateAddress",
+                        label: {
+                            text: "Please pick an alternative postal address",
+                            classes: "govuk-fieldset__legend--m"
+                        },
+                        items: alternateAddressOptions
+                    }) }}
+                {% endset -%}
+
+                {% set replyAddressHtml %}
+                    {{ govukSelect({
+                        id: "alternate-reply-address",
+                        name: "alternateReplyAddress",
+                        label: {
+                            text: "Please pick an alternative reply address",
+                            classes: "govuk-fieldset__legend--m"
+                        },
+                        items: replyAddressOptions
+                    }) }}
+                {% endset -%}
+
+                {{ mojSideNavigation({
+                    label: 'Side navigation',
+                    items: [{
+                        text: 'Basic details',
+                        href: '/basic-details/'+breachNotice.id,
+                        active: true
+                    }, {
+                        text: 'Warning type',
+                        href: '/warning-type/'+breachNotice.id
+                    }, {
+                        text: 'Warning details',
+                        href: '/warning-details/'+breachNotice.id
+                    }, {
+                        text: 'Next appointment',
+                        href: '/next-appointment/'+breachNotice.id
+                    }, {
+                        text: 'Check your answers',
+                        href: '/check-your-report/'+breachNotice.id
+                    }]
+                }) }}
+
+            </div>
+
+            <div class="govuk-grid-column-two-thirds">
+                <h1 class="govuk-heading-l">Breach Notice - Basic Details</h1>
+
+                <h2 class="govuk-heading-m">Title and Full Name</h2>
+                <p id="title-and-full-name">{{ breachNotice.titleAndFullName }}</p>
+
+                <h2 class="govuk-heading-m">CRN</h2>
+                <p id="crn">{{ breachNotice.crn }}</p>
+
+                <h2 class="govuk-heading-m">Postal Address</h2>
+                <p id="postal-address">
+                    {% if defaultOffenderAddress.buildingName %} {{ defaultOffenderAddress.buildingName }}
+                        <br/>{% endif %}
+                    {% if defaultOffenderAddress.buildingName or defaultOffenderAddress.streetName %} {{ defaultOffenderAddress.addressNumber }} {{ defaultOffenderAddress.streetName }}
+                        <br/>{% endif %}
+                    {% if defaultOffenderAddress.district %} {{ defaultOffenderAddress.district }}<br/>{% endif %}
+                    {% if defaultOffenderAddress.townCity %} {{ defaultOffenderAddress.townCity }}<br/>{% endif %}
+                    {% if defaultOffenderAddress.county %} {{ defaultOffenderAddress.county }}<br/>{% endif %}
+                    {% if defaultOffenderAddress.postcode %} {{ defaultOffenderAddress.postcode }}<br/>{% endif %}
+                </p>
+
+                {{ govukRadios({
+                    name: "offenderAddressSelectOne",
+                    fieldset: {
+                        legend: {
+                            text: "Would you like to use the postal address above for this breach notice?",
+                            isPageHeading: false,
+                            classes: "govuk-fieldset__legend--m"
+                        }
+                    },
+                    hint: {
+                        text: "Select one option"
+                    },
+                    items: [
+                        {
+                            value: "Yes",
+                            text: "Yes",
+                            checked: breachNotice.useDefaultAddress
+                        },
+                        {
+                            value: "No",
+                            text: "No, I would like to use a different postal address ",
+                            checked: breachNotice.useDefaultAddress === false,
+                            conditional: {
+                            html: alternateAddressHtml
+                        }
+                        }
+                    ]
+                }) }}
+
+                <h2 class="govuk-heading-m">Reply Address</h2>
+                <p id="reply-address">
+                    {% if defaultReplyAddress.buildingName %} {{ defaultReplyAddress.buildingName }}<br/>{% endif %}
+                    {% if defaultReplyAddress.addressNumber or  defaultReplyAddress.streetName %}{{ defaultReplyAddress.addressNumber }} {{ defaultReplyAddress.streetName }}
+                        <br/>{% endif %}
+                    {% if defaultReplyAddress.district %} {{ defaultReplyAddress.district }}<br/>{% endif %}
+                    {% if defaultReplyAddress.townCity %} {{ defaultReplyAddress.townCity }}<br/>{% endif %}
+                    {% if defaultReplyAddress.county %} {{ defaultReplyAddress.county }}<br/>{% endif %}
+                    {% if defaultReplyAddress.postcode %} {{ defaultReplyAddress.postcode }}<br/>{% endif %}
+                </p>
+                {{ govukRadios({
+                    name: "replyAddressSelectOne",
+                    fieldset: {
+                        legend: {
+                            text: "Would you like to use the reply address above for this breach notice?",
+                            isPageHeading: false,
+                            classes: "govuk-fieldset__legend--m"
+                        }
+                    },
+                    hint: {
+                        text: "Select one option"
+                    },
+                    items: [
+                        {
+                            value: "Yes",
+                            text: "Yes",
+                            checked: breachNotice.useDefaultReplyAddress === true
+                        },
+                        {
+                            value: "No",
+                            text: "No, I would like to use a different reply address ",
+                            checked: breachNotice.useDefaultReplyAddress === false,
+                            conditional: {
+                            html: replyAddressHtml
+                        }
+                        }
+                    ]
+                }) }}
+
+                {{ mojDatePicker({
+                    id: "date-of-letter",
+                    name: "dateOfLetter",
+                    value: basicDetailsDateOfLetter,
+                    label: {
+                        text: "Date of letter",
+                        classes: "govuk-fieldset__legend--m"
+                    },
+                    hint: {
+                        text: "For example, 17/5/2024."
+                    },
+                    errorMessage: {
+                        text: errorMessages.dateOfLetter.text
+                    } if errorMessages.dateOfLetter.text
+                }) }}
+
+                {{ govukInput({
+                    label: {
+                        text: "Office Reference (if any)",
+                        classes: "govuk-label--m",
+                        isPageHeading: false
+                    },
+                    id: "office-reference",
+                    value: breachNotice.referenceNumber,
+                    classes: "govuk-input--width-30",
+                    maxlength: "30",
+                    name: "officeReference",
+                    errorMessage: {
+                        text: errorMessages.officeReferenceNumber.text
+                    } if errorMessages.officeReferenceNumber.text
+                }) }}
+
+                {{ mojButtonMenu({
+                    items: [{
+                        text: "Continue",
+                        preventDoubleClick: "true",
+                        type: "submit",
+                        attributes: {
+                            id: "continue-button"
+                        }
+                    }, {
+                        text: "View Draft Report",
+                        classes: "govuk-button--secondary",
+                        preventDoubleClick: "true",
+                        type: "submit",
+                        name: "action",
+                        value: "viewDraft",
+                        attributes: {
+                            target: "_blank",
+                            id: "view-draft-button"
+                        }
+                    }, {
+                        text: "Save Progress and Close",
+                        type: "submit",
+                        name: "action",
+                        value: "saveProgressAndClose",
+                        classes: "govuk-button--secondary",
+                        attributes: {
+                            id: "close-button"
+                        }
+                    }]
+                }) }}
+
+            </div>
+        </div>
+    </form>
+
+{% endblock %}
