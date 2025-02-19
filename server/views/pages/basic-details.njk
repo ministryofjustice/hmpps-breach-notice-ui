@@ -79,11 +79,11 @@
     </div>
 
     <div class="govuk-grid-column-two-thirds">
-      <h1 class="govuk-heading-x1">Breach Notice - Basic Details</h1>
-      <b class="govuk-fieldset__legend--m">Title and Full Name
-      </b><br/>
+      <h1 class="govuk-heading-l">Breach Notice - Basic Details</h1>
+      <b class="govuk-fieldset__legend--m">Title and Full Name</b>
+      <br/>
       <span id="title-and-full-name">{{ breachNotice.titleAndFullName }}</span>
-      <p/><br>
+      <p></p>
 
       <b class="govuk-fieldset__legend--m">CRN
       </b><br/>
@@ -99,6 +99,7 @@
         {% if defaultOffenderAddress.county %} {{ defaultOffenderAddress.county }}<br>{% endif %}
         {% if defaultOffenderAddress.postcode %} {{ defaultOffenderAddress.postcode }}<br>{% endif %}
       </span>
+      <p></p>
 
       {{ govukRadios({
         name: "offenderAddressSelectOne",
