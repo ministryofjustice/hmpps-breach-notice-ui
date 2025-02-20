@@ -5,6 +5,7 @@ import basicDetailsRoutes from './basicDetails'
 import warningTypeRoutes from './warningType'
 import checkYourReportRoutes from './checkYourReport'
 import pdfMaintenanceRoutes from './pdfMaintenance'
+import reportDeletedRoutes from './reportDeleted'
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 export default function routes({ auditService, hmppsAuthClient, snsService, commonUtils }: Services): Router {
@@ -27,5 +28,6 @@ export default function routes({ auditService, hmppsAuthClient, snsService, comm
   warningTypeRoutes(router, auditService)
   checkYourReportRoutes(router, auditService, hmppsAuthClient, snsService, commonUtils)
   pdfMaintenanceRoutes(router, auditService, hmppsAuthClient)
+  reportDeletedRoutes(router, auditService)
   return router
 }

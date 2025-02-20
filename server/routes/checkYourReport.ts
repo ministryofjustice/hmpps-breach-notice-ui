@@ -24,6 +24,12 @@ export default function checkYourReportRoutes(
 
     if (await commonUtils.redirectRequired(breachNotice, res)) return
 
+    breachNotice.breachNoticeContactList?.forEach(it => {
+      const contact = it
+      contact.contactDateString = toUserDateFromDateTime(it.contactDate)
+      contact.contactTimeString = toUserTime(it.contactDate)
+    })
+
     const basicDetailsDateOfLetter: string = toUserDate(breachNotice.dateOfLetter)
     const responseRequiredByDate: string = toUserDate(breachNotice.responseRequiredByDate)
     const nextAppointmentDate: string = toUserDateFromDateTime(breachNotice.nextAppointmentDate)
@@ -81,7 +87,7 @@ export default function checkYourReportRoutes(
       version: 1,
       description: 'A breach notice has been completed for a person on probation',
       detailUrl: `/pdf/${breachNotice.id}`,
-      occurredAt: new Date().toDateString(),
+      occurredAt: new Date().toISOString(),
       additionalInformation: {
         breachNoticeId: `${breachNotice.id}`,
       },
