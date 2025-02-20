@@ -1,6 +1,3 @@
-import { LocalDate } from '@js-joda/core'
-import { toUserDate } from '../utilities/dateUtils'
-
 context('Check your report page', () => {
   it('Change button for new report', () => {
     cy.visit('/check-your-report/00000000-0000-0000-0000-100000000001')
