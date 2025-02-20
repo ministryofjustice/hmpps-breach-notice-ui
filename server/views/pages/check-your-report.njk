@@ -40,7 +40,8 @@
                         </h2>
                         <ul class="govuk-summary-card__actions">
                             <li class="govuk-summary-card__action">
-                                <a class="govuk-link" href="/basic-details/{{ breachNotice.id }}">Change<span
+                                <a id="change-basic-details" class="govuk-link"
+                                   href="/basic-details/{{ breachNotice.id }}">Change<span
                                             class="govuk-visually-hidden">Change</span></a>
                             </li>
                         </ul>
@@ -193,7 +194,8 @@
                         <ul class="govuk-summary-card__actions">
                             <li class="govuk-summary-card__action">
                                 {% if breachNotice.basicDetailsSaved %}
-                                    <a class="govuk-link" href="/warning-type/{{ breachNotice.id }}">Change<span
+                                    <a id="change-warning-types" class="govuk-link"
+                                       href="/warning-type/{{ breachNotice.id }}">Change<span
                                                 class="govuk-visually-hidden">Change</span></a>
                                 {% endif %}
                             </li>
@@ -254,7 +256,8 @@
                         <ul class="govuk-summary-card__actions">
                             <li class="govuk-summary-card__action">
                                 {% if breachNotice.warningTypeSaved %}
-                                    <a class="govuk-link" href="/warning-details/{{ breachNotice.id }}">Change<span
+                                    <a id="change-warning-details" class="govuk-link"
+                                       href="/warning-details/{{ breachNotice.id }}">Change<span
                                                 class="govuk-visually-hidden">Change</span></a>
                                 {% endif %}
                             </li>
@@ -272,7 +275,7 @@
                                             required information</a>
                                     {% else %}
                                         {% for req in breachNotice.breachNoticeRequirementList %}
-                                            <p>{{ req.requirementTypeMainCategoryDescription }} {% if req.requirementTypeSubCategoryDescription != null %} {{ req.requirementTypeSubCategoryDescription }} {% endif%} {% if req.rejectionReason != null %}- {{ req.rejectionReason }}{% endif %}</p>
+                                            <p>{{ req.requirementTypeMainCategoryDescription }} {% if req.requirementTypeSubCategoryDescription != null %} {{ req.requirementTypeSubCategoryDescription }} {% endif %} {% if req.rejectionReason != null %}- {{ req.rejectionReason }}{% endif %}</p>
                                         {% endfor %}
                                     {% endif %}
                                 </dd>
@@ -296,7 +299,8 @@
                                             required information</a>
                                     {% else %}
                                         {% for contact in breachNotice.breachNoticeContactList %}
-                                            <pr>{{ contact.contactDateString }} {{ contact.contactTimeString }} - {{ contact.contactType }} - {{ contact.contactOutcome }}</pr>
+                                            <pr>{{ contact.contactDateString }} {{ contact.contactTimeString }}
+                                                - {{ contact.contactType }} - {{ contact.contactOutcome }}</pr>
                                         {% endfor %}
                                     {% endif %}
                                 </dd>
@@ -343,7 +347,8 @@
                         <ul class="govuk-summary-card__actions">
                             <li class="govuk-summary-card__action">
                                 {% if breachNotice.warningDetailsSaved %}
-                                    <a class="govuk-link" href="/next-appointment/{{ breachNotice.id }}">Change<span
+                                    <a id="change-next-appointment" class="govuk-link"
+                                       href="/next-appointment/{{ breachNotice.id }}">Change<span
                                                 class="govuk-visually-hidden">Change</span></a>
                                 {% endif %}
                             </li>
@@ -502,7 +507,10 @@
                             {
                                 text: "Publish",
                                 preventDoubleClick: "true",
-                                type: "submit"
+                                type: "submit",
+                                attributes: {
+                                    id: "publish"
+                                }
                             }, {
                                 text: "View Draft Report",
                                 classes: "govuk-button--secondary",
