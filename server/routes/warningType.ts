@@ -153,10 +153,6 @@ export default function warningTypeRoutes(
     return warningTypeRadioButtons
   }
 
-  async function showDraftPdf(id: string, res: Response) {
-    res.redirect(`/pdf/${id}`)
-  }
-
   function initiateSentenceTypeSelectItemsAndApplySavedSelections(
     warningTypeDetails: WarningDetails,
     breachNotice: BreachNotice,
