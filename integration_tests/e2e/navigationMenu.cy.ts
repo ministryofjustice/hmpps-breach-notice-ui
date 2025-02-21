@@ -4,6 +4,7 @@ context('Navigation Menu data checks', () => {
     cy.get('#nav-warning-types').should('have.class', 'disabled-nav')
     cy.get('#nav-warning-details').should('have.class', 'disabled-nav')
     cy.get('#nav-next-appointment').should('have.class', 'disabled-nav')
+    cy.get('#nav-check-your-report').should('have.class', 'disabled-nav')
   })
 
   it('Basic details saved', () => {
@@ -11,6 +12,7 @@ context('Navigation Menu data checks', () => {
     cy.get('#nav-warning-types').should('not.have.class', 'disabled-nav')
     cy.get('#nav-warning-details').should('have.class', 'disabled-nav')
     cy.get('#nav-next-appointment').should('have.class', 'disabled-nav')
+    cy.get('#nav-check-your-report').should('not.have.class', 'disabled-nav')
   })
 
   it('Warning Types saved', () => {
@@ -18,6 +20,7 @@ context('Navigation Menu data checks', () => {
     cy.get('#nav-warning-types').should('not.have.class', 'disabled-nav')
     cy.get('#nav-warning-details').should('not.have.class', 'disabled-nav')
     cy.get('#nav-next-appointment').should('have.class', 'disabled-nav')
+    cy.get('#nav-check-your-report').should('not.have.class', 'disabled-nav')
   })
 
   it('Warning details saved', () => {
@@ -25,5 +28,6 @@ context('Navigation Menu data checks', () => {
     cy.get('#nav-warning-types').should('not.have.class', 'disabled-nav')
     cy.get('#nav-warning-details').should('not.have.class', 'disabled-nav')
     cy.get('#nav-next-appointment').should('not.have.class', 'disabled-nav')
+    cy.get('#nav-check-your-report').should('not.have.class', 'disabled-nav')
   })
 })
