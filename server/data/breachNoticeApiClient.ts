@@ -72,7 +72,9 @@ export interface BreachNotice {
 export interface BreachNoticeContact {
   id: string
   breachNoticeId: string
-  contactDate: LocalDateTime
+  contactDate: Date
+  contactDateString: string
+  contactTimeString: string
   contactType: string
   contactOutcome: string
   contactId: number

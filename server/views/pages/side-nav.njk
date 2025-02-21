@@ -7,30 +7,34 @@
 
         <li class="moj-side-navigation__item {{ "moj-side-navigation__item--active" if currentPage == "warning-type" }}">
             {% if breachNotice.basicDetailsSaved %}
-                <a href="/warning-type/{{ breachNotice.id }}" aria-current="location">Warning type</a>
+                <a id="nav-warning-types" href="/warning-type/{{ breachNotice.id }}" aria-current="location">Warning type</a>
             {% else %}
-                <a href="#" aria-current="location" class=disabled-nav>Warning Type</a>
+                <a id="nav-warning-types" href="#" aria-current="location" class=disabled-nav>Warning Type</a>
             {% endif %}
         </li>
 
         <li class="moj-side-navigation__item {{ "moj-side-navigation__item--active" if currentPage == "warning-details" }}">
             {% if breachNotice.warningTypeSaved %}
-                <a href="/warning-details/{{ breachNotice.id }}" aria-current="location">Warning details</a>
+                <a id="nav-warning-details" href="/warning-details/{{ breachNotice.id }}" aria-current="location">Warning details</a>
             {% else %}
-                <a href="#" aria-current="location" class=disabled-nav>Warning details</a>
+                <a id="nav-warning-details" href="#" aria-current="location" class=disabled-nav>Warning details</a>
             {% endif %}
         </li>
 
         <li class="moj-side-navigation__item {{ "moj-side-navigation__item--active" if currentPage == "next-appointment" }}">
             {% if breachNotice.warningDetailsSaved %}
-                <a href="/next-appointment/{{ breachNotice.id }}" aria-current="location">Next appointment</a>
+                <a id="nav-next-appointment" href="/next-appointment/{{ breachNotice.id }}" aria-current="location">Next appointment</a>
             {% else %}
-                <a href="#" aria-current="location" class=disabled-nav>Next appointment</a>
+                <a id="nav-next-appointment" href="#" aria-current="location" class=disabled-nav>Next appointment</a>
             {% endif %}
         </li>
 
         <li class="moj-side-navigation__item {{ "moj-side-navigation__item--active" if currentPage == "check-your-report" }}">
-            <a href="/check-your-report/{{ breachNotice.id }}" aria-current="location">Check your answers</a>
+            {% if breachNotice.basicDetailsSaved %}
+                <a id="nav-check-your-report" href="/check-your-report/{{ breachNotice.id }}" aria-current="location">Check your answers</a>
+            {% else %}
+                <a id="nav-check-your-report" href="#" class="disabled-nav" aria-current="location">Check your answers</a>
+            {% endif %}
         </li>
     </ul>
 </nav>
