@@ -5,8 +5,7 @@ import basicDetailsRoutes from './basicDetails'
 import warningTypeRoutes from './warningType'
 import warningDetailsRoutes from './warningDetails'
 
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-export default function routes({ auditService, hmppsAuthClient, snsService, commonUtils }: Services): Router {
+export default function routes({ auditService, hmppsAuthClient, commonUtils }: Services): Router {
   const router = Router()
   const get = (path: string | string[], handler: RequestHandler) => router.get(path, asyncMiddleware(handler))
 

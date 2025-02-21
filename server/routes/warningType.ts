@@ -1,5 +1,4 @@
 import { Response, Router } from 'express'
-import { LocalDate, LocalDateTime } from '@js-joda/core'
 import AuditService, { Page } from '../services/auditService'
 import BreachNoticeApiClient, {
   BreachNotice,
@@ -14,7 +13,6 @@ import NdeliusIntegrationApiClient, {
 } from '../data/ndeliusIntegrationApiClient'
 import { HmppsAuthClient } from '../data'
 import CommonUtils from '../services/commonUtils'
-import { fromUserDate } from '../utils/dateUtils'
 
 export default function warningTypeRoutes(
   router: Router,
@@ -80,10 +78,7 @@ export default function warningTypeRoutes(
     // what if no radio buttons are select, do that check first
     const checkedButton: RadioButton = warningTypeRadioButtons.find(r => r.checked)
     if (checkedButton) {
-      console.log('### we have a checked warning type radio buttonm selected')
       breachNotice.breachNoticeTypeDescription = checkedButton.text
-    } else {
-      console.log('### NO warning type radio button was selected')
     }
 
     // find the sentenceTypeRefData from the integration response
@@ -98,7 +93,6 @@ export default function warningTypeRoutes(
     const hasErrors: boolean = Object.keys(errorMessages).length > 0
 
     if (!hasErrors) {
-      // mark that a USER has saved the document at least once
       breachNotice.warningTypeSaved = true
       await breachNoticeApiClient.updateBreachNotice(id, breachNotice)
       res.redirect(`/warning-details/${req.params.id}`)
@@ -156,7 +150,6 @@ export default function warningTypeRoutes(
         }
       })
     }
-    console.log('finished initiateWarningTyep')
     return warningTypeRadioButtons
   }
 
