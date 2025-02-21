@@ -13,3 +13,17 @@ export function toUserDate(str: string): string {
   }
   return ''
 }
+
+export function toUserTime(str: Date): string {
+  if (str) {
+    return DateTimeFormatter.ofPattern('HH:mm').format(DateTimeFormatter.ISO_LOCAL_DATE_TIME.parse(str.toString()))
+  }
+  return ''
+}
+
+export function toUserDateFromDateTime(str: Date): string {
+  if (str) {
+    return DateTimeFormatter.ofPattern('d/M/yyyy').format(DateTimeFormatter.ISO_LOCAL_DATE_TIME.parse(str.toString()))
+  }
+  return ''
+}
