@@ -1,4 +1,4 @@
-import { Response, type Router } from 'express'
+import { type Router } from 'express'
 import { LocalDate, LocalDateTime } from '@js-joda/core'
 import AuditService, { Page } from '../services/auditService'
 import { fromUserDate, toUserDate } from '../utils/dateUtils'
@@ -109,7 +109,6 @@ export default function basicDetailsRoutes(
       await breachNoticeApiClient.updateBreachNotice(id, updatedBreachNotice)
 
       // if the user selected saveProgressAndClose then send a close back to the client
-      console.log(`basic details action passed in: ${req.body.action}`)
       if (req.body.action === 'saveProgressAndClose') {
         res.send(`<script nonce="${res.locals.cspNonce}">window.close()</script>`)
       } else {
@@ -249,10 +248,6 @@ export default function basicDetailsRoutes(
       }
     })
     return defaultAddress
-  }
-
-  async function showDraftPdf(id: string, res: Response) {
-    res.redirect(`/pdf/${id}`)
   }
 
   return router

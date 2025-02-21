@@ -1,4 +1,4 @@
-import { Response, Router } from 'express'
+import { Router } from 'express'
 import AuditService, { Page } from '../services/auditService'
 import BreachNoticeApiClient, {
   BreachNotice,
