@@ -1,5 +1,5 @@
 import { type Response } from 'express'
-import { BreachNotice } from '../data/breachNoticeApiClient'
+import BreachNoticeApiClient, { BreachNotice } from '../data/breachNoticeApiClient'
 
 export default class CommonUtils {
   constructor() {}

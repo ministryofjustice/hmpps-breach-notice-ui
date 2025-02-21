@@ -98,32 +98,24 @@ export default function basicDetailsRoutes(
 
     // validation
     const errorMessages: ErrorMessages = validateBasicDetails(updatedBreachNotice, req.body.dateOfLetter)
-    let hasErrors: boolean = Object.keys(errorMessages).length > 0
+    const hasErrors: boolean = Object.keys(errorMessages).length > 0
 
+    // If we have no errors we are navigating to warning type
+    // unless the user has clicked save and close
     if (!hasErrors) {
       // mark that a USER has saved the document at least once
       updatedBreachNotice.basicDetailsSaved = true
+      // if it doesnt have errors, update
       await breachNoticeApiClient.updateBreachNotice(id, updatedBreachNotice)
 
-      if (req.body.action === 'viewDraft') {
-        try {
-          await showDraftPdf(updatedBreachNotice.id, res)
-        } catch {
-          // Render the page with the new error
-          errorMessages.pdfRenderError = {
-            text: 'There was an issue generating the draft report. Please try again or contact support.',
-          }
-
-          hasErrors = true
-        }
-      } else if (req.body.action === 'saveProgressAndClose') {
+      // if the user selected saveProgressAndClose then send a close back to the client
+      console.log(`basic details action passed in: ${req.body.action}`)
+      if (req.body.action === 'saveProgressAndClose') {
         res.send(`<script nonce="${res.locals.cspNonce}">window.close()</script>`)
       } else {
-        res.redirect(`/warning-type/${req.params.id}`)
+        res.redirect(`/warning-type/${id}`)
       }
-    }
-
-    if (hasErrors) {
+    } else {
       const alternateAddressOptions = addressListToSelectItemList(
         basicDetails.addresses,
         updatedBreachNotice.basicDetailsSaved,
@@ -147,16 +139,6 @@ export default function basicDetailsRoutes(
         basicDetailsDateOfLetter,
         currentPage,
       })
-    } else {
-      // mark that a USER has saved the document at least once
-      updatedBreachNotice.basicDetailsSaved = true
-      await breachNoticeApiClient.updateBreachNotice(id, updatedBreachNotice)
-
-      if (req.body.action === 'saveProgressAndClose') {
-        res.send(`<script nonce="${res.locals.cspNonce}">window.close()</script>`)
-      } else {
-        res.redirect(`/warning-type/${req.params.id}`)
-      }
     }
   })
 
