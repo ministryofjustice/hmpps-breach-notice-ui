@@ -1,5 +1,4 @@
 import { Response, Router } from 'express'
-import { DateTimeFormatter } from '@js-joda/core'
 import AuditService, { Page } from '../services/auditService'
 import BreachNoticeApiClient, { BreachNotice, ErrorMessages } from '../data/breachNoticeApiClient'
 import { HmppsAuthClient } from '../data'
@@ -7,6 +6,7 @@ import SnsService from '../services/snsService'
 import CommonUtils from '../services/commonUtils'
 import { HmppsDomainEvent } from '../data/hmppsSnsClient'
 import config from '../config'
+import { toUserTime, toUserDate, toUserDateFromDateTime } from '../utils/dateUtils'
 
 export default function checkYourReportRoutes(
   router: Router,
@@ -131,27 +131,6 @@ export default function checkYourReportRoutes(
       return true
     }
     return false
-  }
-
-  function toUserDate(str: string): string {
-    if (str) {
-      return DateTimeFormatter.ofPattern('d/M/yyyy').format(DateTimeFormatter.ISO_LOCAL_DATE.parse(str))
-    }
-    return ''
-  }
-
-  function toUserTime(str: Date): string {
-    if (str) {
-      return DateTimeFormatter.ofPattern('HH:mm').format(DateTimeFormatter.ISO_LOCAL_DATE_TIME.parse(str.toString()))
-    }
-    return ''
-  }
-
-  function toUserDateFromDateTime(str: Date): string {
-    if (str) {
-      return DateTimeFormatter.ofPattern('d/M/yyyy').format(DateTimeFormatter.ISO_LOCAL_DATE_TIME.parse(str.toString()))
-    }
-    return ''
   }
 
   return router
