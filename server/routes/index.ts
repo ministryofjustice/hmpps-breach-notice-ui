@@ -7,6 +7,7 @@ import checkYourReportRoutes from './checkYourReport'
 import pdfMaintenanceRoutes from './pdfMaintenance'
 import reportDeletedRoutes from './reportDeleted'
 import reportCompletedRoutes from './reportCompleted'
+import nextAppointmentRoutes from './nextAppointment'
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 export default function routes({ auditService, hmppsAuthClient, snsService, commonUtils }: Services): Router {
@@ -31,5 +32,6 @@ export default function routes({ auditService, hmppsAuthClient, snsService, comm
   pdfMaintenanceRoutes(router, auditService, hmppsAuthClient)
   reportDeletedRoutes(router, auditService)
   reportCompletedRoutes(router, auditService, hmppsAuthClient)
+  nextAppointmentRoutes(router, auditService, hmppsAuthClient, commonUtils)
   return router
 }

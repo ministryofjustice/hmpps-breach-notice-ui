@@ -1,0 +1,134 @@
+{% extends "../partials/layout.njk" %}
+
+{% set pageTitle = applicationName + " - Home" %}
+{% set mainClasses = "app-container govuk-body" %}
+
+{% block content %}
+
+    {% from "moj/components/side-navigation/macro.njk" import mojSideNavigation %}
+    {% from "moj/components/button-menu/macro.njk" import mojButtonMenu %}
+    {% from "govuk/components/radios/macro.njk" import govukRadios %}
+    {% from "govuk/components/input/macro.njk" import govukInput %}
+    {% from "govuk/components/table/macro.njk" import govukTable %}
+
+    <form method="post">
+
+        {% set errorList =[
+            { text: errorMessages.pdfRenderError.text } if errorMessages.pdfRenderError else None
+        ] | reject("undefined") %}
+
+        {% if errorMessages | length > 0 %}
+            {% from "govuk/components/error-summary/macro.njk" import govukErrorSummary %}
+
+            {{ govukErrorSummary({ titleText: "There is a problem", errorList: errorList }) }}
+        {% endif %}
+
+        <input type="hidden" name="_csrf" value="{{ csrfToken }}">
+
+        <div class="govuk-grid-row">
+            <div class="govuk-grid-column-one-third">
+
+                {% include "pages/side-nav.njk" %}
+
+            </div>
+
+            <div class="govuk-grid-column-two-thirds">
+
+                <h1 class="govuk-heading-l">Breach Notice - Next Appointment</h1>
+
+                <h2 class="govuk-heading-m">Responsible Officer</h2>
+                <p id="responsible-officer">{{ responsibleOfficerDisplayValue }}</p>
+
+                <h2 class="govuk-heading-m">Contact Number</h2>
+                <p id="contact-number">{{ nextAppointmentDetails.responsibleOfficer.telephoneNumber }}</p>
+
+                {% set phoneHtml %}
+                    {{ govukInput({
+                        id: "contact-by-phone",
+                        name: "contactByPhone",
+                        type: "tel",
+                        autocomplete: "tel",
+                        value: breachNotice.optionalNumber,
+                        classes: "govuk-!-width-one-third",
+                        label: {
+                            text: "Phone number"
+                        },
+                        errorMessage: {
+                            text: errorMessages.contactByPhone.text
+                        } if errorMessages.contactByPhone.text
+                    }) }}
+                {% endset -%}
+
+                {{ govukRadios({
+                    name: "useContactNumber",
+                    value: useContactNumber,
+                    fieldset: {
+                        legend: {
+                            text: "Would you like to use the contact number above for this breach notice?",
+                            isPageHeading: false,
+                            classes: "govuk-fieldset__legend--m"
+                        }
+                    },
+                    hint: {
+                        text: "Select one option"
+                    },
+                    items: [
+                        {
+                            value: "Yes",
+                            text: "Yes"
+                        },
+                        {
+                            value: "No",
+                            text: "No, I would like to use a different contact number ",
+                            conditional: {
+                            html: phoneHtml
+                        }
+                        }
+                    ]
+                }) }}
+
+                {{ govukRadios({
+                    name: "appointmentSelection",
+                    fieldset: {
+                        legend: {
+                            text: "Would you like to select a next appointment?",
+                            isPageHeading: false,
+                            classes: "govuk-fieldset__legend--m"
+                        }
+                    },
+                    items: appointmentRadioButtons,
+
+                    errorMessage: {
+                        text: "No appointments on file. Please add one on the contact file"
+                    } if appointmentRadioButtons.length <= 0
+                }) }}
+
+
+                {{ mojButtonMenu({
+                    items: [{
+                        text: "Continue",
+                        preventDoubleClick: "true",
+                        type: "submit",
+                        attributes: {
+                            id: "continue-button"
+                        }
+                    }, {
+                        text: "Refresh from Delius",
+                        href: "#",
+                        classes: "govuk-button--secondary"
+                    }, { text: "Save Progress and Close",
+                        type: "submit",
+                        name: "action",
+                        value: "saveProgressAndClose",
+                        classes: "govuk-button--secondary",
+                        attributes: {
+                            id: "close-button"
+                        }
+                    }]
+                }) }}
+
+            </div>
+        </div>
+
+    </form>
+{% endblock %}

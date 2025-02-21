@@ -76,6 +76,26 @@
     },
     {
       "request": {
+        "url": "/breach-notice-api/next-appointment/00000000-0000-0000-0000-000000000001",
+        "method": "GET"
+      },
+      "response": {
+        "status": 200,
+        "jsonBody": {
+          "responsibleOfficer": {
+            "name": {
+              "forename": "ROForename",
+              "middleName": "ROMiddleName",
+              "surname": "ROSurname"
+            },
+            "telephoneNumber": "01234567891"
+          },
+          "futureAppointments": []
+        }
+      }
+    },
+    {
+      "request": {
         "urlPattern": "/delius/health/ping"
       },
       "response": {
