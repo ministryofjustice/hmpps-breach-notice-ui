@@ -1,5 +1,5 @@
 context('Check your report page', () => {
-  it('Change button for new report', () => {
+  it('displays basic details link', () => {
     cy.visit('/check-your-report/00000000-0000-0000-0000-100000000001')
     cy.get('#change-basic-details').should('exist')
     cy.get('#change-warning-types').should('not.exist')
