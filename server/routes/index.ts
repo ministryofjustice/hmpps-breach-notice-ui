@@ -3,6 +3,7 @@ import asyncMiddleware from '../middleware/asyncMiddleware'
 import type { Services } from '../services'
 import basicDetailsRoutes from './basicDetails'
 import warningTypeRoutes from './warningType'
+import warningDetailsRoutes from './warningDetails'
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 export default function routes({ auditService, hmppsAuthClient, snsService, commonUtils }: Services): Router {
@@ -19,5 +20,6 @@ export default function routes({ auditService, hmppsAuthClient, snsService, comm
 
   basicDetailsRoutes(router, auditService, hmppsAuthClient, commonUtils)
   warningTypeRoutes(router, auditService, hmppsAuthClient, commonUtils)
+  warningDetailsRoutes(router, auditService)
   return router
 }

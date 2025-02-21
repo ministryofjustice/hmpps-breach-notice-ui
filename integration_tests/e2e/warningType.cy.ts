@@ -17,11 +17,11 @@ context('Warning Type page', () => {
       .should('contain.text', 'You must select a Sentence Type before you can continue.')
   })
 
-  // it('should navigate to warning-details if all selections have been made', () => {
-  //   cy.visit('/warning-type/00000000-0000-0000-0000-000000000001')
-  //   cy.get('[type="radio"]').check('FOW')
-  //   cy.get('#sentence-Type').select('CO')
-  //   cy.get('#continue-button').click()
-  //   cy.url().should('include', '/warning-details/00000000-0000-0000-0000-100000000001')
-  // })
+  it('should navigate to warning-details if all selections have been made', () => {
+    cy.visit('/warning-type/00000000-0000-0000-0000-000000000001')
+    cy.get('[type="radio"]').check('FOW')
+    cy.get('select').select('CO')
+    cy.get('#continue-button').click()
+    cy.url().should('include', '/warning-details/00000000-0000-0000-0000-000000000001')
+  })
 })
