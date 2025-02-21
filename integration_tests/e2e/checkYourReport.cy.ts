@@ -5,6 +5,9 @@ context('Check your report page', () => {
     cy.get('#change-warning-types').should('not.exist')
     cy.get('#change-warning-details').should('not.exist')
     cy.get('#change-next-appointment').should('not.exist')
+    
+    cy.get('#change-basic-details').click()
+    cy.url().should('include', '/basic-details/00000000-0000-0000-0000-100000000001')
   })
 
   it('Change button for new report', () => {
