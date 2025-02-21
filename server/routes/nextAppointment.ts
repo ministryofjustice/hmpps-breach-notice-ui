@@ -20,8 +20,6 @@ export default function nextAppointmentRoutes(
   hmppsAuthClient: HmppsAuthClient,
   commonUtils: CommonUtils,
 ): Router {
-  const currentPage = 'next-appointment'
-
   router.get('/next-appointment/:id', async (req, res, next) => {
     await auditService.logPageView(Page.NEXT_APPOINTMENT, { who: res.locals.user.username, correlationId: req.id })
     const breachNoticeApiClient = new BreachNoticeApiClient(
