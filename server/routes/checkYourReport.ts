@@ -6,6 +6,7 @@ import { HmppsAuthClient } from '../data'
 import SnsService from '../services/snsService'
 import CommonUtils from '../services/commonUtils'
 import { HmppsDomainEvent } from '../data/hmppsSnsClient'
+import config from '../config'
 
 export default function checkYourReportRoutes(
   router: Router,
@@ -82,11 +83,12 @@ export default function checkYourReportRoutes(
     breachNotice.completedDate = new Date()
     await breachNoticeApiClient.updateBreachNotice(id, breachNotice)
 
+    const baseUrl: string = config.apis.breachNotice.url
     const event: HmppsDomainEvent = {
       eventType: 'probation-case.breach-notice.created',
       version: 1,
       description: 'A breach notice has been completed for a person on probation',
-      detailUrl: `/pdf/${breachNotice.id}`,
+      detailUrl: `${baseUrl}/pdf/${breachNotice.id}`,
       occurredAt: new Date().toISOString(),
       additionalInformation: {
         breachNoticeId: `${breachNotice.id}`,
@@ -103,9 +105,7 @@ export default function checkYourReportRoutes(
 
     snsService.sendMessage(event)
 
-    res.render('pages/report-completed', {
-      breachNotice,
-    })
+    res.redirect(`/report-completed/${req.params.id}`)
   })
 
   function validateCheckYourReport(breachNotice: BreachNotice): boolean {

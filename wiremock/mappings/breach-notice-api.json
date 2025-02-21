@@ -349,6 +349,15 @@
         },
         "transformers": ["response-template"]
       }
+    },
+    {
+      "request": {
+        "url": "/breach-notice-api/breach-notice/00000000-0000-0000-0000-100000000004",
+        "method": "PUT"
+      },
+      "response": {
+        "status": 200
+      }
     }
   ]
 }

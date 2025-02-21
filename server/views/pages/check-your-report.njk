@@ -267,31 +267,7 @@
                         <dl class="govuk-summary-list">
                             <div class="govuk-summary-list__row">
                                 <dt class="govuk-summary-list__key">
-                                    Requirements and/or Conditions
-                                </dt>
-                                <dd class="govuk-summary-list__value">
-                                    {% if ( breachNotice.breachNoticeRequirementList == null or breachNotice.breachNoticeRequirementList.length == 0 ) and breachNotice.warningTypeSaved %}
-                                        <a href="/warning-details/{{ breachNotice.id }}" class="govuk-link">enter
-                                            required information</a>
-                                    {% else %}
-                                        {% for req in breachNotice.breachNoticeRequirementList %}
-                                            <p>{{ req.requirementTypeMainCategoryDescription }} {% if req.requirementTypeSubCategoryDescription != null %} {{ req.requirementTypeSubCategoryDescription }} {% endif %} {% if req.rejectionReason != null %}- {{ req.rejectionReason }}{% endif %}</p>
-                                        {% endfor %}
-                                    {% endif %}
-                                </dd>
-                                {% if breachNotice.breachNoticeRequirementList == null or breachNotice.breachNoticeRequirementList.length == 0 %}
-                                    <dd class="govuk-summary-list__actions">
-
-                                        <span class="govuk-tag--light-blue">
-                                                                                  Required
-                                                                      </span>
-
-                                    </dd>
-                                {% endif %}
-                            </div>
-                            <div class="govuk-summary-list__row">
-                                <dt class="govuk-summary-list__key">
-                                    Failures Being Enforced
+                                    Failures recorded on this order
                                 </dt>
                                 <dd class="govuk-summary-list__value">
                                     {% if ( breachNotice.breachNoticeContactList == null or breachNotice.breachNoticeContactList.length == 0 ) and breachNotice.warningTypeSaved %}
@@ -305,6 +281,30 @@
                                     {% endif %}
                                 </dd>
                                 {% if breachNotice.breachNoticeContactList == null or breachNotice.breachNoticeContactList.length == 0 %}
+                                    <dd class="govuk-summary-list__actions">
+
+                                        <span class="govuk-tag--light-blue">
+                                                                                  Required
+                                                                      </span>
+
+                                    </dd>
+                                {% endif %}
+                            </div>
+                            <div class="govuk-summary-list__row">
+                                <dt class="govuk-summary-list__key">
+                                    Failures being enforced
+                                </dt>
+                                <dd class="govuk-summary-list__value">
+                                    {% if ( breachNotice.breachNoticeRequirementList == null or breachNotice.breachNoticeRequirementList.length == 0 ) and breachNotice.warningTypeSaved %}
+                                        <a href="/warning-details/{{ breachNotice.id }}" class="govuk-link">enter
+                                            required information</a>
+                                    {% else %}
+                                        {% for req in breachNotice.breachNoticeRequirementList %}
+                                            <p>{{ req.requirementTypeMainCategoryDescription }} {% if req.requirementTypeSubCategoryDescription != null %} {{ req.requirementTypeSubCategoryDescription }} {% endif %} {% if req.rejectionReason != null %}- {{ req.rejectionReason }}{% endif %}</p>
+                                        {% endfor %}
+                                    {% endif %}
+                                </dd>
+                                {% if breachNotice.breachNoticeRequirementList == null or breachNotice.breachNoticeRequirementList.length == 0 %}
                                     <dd class="govuk-summary-list__actions">
 
                                         <span class="govuk-tag--light-blue">
