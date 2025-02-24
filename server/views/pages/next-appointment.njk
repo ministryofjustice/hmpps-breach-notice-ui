@@ -114,8 +114,14 @@
                         }
                     }, {
                         text: "Refresh from Delius",
-                        href: "#",
-                        classes: "govuk-button--secondary"
+                        preventDoubleClick: "true",
+                        type: "submit",
+                        name: "action",
+                        value: "refreshData",
+                        classes: "govuk-button--secondary",
+                        attributes: {
+                            id: "refresh-button"
+                        }
                     }, { text: "Save Progress and Close",
                         type: "submit",
                         name: "action",

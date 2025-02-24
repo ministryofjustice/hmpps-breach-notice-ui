@@ -6,7 +6,7 @@ import SnsService from '../services/snsService'
 import CommonUtils from '../services/commonUtils'
 import { HmppsDomainEvent } from '../data/hmppsSnsClient'
 import config from '../config'
-import { toUserTime, toUserDate, toUserDateFromDateTime } from '../utils/dateUtils'
+import { toUserTimeFromDateTime, toUserDate, toUserDateFromDateTime } from '../utils/dateUtils'
 
 export default function checkYourReportRoutes(
   router: Router,
@@ -28,13 +28,13 @@ export default function checkYourReportRoutes(
     breachNotice.breachNoticeContactList?.forEach(it => {
       const contact = it
       contact.contactDateString = toUserDateFromDateTime(it.contactDate)
-      contact.contactTimeString = toUserTime(it.contactDate)
+      contact.contactTimeString = toUserTimeFromDateTime(it.contactDate)
     })
 
     const basicDetailsDateOfLetter: string = toUserDate(breachNotice.dateOfLetter)
     const responseRequiredByDate: string = toUserDate(breachNotice.responseRequiredByDate)
     const nextAppointmentDate: string = toUserDateFromDateTime(breachNotice.nextAppointmentDate)
-    const nextAppointmentTime: string = toUserTime(breachNotice.nextAppointmentDate)
+    const nextAppointmentTime: string = toUserTimeFromDateTime(breachNotice.nextAppointmentDate)
 
     await renderCheckYourReport(
       breachNotice,

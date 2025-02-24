@@ -14,7 +14,14 @@ export function toUserDate(str: string): string {
   return ''
 }
 
-export function toUserTime(str: Date): string {
+export function toUserTime(str: string): string {
+  if (str) {
+    return DateTimeFormatter.ofPattern('HH:mm').format(DateTimeFormatter.ISO_LOCAL_DATE_TIME.parse(str))
+  }
+  return ''
+}
+
+export function toUserTimeFromDateTime(str: Date): string {
   if (str) {
     return DateTimeFormatter.ofPattern('HH:mm').format(DateTimeFormatter.ISO_LOCAL_DATE_TIME.parse(str.toString()))
   }

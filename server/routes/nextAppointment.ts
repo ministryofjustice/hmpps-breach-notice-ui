@@ -1,5 +1,5 @@
-import { Response, Router } from 'express'
-import { DateTimeFormatter, LocalDateTime } from '@js-joda/core'
+import { Router } from 'express'
+import { LocalDateTime } from '@js-joda/core'
 import AuditService, { Page } from '../services/auditService'
 import BreachNoticeApiClient, {
   BreachNotice,
@@ -13,6 +13,7 @@ import BreachNoticeApiClient, {
 import { HmppsAuthClient } from '../data'
 import CommonUtils from '../services/commonUtils'
 import { Address } from '../data/commonModels'
+import { toUserDate, toUserTime } from '../utils/dateUtils'
 
 export default function nextAppointmentRoutes(
   router: Router,
@@ -20,6 +21,8 @@ export default function nextAppointmentRoutes(
   hmppsAuthClient: HmppsAuthClient,
   commonUtils: CommonUtils,
 ): Router {
+  const currentPage = 'next-appointment'
+
   router.get('/next-appointment/:id', async (req, res, next) => {
     await auditService.logPageView(Page.NEXT_APPOINTMENT, { who: res.locals.user.username, correlationId: req.id })
     const breachNoticeApiClient = new BreachNoticeApiClient(
@@ -43,6 +46,7 @@ export default function nextAppointmentRoutes(
       appointmentRadioButtons,
       responsibleOfficerDisplayValue,
       useContactNumber,
+      currentPage,
     })
   })
 
@@ -83,31 +87,18 @@ export default function nextAppointmentRoutes(
     breachNotice.responsibleOfficer = officerDisplayValue(nextAppointmentDetails.responsibleOfficer.name)
 
     const errorMessages: ErrorMessages = validateNextAppointment(breachNotice)
-    let hasErrors: boolean = Object.keys(errorMessages).length > 0
+    const hasErrors: boolean = Object.keys(errorMessages).length > 0
 
-    if (!hasErrors) {
+    if (!hasErrors && req.body.action !== 'refreshData') {
       breachNotice.nextAppointmentSaved = true
       await breachNoticeApiClient.updateBreachNotice(breachNoticeId, breachNotice)
 
-      if (req.body.action === 'viewDraft') {
-        try {
-          await showDraftPdf(breachNotice.id, res)
-        } catch {
-          // Render the page with the new error
-          errorMessages.pdfRenderError = {
-            text: 'There was an issue generating the draft report. Please try again or contact support.',
-          }
-
-          hasErrors = true
-        }
-      } else if (req.body.action === 'saveProgressAndClose') {
+      if (req.body.action === 'saveProgressAndClose') {
         res.send(`<script nonce="${res.locals.cspNonce}">window.close()</script>`)
       } else {
         res.redirect(`/check-your-report/${req.params.id}`)
       }
-    }
-
-    if (hasErrors) {
+    } else {
       const appointmentRadioButtons: Array<RadioButton> = initiateNextAppointmentRadioButtonsAndApplySavedSelections(
         nextAppointmentDetails.futureAppointments,
         breachNotice,
@@ -122,17 +113,8 @@ export default function nextAppointmentRoutes(
         responsibleOfficerDisplayValue,
         useContactNumber,
         errorMessages,
+        currentPage,
       })
-    } else {
-      // mark that a USER has saved the document at least once
-      breachNotice.nextAppointmentSaved = true
-      await breachNoticeApiClient.updateBreachNotice(breachNoticeId, breachNotice)
-
-      if (req.body.action === 'saveProgressAndClose') {
-        res.send(`<script nonce="${res.locals.cspNonce}">window.close()</script>`)
-      } else {
-        res.redirect(`/check-your-report/${req.params.id}`)
-      }
     }
   })
 
@@ -161,49 +143,25 @@ export default function nextAppointmentRoutes(
     return errorMessages
   }
 
-  async function showDraftPdf(id: string, res: Response) {
-    res.redirect(`/pdf/${id}`)
-  }
-
   function initiateNextAppointmentRadioButtonsAndApplySavedSelections(
     futureAppointments: Array<FutureAppointment>,
     breachNotice: BreachNotice,
   ): RadioButton[] {
-    // Read warning Types
-    const futureAppointmentRadioButtons: RadioButton[] = [
-      ...futureAppointments.map(futureAppointment => ({
-        text: [
-          futureAppointment.description,
-          futureAppointment.type.description,
-          DateTimeFormatter.ofPattern('d/M/yyyy').format(
-            DateTimeFormatter.ISO_LOCAL_DATE_TIME.parse(futureAppointment.datetime),
-          ),
-          DateTimeFormatter.ofPattern('HH:mm').format(
-            DateTimeFormatter.ISO_LOCAL_DATE_TIME.parse(futureAppointment.datetime),
-          ),
-          futureAppointment.location.buildingNumber.concat(` ${futureAppointment.location.streetName}`).trim(),
-          officerDisplayValue(futureAppointment.officer.name),
-        ]
-          .filter(item => item)
-          .join(', '),
-        value: `${futureAppointment.contactId}`,
-        selected: false,
-        checked: false,
-      })),
-    ]
-
-    // return warningTypeRadioButtons
-    // find currently selected code in breach notice and apply to the radio buttons
-    if (breachNotice.nextAppointmentId) {
-      futureAppointmentRadioButtons.forEach((radioButton: RadioButton) => {
-        if (breachNotice.nextAppointmentId && breachNotice.nextAppointmentId === Number(radioButton.value)) {
-          // eslint-disable-next-line no-param-reassign
-          radioButton.checked = true
-        }
-      })
-    }
-
-    return futureAppointmentRadioButtons
+    return futureAppointments.map(futureAppointment => ({
+      text: [
+        futureAppointment.description,
+        futureAppointment.type.description,
+        toUserDate(futureAppointment.datetime.substring(0, 10)),
+        toUserTime(futureAppointment.datetime),
+        `${futureAppointment.location.buildingNumber} ${futureAppointment.location.streetName}`.trim(),
+        officerDisplayValue(futureAppointment.officer.name),
+      ]
+        .filter(item => item)
+        .join(', '),
+      value: `${futureAppointment.contactId}`,
+      selected: false,
+      checked: breachNotice.nextAppointmentId && breachNotice.nextAppointmentId === futureAppointment.contactId,
+    }))
   }
 
   function officerDisplayValue(officer: Name): string {
