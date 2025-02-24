@@ -28,10 +28,9 @@ export default function nextAppointmentRoutes(
     const breachNoticeApiClient = new BreachNoticeApiClient(
       await hmppsAuthClient.getSystemClientToken(res.locals.user.username),
     )
-    const breachNoticeId = req.params.id
-    let breachNotice: BreachNotice = null
+    const { id } = req.params
     const nextAppointmentDetails = fetchNextAppointmentDetails()
-    breachNotice = await breachNoticeApiClient.getBreachNoticeById(breachNoticeId as string)
+    const breachNotice: BreachNotice = await breachNoticeApiClient.getBreachNoticeById(id as string)
     const appointmentRadioButtons: Array<RadioButton> = initiateNextAppointmentRadioButtonsAndApplySavedSelections(
       nextAppointmentDetails.futureAppointments,
       breachNotice,
@@ -55,9 +54,9 @@ export default function nextAppointmentRoutes(
       await hmppsAuthClient.getSystemClientToken(res.locals.user.username),
     )
     await auditService.logPageView(Page.NEXT_APPOINTMENT, { who: res.locals.user.username, correlationId: req.id })
-    const breachNoticeId = req.params.id
+    const { id } = req.params
     let breachNotice: BreachNotice = null
-    breachNotice = await breachNoticeApiClient.getBreachNoticeById(breachNoticeId as string)
+    breachNotice = await breachNoticeApiClient.getBreachNoticeById(id as string)
     const nextAppointmentDetails = fetchNextAppointmentDetails()
     if (await commonUtils.redirectRequired(breachNotice, res)) return
 
@@ -91,12 +90,12 @@ export default function nextAppointmentRoutes(
 
     if (!hasErrors && req.body.action !== 'refreshData') {
       breachNotice.nextAppointmentSaved = true
-      await breachNoticeApiClient.updateBreachNotice(breachNoticeId, breachNotice)
+      await breachNoticeApiClient.updateBreachNotice(id, breachNotice)
 
       if (req.body.action === 'saveProgressAndClose') {
         res.send(`<script nonce="${res.locals.cspNonce}">window.close()</script>`)
       } else {
-        res.redirect(`/check-your-report/${req.params.id}`)
+        res.redirect(`/check-your-report/${id}`)
       }
     } else {
       const appointmentRadioButtons: Array<RadioButton> = initiateNextAppointmentRadioButtonsAndApplySavedSelections(
