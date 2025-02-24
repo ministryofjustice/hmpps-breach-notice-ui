@@ -1,0 +1,32 @@
+{% extends "../partials/layout.njk" %}
+
+{% set pageTitle = applicationName + " - Home" %}
+{% set mainClasses = "app-container govuk-body" %}
+
+{% block content %}
+    {% from "moj/components/side-navigation/macro.njk" import mojSideNavigation %}
+    {% from "govuk/components/panel/macro.njk" import govukPanel %}
+    {% from "govuk/components/panel/macro.njk" import govukPanel %}
+
+
+    <div class="govuk-grid-row">
+        <div class="govuk-grid-column-two-thirds">
+            {% set mainClasses = "govuk-main-wrapper--l" %}
+
+            {{ govukPanel({
+                titleText: "Report Published",
+                html: "Your Breach Report has been completed and uploaded."
+            }) }}
+
+            <h1 class="govuk-heading-x1">What to do next</h1>
+
+            <h2 class="govuk-heading-m">Review and print your Breach Notice letter</h2>
+            <p id="reviewReport"><a href="{{ '/pdf/' + breachNotice.id }}" class="govuk-link">View your completed PDF letter</a></p>
+
+            <h2 class="govuk-heading-m">Delete this report</h2>
+            <p id="deleteReport"><a href="{{ '/report-deleted/' + breachNotice.id }}" class="govuk-link">Delete this report</a></p>
+
+        </div>
+    </div>
+
+{% endblock %}
