@@ -8,6 +8,7 @@ import pdfMaintenanceRoutes from './pdfMaintenance'
 import reportDeletedRoutes from './reportDeleted'
 import reportCompletedRoutes from './reportCompleted'
 import warningDetailsRoutes from './warningDetails'
+import nextAppointmentRoutes from './nextAppointment'
 
 export default function routes({ auditService, hmppsAuthClient, snsService, commonUtils }: Services): Router {
   const router = Router()
@@ -32,5 +33,6 @@ export default function routes({ auditService, hmppsAuthClient, snsService, comm
   pdfMaintenanceRoutes(router, auditService, hmppsAuthClient)
   reportDeletedRoutes(router, auditService)
   reportCompletedRoutes(router, auditService, hmppsAuthClient)
+  nextAppointmentRoutes(router, auditService, hmppsAuthClient, commonUtils)
   return router
 }
