@@ -17,8 +17,7 @@
 
         {% set errorList =[
             { text: errorMessages.dateOfLetter.text, href: "#date-of-letter" } if errorMessages.dateOfLetter else None,
-            { text: errorMessages.officeReferenceNumber.text, href: "#office-reference" } if errorMessages.officeReferenceNumber else None,
-            { text: errorMessages.pdfRenderError.text } if errorMessages.pdfRenderError else None
+            { text: errorMessages.officeReferenceNumber.text, href: "#office-reference" } if errorMessages.officeReferenceNumber else None
         ] | reject("undefined") %}
 
         {% if errorMessages | length > 0 %}

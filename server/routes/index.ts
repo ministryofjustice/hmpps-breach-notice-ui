@@ -7,9 +7,9 @@ import checkYourReportRoutes from './checkYourReport'
 import pdfMaintenanceRoutes from './pdfMaintenance'
 import reportDeletedRoutes from './reportDeleted'
 import reportCompletedRoutes from './reportCompleted'
+import warningDetailsRoutes from './warningDetails'
 import nextAppointmentRoutes from './nextAppointment'
 
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
 export default function routes({ auditService, hmppsAuthClient, snsService, commonUtils }: Services): Router {
   const router = Router()
   const get = (path: string | string[], handler: RequestHandler) => router.get(path, asyncMiddleware(handler))
@@ -27,7 +27,8 @@ export default function routes({ auditService, hmppsAuthClient, snsService, comm
   })
 
   basicDetailsRoutes(router, auditService, hmppsAuthClient, commonUtils)
-  warningTypeRoutes(router, auditService)
+  warningTypeRoutes(router, auditService, hmppsAuthClient, commonUtils)
+  warningDetailsRoutes(router, auditService)
   checkYourReportRoutes(router, auditService, hmppsAuthClient, snsService, commonUtils)
   pdfMaintenanceRoutes(router, auditService, hmppsAuthClient)
   reportDeletedRoutes(router, auditService)
