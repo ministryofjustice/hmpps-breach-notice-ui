@@ -1,4 +1,3 @@
-import { LocalDateTime } from '@js-joda/core'
 import config from '../config'
 import RestClient from './restClient'
 import { ReferenceData } from './ndeliusIntegrationApiClient'
@@ -59,7 +58,7 @@ export interface BreachNotice {
   responsibleOfficer: string
   contactNumber: string
   nextAppointmentType: string
-  nextAppointmentDate: Date
+  nextAppointmentDate: string
   nextAppointmentLocation: string
   nextAppointmentOfficer: string
   nextAppointmentId: number
@@ -81,9 +80,9 @@ export interface BreachNotice {
 export interface BreachNoticeContact {
   id: string
   breachNoticeId: string
-  contactDate: Date
-  contactDateString: string
-  contactTimeString: string
+  contactDate: string
+  contactDateString?: string
+  contactTimeString?: string
   contactType: string
   contactOutcome: string
   contactId: number
@@ -112,7 +111,7 @@ export interface RadioButton {
 }
 
 export interface EnforceableContactRadioButton {
-  datetime: LocalDateTime
+  datetime: string
   type: ReferenceData
   outcome: ReferenceData
   notes: string

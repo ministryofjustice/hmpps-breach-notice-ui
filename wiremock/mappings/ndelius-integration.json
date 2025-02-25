@@ -70,13 +70,13 @@
     },
     {
       "request": {
-        "urlPattern": "/warning-types",
+        "urlPattern": "/warning-types/.+?/.+?",
         "method": "GET"
       },
       "response": {
         "status": 200,
         "jsonBody": {
-          "content": [
+          "warningTypes": [
             {
               "code": "FOW",
               "description": "Formal Warning"
@@ -89,7 +89,20 @@
               "code": "FW",
               "description": "Final Warning"
             }
-          ]
+          ],
+          "sentenceTypes": [
+            {
+              "code": "CO",
+              "description": "Community Order",
+              "conditionBeingEnforced": "string"
+            },
+            {
+              "code": "123",
+              "description": "Another Typer",
+              "conditionBeingEnforced": "string"
+            }
+          ],
+          "defaultSentenceTypeCode": "CO"
         },
         "headers": {
           "Content-Type": "application/json;charset=UTF-8"
@@ -98,7 +111,7 @@
     },
     {
       "request": {
-        "urlPattern": "/warning-details/(.*?)",
+        "urlPattern": "/warning-details/.+?/.+?",
         "method": "GET"
       },
       "response": {
@@ -110,14 +123,6 @@
               "description": "Attended late"
             }
           ],
-          "sentenceTypes": [
-            {
-              "code": "CO",
-              "description": "Community Order",
-              "conditionBeingEnforced": "string"
-            }
-          ],
-          "defaultSentenceTypeCode": "ABC",
           "enforceableContacts": [
             {
               "id": 0,

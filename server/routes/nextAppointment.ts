@@ -76,7 +76,7 @@ export default function nextAppointmentRoutes(
       )
       .forEach((futureAppointment: FutureAppointment) => {
         breachNotice.nextAppointmentId = futureAppointment.contactId
-        breachNotice.nextAppointmentDate = new Date(futureAppointment.datetime)
+        breachNotice.nextAppointmentDate = futureAppointment.datetime
         breachNotice.nextAppointmentType = futureAppointment.type.code
         breachNotice.nextAppointmentLocation = futureAppointment.location.buildingNumber
           .concat(` ${futureAppointment.location.streetName}`)

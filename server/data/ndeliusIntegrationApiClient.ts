@@ -14,15 +14,15 @@ export default class NdeliusIntegrationApiClient extends RestClient {
     })
   }
 
-  async getWarningTypes(): Promise<WarningTypeWrapper> {
+  async getWarningTypes(crn: string, breachNoticeId: string): Promise<WarningTypeWrapper> {
     return this.get({
-      path: `/warning-types`,
+      path: `/warning-types/${crn}/${breachNoticeId}`,
     })
   }
 
-  async getWarningDetails(crn: string): Promise<WarningDetails> {
+  async getWarningDetails(crn: string, breachNoticeId: string): Promise<WarningDetails> {
     return this.get({
-      path: `/warning-details/${crn}`,
+      path: `/warning-details/${crn}/${breachNoticeId}`,
     })
   }
 
@@ -66,13 +66,13 @@ export interface WarningType {
 }
 
 export interface WarningTypeWrapper {
-  content: WarningType[]
+  warningTypes: WarningType[]
+  sentenceTypes: SentenceType[]
+  defaultSentenceTypeCode: string
 }
 
 export interface WarningDetails {
   breachReasons: ReferenceData[]
-  sentenceTypes: SentenceType[]
-  defaultSentenceTypeCode: string
   enforceableContactList: EnforceableContact[]
 }
 

@@ -6,11 +6,7 @@ import BreachNoticeApiClient, {
   RadioButton,
   SelectItem,
 } from '../data/breachNoticeApiClient'
-import NdeliusIntegrationApiClient, {
-  SentenceType,
-  WarningDetails,
-  WarningTypeWrapper,
-} from '../data/ndeliusIntegrationApiClient'
+import NdeliusIntegrationApiClient, { SentenceType, WarningType } from '../data/ndeliusIntegrationApiClient'
 import { HmppsAuthClient } from '../data'
 import CommonUtils from '../services/commonUtils'
 
@@ -24,24 +20,21 @@ export default function warningTypeRoutes(
 
   router.get('/warning-type/:id', async (req, res, next) => {
     await auditService.logPageView(Page.WARNING_TYPE, { who: res.locals.user.username, correlationId: req.id })
-    const breachNoticeApiClient = new BreachNoticeApiClient(
-      await hmppsAuthClient.getSystemClientToken(res.locals.user.username),
-    )
-    const ndeliusIntegrationApiClient = new NdeliusIntegrationApiClient(
-      await hmppsAuthClient.getSystemClientToken(res.locals.user.username),
-    )
-    const breachNoticeId = req.params.id
-    const breachNotice: BreachNotice = await breachNoticeApiClient.getBreachNoticeById(breachNoticeId as string)
+    const token = await hmppsAuthClient.getSystemClientToken(res.locals.user.username)
+    const breachNoticeApiClient = new BreachNoticeApiClient(token)
+    const ndeliusIntegrationApiClient = new NdeliusIntegrationApiClient(token)
+    const { id } = req.params
+    const breachNotice: BreachNotice = await breachNoticeApiClient.getBreachNoticeById(id)
     if (await commonUtils.redirectRequired(breachNotice, res)) return
-    const warningTypes: WarningTypeWrapper = await ndeliusIntegrationApiClient.getWarningTypes()
-    const warningDetails: WarningDetails = await ndeliusIntegrationApiClient.getWarningDetails(breachNotice.crn)
+    const { warningTypes, sentenceTypes } = await ndeliusIntegrationApiClient.getWarningTypes(breachNotice.crn, id)
+
     const warningTypeRadioButtons: Array<RadioButton> = initiateWarningTypeRadioButtonsAndApplySavedSelections(
       warningTypes,
       breachNotice,
     )
 
     const sentenceTypeSelectItems: Array<SelectItem> = initiateSentenceTypeSelectItemsAndApplySavedSelections(
-      warningDetails,
+      sentenceTypes,
       breachNotice,
     )
 
@@ -54,19 +47,15 @@ export default function warningTypeRoutes(
   })
 
   router.post('/warning-type/:id', async (req, res, next) => {
-    const breachNoticeApiClient = new BreachNoticeApiClient(
-      await hmppsAuthClient.getSystemClientToken(res.locals.user.username),
-    )
-    const ndeliusIntegrationApiClient = new NdeliusIntegrationApiClient(
-      await hmppsAuthClient.getSystemClientToken(res.locals.user.username),
-    )
+    const token = await hmppsAuthClient.getSystemClientToken(res.locals.user.username)
+    const breachNoticeApiClient = new BreachNoticeApiClient(token)
+    const ndeliusIntegrationApiClient = new NdeliusIntegrationApiClient(token)
     const { id } = req.params
     let breachNotice: BreachNotice = null
     breachNotice = await breachNoticeApiClient.getBreachNoticeById(id as string)
     if (await commonUtils.redirectRequired(breachNotice, res)) return
-    const warningTypes: WarningTypeWrapper = await ndeliusIntegrationApiClient.getWarningTypes()
-    const warningDetails: WarningDetails = await ndeliusIntegrationApiClient.getWarningDetails(breachNotice.crn)
-
+    const { warningTypes, sentenceTypes } = await ndeliusIntegrationApiClient.getWarningTypes(breachNotice.crn, id)
+    const sentenceTypeList: SelectItem[] = getSentenceTypeSelectItems(sentenceTypes)
     const warningTypeRadioButtons: Array<RadioButton> = initiateWarningTypeRadioButtonsAndApplySavedSelections(
       warningTypes,
       breachNotice,
@@ -75,18 +64,19 @@ export default function warningTypeRoutes(
     // add new details
     breachNotice.breachNoticeTypeCode = req.body.warningType
     breachNotice.breachSentenceTypeCode = req.body.sentenceType
-    // what if no radio buttons are select, do that check first
-    const checkedButton: RadioButton = warningTypeRadioButtons.find(r => r.checked)
+    const checkedButton: RadioButton = warningTypeRadioButtons.find(r => r.value === req.body.warningType)
     if (checkedButton) {
       breachNotice.breachNoticeTypeDescription = checkedButton.text
     }
 
-    // find the sentenceTypeRefData from the integration response
-    warningDetails.sentenceTypes.forEach((sentenceType: SentenceType) => {
-      if (breachNotice.breachSentenceTypeCode && breachNotice.breachSentenceTypeCode === sentenceType.code) {
-        breachNotice.breachSentenceTypeDescription = sentenceType.description
-      }
-    })
+    const selectedSentenceType = sentenceTypeList.find(
+      sentenceTypeSelectItem => sentenceTypeSelectItem.value === breachNotice.breachSentenceTypeCode,
+    )
+
+    if (selectedSentenceType) {
+      breachNotice.breachSentenceTypeDescription = selectedSentenceType.value
+    }
+
     // perform validation
     const errorMessages: ErrorMessages = validateWarningType(breachNotice)
     const hasErrors: boolean = Object.keys(errorMessages).length > 0
@@ -97,7 +87,7 @@ export default function warningTypeRoutes(
       res.redirect(`/warning-details/${req.params.id}`)
     } else {
       const sentenceTypeSelectItems: Array<SelectItem> = initiateSentenceTypeSelectItemsAndApplySavedSelections(
-        warningDetails,
+        sentenceTypes,
         breachNotice,
       )
 
@@ -129,11 +119,11 @@ export default function warningTypeRoutes(
   }
 
   function initiateWarningTypeRadioButtonsAndApplySavedSelections(
-    warningTypes: WarningTypeWrapper,
+    warningTypes: WarningType[],
     breachNotice: BreachNotice,
   ): RadioButton[] {
     const warningTypeRadioButtons: RadioButton[] = [
-      ...warningTypes.content.map(warningType => ({
+      ...warningTypes.map(warningType => ({
         text: `${warningType.description}`,
         value: `${warningType.code}`,
         selected: false,
@@ -146,14 +136,32 @@ export default function warningTypeRoutes(
         if (breachNotice.breachNoticeTypeCode && breachNotice.breachNoticeTypeCode === radioButton.value) {
           // eslint-disable-next-line no-param-reassign
           radioButton.checked = true
+        } else {
+          // eslint-disable-next-line no-param-reassign
+          radioButton.checked = false
         }
       })
     }
     return warningTypeRadioButtons
   }
 
+  function getSentenceTypeSelectItems(sentenceTypes: SentenceType[]): SelectItem[] {
+    return [
+      {
+        text: 'Please Select',
+        value: '-1',
+        selected: true,
+      },
+      ...sentenceTypes.map(sentenceType => ({
+        text: `${sentenceType.description}`,
+        value: `${sentenceType.code}`,
+        selected: false,
+      })),
+    ]
+  }
+
   function initiateSentenceTypeSelectItemsAndApplySavedSelections(
-    warningTypeDetails: WarningDetails,
+    sentenceTypes: SentenceType[],
     breachNotice: BreachNotice,
   ): SelectItem[] {
     const sentenceTypeSelectItems: SelectItem[] = [
@@ -162,7 +170,7 @@ export default function warningTypeRoutes(
         value: '-1',
         selected: true,
       },
-      ...warningTypeDetails.sentenceTypes.map(sentenceType => ({
+      ...sentenceTypes.map(sentenceType => ({
         text: `${sentenceType.description}`,
         value: `${sentenceType.code}`,
         selected: false,
