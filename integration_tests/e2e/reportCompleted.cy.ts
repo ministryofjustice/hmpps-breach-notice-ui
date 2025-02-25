@@ -1,4 +1,4 @@
-context('Warning Type page', () => {
+context('Report Completed page', () => {
   it('displays main panel', () => {
     cy.visit('/report-completed/00000000-0000-0000-0000-000000000001')
     cy.get('.govuk-panel--confirmation').should('exist')
