@@ -125,27 +125,14 @@ export default function warningTypeRoutes(
     warningTypes: WarningType[],
     breachNotice: BreachNotice,
   ): RadioButton[] {
-    const warningTypeRadioButtons: RadioButton[] = [
+    return [
       ...warningTypes.map(warningType => ({
         text: `${warningType.description}`,
         value: `${warningType.code}`,
         selected: false,
-        checked: false,
+        checked: breachNotice.breachNoticeTypeCode && breachNotice.breachNoticeTypeCode === warningType.code,
       })),
     ]
-
-    if (breachNotice.breachNoticeTypeCode) {
-      warningTypeRadioButtons.forEach((radioButton: RadioButton) => {
-        if (breachNotice.breachNoticeTypeCode && breachNotice.breachNoticeTypeCode === radioButton.value) {
-          // eslint-disable-next-line no-param-reassign
-          radioButton.checked = true
-        } else {
-          // eslint-disable-next-line no-param-reassign
-          radioButton.checked = false
-        }
-      })
-    }
-    return warningTypeRadioButtons
   }
 
   function getSentenceTypeSelectItems(sentenceTypes: SentenceType[]): SelectItem[] {
@@ -167,7 +154,7 @@ export default function warningTypeRoutes(
     sentenceTypes: SentenceType[],
     breachNotice: BreachNotice,
   ): SelectItem[] {
-    const sentenceTypeSelectItems: SelectItem[] = [
+    return [
       {
         text: 'Please Select',
         value: '-1',
@@ -176,23 +163,9 @@ export default function warningTypeRoutes(
       ...sentenceTypes.map(sentenceType => ({
         text: `${sentenceType.description}`,
         value: `${sentenceType.code}`,
-        selected: false,
+        selected: breachNotice.breachSentenceTypeCode && breachNotice.breachSentenceTypeCode === sentenceType.code,
       })),
     ]
-
-    if (breachNotice.breachSentenceTypeCode) {
-      sentenceTypeSelectItems.forEach((sentenceTypeSelectItem: SelectItem) => {
-        if (
-          breachNotice.breachSentenceTypeCode &&
-          breachNotice.breachSentenceTypeCode === sentenceTypeSelectItem.value
-        ) {
-          // eslint-disable-next-line no-param-reassign
-          sentenceTypeSelectItem.selected = true
-        }
-      })
-    }
-
-    return sentenceTypeSelectItems
   }
 
   return router
