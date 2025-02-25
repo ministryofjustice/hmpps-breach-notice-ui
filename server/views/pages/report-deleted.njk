@@ -4,7 +4,23 @@
 {% set mainClasses = "app-container govuk-body" %}
 
 {% block content %}
+    {% from "moj/components/side-navigation/macro.njk" import mojSideNavigation %}
+    {% from "govuk/components/panel/macro.njk" import govukPanel %}
 
-PLACEHOLDER
+    <div class="govuk-grid-row">
+        <div class="govuk-grid-column-two-thirds">
+            {% set mainClasses = "govuk-main-wrapper--l" %}
+
+            {{ govukPanel({
+                titleText: "Report Deleted",
+                html: "This Breach Report has been permanently deleted and cannot be recovered"
+            }) }}
+
+            <h2 class="govuk-heading-x1">What to do next</h2>
+
+            <h2 class="govuk-heading-m">Close this letter</h2>
+            <p id="close-window"><a href="/close" class="govuk-link">Return back to the main Delius Screen</a></p>
+        </div>
+    </div>
 
 {% endblock %}
