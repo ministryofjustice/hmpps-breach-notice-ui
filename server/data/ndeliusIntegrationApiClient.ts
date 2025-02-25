@@ -2,6 +2,7 @@ import { LocalDateTime } from '@js-joda/core'
 import config from '../config'
 import RestClient from './restClient'
 import { Address } from './commonModels'
+import { ReferenceData } from './breachNoticeApiClient'
 
 export default class NdeliusIntegrationApiClient extends RestClient {
   constructor(token: string) {
@@ -26,8 +27,18 @@ export default class NdeliusIntegrationApiClient extends RestClient {
     })
   }
 
+  // async getSentenceTypes(): Promise<SentenceType> {
+  //   if (config.apis.ndeliusIntegration.enabled === false) {
+  //     return createDummySentenceTypes()
+  //   }
+  //   return this.get({
+  //     path: `/sentence-types`,
+  //   })
+  // }
+
   async getWarningDetails(crn: string): Promise<WarningDetails> {
     if (config.apis.ndeliusIntegration.enabled === false) {
+      console.log('creating dummy details')
       return createDummyWarningDetails()
     }
     return this.get({
@@ -70,11 +81,6 @@ export interface WarningDetails {
   sentenceTypes: SentenceType[]
   defaultSentenceTypeCode: string
   enforceableContactList: EnforceableContact[]
-}
-
-export interface ReferenceData {
-  code: string
-  description: string
 }
 
 export interface BreachNoticeContact {

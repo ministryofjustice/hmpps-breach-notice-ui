@@ -28,7 +28,7 @@ export default function routes({ auditService, hmppsAuthClient, snsService, comm
 
   basicDetailsRoutes(router, auditService, hmppsAuthClient, commonUtils)
   warningTypeRoutes(router, auditService, hmppsAuthClient, commonUtils)
-  warningDetailsRoutes(router, auditService)
+  warningDetailsRoutes(router, auditService, hmppsAuthClient, commonUtils)
   checkYourReportRoutes(router, auditService, hmppsAuthClient, snsService, commonUtils)
   pdfMaintenanceRoutes(router, auditService, hmppsAuthClient)
   reportDeletedRoutes(router, auditService)

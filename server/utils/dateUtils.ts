@@ -28,9 +28,9 @@ export function toUserTimeFromDateTime(str: Date): string {
   return ''
 }
 
-export function toUserDateFromDateTime(str: Date): string {
+export function toUserDateFromDateTime(str: string): string {
   if (str) {
-    return DateTimeFormatter.ofPattern('d/M/yyyy').format(DateTimeFormatter.ISO_LOCAL_DATE_TIME.parse(str.toString()))
+    return DateTimeFormatter.ofPattern('d/M/yyyy').format(DateTimeFormatter.ISO_LOCAL_DATE_TIME.parse(str))
   }
   return ''
 }
