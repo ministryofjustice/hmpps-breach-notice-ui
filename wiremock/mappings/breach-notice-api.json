@@ -76,6 +76,15 @@
     },
     {
       "request": {
+        "url": "/breach-notice-api/breach-notice/00000000-0000-0000-0000-000000000001",
+        "method": "DELETE"
+      },
+      "response": {
+        "status": 200
+      }
+    },
+    {
+      "request": {
         "url": "/breach-notice-api/next-appointment/00000000-0000-0000-0000-000000000001",
         "method": "GET"
       },
