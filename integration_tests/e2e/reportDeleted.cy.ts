@@ -10,7 +10,7 @@ context('Report Deleted page', () => {
 
   it('delete link closes window', () => {
     cy.visit('/report-deleted/00000000-0000-0000-0000-000000000001')
-    cy.get('#close-window').should('exist').should('contain.text', 'Return back to the main Delius Screen')
+    cy.get('#close-window').should('exist').should('contain.text', 'Click here to close this window')
     cy.get('#close-window .govuk-link').click()
     cy.url().should('include', '/close')
   })
