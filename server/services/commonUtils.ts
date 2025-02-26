@@ -15,19 +15,8 @@ export default class CommonUtils {
       res.locals.user.username,
     )
     if (laoCheck.isExcluded || laoCheck.isRestricted) {
-      let limitedAccessMessages: string = ''
-      if (laoCheck.isExcluded) {
-        limitedAccessMessages += laoCheck.exclusionMessage
-        if (laoCheck.isRestricted) {
-          limitedAccessMessages += '<br/>'
-        }
-      }
-      if (laoCheck.isRestricted) {
-        limitedAccessMessages += laoCheck.restrictionMessage
-      }
-
       res.render('pages/limited-access', {
-        limitedAccessMessages,
+        laoCheck,
       })
       return true
     }
