@@ -9,6 +9,7 @@ import reportDeletedRoutes from './reportDeleted'
 import reportCompletedRoutes from './reportCompleted'
 import warningDetailsRoutes from './warningDetails'
 import nextAppointmentRoutes from './nextAppointment'
+import BreachNoticeApiClient from '../data/breachNoticeApiClient'
 
 export default function routes({ auditService, hmppsAuthClient, snsService, commonUtils }: Services): Router {
   const router = Router()
@@ -19,6 +20,29 @@ export default function routes({ auditService, hmppsAuthClient, snsService, comm
   })
 
   get('/breach-notice/:id', async (req, res, next) => {
+    const breachNoticeApiClient = new BreachNoticeApiClient(
+      await hmppsAuthClient.getSystemClientToken(res.locals.user.username),
+    )
+    const { id } = req.params
+    const breachNotice = await breachNoticeApiClient.getBreachNoticeById(id as string)
+
+    if (breachNotice.nextAppointmentSaved) {
+      res.redirect(`/check-your-report/${req.params.id}`)
+      return
+    }
+    if (breachNotice.warningDetailsSaved) {
+      res.redirect(`/next-appointment/${req.params.id}`)
+      return
+    }
+    if (breachNotice.warningTypeSaved) {
+      res.redirect(`/warning-details/${req.params.id}`)
+      return
+    }
+    if (breachNotice.basicDetailsSaved) {
+      res.redirect(`/warning-type/${req.params.id}`)
+      return
+    }
+
     res.redirect(`/basic-details/${req.params.id}`)
   })
 

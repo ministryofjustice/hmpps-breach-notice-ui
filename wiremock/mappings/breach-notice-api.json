@@ -381,6 +381,79 @@
     },
     {
       "request": {
+        "url": "/breach-notice-api/breach-notice/00000000-0000-0000-0000-100000000009",
+        "method": "GET"
+      },
+      "response": {
+        "status": 200,
+        "jsonBody": {
+          "id": "00000000-0000-0000-0000-100000000009",
+          "crn": "X017052",
+          "titleAndFullName": "Mr Billy The Kid",
+          "dateOfLetter": "2025-01-01",
+          "referenceNumber": "REF0001",
+          "responseRequiredByDate": "2025-01-01",
+          "breachNoticeTypeCode": "BW",
+          "breachNoticeTypeDescription": "Breach Warning",
+          "breachConditionTypeCode": "BRE",
+          "breachConditionTypeDescription": "Breach",
+          "breachSentenceTypeCode": "CO",
+          "breachSentenceTypeDescription": "Community Order(s)",
+          "responsibleOfficer": "An Officer",
+          "contactNumber": "0892929187",
+          "nextAppointmentType": "App Type",
+          "nextAppointmentDate": "2025-01-01T12:34:56",
+          "nextAppointmentLocation": "Location",
+          "nextAppointmentOfficer": "Officer",
+          "nextAppointmentContact": "0292827177",
+          "completedDate": null,
+          "offenderAddress": {
+            "addressId": 12345,
+            "type": "Postal",
+            "buildingName": null,
+            "buildingNumber": "21",
+            "streetName": "Postal Street",
+            "district": "Postal District",
+            "townCity": "PostCity",
+            "county": "Postal County",
+            "postcode": "NE30 3ZZ"
+          },
+          "replyAddress": {
+            "addressId": 33333,
+            "type": "Postal",
+            "buildingName": null,
+            "buildingNumber": "21",
+            "streetName": "Reply Street",
+            "district": "Reply District",
+            "townCity": "Reply City",
+            "county": "Reply County",
+            "postcode": "NE22 3AA"
+          },
+          "basicDetailsSaved": true,
+          "warningTypeSaved": true,
+          "warningDetailsSaved": true,
+          "nextAppointmentSaved": false,
+          "useDefaultAddress": true,
+          "useDefaultReplyAddress": true,
+          "breachNoticeContactList": [
+            {
+              "contactId": 1
+            }
+          ],
+          "breachNoticeRequirementList": [
+            {
+              "requirementId": 1
+            }
+          ]
+        },
+        "headers": {
+          "Content-Type": "application/json;charset=UTF-8"
+        },
+        "transformers": ["response-template"]
+      }
+    },
+    {
+      "request": {
         "url": "/breach-notice-api/breach-notice/00000000-0000-0000-0000-100000000004",
         "method": "PUT"
       },
