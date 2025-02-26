@@ -1,13 +1,15 @@
-import { Router } from 'express'
+import { type RequestHandler, Router } from 'express'
 import AuditService, { Page } from '../services/auditService'
 import { HmppsAuthClient } from '../data'
+import asyncMiddleware from '../middleware/asyncMiddleware'
 
 export default function reportCompletedRoutes(
   router: Router,
   auditService: AuditService,
   hmppsAuthClient: HmppsAuthClient,
 ): Router {
-  router.get('/report-completed/:id', async (req, res, next) => {
+  const get = (path: string | string[], handler: RequestHandler) => router.get(path, asyncMiddleware(handler))
+  get('/report-completed/:id', async (req, res, next) => {
     await auditService.logPageView(Page.REPORT_COMPLETED, { who: res.locals.user.username, correlationId: req.id })
     await hmppsAuthClient.getSystemClientToken(res.locals.user.username)
     res.render('pages/report-completed')

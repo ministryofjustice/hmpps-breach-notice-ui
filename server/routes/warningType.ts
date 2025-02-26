@@ -1,4 +1,4 @@
-import { Router } from 'express'
+import { type RequestHandler, Router } from 'express'
 import AuditService, { Page } from '../services/auditService'
 import BreachNoticeApiClient, {
   BreachNotice,
@@ -6,13 +6,10 @@ import BreachNoticeApiClient, {
   RadioButton,
   SelectItem,
 } from '../data/breachNoticeApiClient'
-import NdeliusIntegrationApiClient, {
-  SentenceType,
-  WarningType,
-  WarningTypeWrapper,
-} from '../data/ndeliusIntegrationApiClient'
+import { SentenceType, WarningType } from '../data/ndeliusIntegrationApiClient'
 import { HmppsAuthClient } from '../data'
 import CommonUtils from '../services/commonUtils'
+import asyncMiddleware from '../middleware/asyncMiddleware'
 
 export default function warningTypeRoutes(
   router: Router,
@@ -21,15 +18,14 @@ export default function warningTypeRoutes(
   commonUtils: CommonUtils,
 ): Router {
   const currentPage = 'warning-type'
+  const get = (path: string | string[], handler: RequestHandler) => router.get(path, asyncMiddleware(handler))
+  const post = (path: string | string[], handler: RequestHandler) => router.post(path, asyncMiddleware(handler))
 
-  router.get('/warning-type/:id', async (req, res, next) => {
+  get('/warning-type/:id', async (req, res, next) => {
     await auditService.logPageView(Page.WARNING_TYPE, { who: res.locals.user.username, correlationId: req.id })
     const breachNoticeApiClient = new BreachNoticeApiClient(
       await hmppsAuthClient.getSystemClientToken(res.locals.user.username),
     )
-    // const ndeliusIntegrationApiClient = new NdeliusIntegrationApiClient(
-    //   await hmppsAuthClient.getSystemClientToken(res.locals.user.username),
-    // )
     const breachNoticeId = req.params.id
     const breachNotice: BreachNotice = await breachNoticeApiClient.getBreachNoticeById(breachNoticeId as string)
     if (await commonUtils.redirectRequired(breachNotice, res)) return
@@ -53,7 +49,7 @@ export default function warningTypeRoutes(
     })
   })
 
-  router.post('/warning-type/:id', async (req, res, next) => {
+  post('/warning-type/:id', async (req, res, next) => {
     const breachNoticeApiClient = new BreachNoticeApiClient(
       await hmppsAuthClient.getSystemClientToken(res.locals.user.username),
     )

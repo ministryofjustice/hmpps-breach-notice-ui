@@ -1,7 +1,5 @@
-import { LocalDateTime } from '@js-joda/core'
 import config from '../config'
 import RestClient from './restClient'
-import { ReferenceData } from './ndeliusIntegrationApiClient'
 import { Address } from './commonModels'
 
 export default class BreachNoticeApiClient extends RestClient {
@@ -43,7 +41,7 @@ export interface BreachNotice {
   titleAndFullName: string
   dateOfLetter: string
   referenceNumber: string
-  responseRequiredByDate: string
+  responseRequiredDate: string
   breachNoticeTypeCode: string
   breachNoticeTypeDescription: string
   breachConditionTypeCode: string
@@ -87,8 +85,8 @@ export interface BreachNoticeRequirement {
   id: string
   breachNoticeId: string
   requirementId: number
-  mainCategoryDescription: string
-  subCategoryDescription: string
+  requirementTypeMainCategoryDescription: string
+  requirementTypeSubCategoryDescription: string
   rejectionReason: string
 }
 
@@ -174,7 +172,7 @@ export interface WarningDetailsRequirementSelectItem {
   value: string
   text: string
   selected: boolean
-  requirements: SelectItem[]
+  breachReasons: SelectItem[]
 }
 
 export interface ErrorMessages {
@@ -204,7 +202,6 @@ export interface Officer {
   code: string
   name: Name
 }
-
 
 export type WarningDetailsRequirementSelectItemsList = Array<WarningDetailsRequirementSelectItem>
 
