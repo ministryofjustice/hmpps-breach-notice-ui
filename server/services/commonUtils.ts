@@ -1,11 +1,26 @@
 import { type Response } from 'express'
 import { BreachNotice } from '../data/breachNoticeApiClient'
+import NdeliusIntegrationApiClient, { LimitedAccessCheck } from '../data/ndeliusIntegrationApiClient'
+import { HmppsAuthClient } from '../data'
 
 export default class CommonUtils {
-  constructor() {}
+  constructor(private readonly hmppsAuthClient: HmppsAuthClient) {}
 
   async redirectRequired(breachNotice: BreachNotice, res: Response): Promise<boolean> {
-    // TODO LAO Check
+    const token = await this.hmppsAuthClient.getSystemClientToken(res.locals.user.username)
+    const ndeliusIntegrationApiClient = new NdeliusIntegrationApiClient(token)
+
+    const laoCheck: LimitedAccessCheck = await ndeliusIntegrationApiClient.getLimitedAccessCheck(
+      breachNotice.crn,
+      res.locals.user.username,
+    )
+    if (laoCheck.isExcluded || laoCheck.isRestricted) {
+      res.render('pages/limited-access', {
+        laoCheck,
+      })
+      return true
+    }
+
     if (breachNotice.completedDate != null) {
       res.redirect(`/report-completed/${breachNotice.id}`)
       return true

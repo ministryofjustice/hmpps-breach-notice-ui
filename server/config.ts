@@ -62,7 +62,7 @@ const snsConfig = () => {
 }
 
 const ndeliusIntegrationConfig = () => {
-  const ndeliusIntegrationEnabled = get('NDELIUS_INTEGRATION_ENABLED', 'false', requiredInProduction) === 'true'
+  const ndeliusIntegrationEnabled = get('NDELIUS_INTEGRATION_ENABLED', 'true', requiredInProduction) === 'true'
   return {
     url: get('NDELIUS_INTEGRATION_URL', 'http://localhost:9091', requiredInProduction),
     timeout: {

@@ -8,7 +8,7 @@ export const services = () => {
 
   const auditService = new AuditService(hmppsAuditClient)
   const snsService = new SnsService(hmppsSnsClient)
-  const commonUtils = new CommonUtils()
+  const commonUtils = new CommonUtils(hmppsAuthClient)
 
   return {
     applicationInfo,

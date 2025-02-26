@@ -1,0 +1,41 @@
+{% extends "../partials/layout.njk" %}
+
+{% set pageTitle = applicationName + " - Home" %}
+{% set mainClasses = "app-container govuk-body" %}
+
+{% block content %}
+    {% from "moj/components/side-navigation/macro.njk" import mojSideNavigation %}
+    {% from "govuk/components/panel/macro.njk" import govukPanel %}
+    {% from "govuk/components/panel/macro.njk" import govukPanel %}
+
+
+    <div class="govuk-grid-row">
+        <div class="govuk-grid-column-two-thirds">
+            {% set mainClasses = "govuk-main-wrapper--l" %}
+
+            <div class="govuk-panel govuk-panel--confirmation" id="lao-panel">
+                <h1 class="govuk-panel__title">
+                    Access to this record is Restricted
+                </h1>
+                <div class="govuk-panel__body">
+                    {% if laoCheck.isExcluded %}
+                        <span id="exclusionText">{{ laoCheck.exclusionMessage }}</span>
+                    {% endif %}
+                    {% if laoCheck.isRestricted %}
+                        {% if laoCheck.isExcluded %}
+                            <br/>
+                        {% endif %}
+                        <span id="restrictionText">{{ laoCheck.restrictionMessage }}</span>
+                    {% endif %}
+                </div>
+            </div>
+
+            <h2 class="govuk-heading-m">What to do next</h2>
+
+            <p class="govuk-body">
+                <a href="/close" class="govuk-link">Click here to close this window</a>
+            </p>
+        </div>
+    </div>
+
+{% endblock %}
