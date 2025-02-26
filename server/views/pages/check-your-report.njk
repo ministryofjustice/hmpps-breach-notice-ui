@@ -319,14 +319,14 @@
                                     Response Required By
                                 </dt>
                                 <dd class="govuk-summary-list__value">
-                                    {% if breachNotice.responseRequiredByDate == null and breachNotice.warningTypeSaved %}
+                                    {% if breachNotice.responseRequiredDate == null and breachNotice.warningDetailsSaved %}
                                         <a href="/warning-details/{{ breachNotice.id }}" class="govuk-link">enter
                                             required information</a>
                                     {% else %}
-                                        {{ responseRequiredByDate }}
+                                        {{ responseRequiredDate }}
                                     {% endif %}
                                 </dd>
-                                {% if breachNotice.responseRequiredByDate == null %}
+                                {% if breachNotice.responseRequiredDate == null %}
                                     <dd class="govuk-summary-list__actions">
 
                                         <span class="govuk-tag--light-blue">

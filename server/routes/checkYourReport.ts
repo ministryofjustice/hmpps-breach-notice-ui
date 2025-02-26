@@ -35,7 +35,7 @@ export default function checkYourReportRoutes(
     })
 
     const basicDetailsDateOfLetter: string = toUserDate(breachNotice.dateOfLetter)
-    const responseRequiredByDate: string = toUserDate(breachNotice.responseRequiredByDate)
+    const responseRequiredByDate: string = toUserDate(breachNotice.responseRequiredDate)
     const nextAppointmentDate: string = toUserDateFromDateTime(breachNotice.nextAppointmentDate)
     const nextAppointmentTime: string = toUserTimeFromDateTime(breachNotice.nextAppointmentDate)
 
@@ -124,7 +124,7 @@ export default function checkYourReportRoutes(
       breachNotice.breachNoticeContactList.length > 0 &&
       breachNotice.breachNoticeRequirementList != null &&
       breachNotice.breachNoticeRequirementList.length > 0 &&
-      breachNotice.responseRequiredByDate != null &&
+      breachNotice.responseRequiredDate != null &&
       breachNotice.nextAppointmentType != null &&
       breachNotice.nextAppointmentDate != null &&
       breachNotice.nextAppointmentLocation != null &&
