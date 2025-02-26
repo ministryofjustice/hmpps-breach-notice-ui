@@ -34,6 +34,15 @@ export default class NdeliusIntegrationApiClient extends RestClient {
       path: `/warning-details/${crn}`,
     })
   }
+
+  async getLimitedAccessCheck(crn: string, username: string): Promise<LimitedAccessCheck> {
+    if (config.apis.ndeliusIntegration.enabled === false) {
+      return createDummyLaoCheck()
+    }
+    return this.get({
+      path: `/users/${username}/access/${crn}`,
+    })
+  }
 }
 
 export interface Name {
@@ -47,6 +56,13 @@ export interface BasicDetails {
   name: Name
   addresses: Address[]
   replyAddresses: Address[]
+}
+
+export interface LimitedAccessCheck {
+  isExcluded: boolean
+  exclusionMessage?: string
+  isRestricted: boolean
+  restrictionMessage?: string
 }
 
 // Reference Data
@@ -275,5 +291,12 @@ function createDummyRequirement(): Requirement {
     id: 1,
     type: createDummyReferenceData(),
     subType: createDummyReferenceData(),
+  }
+}
+
+function createDummyLaoCheck(): LimitedAccessCheck {
+  return {
+    isExcluded: false,
+    isRestricted: false,
   }
 }

@@ -19,23 +19,23 @@
               "addressId": 1,
               "type": "Postal",
               "buildingName": null,
-              "buildingNumber": "25",
-              "streetName": "Post Street",
+              "buildingNumber": "281",
+              "streetName": "Postal Street",
               "townCity": "Postinton",
               "district": "Postrict",
               "county": "County Post",
-              "postcode": "PO1 2ST"
+              "postcode": "NE30 3ZZ"
             },
             {
               "addressId": 2,
               "type": "Postal",
-              "buildingName": "Postal Manor",
-              "buildingNumber": "177",
-              "streetName": "Postal Blvd",
+              "buildingName": null,
+              "buildingNumber": "21",
+              "streetName": "Postal Street",
               "townCity": "Upper Posty",
               "district": "POHO",
               "county": "North Posts",
-              "postcode": "PO4 5ST"
+              "postcode": "NE30 3ZZ"
             }
           ],
           "replyAddresses": [
@@ -43,12 +43,12 @@
               "addressId": 3,
               "type": "Postal",
               "buildingName": null,
-              "buildingNumber": "25",
+              "buildingNumber": "21",
               "streetName": "Reply Street",
               "townCity": "Replyinton",
               "district": "Replyrict",
               "county": "County Reply",
-              "postcode": "RE1 2PL"
+              "postcode": "NE22 3AA"
             },
             {
               "addressId": 4,
@@ -145,6 +145,74 @@
               }
             }
           ]
+        },
+        "headers": {
+          "Content-Type": "application/json;charset=UTF-8"
+        }
+      }
+    },
+    {
+      "request": {
+        "urlPattern": "/users/(.*?)/access/(.*?)",
+        "method": "GET"
+      },
+      "response": {
+        "status": 200,
+        "jsonBody": {
+          "isExcluded": false,
+          "isRestricted": false
+        },
+        "headers": {
+          "Content-Type": "application/json;charset=UTF-8"
+        }
+      }
+    },
+    {
+      "request": {
+        "urlPattern": "/users/(.*?)/access/X100501",
+        "method": "GET"
+      },
+      "response": {
+        "status": 200,
+        "jsonBody": {
+          "isExcluded": true,
+          "exclusionMessage": "User is excluded. Please contact XXXXXXXXX.",
+          "isRestricted": false
+        },
+        "headers": {
+          "Content-Type": "application/json;charset=UTF-8"
+        }
+      }
+    },
+    {
+      "request": {
+        "urlPattern": "/users/(.*?)/access/X100502",
+        "method": "GET"
+      },
+      "response": {
+        "status": 200,
+        "jsonBody": {
+          "isExcluded": false,
+          "isRestricted": true,
+          "restrictionMessage": "User is restricted. Please contact XXXXXXX."
+        },
+        "headers": {
+          "Content-Type": "application/json;charset=UTF-8"
+        }
+      }
+    },
+    {
+      "request": {
+        "urlPattern": "/users/(.*?)/access/X100503",
+        "method": "GET"
+      },
+      "response": {
+        "status": 200,
+        "jsonBody": {
+          "isExcluded": true,
+          "exclusionMessage": "User is excluded. Please contact XXXXXXXXX.",
+          "isRestricted": true,
+          "restrictionMessage": "User is restricted. Please contact XXXXXXX."
         },
         "headers": {
           "Content-Type": "application/json;charset=UTF-8"

@@ -1,0 +1,29 @@
+{% extends "../partials/layout.njk" %}
+
+{% set pageTitle = applicationName + " - Home" %}
+{% set mainClasses = "app-container govuk-body" %}
+
+{% block content %}
+    {% from "moj/components/side-navigation/macro.njk" import mojSideNavigation %}
+    {% from "govuk/components/panel/macro.njk" import govukPanel %}
+    {% from "govuk/components/panel/macro.njk" import govukPanel %}
+
+
+    <div class="govuk-grid-row">
+        <div class="govuk-grid-column-two-thirds" id="lao-panel">
+            {% set mainClasses = "govuk-main-wrapper--l" %}
+
+            {{ govukPanel({
+                titleText: "Limited Access",
+                html: ''+limitedAccessMessages
+            }) }}
+
+            <h2 class="govuk-heading-m">What to do next</h2>
+
+            <p class="govuk-body">
+                <a href="/close" class="govuk-link">Click here to close this window</a>
+            </p>
+        </div>
+    </div>
+
+{% endblock %}
