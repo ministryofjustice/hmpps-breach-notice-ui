@@ -11,8 +11,8 @@
           "title": "Mr",
           "name": {
             "forename": "Billy",
-            "middleName": null,
-            "surname": "Kiddo"
+            "middleName": "The",
+            "surname": "Kid"
           },
           "addresses": [
             {
@@ -112,7 +112,7 @@
           ],
           "sentenceTypes": [
             {
-              "code": "ABC",
+              "code": "CO",
               "description": "Community Order",
               "conditionBeingEnforced": "string"
             }
@@ -176,7 +176,7 @@
         "status": 200,
         "jsonBody": {
           "isExcluded": true,
-          "exclusionMessage": "User is excluded. Please contact XXXXXXXXX.",
+          "exclusionMessage": "If you believe you should be able to access this record please contact [whoever]",
           "isRestricted": false
         },
         "headers": {
@@ -194,7 +194,7 @@
         "jsonBody": {
           "isExcluded": false,
           "isRestricted": true,
-          "restrictionMessage": "User is restricted. Please contact XXXXXXX."
+          "restrictionMessage": "If you believe you should be able to access this record please contact [whoever]"
         },
         "headers": {
           "Content-Type": "application/json;charset=UTF-8"
@@ -210,9 +210,9 @@
         "status": 200,
         "jsonBody": {
           "isExcluded": true,
-          "exclusionMessage": "User is excluded. Please contact XXXXXXXXX.",
+          "exclusionMessage": "If you believe you should be able to access this record please contact [whoever]",
           "isRestricted": true,
-          "restrictionMessage": "User is restricted. Please contact XXXXXXX."
+          "restrictionMessage": "If you believe you should be able to access this record please contact [whoever]"
         },
         "headers": {
           "Content-Type": "application/json;charset=UTF-8"
