@@ -116,7 +116,10 @@ export default function warningDetailsRoutes(
         warningDetails.enforceableContactList,
       )
       const enforceableContactRadioButtonList = createEnforceableContactRadioButtonListFromEnforceableContacts(
+        // enforceable contact list is the lkist that remains the same
+        // breach notice contains a list of contacts we are ionterested in
         warningDetails.enforceableContactList,
+        breachNotice,
       )
 
       const breachReasons = convertReferenceDataListToSelectItemList(warningDetails.breachReasons)
@@ -174,14 +177,13 @@ export default function warningDetailsRoutes(
       await hmppsAuthClient.getSystemClientToken(res.locals.user.username),
     )
     const breachNoticeId = req.params.id
-    let breachNotice: BreachNotice = null
-    breachNotice = await breachNoticeApiClient.getBreachNoticeById(breachNoticeId as string)
-
+    const breachNotice = await breachNoticeApiClient.getBreachNoticeById(breachNoticeId as string)
     if (await commonUtils.redirectRequired(breachNotice, res)) return
 
     const warningDetails: WarningDetails = createDummyWarningDetails()
     const enforceableContactRadioButtonList = createEnforceableContactRadioButtonListFromEnforceableContacts(
       warningDetails.enforceableContactList,
+      breachNotice,
     )
     const breachReasons = convertReferenceDataListToSelectItemList(warningDetails.breachReasons)
     const requirementsList = createFailuresBeingEnforcedRequirementSelectList(
@@ -254,6 +256,7 @@ export default function warningDetailsRoutes(
 
   function createEnforceableContactRadioButtonListFromEnforceableContacts(
     enforceableContactList: EnforceableContactList,
+    breachNotice: BreachNotice,
   ): EnforceableContactRadioButtonList {
     return enforceableContactList.map(enforceableContact => ({
       datetime: enforceableContact.datetime,
@@ -261,7 +264,9 @@ export default function warningDetailsRoutes(
       outcome: enforceableContact.outcome,
       notes: enforceableContact.notes,
       requirement: enforceableContact.requirement,
-      checked: 'checked',
+      checked: breachNotice.breachNoticeContactList.some(
+        contact => contact.contactId?.toString() === enforceableContact.id?.toString(),
+      ),
       value: enforceableContact.id.toString(),
       text: enforceableContact.description,
     }))
