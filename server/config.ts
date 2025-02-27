@@ -62,7 +62,6 @@ const snsConfig = () => {
 }
 
 const ndeliusIntegrationConfig = () => {
-  const ndeliusIntegrationEnabled = get('NDELIUS_INTEGRATION_ENABLED', 'true', requiredInProduction) === 'true'
   return {
     url: get('NDELIUS_INTEGRATION_URL', 'http://localhost:9091', requiredInProduction),
     timeout: {
@@ -70,7 +69,6 @@ const ndeliusIntegrationConfig = () => {
       deadline: Number(get('NDELIUS_INTEGRATION_TIMEOUT_DEADLINE', 10000)),
     },
     agent: new AgentConfig(Number(get('NDELIUS_INTEGRATION_TIMEOUT_RESPONSE', 10000))),
-    enabled: ndeliusIntegrationEnabled,
   }
 }
 
