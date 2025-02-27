@@ -84,7 +84,6 @@ export default function warningTypeRoutes(
     // find the sentenceTypeRefData from the integration response
     warningDetails.sentenceTypes.forEach((sentenceType: SentenceType) => {
       if (breachNotice.breachSentenceTypeCode && breachNotice.breachSentenceTypeCode === sentenceType.code) {
-        // eslint-disable-next-line no-param-reassign
         breachNotice.breachSentenceTypeDescription = sentenceType.description
       }
     })

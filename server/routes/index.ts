@@ -1,4 +1,5 @@
 import { type RequestHandler, Router } from 'express'
+
 import asyncMiddleware from '../middleware/asyncMiddleware'
 import type { Services } from '../services'
 import basicDetailsRoutes from './basicDetails'
