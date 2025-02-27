@@ -27,18 +27,8 @@ export default class NdeliusIntegrationApiClient extends RestClient {
     })
   }
 
-  // async getSentenceTypes(): Promise<SentenceType> {
-  //   if (config.apis.ndeliusIntegration.enabled === false) {
-  //     return createDummySentenceTypes()
-  //   }
-  //   return this.get({
-  //     path: `/sentence-types`,
-  //   })
-  // }
-
   async getWarningDetails(crn: string): Promise<WarningDetails> {
     if (config.apis.ndeliusIntegration.enabled === false) {
-      console.log('creating dummy details')
       return createDummyWarningDetails()
     }
     return this.get({
@@ -81,24 +71,6 @@ export interface WarningDetails {
   sentenceTypes: SentenceType[]
   defaultSentenceTypeCode: string
   enforceableContactList: EnforceableContact[]
-}
-
-export interface BreachNoticeContact {
-  id: string
-  breachNoticeId: string
-  contactDate: LocalDateTime
-  contactType: string
-  contactOutcome: string
-  contactId: number
-}
-
-export interface BreachNoticeRequirement {
-  id: string
-  breachNoticeId: string
-  requirementId: number
-  mainCategoryDescription: string
-  subCategoryDescription: string
-  rejectionReason: string
 }
 
 export interface EnforceableContact {

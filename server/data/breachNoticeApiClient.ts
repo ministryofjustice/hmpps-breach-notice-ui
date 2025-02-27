@@ -88,6 +88,8 @@ export interface BreachNoticeRequirement {
   requirementTypeMainCategoryDescription: string
   requirementTypeSubCategoryDescription: string
   rejectionReason: string
+  fromDate: string
+  toDate: string
 }
 
 export interface EnforceableContact {
@@ -171,8 +173,10 @@ export interface Requirement {
 export interface WarningDetailsRequirementSelectItem {
   value: string
   text: string
-  selected: boolean
-  breachReasons: SelectItem[]
+  checked: boolean
+  conditional: {
+    html: string
+  }
 }
 
 export interface ErrorMessages {

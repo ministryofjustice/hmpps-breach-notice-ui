@@ -79,10 +79,11 @@
     ]
   },
   "dependencies": {
-    "@aws-sdk/client-sqs": "^3.658.0",
     "@aws-sdk/client-sns": "^3.744.0",
+    "@aws-sdk/client-sqs": "^3.658.0",
     "@js-joda/core": "^5.6.4",
     "@ministryofjustice/frontend": "^2.2.4",
+    "@types/qs": "^6.9.18",
     "agentkeepalive": "^4.5.0",
     "applicationinsights": "^2.9.6",
     "body-parser": "^1.20.3",

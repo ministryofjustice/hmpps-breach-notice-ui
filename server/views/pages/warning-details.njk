@@ -28,50 +28,6 @@
   {% endif %}
   <input type="hidden" name="_csrf" value="{{ csrfToken }}">
 
-
-
-  {% set phoneHtml %}
-   {{ govukInput({
-    id: "contact-by-phone",
-    name: "contactByPhone",
-    type: "tel",
-    autocomplete: "tel",
-    classes: "govuk-!-width-one-third",
-    label: {
-     text: "Phone number"
-    }
-   }) }}
-  {% endset -%}
-
-  {% set govselectHtml %}
-   {{ govukSelect({
-    id: "sort",
-    name: "sort",
-    label: {
-     text: "Reason"
-    },
-    items: [
-     {
-      value: "failed",
-      text: "Failed to attend"
-     },
-     {
-      value: "late",
-      text: "Attended Late",
-      selected: true
-     },
-     {
-      value: "failedcomply",
-      text: "Failed to comply"
-     },
-     {
-      value: "touch",
-      text: "Failed to keep in touch"
-     }
-    ]
-   }) }}
-  {% endset -%}
-
   <div class="govuk-grid-row">
    <div class="govuk-grid-column-one-third">
     {% include "pages/side-nav.njk" %}
@@ -84,9 +40,6 @@
     2 occasions during a 12-month period
     <br/><br/>
 
-
-
-
     <div class="govuk-form-group">
      <fieldset class="govuk-fieldset" aria-describedby="signIn-hint">
       <legend class="govuk-fieldset__legend govuk-fieldset__legend--m">
@@ -95,9 +48,7 @@
        </h1>
       </legend>
       <div id="signIn-hint" class="govuk-hint">
-
       </div>
-
       <div class="govuk-radios" data-module="govuk-radios">
        {% for failure in enforceableContactRadioButtonList %}
         <div class="govuk-radios__item">
@@ -126,48 +77,25 @@
      </fieldset>
     </div>
 
-    <div class="govuk-form-group">
-     <fieldset class="govuk-fieldset" aria-describedby="contact-hint">
-      <legend class="govuk-fieldset__legend govuk-fieldset__legend--m">
-       <h1 class="govuk-fieldset__heading">
-        Select the Failures being enforced
-       </h1>
-      </legend>
-      <div id="contact-hint" class="govuk-hint">
-       Select all that apply
-      </div>
-      <div class="govuk-checkboxes" data-module="govuk-checkboxes">
-       {% for requirement in requirementsList %}
-        <div class="govuk-checkboxes__item">
-         <input class="govuk-checkboxes__input"
-                id="checkbox{{ requirement.value }}"
-                name="failuresBeingEnforcedRequirements"
-                type="checkbox"
-                value="{{ requirement.value }}"
-                data-aria-controls="hidden{{ requirement.value }}" >
-         <label class="govuk-label govuk-checkboxes__label" for="checkbox{{ requirement.value }}">
-          {{ requirement.text }}
-         </label>
-        </div>
-        <div class="govuk-checkboxes__conditional govuk-checkboxes__conditional--hidden"
-             id="hidden{{ requirement.value }}">
-         {{ govukSelect({
-          id: "breachReason"+requirement.value,
-          name: "breachreason"+requirement.value,
-          label: {
-           text: "Reason"
-          },
-          items: requirement.breachReasons
-         }) }}
-        </div>
-       {% endfor %}
-      </div>
-     </fieldset>
-    </div>
+    {{ govukCheckboxes({
+     name: "failuresBeingEnforcedRequirements",
+     fieldset: {
+      legend: {
+       text: "Select the Failures being enforced",
+       isPageHeading: false,
+       classes: "govuk-fieldset__legend--m"
+      }
+     },
+     hint: {
+      text: "Select all that apply"
+     },
+     items: requirementsList
+    }) }}
 
     {{ mojDatePicker({
      id: "responseRequiredByDate",
      name: "responseRequiredByDate",
+     value: warningDetailsResponseRequiredDate,
      label: {
       text: "Response Required By",
       classes: "govuk-fieldset__legend--m"
@@ -186,19 +114,12 @@
       preventDoubleClick: "true",
       type: "submit"
      }, {
-      text: "View Draft Report",
-      classes: "govuk-button--secondary",
-      preventDoubleClick: "true",
-      type: "submit",
-      name: "action",
-      value: "viewDraft"
-     }, {
       text: "Refresh from Delius",
       href: "#",
       classes: "govuk-button--secondary",
       preventDoubleClick: "true"
      }, {
-      text: "Close",
+      text: "Save Progress and Close",
       href: "/warning-type/"+breachNotice.id,
       classes: "govuk-button--secondary",
       preventDoubleClick: "true"
@@ -208,5 +129,4 @@
    </div>
   </div>
  </form>
-
 {% endblock %}

@@ -19,10 +19,11 @@ import BreachNoticeApiClient, {
   WarningDetailsRequirementSelectItem,
 } from '../data/breachNoticeApiClient'
 import AuditService, { Page } from '../services/auditService'
-import { fromUserDate } from '../utils/dateUtils'
+import { fromUserDate, toUserDate } from '../utils/dateUtils'
 import { HmppsAuthClient } from '../data'
 import CommonUtils from '../services/commonUtils'
 import asyncMiddleware from '../middleware/asyncMiddleware'
+import asArray from '../utils/utils'
 
 export default function warningDetailsRoutes(
   router: Router,
@@ -75,29 +76,35 @@ export default function warningDetailsRoutes(
     breachNotice.breachNoticeContactList = contactList
 
     // lookup the requirements
-    const selectedRequirements: string[] = req.body.failuresBeingEnforcedRequirements
+    // this can come in an array or singular
+    const selectedFailureRequirements = asArray(req.body.failuresBeingEnforcedRequirements)
 
-    // we have contacts and requirements in here: warningDetails.enforceableContactList
-    // to get the full requirement info we will need to loop through the contacts until
-    // we find the one with the requirement to get the details
-    selectedRequirements.forEach((requirementId: string) => {
+    selectedFailureRequirements.forEach((requirementId: string) => {
       const enforceableContactWithRequirement: EnforceableContact = warningDetails.enforceableContactList.find(
         contact => contact.requirement.id.toString() === requirementId,
       )
       const bodyParamBreachReason: string = `breachreason${requirementId}`
-      requirementList.push({
+
+      const currentRequirement: BreachNoticeRequirement = {
         id: null,
         breachNoticeId: breachNotice.id,
         requirementId: enforceableContactWithRequirement.requirement.id,
         requirementTypeMainCategoryDescription: enforceableContactWithRequirement.requirement.type.description,
         requirementTypeSubCategoryDescription: enforceableContactWithRequirement.requirement.subType.description,
         rejectionReason: req.body[bodyParamBreachReason],
-      })
+        fromDate: null,
+        toDate: null,
+      }
+
+      requirementList.push(
+        applyContactDateRangesToRequirement(currentRequirement, warningDetails.enforceableContactList),
+      )
     })
 
+    // we have contacts and requirements in here: warningDetails.enforceableContactList
+    // to get the full requirement info we will need to loop through the contacts until
+    // we find the one with the requirement to get the details
     breachNotice.breachNoticeRequirementList = requirementList
-    console.log('response required by')
-    console.log(req.body.responseRequiredByDate)
 
     const warningDetailsErrorMessages: ErrorMessages = validateWarningDetails(
       breachNotice,
@@ -126,6 +133,7 @@ export default function warningDetailsRoutes(
       const requirementsList = createFailuresBeingEnforcedRequirementSelectList(
         warningDetails.enforceableContactList,
         warningDetails.breachReasons,
+        breachNotice,
       )
 
       res.render(`pages/warning-details`, {
@@ -140,6 +148,30 @@ export default function warningDetailsRoutes(
     }
   })
 
+  function applyContactDateRangesToRequirement(
+    breachNoticeRequirement: BreachNoticeRequirement,
+    enforceableContactList: EnforceableContact[],
+  ): BreachNoticeRequirement {
+    const dateList: string[] = []
+    enforceableContactList.forEach((enforcebleContact: EnforceableContact) => {
+      if (enforcebleContact.requirement) {
+        if (enforcebleContact.requirement.id.toString() === breachNoticeRequirement.requirementId.toString()) {
+          if (enforcebleContact.datetime) {
+            dateList.push(enforcebleContact.datetime)
+          }
+        }
+      }
+    })
+
+    const maxDate = dateList.reduce((a, b) => (a > b ? a : b))
+    const minDate = dateList.reduce((a, b) => (a < b ? a : b))
+    // eslint-disable-next-line no-param-reassign
+    breachNoticeRequirement.toDate = maxDate
+    // eslint-disable-next-line no-param-reassign
+    breachNoticeRequirement.fromDate = minDate
+    return breachNoticeRequirement
+  }
+
   function validateWarningDetails(breachNotice: BreachNotice, responseRequiredByDate: string): ErrorMessages {
     const errorMessages: ErrorMessages = {}
     const currentDateAtStartOfTheDay: LocalDateTime = LocalDate.now().atStartOfDay()
@@ -147,6 +179,7 @@ export default function warningDetailsRoutes(
     try {
       // eslint-disable-next-line no-param-reassign
       breachNotice.responseRequiredDate = fromUserDate(responseRequiredByDate)
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
     } catch (error: unknown) {
       // eslint-disable-next-line no-param-reassign
       breachNotice.responseRequiredDate = responseRequiredByDate
@@ -181,7 +214,7 @@ export default function warningDetailsRoutes(
     if (await commonUtils.redirectRequired(breachNotice, res)) return
 
     const warningDetails: WarningDetails = createDummyWarningDetails()
-    // const warningDetailsDate
+    const warningDetailsResponseRequiredDate: string = toUserDate(breachNotice.responseRequiredDate)
     const enforceableContactRadioButtonList = createEnforceableContactRadioButtonListFromEnforceableContacts(
       warningDetails.enforceableContactList,
       breachNotice,
@@ -190,6 +223,7 @@ export default function warningDetailsRoutes(
     const requirementsList = createFailuresBeingEnforcedRequirementSelectList(
       warningDetails.enforceableContactList,
       warningDetails.breachReasons,
+      breachNotice,
     )
 
     const failuresRecorded: SelectItemList = createSelectItemListFromEnforceableContacts(
@@ -203,6 +237,7 @@ export default function warningDetailsRoutes(
       breachReasons,
       requirementsList,
       currentPage,
+      warningDetailsResponseRequiredDate,
     })
   })
 
@@ -212,17 +247,32 @@ export default function warningDetailsRoutes(
   function createFailuresBeingEnforcedRequirementSelectList(
     enforceableContactList: EnforceableContactList,
     breachReasons: ReferenceDataList,
+    breachNotice: BreachNotice,
   ): WarningDetailsRequirementSelectItem[] {
-    const breachReasonSelectItems: SelectItemList = craftTheBreachReasonSelectItems(breachReasons)
     const returnItems: WarningDetailsRequirementSelectItem[] = []
 
     enforceableContactList.forEach((enforceableContact: EnforceableContact) => {
       const { requirement } = enforceableContact
+      const breachNoticeRequirement = breachNotice.breachNoticeRequirementList.find(
+        savedRequirement => savedRequirement.requirementId?.toString() === requirement.id?.toString(),
+      )
+      const breachReasonSelectItems: SelectItemList = craftTheBreachReasonSelectItems(
+        breachReasons,
+        breachNoticeRequirement,
+      )
       const linkedSelectItem: WarningDetailsRequirementSelectItem = {
         text: `${requirement.type.description} - ${requirement.subType.description}`,
         value: requirement.id.toString(),
-        selected: false,
-        breachReasons: breachReasonSelectItems,
+        checked: !!breachNoticeRequirement,
+        conditional: {
+          html:
+            `<div class="govuk-form-group">\n` +
+            `  <label class="govuk-label" for="breachreason${requirement.id}">Why is this being enforced? </label>` +
+            `  <select class="govuk-select" id="breachreason${requirement.id}" name="breachreason${requirement.id}">\n${breachReasonSelectItems
+              .map(item => `<option value="${item.value}" ${item.selected ? 'selected' : ''}>${item.text}</option>`)
+              .join()}  </select>\n` +
+            `</div>`,
+        },
       }
       returnItems.push(linkedSelectItem)
     })
@@ -242,17 +292,17 @@ export default function warningDetailsRoutes(
     return selectItemList
   }
 
-  function craftTheBreachReasonSelectItems(refDataList: ReferenceDataList): SelectItemList {
-    const selectItemListToReturn: SelectItem[] = []
-    refDataList.forEach((referenceData: ReferenceData) => {
-      const selectItem: SelectItem = {
+  function craftTheBreachReasonSelectItems(
+    refDataList: ReferenceDataList,
+    requirement: BreachNoticeRequirement,
+  ): SelectItemList {
+    return refDataList.map((referenceData: ReferenceData) => {
+      return {
         text: referenceData.description,
         value: referenceData.code,
-        selected: false,
+        selected: requirement && requirement?.rejectionReason === referenceData.code,
       }
-      selectItemListToReturn.push(selectItem)
     })
-    return selectItemListToReturn
   }
 
   function createEnforceableContactRadioButtonListFromEnforceableContacts(
