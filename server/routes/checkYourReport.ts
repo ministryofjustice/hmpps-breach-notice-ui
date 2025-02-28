@@ -112,7 +112,7 @@ export default function checkYourReportRoutes(
   })
 
   function validateCheckYourReport(breachNotice: BreachNotice): boolean {
-    if (
+    return (
       breachNotice.crn != null &&
       breachNotice.titleAndFullName != null &&
       breachNotice.offenderAddress != null &&
@@ -130,10 +130,7 @@ export default function checkYourReportRoutes(
       breachNotice.nextAppointmentLocation != null &&
       breachNotice.nextAppointmentOfficer != null &&
       breachNotice.responsibleOfficer != null
-    ) {
-      return true
-    }
-    return false
+    )
   }
 
   return router

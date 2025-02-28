@@ -6,7 +6,7 @@ import BreachNoticeApiClient, {
   RadioButton,
   SelectItem,
 } from '../data/breachNoticeApiClient'
-import { SentenceType, WarningType } from '../data/ndeliusIntegrationApiClient'
+import NdeliusIntegrationApiClient, { SentenceType, WarningType } from '../data/ndeliusIntegrationApiClient'
 import { HmppsAuthClient } from '../data'
 import CommonUtils from '../services/commonUtils'
 import asyncMiddleware from '../middleware/asyncMiddleware'
