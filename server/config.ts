@@ -61,17 +61,6 @@ const snsConfig = () => {
   }
 }
 
-const ndeliusIntegrationConfig = () => {
-  return {
-    url: get('NDELIUS_INTEGRATION_URL', 'http://localhost:9091', requiredInProduction),
-    timeout: {
-      response: Number(get('NDELIUS_INTEGRATION_TIMEOUT_RESPONSE', 10000)),
-      deadline: Number(get('NDELIUS_INTEGRATION_TIMEOUT_DEADLINE', 10000)),
-    },
-    agent: new AgentConfig(Number(get('NDELIUS_INTEGRATION_TIMEOUT_RESPONSE', 10000))),
-  }
-}
-
 export default {
   buildNumber: get('BUILD_NUMBER', '1_0_0', requiredInProduction),
   productId: get('PRODUCT_ID', 'UNASSIGNED', requiredInProduction),
@@ -93,8 +82,9 @@ export default {
   },
   apis: {
     hmppsAuth: {
-      url: get('HMPPS_AUTH_URL', 'http://localhost:9090/auth', requiredInProduction),
-      externalUrl: get('HMPPS_AUTH_EXTERNAL_URL', get('HMPPS_AUTH_URL', 'http://localhost:9090/auth')),
+      url: get('HMPPS_AUTH_URL', 'http://localhost:9091/auth', requiredInProduction),
+      healthPath: '/health/ping',
+      externalUrl: get('HMPPS_AUTH_EXTERNAL_URL', get('HMPPS_AUTH_URL', 'http://localhost:9091/auth')),
       timeout: {
         response: Number(get('HMPPS_AUTH_TIMEOUT_RESPONSE', 10000)),
         deadline: Number(get('HMPPS_AUTH_TIMEOUT_DEADLINE', 10000)),
@@ -105,9 +95,9 @@ export default {
       systemClientId: get('CLIENT_CREDS_CLIENT_ID', 'clientid', requiredInProduction),
       systemClientSecret: get('CLIENT_CREDS_CLIENT_SECRET', 'clientsecret', requiredInProduction),
     },
-    ndeliusIntegration: ndeliusIntegrationConfig(),
     tokenVerification: {
-      url: get('TOKEN_VERIFICATION_API_URL', 'http://localhost:8100', requiredInProduction),
+      url: get('TOKEN_VERIFICATION_API_URL', 'http://localhost:9091/verification', requiredInProduction),
+      healthPath: '/health/ping',
       timeout: {
         response: Number(get('TOKEN_VERIFICATION_API_TIMEOUT_RESPONSE', 5000)),
         deadline: Number(get('TOKEN_VERIFICATION_API_TIMEOUT_DEADLINE', 5000)),
@@ -116,12 +106,22 @@ export default {
       enabled: get('TOKEN_VERIFICATION_ENABLED', 'false') === 'true',
     },
     breachNotice: {
-      url: get('BREACH_NOTICE_API_URL', 'http://localhost:8080', requiredInProduction),
+      url: get('BREACH_NOTICE_API_URL', 'http://localhost:9091/breach-notice-api', requiredInProduction),
+      healthPath: '/health/ping',
       timeout: {
         response: Number(get('BREACH_NOTICE_API_TIMEOUT_RESPONSE', 5000)),
         deadline: Number(get('BREACH_NOTICE_API_TIMEOUT_DEADLINE', 5000)),
       },
       agent: new AgentConfig(Number(get('BREACH_NOTICE_API_TIMEOUT_RESPONSE', 5000))),
+    },
+    ndeliusIntegration: {
+      url: get('NDELIUS_INTEGRATION_URL', 'http://localhost:9091', requiredInProduction),
+      healthPath: '/health/ping',
+      timeout: {
+        response: Number(get('NDELIUS_INTEGRATION_TIMEOUT_RESPONSE', 10000)),
+        deadline: Number(get('NDELIUS_INTEGRATION_TIMEOUT_DEADLINE', 10000)),
+      },
+      agent: new AgentConfig(Number(get('NDELIUS_INTEGRATION_TIMEOUT_RESPONSE', 10000))),
     },
   },
   sqs: {

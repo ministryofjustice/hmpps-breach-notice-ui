@@ -23,25 +23,29 @@ You'll need to install:
 
 Install NPM package dependencies (from the root of the project):
 
-```shell
-
 First - Create a .env file in the root of the project (only on first run copy the example env file by running the following command)
 
 ```shell
 cp .env.example .env
 ```
 
-Then, to run the service locally with dependencies in docker:
+Then, to run the service locally with dependencies in WireMock:
 
 ```shell
-#1 Start Docker Container(s)
-docker compose up --scale=app=0 -d
-
-#2 Start the Application
 npm run start:dev
 ```
 
 Open http://localhost:3000 in your browser.
+
+### Running the API locally
+
+To start the service with a locally running instance of [hmpps-breach-notice-api](https://github.com/ministryofjustice/hmpps-breach-notice-api) on port 8080,
+add the following to your `.env` file:
+
+```properties
+HMPPS_AUTH_URL=http://localhost:9090/auth
+BREACH_NOTICE_API_URL=http://localhost:8080
+```
 
 ### Integrate with dev services running on MOJ Cloud Platform
 
@@ -154,7 +158,3 @@ And then either, run tests in headless mode with:
 Or run tests with the cypress UI:
 
 `npm run int-test-ui`
-
-## Change log
-
-A changelog for the service is available [here](./CHANGELOG.md)

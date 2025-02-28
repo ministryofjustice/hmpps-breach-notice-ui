@@ -8,7 +8,7 @@
     {% from "moj/components/side-navigation/macro.njk" import mojSideNavigation %}
     {% from "govuk/components/radios/macro.njk" import govukRadios %}
     {% from "govuk/components/select/macro.njk" import govukSelect %}
-    {% from "moj/components/button-menu/macro.njk" import mojButtonMenu %}
+    {% from "govuk/components/button/macro.njk" import govukButton %}
     {% from "moj/components/date-picker/macro.njk" import mojDatePicker %}
     {% from "govuk/components/table/macro.njk" import govukTable %}
     {% from "govuk/components/select/macro.njk" import govukSelect %}
@@ -64,25 +64,25 @@
                     } if errorMessages.sentenceType.text
                 }) }}
 
-                {{ mojButtonMenu({
-                    items: [{
-                        text: "Continue",
-                        type: "submit",
-                        preventDoubleClick: "true",
-                        attributes: {
-                            id: "continue-button"
-                        }
-                    },{
-                        text: "Save Progress and Close",
-                        href: "/basic-details/"+breachNotice.id,
-                        classes: "govuk-button--secondary",
-                        preventDoubleClick: "true",
-                        attributes: {
-                            id: "close-button"
-                        }
-                    }]
-                }) }}
-
+                <div class="moj-button-group">
+                  {{ govukButton({
+                    text: "Continue",
+                    preventDoubleClick: "true",
+                    type: "submit",
+                    attributes: {
+                      id: "continue-button"
+                    }
+                  }) }}
+                  {{ govukButton({
+                    text: "Save Progress and Close",
+                    href: "/basic-details/"+breachNotice.id,
+                    classes: "govuk-button--secondary",
+                    preventDoubleClick: "true",
+                    attributes: {
+                      id: "close-button"
+                    }
+                  }) }}
+                </div>
             </div>
         </div>
     </form>

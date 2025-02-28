@@ -1,6 +1,5 @@
 version: '3.1'
 services:
-
   hmpps-auth:
     image: quay.io/hmpps/hmpps-auth:latest
     networks:
@@ -44,10 +43,9 @@ services:
       - REDIS_HOST=localhost
       - HMPPS_AUTH_EXTERNAL_URL=http://localhost:9090/auth
       - HMPPS_AUTH_URL=http://hmpps-auth:8080/auth
-      # These will need to match new creds in the seed auth service auth
-      - AUTH_CODE_CLIENT_ID=hmpps-typescript-template
+      - AUTH_CODE_CLIENT_ID=hmpps-breach-notice-ui
       - AUTH_CODE_CLIENT_SECRET=clientsecret
-      - CLIENT_CREDS_CLIENT_ID=hmpps-typescript-template-system
+      - CLIENT_CREDS_CLIENT_ID=hmpps-breach-notice-ui-client
       - CLIENT_CREDS_CLIENT_SECRET=clientsecret
       - SESSION_SECRET=somesecretvalue
       - TOKEN_VERIFICATION_API_URL=http://hmpps-auth:8080/auth

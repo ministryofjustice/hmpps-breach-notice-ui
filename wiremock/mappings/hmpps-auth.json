@@ -50,14 +50,13 @@
           "internalUser": true
         },
         "headers": {
-          "Content-Type": "application/json;charset=UTF-8",
-          "Location": "http://localhost:3007/sign-in/callback?code=codexxxx&state=stateyyyy"
+          "Content-Type": "application/json;charset=UTF-8"
         }
       }
     },
     {
       "request": {
-        "urlPattern": "/auth/oauth/authorize\\?response_type=code&redirect_uri=.+?&state=.+?&client_id=clientid",
+        "urlPattern": "/auth/oauth/authorize\\?response_type=code&redirect_uri=.+?3007.+?&state=.+?&client_id=.+?",
         "method": "GET"
       },
       "response": {
@@ -65,6 +64,20 @@
         "headers": {
           "Content-Type": "text/html",
           "Location": "http://localhost:3007/sign-in/callback?code=codexxxx&state={{ request.query.state }}"
+        },
+        "transformers": ["response-template"]
+      }
+    },
+    {
+      "request": {
+        "urlPattern": "/auth/oauth/authorize\\?response_type=code&redirect_uri=.+?3000.+?&state=.+?&client_id=.+?",
+        "method": "GET"
+      },
+      "response": {
+        "status": 302,
+        "headers": {
+          "Content-Type": "text/html",
+          "Location": "http://localhost:3000/sign-in/callback?code=codexxxx&state={{ request.query.state }}"
         },
         "transformers": ["response-template"]
       }
