@@ -60,6 +60,8 @@ ENVIRONMENT=dev
 REDIS_ENABLED=false
 HMPPS_AUTH_URL=https://sign-in-dev.hmpps.service.justice.gov.uk/auth
 MANAGE_USERS_API_URL=https://manage-users-api-dev.hmpps.service.justice.gov.uk
+BREACH_NOTICE_API_URL=https://breach-notice-api-dev.hmpps.service.justice.gov.uk
+NDELIUS_INTEGRATION_URL=https://breach-notice-and-delius-dev.hmpps.service.justice.gov.uk
 
 ```
 
