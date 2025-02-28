@@ -1,7 +1,8 @@
-import { Router } from 'express'
+import { type RequestHandler, Router } from 'express'
 import AuditService, { Page } from '../services/auditService'
 import BreachNoticeApiClient from '../data/breachNoticeApiClient'
 import { HmppsAuthClient } from '../data'
+import asyncMiddleware from '../middleware/asyncMiddleware'
 import CommonUtils from '../services/commonUtils'
 
 export default function pdfMaintenanceRoutes(
@@ -10,7 +11,9 @@ export default function pdfMaintenanceRoutes(
   hmppsAuthClient: HmppsAuthClient,
   commonUtils: CommonUtils,
 ): Router {
-  router.get('/pdf/:id', async (req, res, next) => {
+  const get = (path: string | string[], handler: RequestHandler) => router.get(path, asyncMiddleware(handler))
+
+  get('/pdf/:id', async (req, res, next) => {
     await auditService.logPageView(Page.REPORT_DELETED, { who: res.locals.user.username, correlationId: req.id })
     const breachNoticeApiClient = new BreachNoticeApiClient(
       await hmppsAuthClient.getSystemClientToken(res.locals.user.username),

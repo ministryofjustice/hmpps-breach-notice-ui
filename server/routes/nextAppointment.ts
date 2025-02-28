@@ -1,4 +1,4 @@
-import { Router } from 'express'
+import { type RequestHandler, Router } from 'express'
 import { LocalDateTime } from '@js-joda/core'
 import AuditService, { Page } from '../services/auditService'
 import BreachNoticeApiClient, {
@@ -14,6 +14,7 @@ import { HmppsAuthClient } from '../data'
 import CommonUtils from '../services/commonUtils'
 import { Address } from '../data/commonModels'
 import { toUserDate, toUserTime } from '../utils/dateUtils'
+import asyncMiddleware from '../middleware/asyncMiddleware'
 
 export default function nextAppointmentRoutes(
   router: Router,
@@ -22,8 +23,10 @@ export default function nextAppointmentRoutes(
   commonUtils: CommonUtils,
 ): Router {
   const currentPage = 'next-appointment'
+  const get = (path: string | string[], handler: RequestHandler) => router.get(path, asyncMiddleware(handler))
+  const post = (path: string | string[], handler: RequestHandler) => router.post(path, asyncMiddleware(handler))
 
-  router.get('/next-appointment/:id', async (req, res, next) => {
+  get('/next-appointment/:id', async (req, res, next) => {
     await auditService.logPageView(Page.NEXT_APPOINTMENT, { who: res.locals.user.username, correlationId: req.id })
     const breachNoticeApiClient = new BreachNoticeApiClient(
       await hmppsAuthClient.getSystemClientToken(res.locals.user.username),
@@ -49,7 +52,7 @@ export default function nextAppointmentRoutes(
     })
   })
 
-  router.post('/next-appointment/:id', async (req, res, next) => {
+  post('/next-appointment/:id', async (req, res, next) => {
     const breachNoticeApiClient = new BreachNoticeApiClient(
       await hmppsAuthClient.getSystemClientToken(res.locals.user.username),
     )
@@ -76,7 +79,7 @@ export default function nextAppointmentRoutes(
       )
       .forEach((futureAppointment: FutureAppointment) => {
         breachNotice.nextAppointmentId = futureAppointment.contactId
-        breachNotice.nextAppointmentDate = new Date(futureAppointment.datetime)
+        breachNotice.nextAppointmentDate = futureAppointment.datetime
         breachNotice.nextAppointmentType = futureAppointment.type.code
         breachNotice.nextAppointmentLocation = futureAppointment.location.buildingNumber
           .concat(` ${futureAppointment.location.streetName}`)
