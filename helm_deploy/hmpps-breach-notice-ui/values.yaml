@@ -8,7 +8,7 @@ generic-service:
   replicaCount: 4
 
   image:
-    repository: quay.io/hmpps/hmpps-breach-notice-ui
+    repository: ghcr.io/ministryofjustice/hmpps-breach-notice-ui
     tag: app_version # override at deployment time
     port: 3000
 
@@ -58,6 +58,7 @@ generic-service:
   allowlist:
     groups:
       - internal
+      - unilink_staff
 
 generic-prometheus-alerts:
   targetApplication: hmpps-breach-notice-ui
