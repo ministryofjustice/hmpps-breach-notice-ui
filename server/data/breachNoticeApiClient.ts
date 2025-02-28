@@ -137,33 +137,3 @@ export interface WarningDetailsRequirementSelectItem {
 export interface ErrorMessages {
   [key: string]: { text: string }
 }
-
-export interface FutureAppointment {
-  contactId: number
-  datetime: string
-  description: string
-  type: ReferenceData
-  location: Address
-  officer: Officer
-}
-
-export interface NextAppointmentDetails {
-  responsibleOfficer: ResponsibleOfficer
-  futureAppointments: Array<FutureAppointment>
-}
-
-export interface ResponsibleOfficer {
-  telephoneNumber: string
-  name: Name
-}
-
-export interface Officer {
-  code: string
-  name: Name
-}
-
-export interface Name {
-  forename: string
-  middleName: string
-  surname: string
-}
