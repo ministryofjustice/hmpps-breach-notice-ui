@@ -67,6 +67,14 @@ export default function warningTypeRoutes(
     // add new details
     breachNotice.breachNoticeTypeCode = req.body.warningType
     breachNotice.breachSentenceTypeCode = req.body.sentenceType
+    // find the condition Being Enforced
+    const conditionBeingEnforced: SentenceType = sentenceTypes.find(
+      sentenceType => sentenceType.code === breachNotice.breachSentenceTypeCode,
+    )
+    if (conditionBeingEnforced) {
+      breachNotice.conditionBeingEnforced = conditionBeingEnforced.conditionBeingEnforced
+    }
+
     const checkedButton: RadioButton = warningTypeRadioButtons.find(r => r.value === req.body.warningType)
     if (checkedButton) {
       breachNotice.breachNoticeTypeDescription = checkedButton.text

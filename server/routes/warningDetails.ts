@@ -96,9 +96,6 @@ export default function warningDetailsRoutes(
     })
 
     breachNotice.breachNoticeRequirementList = requirementList
-    console.log('response required by')
-    console.log(req.body.responseRequiredByDate)
-
     const warningDetailsErrorMessages: ErrorMessages = validateWarningDetails(
       breachNotice,
       req.body.responseRequiredByDate,
@@ -181,7 +178,6 @@ export default function warningDetailsRoutes(
     if (await commonUtils.redirectRequired(breachNotice, res)) return
 
     const warningDetails: WarningDetails = createDummyWarningDetails()
-    // const warningDetailsDate
     const enforceableContactRadioButtonList = createEnforceableContactRadioButtonListFromEnforceableContacts(
       warningDetails.enforceableContactList,
       breachNotice,

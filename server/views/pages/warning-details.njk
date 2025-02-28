@@ -81,50 +81,39 @@
     <h1 class="govuk-fieldset__legend--m">
      Condition being enforced
     </h1>
-    2 occasions during a 12-month period
+    {{ breachNotice.conditionBeingEnforced }}
     <br/><br/>
 
 
 
 
     <div class="govuk-form-group">
-     <fieldset class="govuk-fieldset" aria-describedby="signIn-hint">
-      <legend class="govuk-fieldset__legend govuk-fieldset__legend--m">
-       <h1 class="govuk-fieldset__heading">
-        Failures recorded on this order
-       </h1>
-      </legend>
-      <div id="signIn-hint" class="govuk-hint">
+      <fieldset class="govuk-fieldset" aria-describedby="signIn-hint">
+        <legend class="govuk-fieldset__legend govuk-fieldset__legend--m">
+          <h1 class="govuk-fieldset__heading">
+            Failures recorded on this order
+          </h1>
+        </legend>
+      {% for failure in enforceableContactRadioButtonList %}
+        <div>
+            {{ failure.text }}
 
-      </div>
-
-      <div class="govuk-radios" data-module="govuk-radios">
-       {% for failure in enforceableContactRadioButtonList %}
-        <div class="govuk-radios__item">
-         <input class="govuk-radios__input"
-                id="contact-{{ failure.value }}"
-                name="failureRecordedContact"
-                type="radio"
-                value="{{ failure.value }}"
-                aria-describedby="enforceablecontact-item-hint"
-                {% if failure.checked %}checked{% endif %}>
-
-         <label class="govuk-label govuk-radios__label" for="contact-{{ failure.value }}">
-          {{ failure.text }}
-         </label>
-         <div id="enforceablecontact-item-hint" class="govuk-hint govuk-radios__hint">
-          {{ govukDetails({
-           summaryText: "View requirement notes",
-           text: failure.notes
-          }) }}
-         </div>
+            {{ govukDetails({
+              summaryText: "View requirement notes",
+              text: failure.notes
+            }) }}
         </div>
-       {% else %}
+      {% else %}
         <li>There are no failures recorded to display</li>
-       {% endfor %}
-      </div>
-     </fieldset>
+      {% endfor %}
+      </fieldset>
     </div>
+
+
+
+
+
+
 
     <div class="govuk-form-group">
      <fieldset class="govuk-fieldset" aria-describedby="contact-hint">

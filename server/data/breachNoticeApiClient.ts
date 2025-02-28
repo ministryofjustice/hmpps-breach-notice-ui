@@ -74,6 +74,7 @@ export interface BreachNotice {
   breachNoticeRequirementList: BreachNoticeRequirement[]
   optionalNumberChecked: boolean
   optionalNumber: string
+  conditionBeingEnforced: string
 }
 
 export interface BreachNoticeContact {
