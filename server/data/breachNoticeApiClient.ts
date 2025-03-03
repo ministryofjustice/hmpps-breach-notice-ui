@@ -164,7 +164,7 @@ export interface EnforceableContactRadioButton {
   outcome: ReferenceData
   notes: string
   requirement: Requirement
-  checked: boolean
+  checked?: boolean
   value: string
   text: string
 }

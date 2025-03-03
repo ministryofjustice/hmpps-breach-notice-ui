@@ -8,13 +8,12 @@
  {% from "moj/components/side-navigation/macro.njk" import mojSideNavigation %}
  {% from "govuk/components/radios/macro.njk" import govukRadios %}
  {% from "govuk/components/select/macro.njk" import govukSelect %}
- {% from "moj/components/button-menu/macro.njk" import mojButtonMenu %}
+ {% from "govuk/components/button/macro.njk" import govukButton %}
  {% from "moj/components/date-picker/macro.njk" import mojDatePicker %}
  {% from "govuk/components/table/macro.njk" import govukTable %}
  {% from "govuk/components/input/macro.njk" import govukInput %}
  {% from "govuk/components/checkboxes/macro.njk" import govukCheckboxes %}
  {% from "govuk/components/details/macro.njk" import govukDetails %}
- {% from "govuk/components/table/macro.njk" import govukTable %}
 
  <form method="post">
   {% set errorList =[
@@ -27,8 +26,6 @@
    {{ govukErrorSummary({ titleText: "There is a problem", errorList: errorList }) }}
   {% endif %}
   <input type="hidden" name="_csrf" value="{{ csrfToken }}">
-
-
 
   {% set phoneHtml %}
    {{ govukInput({
@@ -78,39 +75,24 @@
    </div>
    <div class="govuk-grid-column-two-thirds">
     <h1 class="govuk-heading-x1">{{ applicationName + " - " + breachNotice.breachNoticeTypeDescription + " Details" }}</h1>
-    <h1 class="govuk-fieldset__legend--m">
+     <h2 class="govuk-heading-m">
      Condition being enforced
-    </h1>
-    {{ breachNotice.conditionBeingEnforced }}
-    <br/><br/>
+     </h2>
+     <p id="condition-being-enforced"> {{ breachNotice.conditionBeingEnforced }}</p>
 
+     <h2 class="govuk-heading-m">
+       Failures recorded on this order
+     </h2>
+     {% for failure in enforceableContactRadioButtonList %}
+       <p>
+         {{ failure.text }}
 
-
-
-    <div class="govuk-form-group">
-      <fieldset class="govuk-fieldset" aria-describedby="signIn-hint">
-        <legend class="govuk-fieldset__legend govuk-fieldset__legend--m">
-          <h1 class="govuk-fieldset__heading">
-            Failures recorded on this order
-          </h1>
-        </legend>
-      {% for failure in enforceableContactRadioButtonList %}
-        <div>
-            {{ failure.text }}
-
-            {{ govukDetails({
-              summaryText: "View requirement notes",
-              text: failure.notes
-            }) }}
-        </div>
-      {% else %}
-        <li>There are no failures recorded to display</li>
-      {% endfor %}
-      </fieldset>
-    </div>
-
-
-
+         {{ govukDetails({
+           summaryText: "View requirement notes",
+           text: failure.notes
+         }) }}
+       </p>
+     {% endfor %}
 
 
 
@@ -118,9 +100,9 @@
     <div class="govuk-form-group">
      <fieldset class="govuk-fieldset" aria-describedby="contact-hint">
       <legend class="govuk-fieldset__legend govuk-fieldset__legend--m">
-       <h1 class="govuk-fieldset__heading">
-        Select the Failures being enforced
-       </h1>
+        <h2 class="govuk-heading-m">
+          Select the Failures being enforced
+        </h2>
       </legend>
       <div id="contact-hint" class="govuk-hint">
        Select all that apply
@@ -169,31 +151,40 @@
      } if errorMessages.responseRequiredByDate.text
     }) }}
 
-    {{ mojButtonMenu({
-     items: [{
-      text: "Continue",
-      preventDoubleClick: "true",
-      type: "submit"
-     }, {
-      text: "View Draft Report",
-      classes: "govuk-button--secondary",
-      preventDoubleClick: "true",
-      type: "submit",
-      name: "action",
-      value: "viewDraft"
-     }, {
-      text: "Refresh from Delius",
-      href: "#",
-      classes: "govuk-button--secondary",
-      preventDoubleClick: "true"
-     }, {
-      text: "Close",
-      href: "/warning-type/"+breachNotice.id,
-      classes: "govuk-button--secondary",
-      preventDoubleClick: "true"
-     }]
-    }) }}
+     <div class="moj-button-group">
+       {{ govukButton({
+         text: "Continue",
+         preventDoubleClick: "true",
+         type: "submit",
+         attributes: {
+           id: "continue-button"
+         }
+       }) }}
 
+       {{ govukButton({
+         text: "Refresh from Delius",
+         preventDoubleClick: "true",
+         type: "submit",
+         name: "action",
+         value: "refreshFromNdelius",
+         classes: "govuk-button--secondary",
+         attributes: {
+           id: "refresh-from-ndelius--button"
+         }
+       }) }}
+
+       {{ govukButton({
+         text: "Save Progress and Close",
+         preventDoubleClick: "true",
+         type: "submit",
+         name: "action",
+         value: "saveProgressAndClose",
+         classes: "govuk-button--secondary",
+         attributes: {
+           id: "close-button"
+         }
+       }) }}
+     </div>
    </div>
   </div>
  </form>

@@ -116,7 +116,6 @@ export default function warningDetailsRoutes(
         // enforceable contact list is the lkist that remains the same
         // breach notice contains a list of contacts we are ionterested in
         warningDetails.enforceableContactList,
-        breachNotice,
       )
 
       const breachReasons = convertReferenceDataListToSelectItemList(warningDetails.breachReasons)
@@ -176,18 +175,17 @@ export default function warningDetailsRoutes(
     const breachNoticeId = req.params.id
     const breachNotice = await breachNoticeApiClient.getBreachNoticeById(breachNoticeId as string)
     if (await commonUtils.redirectRequired(breachNotice, res)) return
-
     const warningDetails: WarningDetails = createDummyWarningDetails()
+    // enforceable contacts list is empty
     const enforceableContactRadioButtonList = createEnforceableContactRadioButtonListFromEnforceableContacts(
       warningDetails.enforceableContactList,
-      breachNotice,
     )
+
     const breachReasons = convertReferenceDataListToSelectItemList(warningDetails.breachReasons)
     const requirementsList = createFailuresBeingEnforcedRequirementSelectList(
       warningDetails.enforceableContactList,
       warningDetails.breachReasons,
     )
-
     const failuresRecorded: SelectItemList = createSelectItemListFromEnforceableContacts(
       warningDetails.enforceableContactList,
     )
@@ -212,29 +210,33 @@ export default function warningDetailsRoutes(
     const breachReasonSelectItems: SelectItemList = craftTheBreachReasonSelectItems(breachReasons)
     const returnItems: WarningDetailsRequirementSelectItem[] = []
 
-    enforceableContactList.forEach((enforceableContact: EnforceableContact) => {
-      const { requirement } = enforceableContact
-      const linkedSelectItem: WarningDetailsRequirementSelectItem = {
-        text: `${requirement.type.description} - ${requirement.subType.description}`,
-        value: requirement.id.toString(),
-        selected: false,
-        breachReasons: breachReasonSelectItems,
-      }
-      returnItems.push(linkedSelectItem)
-    })
+    if (enforceableContactList) {
+      enforceableContactList.forEach((enforceableContact: EnforceableContact) => {
+        const { requirement } = enforceableContact
+        const linkedSelectItem: WarningDetailsRequirementSelectItem = {
+          text: `${requirement.type.description} - ${requirement.subType.description}`,
+          value: requirement?.id.toString(),
+          selected: false,
+          breachReasons: breachReasonSelectItems,
+        }
+        returnItems.push(linkedSelectItem)
+      })
+    }
     return returnItems
   }
 
   function createSelectItemListFromEnforceableContacts(enforceableContactList: EnforceableContactList): SelectItemList {
     const selectItemList: SelectItem[] = []
-    enforceableContactList.forEach((enforceableContact: EnforceableContact) => {
-      const selectItem: SelectItem = {
-        text: enforceableContact.description,
-        value: enforceableContact.id.toString(),
-        selected: false,
-      }
-      selectItemList.push(selectItem)
-    })
+    if (enforceableContactList) {
+      enforceableContactList.forEach((enforceableContact: EnforceableContact) => {
+        const selectItem: SelectItem = {
+          text: enforceableContact.description,
+          value: enforceableContact.id.toString(),
+          selected: false,
+        }
+        selectItemList.push(selectItem)
+      })
+    }
     return selectItemList
   }
 
@@ -253,20 +255,19 @@ export default function warningDetailsRoutes(
 
   function createEnforceableContactRadioButtonListFromEnforceableContacts(
     enforceableContactList: EnforceableContactList,
-    breachNotice: BreachNotice,
   ): EnforceableContactRadioButtonList {
-    return enforceableContactList.map(enforceableContact => ({
-      datetime: enforceableContact.datetime,
-      type: enforceableContact.type,
-      outcome: enforceableContact.outcome,
-      notes: enforceableContact.notes,
-      requirement: enforceableContact.requirement,
-      checked: breachNotice.breachNoticeContactList.some(
-        contact => contact.contactId?.toString() === enforceableContact.id?.toString(),
-      ),
-      value: enforceableContact.id.toString(),
-      text: enforceableContact.description,
-    }))
+    if (enforceableContactList) {
+      return enforceableContactList.map(enforceableContact => ({
+        datetime: enforceableContact.datetime,
+        type: enforceableContact.type,
+        outcome: enforceableContact.outcome,
+        notes: enforceableContact.notes,
+        requirement: enforceableContact.requirement,
+        value: enforceableContact.id.toString(),
+        text: enforceableContact.description,
+      }))
+    }
+    return null
   }
 
   // Will call integration point once available
