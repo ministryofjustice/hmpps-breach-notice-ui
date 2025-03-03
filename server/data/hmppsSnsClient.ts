@@ -2,9 +2,9 @@ import { SNSClient, PublishCommand } from '@aws-sdk/client-sns'
 import logger from '../../logger'
 
 export interface HmppsDomainEvent {
-  eventType: 'probation-case.breach-notice.created'
+  eventType: string // The domain event type (eg 'probation-case.breach-notice.created')
   version: 1
-  description: 'A breach notice has been completed for a person on probation'
+  description: string // Domain event description
   detailUrl: string // This should be set to the PDF URL for the breach notice
   occurredAt: string // Current timestamp in ISO format
   additionalInformation: {
