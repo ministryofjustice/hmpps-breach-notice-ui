@@ -14,7 +14,6 @@ generic-service:
     BREACH_NOTICE_API_URL: "https://breach-notice-api-dev.hmpps.service.justice.gov.uk"
     NDELIUS_INTEGRATION_URL: "https://breach-notice-and-delius-dev.hmpps.service.justice.gov.uk"
     ENVIRONMENT_NAME: DEV
-    AUDIT_ENABLED: "false"
 
   allowlist:
     groups:

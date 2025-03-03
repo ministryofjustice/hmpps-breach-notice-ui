@@ -22,35 +22,25 @@ export interface HmppsDomainEvent {
 
 export interface SnsClientConfig {
   topicArn: string
-  region: string
-  serviceName: string
   enabled: boolean
-  key: string
-  secret: string
-  snsHost: string
+  endpoint: string
 }
 
 export default class HmppsSnsClient {
-  private snsClient: SNSClient
+  private readonly snsClient: SNSClient
 
-  private topicArn: string
+  private readonly topicArn: string
 
-  private serviceName: string
+  private readonly enabled: boolean
 
-  private enabled: boolean
-
-  constructor(config: SnsClientConfig) {
-    this.enabled = config.enabled
-    this.topicArn = config.topicArn
-    this.serviceName = config.serviceName
-    this.snsClient = new SNSClient({
-      region: config.region,
-      endpoint: config.snsHost,
-      credentials: { accessKeyId: config.key, secretAccessKey: config.secret },
-    })
+  constructor({ enabled, endpoint, topicArn }: SnsClientConfig) {
+    this.enabled = enabled
+    this.topicArn = topicArn
+    this.snsClient = endpoint ? new SNSClient({ endpoint }) : new SNSClient()
   }
 
   async sendMessage(event: HmppsDomainEvent, throwOnError: boolean = true) {
+    logger.debug('Sending SNS notification', event)
     if (this.enabled) {
       try {
         const publishParams = {
