@@ -11,7 +11,17 @@ context('Warning Details page', () => {
 
   it('when a Requirement checkbox is checked, breach reasons dropdown appears', () => {
     cy.visit('/warning-details/00000000-0000-0000-0000-000000000022')
-    cy.get('#checkbox1').check()
-    cy.get('#breachReason1').should('exist')
+    cy.get('#failuresBeingEnforcedRequirements').check()
+    cy.get('#breachreason0').should('exist')
+  })
+
+  it('entering a date in an invalid format causes a validation error', () => {
+    cy.visit('/warning-details/00000000-0000-0000-0000-000000000022')
+    cy.get('#responseRequiredByDate').type('123456')
+    cy.get('#continue-button').click()
+    cy.get('.govuk-error-summary__title').should('exist').should('contain.text', 'There is a problem')
+    cy.get('#responseRequiredByDate-error')
+      .should('exist')
+      .should('contain.text', 'The proposed date for this letter is in an invalid format')
   })
 })

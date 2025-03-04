@@ -107,12 +107,9 @@ export default function warningDetailsRoutes(
     })
 
     breachNotice.breachNoticeRequirementList = requirementList
-    const warningDetailsErrorMessages: ErrorMessages = validateWarningDetails(
-      breachNotice,
-      req.body.responseRequiredByDate,
-    )
+    const errorMessages: ErrorMessages = validateWarningDetails(breachNotice, req.body.responseRequiredByDate)
 
-    const hasErrors: boolean = Object.keys(warningDetailsErrorMessages).length > 0
+    const hasErrors: boolean = Object.keys(errorMessages).length > 0
 
     // if we dont have validation errors navigate to ...next screen
     if (!hasErrors) {
@@ -144,6 +141,7 @@ export default function warningDetailsRoutes(
         breachReasons,
         requirementsList,
         currentPage,
+        errorMessages,
       })
     }
   })
@@ -175,7 +173,6 @@ export default function warningDetailsRoutes(
   function validateWarningDetails(breachNotice: BreachNotice, responseRequiredByDate: string): ErrorMessages {
     const errorMessages: ErrorMessages = {}
     const currentDateAtStartOfTheDay: LocalDateTime = LocalDate.now().atStartOfDay()
-
     try {
       // eslint-disable-next-line no-param-reassign
       breachNotice.responseRequiredDate = fromUserDate(responseRequiredByDate)
@@ -183,7 +180,7 @@ export default function warningDetailsRoutes(
     } catch (error: unknown) {
       // eslint-disable-next-line no-param-reassign
       breachNotice.responseRequiredDate = responseRequiredByDate
-      errorMessages.dateOfLetter = {
+      errorMessages.responseRequiredByDate = {
         text: 'The proposed date for this letter is in an invalid format, please use the correct format e.g 17/5/2024',
       }
       // we cant continue with date validation
@@ -248,26 +245,32 @@ export default function warningDetailsRoutes(
     breachReasons: ReferenceDataList,
     breachNotice: BreachNotice,
   ): WarningDetailsRequirementSelectItem[] {
-    return enforceableContactList.map((enforceableContact: EnforceableContact) => {
-      const { requirement } = enforceableContact
-      const breachNoticeRequirement = breachNotice.breachNoticeRequirementList.find(
-        savedRequirement => savedRequirement.requirementId?.toString() === requirement.id?.toString(),
-      )
-      const breachReasonSelectItems = craftTheBreachReasonSelectItems(breachReasons, breachNoticeRequirement)
-      return {
-        text: `${requirement.type.description} - ${requirement.subType.description}`,
-        value: requirement.id.toString(),
-        checked: !!breachNoticeRequirement,
-        conditional: {
-          html: `<div class="govuk-form-group">
-            <label class="govuk-label" for="breachreason${requirement.id}">Why is this being enforced?</label>
-            <select class="govuk-select" id="breachreason${requirement.id}" name="breachreason${requirement.id}">
-            ${breachReasonSelectItems.map(item => `<option value="${item.value}" ${item.selected ? 'selected' : ''}>${item.text}</option>`).join()}
-            </select>
-          </div>`,
-        },
-      }
-    })
+    if (enforceableContactList) {
+      return enforceableContactList.map((enforceableContact: EnforceableContact) => {
+        const { requirement } = enforceableContact
+        let breachNoticeRequirement: BreachNoticeRequirement = null
+        if (breachNotice.breachNoticeRequirementList) {
+          breachNoticeRequirement = breachNotice.breachNoticeRequirementList.find(
+            savedRequirement => savedRequirement.requirementId?.toString() === requirement.id?.toString(),
+          )
+        }
+        const breachReasonSelectItems = craftTheBreachReasonSelectItems(breachReasons, breachNoticeRequirement)
+        return {
+          text: `${requirement.type.description} - ${requirement.subType.description}`,
+          value: requirement.id.toString(),
+          checked: !!breachNoticeRequirement,
+          conditional: {
+            html: `<div class="govuk-form-group">
+              <label class="govuk-label" for="breachreason${requirement.id}">Why is this being enforced?</label>
+              <select class="govuk-select" id="breachreason${requirement.id}" name="breachreason${requirement.id}">
+              ${breachReasonSelectItems.map(item => `<option value="${item.value}" ${item.selected ? 'selected' : ''}>${item.text}</option>`).join()}
+              </select>
+            </div>`,
+          },
+        }
+      })
+    }
+    return []
   }
 
   function createSelectItemListFromEnforceableContacts(enforceableContactList: EnforceableContactList): SelectItemList {

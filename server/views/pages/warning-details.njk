@@ -17,8 +17,7 @@
 
   <form method="post">
     {% set errorList =[
-      { text: errorMessages.responseRequiredByDate.text, href: "#date-of-letter" } if errorMessages.dateOfLetter else None,
-      { text: errorMessages.pdfRenderError.text } if errorMessages.pdfRenderError else None
+      { text: errorMessages.responseRequiredByDate.text, href: "#responseRequiredByDate" } if errorMessages.responseRequiredByDate else None
     ] | reject("undefined") %}
 
     {% if errorMessages | length > 0 %}
