@@ -4,25 +4,25 @@ import BreachNoticeApiClient, {
   BreachNotice,
   BreachNoticeContact,
   BreachNoticeRequirement,
-  EnforceableContact,
-  EnforceableContactList,
   EnforceableContactRadioButtonList,
   ErrorMessages,
   ReferenceData,
   ReferenceDataList,
-  Requirement,
   SelectItem,
   SelectItemList,
-  SentenceType,
-  SentenceTypeList,
-  WarningDetails,
   WarningDetailsRequirementSelectItem,
 } from '../data/breachNoticeApiClient'
 import AuditService, { Page } from '../services/auditService'
-import { fromUserDate } from '../utils/dateUtils'
+import { fromUserDate, toUserDate } from '../utils/dateUtils'
 import { HmppsAuthClient } from '../data'
 import CommonUtils from '../services/commonUtils'
 import asyncMiddleware from '../middleware/asyncMiddleware'
+import asArray from '../utils/utils'
+import NdeliusIntegrationApiClient, {
+  EnforceableContact,
+  EnforceableContactList,
+  WarningDetails,
+} from '../data/ndeliusIntegrationApiClient'
 
 export default function warningDetailsRoutes(
   router: Router,
@@ -35,15 +35,24 @@ export default function warningDetailsRoutes(
   const post = (path: string | string[], handler: RequestHandler) => router.post(path, asyncMiddleware(handler))
 
   post('/warning-details/:id', async (req, res, next) => {
+    const { id } = req.params
     const breachNoticeApiClient = new BreachNoticeApiClient(
       await hmppsAuthClient.getSystemClientToken(res.locals.user.username),
     )
 
-    const { id } = req.params
-    const warningDetails: WarningDetails = createDummyWarningDetails()
+    const ndeliusIntegrationApiClient = new NdeliusIntegrationApiClient(
+      await hmppsAuthClient.getSystemClientToken(res.locals.user.username),
+    )
+
     const breachNotice: BreachNotice = await breachNoticeApiClient.getBreachNoticeById(id as string)
 
     if (await commonUtils.redirectRequired(breachNotice, res)) return
+
+    // const basicDetails = await ndeliusIntegrationApiClient.getBasicDetails(breachNotice.crn, req.user.username)
+    const warningDetails: WarningDetails = await ndeliusIntegrationApiClient.getWarningDetails(
+      breachNotice.crn,
+      breachNotice.id,
+    )
 
     // failures recorded on this order
     // list of contacts
@@ -56,7 +65,7 @@ export default function warningDetailsRoutes(
     const failureRecordedContactId: string = req.body.failureRecordedContact
 
     // lookup the contact and push to the list of contacts to be saved
-    const enforceableContact: EnforceableContact = warningDetails.enforceableContactList.find(
+    const enforceableContact: EnforceableContact = warningDetails.enforceableContacts.find(
       contact => contact.id.toString() === failureRecordedContactId,
     )
 
@@ -65,7 +74,7 @@ export default function warningDetailsRoutes(
         id: null,
         contactId: enforceableContact.id,
         breachNoticeId: breachNotice.id,
-        contactDate: enforceableContact.datetime,
+        contactDate: enforceableContact.datetime.toString(),
         contactType: enforceableContact.type.description,
         contactOutcome: enforceableContact.outcome.description,
       })
@@ -75,24 +84,27 @@ export default function warningDetailsRoutes(
     breachNotice.breachNoticeContactList = contactList
 
     // lookup the requirements
-    const selectedRequirements: string[] = req.body.failuresBeingEnforcedRequirements
+    // this can come in an array or singular
+    const selectedFailureRequirements = asArray(req.body.failuresBeingEnforcedRequirements)
 
-    // we have contacts and requirements in here: warningDetails.enforceableContactList
-    // to get the full requirement info we will need to loop through the contacts until
-    // we find the one with the requirement to get the details
-    selectedRequirements.forEach((requirementId: string) => {
-      const enforceableContactWithRequirement: EnforceableContact = warningDetails.enforceableContactList.find(
+    selectedFailureRequirements.forEach((requirementId: string) => {
+      const enforceableContactWithRequirement: EnforceableContact = warningDetails.enforceableContacts.find(
         contact => contact.requirement.id.toString() === requirementId,
       )
       const bodyParamBreachReason: string = `breachreason${requirementId}`
-      requirementList.push({
+
+      const currentRequirement: BreachNoticeRequirement = {
         id: null,
         breachNoticeId: breachNotice.id,
         requirementId: enforceableContactWithRequirement.requirement.id,
         requirementTypeMainCategoryDescription: enforceableContactWithRequirement.requirement.type.description,
         requirementTypeSubCategoryDescription: enforceableContactWithRequirement.requirement.subType.description,
         rejectionReason: req.body[bodyParamBreachReason],
-      })
+        fromDate: null,
+        toDate: null,
+      }
+
+      requirementList.push(applyContactDateRangesToRequirement(currentRequirement, warningDetails.enforceableContacts))
     })
 
     breachNotice.breachNoticeRequirementList = requirementList
@@ -110,31 +122,49 @@ export default function warningDetailsRoutes(
       res.redirect(`/next-appointment/${id}`)
     } else {
       const failuresRecorded: SelectItemList = createSelectItemListFromEnforceableContacts(
-        warningDetails.enforceableContactList,
+        warningDetails.enforceableContacts,
       )
-      const enforceableContactRadioButtonList = createEnforceableContactRadioButtonListFromEnforceableContacts(
-        // enforceable contact list is the lkist that remains the same
-        // breach notice contains a list of contacts we are ionterested in
-        warningDetails.enforceableContactList,
-      )
-
       const breachReasons = convertReferenceDataListToSelectItemList(warningDetails.breachReasons)
       const requirementsList = createFailuresBeingEnforcedRequirementSelectList(
-        warningDetails.enforceableContactList,
+        warningDetails.enforceableContacts,
         warningDetails.breachReasons,
+        breachNotice,
       )
 
       res.render(`pages/warning-details`, {
         breachNotice,
         warningDetails,
         failuresRecorded,
-        enforceableContactRadioButtonList,
         breachReasons,
         requirementsList,
         currentPage,
       })
     }
   })
+
+  function applyContactDateRangesToRequirement(
+    breachNoticeRequirement: BreachNoticeRequirement,
+    enforceableContactList: EnforceableContact[],
+  ): BreachNoticeRequirement {
+    const dateList: string[] = []
+    enforceableContactList.forEach((enforcebleContact: EnforceableContact) => {
+      if (enforcebleContact.requirement) {
+        if (enforcebleContact.requirement.id.toString() === breachNoticeRequirement.requirementId.toString()) {
+          if (enforcebleContact.datetime) {
+            dateList.push(enforcebleContact.datetime.toString())
+          }
+        }
+      }
+    })
+
+    const maxDate = dateList.reduce((a, b) => (a > b ? a : b))
+    const minDate = dateList.reduce((a, b) => (a < b ? a : b))
+    // eslint-disable-next-line no-param-reassign
+    breachNoticeRequirement.toDate = maxDate
+    // eslint-disable-next-line no-param-reassign
+    breachNoticeRequirement.fromDate = minDate
+    return breachNoticeRequirement
+  }
 
   function validateWarningDetails(breachNotice: BreachNotice, responseRequiredByDate: string): ErrorMessages {
     const errorMessages: ErrorMessages = {}
@@ -143,6 +173,7 @@ export default function warningDetailsRoutes(
     try {
       // eslint-disable-next-line no-param-reassign
       breachNotice.responseRequiredDate = fromUserDate(responseRequiredByDate)
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
     } catch (error: unknown) {
       // eslint-disable-next-line no-param-reassign
       breachNotice.responseRequiredDate = responseRequiredByDate
@@ -175,54 +206,65 @@ export default function warningDetailsRoutes(
     const breachNoticeId = req.params.id
     const breachNotice = await breachNoticeApiClient.getBreachNoticeById(breachNoticeId as string)
     if (await commonUtils.redirectRequired(breachNotice, res)) return
-    const warningDetails: WarningDetails = createDummyWarningDetails()
-    // enforceable contacts list is empty
-    const enforceableContactRadioButtonList = createEnforceableContactRadioButtonListFromEnforceableContacts(
-      warningDetails.enforceableContactList,
+    const ndeliusIntegrationApiClient = new NdeliusIntegrationApiClient(
+      await hmppsAuthClient.getSystemClientToken(res.locals.user.username),
     )
 
+    const warningDetails: WarningDetails = await ndeliusIntegrationApiClient.getWarningDetails(
+      breachNotice.crn,
+      breachNotice.id,
+    )
+
+    const warningDetailsResponseRequiredDate: string = toUserDate(breachNotice.responseRequiredDate)
     const breachReasons = convertReferenceDataListToSelectItemList(warningDetails.breachReasons)
     const requirementsList = createFailuresBeingEnforcedRequirementSelectList(
-      warningDetails.enforceableContactList,
+      warningDetails.enforceableContacts,
       warningDetails.breachReasons,
+      breachNotice,
     )
+
     const failuresRecorded: SelectItemList = createSelectItemListFromEnforceableContacts(
-      warningDetails.enforceableContactList,
+      warningDetails.enforceableContacts,
     )
     res.render(`pages/warning-details`, {
       breachNotice,
       warningDetails,
       failuresRecorded,
-      enforceableContactRadioButtonList,
       breachReasons,
       requirementsList,
       currentPage,
+      warningDetailsResponseRequiredDate,
     })
   })
 
-  // Generate the requirement list. to do this we loop through the enforceable contact
-  // list and take the requirement associated with each contact into a list
-  // we have a list of breach reasons to also associate with the requirements
   function createFailuresBeingEnforcedRequirementSelectList(
     enforceableContactList: EnforceableContactList,
     breachReasons: ReferenceDataList,
+    breachNotice: BreachNotice,
   ): WarningDetailsRequirementSelectItem[] {
-    const breachReasonSelectItems: SelectItemList = craftTheBreachReasonSelectItems(breachReasons)
-    const returnItems: WarningDetailsRequirementSelectItem[] = []
+    console.log('enforceablecontactlist')
+    console.log(enforceableContactList)
 
-    if (enforceableContactList) {
-      enforceableContactList.forEach((enforceableContact: EnforceableContact) => {
-        const { requirement } = enforceableContact
-        const linkedSelectItem: WarningDetailsRequirementSelectItem = {
-          text: `${requirement.type.description} - ${requirement.subType.description}`,
-          value: requirement?.id.toString(),
-          selected: false,
-          breachReasons: breachReasonSelectItems,
-        }
-        returnItems.push(linkedSelectItem)
-      })
-    }
-    return returnItems
+    return enforceableContactList.map((enforceableContact: EnforceableContact) => {
+      const { requirement } = enforceableContact
+      const breachNoticeRequirement = breachNotice.breachNoticeRequirementList.find(
+        savedRequirement => savedRequirement.requirementId?.toString() === requirement.id?.toString(),
+      )
+      const breachReasonSelectItems = craftTheBreachReasonSelectItems(breachReasons, breachNoticeRequirement)
+      return {
+        text: `${requirement.type.description} - ${requirement.subType.description}`,
+        value: requirement.id.toString(),
+        checked: !!breachNoticeRequirement,
+        conditional: {
+          html: `<div class="govuk-form-group">
+            <label class="govuk-label" for="breachreason${requirement.id}">Why is this being enforced?</label>
+            <select class="govuk-select" id="breachreason${requirement.id}" name="breachreason${requirement.id}">
+            ${breachReasonSelectItems.map(item => `<option value="${item.value}" ${item.selected ? 'selected' : ''}>${item.text}</option>`).join()}
+            </select>
+          </div>`,
+        },
+      }
+    })
   }
 
   function createSelectItemListFromEnforceableContacts(enforceableContactList: EnforceableContactList): SelectItemList {
@@ -240,126 +282,17 @@ export default function warningDetailsRoutes(
     return selectItemList
   }
 
-  function craftTheBreachReasonSelectItems(refDataList: ReferenceDataList): SelectItemList {
-    const selectItemListToReturn: SelectItem[] = []
-    refDataList.forEach((referenceData: ReferenceData) => {
-      const selectItem: SelectItem = {
+  function craftTheBreachReasonSelectItems(
+    refDataList: ReferenceDataList,
+    requirement: BreachNoticeRequirement,
+  ): SelectItemList {
+    return refDataList.map((referenceData: ReferenceData) => {
+      return {
         text: referenceData.description,
         value: referenceData.code,
-        selected: false,
+        selected: requirement && requirement?.rejectionReason === referenceData.code,
       }
-      selectItemListToReturn.push(selectItem)
     })
-    return selectItemListToReturn
-  }
-
-  function createEnforceableContactRadioButtonListFromEnforceableContacts(
-    enforceableContactList: EnforceableContactList,
-  ): EnforceableContactRadioButtonList {
-    if (enforceableContactList) {
-      return enforceableContactList.map(enforceableContact => ({
-        datetime: enforceableContact.datetime,
-        type: enforceableContact.type,
-        outcome: enforceableContact.outcome,
-        notes: enforceableContact.notes,
-        requirement: enforceableContact.requirement,
-        value: enforceableContact.id.toString(),
-        text: enforceableContact.description,
-      }))
-    }
-    return null
-  }
-
-  // Will call integration point once available
-  function createDummyWarningDetails(): WarningDetails {
-    return {
-      breachReasons: createDummyBreachReasonList(),
-      defaultSentenceTypeCode: 'BR1',
-      enforceableContactList: createDummyEnforceableContactList(),
-      sentenceTypes: createDummySentenceTypeList(),
-    }
-  }
-
-  function createDummyEnforceableContactList() {
-    const enforceableContact1: EnforceableContact = {
-      description:
-        '02/10/2024, Contact 1 - Rehabilitation Activity Requirement (RAR), Planned Office Visit (NS), Unacceptable absence',
-      datetime: LocalDateTime.now().toString(),
-      id: 1,
-      notes: 'Lorem 1 ipsum dolor sit amet, consectetur adipiscing elit. Contact 1',
-      outcome: createDummyOutcome(),
-      type: createDummyType(),
-      requirement: createDummyRequirement(1),
-    }
-
-    const enforceableContact2: EnforceableContact = {
-      description: '01/08/2024, Contact 2 - Regular, CP/UPW Appointment (NS), Sent Home (behavior)',
-      datetime: LocalDateTime.now().toString(),
-      id: 2,
-      notes: 'Lorem 2 ipsum dolor sit amet, consectetur adipiscing elit, sed do Contact 2',
-      outcome: createDummyOutcome(),
-      type: createDummySubType(),
-      requirement: createDummyRequirement(2),
-    }
-
-    return [enforceableContact1, enforceableContact2]
-  }
-
-  function createDummyType(): ReferenceData {
-    return {
-      code: 'REQ1',
-      description: 'Requirement Type',
-    }
-  }
-
-  function createDummySubType(): ReferenceData {
-    return {
-      code: 'REQ2',
-      description: 'Requirement Sub Type',
-    }
-  }
-
-  function createDummyOutcome(): ReferenceData {
-    return {
-      code: 'Outcom1',
-      description: 'Dummy Outcome',
-    }
-  }
-
-  function createDummyBreachReasonList() {
-    const breachReason1: ReferenceData = {
-      code: '2IN12',
-      description: '2 occasions in a 12 month period',
-    }
-
-    const breachReason2: ReferenceData = {
-      code: '3TOTAL',
-      description: '3 occasions during your supervision period',
-    }
-
-    return [breachReason1, breachReason2]
-  }
-
-  function createDummyRequirement(idVar: number): Requirement {
-    return {
-      id: idVar,
-      type: createDummyType(),
-      subType: createDummySubType(),
-    }
-  }
-
-  function createDummySentenceTypeList(): SentenceTypeList {
-    const sentenceType1: SentenceType = {
-      code: `CO`,
-      description: 'Community Order(s)',
-      conditionBeingEnforced: 'Test Condition CO',
-    }
-    const sentenceType2: SentenceType = {
-      code: `SSO`,
-      description: 'Suspended Supervision Order(s)',
-      conditionBeingEnforced: 'Test Condition SSO',
-    }
-    return [sentenceType1, sentenceType2]
   }
 
   function convertReferenceDataListToSelectItemList(referenceDataList: ReferenceDataList): SelectItemList {

@@ -95,30 +95,25 @@ export interface BreachNoticeRequirement {
   requirementTypeMainCategoryDescription: string
   requirementTypeSubCategoryDescription: string
   rejectionReason: string
+  fromDate: string
+  toDate: string
 }
 
-export interface EnforceableContact {
-  id: number
-  datetime: string
-  description: string
-  type: ReferenceData
-  outcome: ReferenceData
-  notes: string
-  requirement: Requirement
-}
+// export interface EnforceableContact {
+//   id: number
+//   datetime: string
+//   description: string
+//   type: ReferenceData
+//   outcome: ReferenceData
+//   notes: string
+//   requirement: Requirement
+// }
 
 export interface BasicDetails {
   title: string
   name: Name
   addresses: AddressList
   replyAddresses: AddressList
-}
-
-export interface WarningDetails {
-  breachReasons: ReferenceDataList
-  sentenceTypes: SentenceTypeList
-  defaultSentenceTypeCode: string
-  enforceableContactList: EnforceableContactList
 }
 
 export interface WarningTypeDetails {
@@ -178,8 +173,10 @@ export interface Requirement {
 export interface WarningDetailsRequirementSelectItem {
   value: string
   text: string
-  selected: boolean
-  breachReasons: SelectItem[]
+  checked: boolean
+  conditional: {
+    html: string
+  }
 }
 
 export interface ErrorMessages {
@@ -223,11 +220,3 @@ export type RadioButtonList = Array<RadioButton>
 export type ReferenceDataList = Array<ReferenceData>
 
 export type SentenceTypeList = Array<SentenceType>
-
-export type EnforceableContactList = Array<EnforceableContact>
-
-export type RequirementList = Array<Requirement>
-
-export type BreachNoticeContactList = Array<BreachNoticeContact>
-
-export type BreachNoticeRequirementList = Array<BreachNoticeRequirement>

@@ -9,7 +9,8 @@ export function fromUserDate(str: string): string {
 
 export function toUserDate(str: string): string {
   if (str) {
-    return DateTimeFormatter.ofPattern('d/M/yyyy').format(DateTimeFormatter.ISO_LOCAL_DATE.parse(str))
+    const timeStrippedString = str.includes('T') ? str.split('T')[0] : str
+    return DateTimeFormatter.ofPattern('d/M/yyyy').format(DateTimeFormatter.ISO_LOCAL_DATE.parse(timeStrippedString))
   }
   return ''
 }

@@ -83,7 +83,7 @@ export interface WarningTypeWrapper {
 
 export interface WarningDetails {
   breachReasons: ReferenceData[]
-  enforceableContactList: EnforceableContact[]
+  enforceableContacts: EnforceableContact[]
 }
 
 export interface BreachNoticeContact {
@@ -119,3 +119,5 @@ export interface Requirement {
   type: ReferenceData
   subType: ReferenceData
 }
+
+export type EnforceableContactList = Array<EnforceableContact>
