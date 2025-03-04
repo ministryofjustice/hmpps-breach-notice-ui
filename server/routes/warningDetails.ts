@@ -6,9 +6,7 @@ import BreachNoticeApiClient, {
   BreachNoticeRequirement,
   ErrorMessages,
   ReferenceData,
-  ReferenceDataList,
   SelectItem,
-  SelectItemList,
   WarningDetailsRequirementSelectItem,
 } from '../data/breachNoticeApiClient'
 import AuditService, { Page } from '../services/auditService'
@@ -124,9 +122,7 @@ export default function warningDetailsRoutes(
         res.redirect(`/next-appointment/${id}`)
       }
     } else {
-      const failuresRecorded: SelectItemList = createSelectItemListFromEnforceableContacts(
-        warningDetails.enforceableContacts,
-      )
+      const failuresRecorded = createSelectItemListFromEnforceableContacts(warningDetails.enforceableContacts)
       const breachReasons = convertReferenceDataListToSelectItemList(warningDetails.breachReasons)
       const requirementsList = createFailuresBeingEnforcedRequirementSelectList(
         warningDetails.enforceableContacts,
@@ -226,9 +222,7 @@ export default function warningDetailsRoutes(
       breachNotice,
     )
 
-    const failuresRecorded: SelectItemList = createSelectItemListFromEnforceableContacts(
-      warningDetails.enforceableContacts,
-    )
+    const failuresRecorded = createSelectItemListFromEnforceableContacts(warningDetails.enforceableContacts)
     res.render(`pages/warning-details`, {
       breachNotice,
       warningDetails,
@@ -242,7 +236,7 @@ export default function warningDetailsRoutes(
 
   function createFailuresBeingEnforcedRequirementSelectList(
     enforceableContactList: EnforceableContactList,
-    breachReasons: ReferenceDataList,
+    breachReasons: ReferenceData[],
     breachNotice: BreachNotice,
   ): WarningDetailsRequirementSelectItem[] {
     if (enforceableContactList) {
@@ -273,7 +267,7 @@ export default function warningDetailsRoutes(
     return []
   }
 
-  function createSelectItemListFromEnforceableContacts(enforceableContactList: EnforceableContactList): SelectItemList {
+  function createSelectItemListFromEnforceableContacts(enforceableContactList: EnforceableContactList): SelectItem[] {
     const selectItemList: SelectItem[] = []
     if (enforceableContactList) {
       enforceableContactList.forEach((enforceableContact: EnforceableContact) => {
@@ -289,9 +283,9 @@ export default function warningDetailsRoutes(
   }
 
   function craftTheBreachReasonSelectItems(
-    refDataList: ReferenceDataList,
+    refDataList: ReferenceData[],
     requirement: BreachNoticeRequirement,
-  ): SelectItemList {
+  ): SelectItem[] {
     return refDataList.map((referenceData: ReferenceData) => {
       return {
         text: referenceData.description,
@@ -301,7 +295,7 @@ export default function warningDetailsRoutes(
     })
   }
 
-  function convertReferenceDataListToSelectItemList(referenceDataList: ReferenceDataList): SelectItemList {
+  function convertReferenceDataListToSelectItemList(referenceDataList: ReferenceData[]): SelectItem[] {
     return referenceDataList.map(refData => ({
       selected: false,
       text: refData.description,

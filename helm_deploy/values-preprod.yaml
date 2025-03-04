@@ -11,8 +11,9 @@ generic-service:
     INGRESS_URL: "https://breach-notice-preprod.hmpps.service.justice.gov.uk"
     HMPPS_AUTH_URL: "https://sign-in-preprod.hmpps.service.justice.gov.uk/auth"
     TOKEN_VERIFICATION_API_URL: "https://token-verification-api-preprod.prison.service.justice.gov.uk"
+    BREACH_NOTICE_API_URL: "https://breach-notice-api-preprod.hmpps.service.justice.gov.uk"
+    NDELIUS_INTEGRATION_URL: "https://breach-notice-and-delius-preprod.hmpps.service.justice.gov.uk"
     ENVIRONMENT_NAME: PRE-PRODUCTION
-    AUDIT_ENABLED: "false"
 
 generic-prometheus-alerts:
   alertSeverity: NON_PROD_ALERTS_SEVERITY_LABEL

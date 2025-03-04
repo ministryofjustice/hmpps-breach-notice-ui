@@ -2,11 +2,10 @@ import { Readable } from 'stream'
 
 import Agent, { HttpsAgent } from 'agentkeepalive'
 import superagent from 'superagent'
-
 import logger from '../../logger'
+import type { UnsanitisedError } from '../sanitisedError'
 import sanitiseError from '../sanitisedError'
 import type { ApiConfig } from '../config'
-import type { UnsanitisedError } from '../sanitisedError'
 
 interface Request {
   path: string
@@ -68,7 +67,7 @@ export default class RestClient {
         .responseType(responseType)
         .timeout(this.timeoutConfig())
 
-      return raw ? result : result.body
+      return raw ? (result as Response) : result.body
     } catch (error) {
       const sanitisedError = sanitiseError(error)
       logger.warn({ ...sanitisedError }, `Error calling ${this.name}, path: '${path}', verb: 'GET'`)
@@ -98,7 +97,7 @@ export default class RestClient {
         .responseType(responseType)
         .timeout(this.timeoutConfig())
 
-      return raw ? result : result.body
+      return raw ? (result as Response) : result.body
     } catch (error) {
       const sanitisedError = sanitiseError(error)
       logger.warn({ ...sanitisedError }, `Error calling ${this.name}, path: '${path}', verb: '${method.toUpperCase()}'`)
@@ -140,7 +139,7 @@ export default class RestClient {
         .responseType(responseType)
         .timeout(this.timeoutConfig())
 
-      return raw ? result : result.body
+      return raw ? (result as Response) : result.body
     } catch (error) {
       const sanitisedError = sanitiseError(error)
       logger.warn({ ...sanitisedError }, `Error calling ${this.name}, path: '${path}', verb: 'DELETE'`)

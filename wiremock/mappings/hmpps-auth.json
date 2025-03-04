@@ -42,7 +42,7 @@
       "response": {
         "status": 200,
         "jsonBody": {
-          "access_token": "eyJhbGciOiJSUzUxMiIsInR5cCI6IkpXVCJ9.eyJuYW1lIjoiam9obiBzbWl0aCIsInVzZXJfbmFtZSI6IlVTRVIxIiwic2NvcGUiOlsicmVhZCJdLCJhdXRoX3NvdXJjZSI6ImRlbGl1cyIsImF1dGhvcml0aWVzIjpbIlJPTEVfVElFUl9TRVJWSUNFX1VTRVIiXSwianRpIjoiODNiNTBhMTAtY2NhNi00MWRiLTk4NWYtZTg3ZWZiMzAzZGRiIiwiY2xpZW50X2lkIjoiY2xpZW50aWQiLCJpYXQiOjE3MDE5NTEzNjgsImV4cCI6OTk5OTk5OTk5OX0.AZCu2XgZZhxfjB4bEpedNnK6AtxwcMat3h5pcHjAYs56ttxaemjDa3WMXoyvCPIwc52SP3NmvchaQQ5hM51m_gKUxVByUfDWBxZEUSEpf6A6EOEwmr8nWfz_BGSg7ZeBhTbQOKP9dDf7D6ZUzrb6mdli1bVNZCRkuYjyMozjXPk",
+          "access_token": "eyJhbGciOiJub25lIiwidHlwIjoiSldUIn0.eyJuYW1lIjoiam9obiBzbWl0aCIsInVzZXJfbmFtZSI6IlVTRVIxIiwic2NvcGUiOlsicmVhZCJdLCJhdXRoX3NvdXJjZSI6ImRlbGl1cyIsImF1dGhvcml0aWVzIjpbIlJPTEVfQlJFQUNIX05PVElDRSJdLCJqdGkiOiI4M2I1MGExMC1jY2E2LTQxZGItOTg1Zi1lODdlZmIzMDNkZGIiLCJjbGllbnRfaWQiOiJjbGllbnRpZCIsImlhdCI6MTcwMTk1MTM2OCwiZXhwIjo5OTk5OTk5OTk5fQ.",
           "token_type": "bearer",
           "user_name": "USER1",
           "expires_in": 599,

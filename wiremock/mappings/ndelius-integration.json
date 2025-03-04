@@ -223,6 +223,58 @@
           "Content-Type": "application/json;charset=UTF-8"
         }
       }
+    },
+    {
+      "request": {
+        "urlPattern": "/next-appointment-details/(.*?)",
+        "method": "GET"
+      },
+      "response": {
+        "status": 200,
+        "jsonBody": {
+          "responsibleOfficer": {
+            "name": {
+              "forename": "ROForename",
+              "middleName": "ROMiddleName",
+              "surname": "ROSurname"
+            },
+            "telephoneNumber": "01234567891"
+          },
+          "futureAppointments": [
+            {
+              "contactId": 1,
+              "datetime": "2025-01-01T12:34:56",
+              "description": "FIRSTAPPOINTMENT",
+              "type": {
+                "code": "FTYPE",
+                "description": "First Appointment Type"
+              },
+              "location": {
+                "addressId": 1,
+                "type": "Postal",
+                "buildingName": null,
+                "buildingNumber": "281",
+                "streetName": "Postal Street",
+                "townCity": "Postinton",
+                "district": "Postrict",
+                "county": "County Post",
+                "postcode": "NE30 3ZZ"
+              },
+              "officer": {
+                "code": "N01A001",
+                "name": {
+                  "forename": "Where",
+                  "middleName": "is",
+                  "surname": "Wally"
+                }
+              }
+            }
+          ]
+        },
+        "headers": {
+          "Content-Type": "application/json;charset=UTF-8"
+        }
+      }
     }
   ]
 }

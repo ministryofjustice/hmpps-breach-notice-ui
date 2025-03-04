@@ -99,28 +99,6 @@ export interface BreachNoticeRequirement {
   toDate: string
 }
 
-// export interface EnforceableContact {
-//   id: number
-//   datetime: string
-//   description: string
-//   type: ReferenceData
-//   outcome: ReferenceData
-//   notes: string
-//   requirement: Requirement
-// }
-
-export interface BasicDetails {
-  title: string
-  name: Name
-  addresses: AddressList
-  replyAddresses: AddressList
-}
-
-export interface WarningTypeDetails {
-  warningTypes: RadioButtonList
-  sentenceTypes: SentenceTypeList
-}
-
 export interface Name {
   forename: string
   middleName: string
@@ -140,34 +118,10 @@ export interface ReferenceData {
   description: string
 }
 
-// Reference Data
-export interface SentenceType {
-  code: string
-  description: string
-  conditionBeingEnforced: string
-}
-
 export interface RadioButton {
   value: string
   text: string
   checked: boolean
-}
-
-export interface EnforceableContactRadioButton {
-  datetime: string
-  type: ReferenceData
-  outcome: ReferenceData
-  notes: string
-  requirement: Requirement
-  checked?: boolean
-  value: string
-  text: string
-}
-
-export interface Requirement {
-  id: number
-  type: ReferenceData
-  subType: ReferenceData
 }
 
 export interface WarningDetailsRequirementSelectItem {
@@ -182,41 +136,3 @@ export interface WarningDetailsRequirementSelectItem {
 export interface ErrorMessages {
   [key: string]: { text: string }
 }
-
-export interface FutureAppointment {
-  contactId: number
-  datetime: string
-  description: string
-  type: ReferenceData
-  location: Address
-  officer: Officer
-}
-
-export interface NextAppointmentDetails {
-  responsibleOfficer: ResponsibleOfficer
-  futureAppointments: Array<FutureAppointment>
-}
-
-export interface ResponsibleOfficer {
-  telephoneNumber: string
-  name: Name
-}
-
-export interface Officer {
-  code: string
-  name: Name
-}
-
-export type WarningDetailsRequirementSelectItemsList = Array<WarningDetailsRequirementSelectItem>
-
-export type EnforceableContactRadioButtonList = Array<EnforceableContactRadioButton>
-
-export type AddressList = Array<Address>
-
-export type SelectItemList = Array<SelectItem>
-
-export type RadioButtonList = Array<RadioButton>
-
-export type ReferenceDataList = Array<ReferenceData>
-
-export type SentenceTypeList = Array<SentenceType>

@@ -54,11 +54,13 @@ export default function warningTypeRoutes(
     const breachNoticeApiClient = new BreachNoticeApiClient(token)
     const ndeliusIntegrationApiClient = new NdeliusIntegrationApiClient(token)
     const { id } = req.params
-    let breachNotice: BreachNotice = null
-    breachNotice = await breachNoticeApiClient.getBreachNoticeById(id as string)
+    const breachNotice: BreachNotice = await breachNoticeApiClient.getBreachNoticeById(id as string)
     if (await commonUtils.redirectRequired(breachNotice, res)) return
     const { warningTypes, sentenceTypes } = await ndeliusIntegrationApiClient.getWarningTypes(breachNotice.crn, id)
-    const sentenceTypeList: SelectItem[] = getSentenceTypeSelectItems(sentenceTypes)
+    const sentenceTypeList: SelectItem[] = initiateSentenceTypeSelectItemsAndApplySavedSelections(
+      sentenceTypes,
+      breachNotice,
+    )
     const warningTypeRadioButtons: Array<RadioButton> = initiateWarningTypeRadioButtonsAndApplySavedSelections(
       warningTypes,
       breachNotice,
@@ -139,21 +141,6 @@ export default function warningTypeRoutes(
         value: `${warningType.code}`,
         selected: false,
         checked: breachNotice.breachNoticeTypeCode && breachNotice.breachNoticeTypeCode === warningType.code,
-      })),
-    ]
-  }
-
-  function getSentenceTypeSelectItems(sentenceTypes: SentenceType[]): SelectItem[] {
-    return [
-      {
-        text: 'Please Select',
-        value: '-1',
-        selected: true,
-      },
-      ...sentenceTypes.map(sentenceType => ({
-        text: `${sentenceType.description}`,
-        value: `${sentenceType.code}`,
-        selected: false,
       })),
     ]
   }

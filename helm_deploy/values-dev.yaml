@@ -11,8 +11,15 @@ generic-service:
     INGRESS_URL: "https://breach-notice-dev.hmpps.service.justice.gov.uk"
     HMPPS_AUTH_URL: "https://sign-in-dev.hmpps.service.justice.gov.uk/auth"
     TOKEN_VERIFICATION_API_URL: "https://token-verification-api-dev.prison.service.justice.gov.uk"
+    BREACH_NOTICE_API_URL: "https://breach-notice-api-dev.hmpps.service.justice.gov.uk"
+    NDELIUS_INTEGRATION_URL: "https://breach-notice-and-delius-dev.hmpps.service.justice.gov.uk"
     ENVIRONMENT_NAME: DEV
-    AUDIT_ENABLED: "false"
+
+  allowlist:
+    groups:
+      - internal
+      - unilink_staff
+      - moj_cloud_platform # for end-to-end testing
 
 generic-prometheus-alerts:
   alertSeverity: NON_PROD_ALERTS_SEVERITY_LABEL

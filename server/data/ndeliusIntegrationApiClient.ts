@@ -2,7 +2,6 @@ import { LocalDateTime } from '@js-joda/core'
 import config from '../config'
 import RestClient from './restClient'
 import { Address } from './commonModels'
-import { ReferenceData } from './breachNoticeApiClient'
 
 export default class NdeliusIntegrationApiClient extends RestClient {
   constructor(token: string) {
@@ -21,18 +20,15 @@ export default class NdeliusIntegrationApiClient extends RestClient {
     })
   }
 
-  // async getSentenceTypes(): Promise<SentenceType> {
-  //   if (config.apis.ndeliusIntegration.enabled === false) {
-  //     return createDummySentenceTypes()
-  //   }
-  //   return this.get({
-  //     path: `/sentence-types`,
-  //   })
-  // }
-
   async getWarningDetails(crn: string, breachNoticeId: string): Promise<WarningDetails> {
     return this.get({
       path: `/warning-details/${crn}/${breachNoticeId}`,
+    })
+  }
+
+  async getNextAppointmentDetails(crn: string): Promise<NextAppointmentDetails> {
+    return this.get({
+      path: `/next-appointment-details/${crn}`,
     })
   }
 
@@ -86,6 +82,11 @@ export interface WarningDetails {
   enforceableContacts: EnforceableContact[]
 }
 
+export interface ReferenceData {
+  code: string
+  description: string
+}
+
 export interface BreachNoticeContact {
   id: string
   breachNoticeId: string
@@ -118,6 +119,30 @@ export interface Requirement {
   id: number
   type: ReferenceData
   subType: ReferenceData
+}
+
+export interface FutureAppointment {
+  contactId: number
+  datetime: string
+  description: string
+  type: ReferenceData
+  location: Address
+  officer: Officer
+}
+
+export interface NextAppointmentDetails {
+  responsibleOfficer: ResponsibleOfficer
+  futureAppointments: Array<FutureAppointment>
+}
+
+export interface ResponsibleOfficer {
+  telephoneNumber: string
+  name: Name
+}
+
+export interface Officer {
+  code: string
+  name: Name
 }
 
 export type EnforceableContactList = Array<EnforceableContact>
