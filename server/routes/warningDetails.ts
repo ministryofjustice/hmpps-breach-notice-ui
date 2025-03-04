@@ -33,23 +33,14 @@ export default function warningDetailsRoutes(
 
   post('/warning-details/:id', async (req, res, next) => {
     const { id } = req.params
-    const breachNoticeApiClient = new BreachNoticeApiClient(
-      await hmppsAuthClient.getSystemClientToken(res.locals.user.username),
-    )
-
-    const ndeliusIntegrationApiClient = new NdeliusIntegrationApiClient(
-      await hmppsAuthClient.getSystemClientToken(res.locals.user.username),
-    )
-
-    const breachNotice: BreachNotice = await breachNoticeApiClient.getBreachNoticeById(id as string)
+    const token = await hmppsAuthClient.getSystemClientToken(res.locals.user.username)
+    const breachNoticeApiClient = new BreachNoticeApiClient(token)
+    const ndeliusIntegrationApiClient = new NdeliusIntegrationApiClient(token)
+    const breachNotice = await breachNoticeApiClient.getBreachNoticeById(id as string)
 
     if (await commonUtils.redirectRequired(breachNotice, res)) return
 
-    // const basicDetails = await ndeliusIntegrationApiClient.getBasicDetails(breachNotice.crn, req.user.username)
-    const warningDetails: WarningDetails = await ndeliusIntegrationApiClient.getWarningDetails(
-      breachNotice.crn,
-      breachNotice.id,
-    )
+    const warningDetails = await ndeliusIntegrationApiClient.getWarningDetails(breachNotice.crn, breachNotice.id)
 
     // failures recorded on this order
     // list of contacts
@@ -146,24 +137,16 @@ export default function warningDetailsRoutes(
     breachNoticeRequirement: BreachNoticeRequirement,
     enforceableContactList: EnforceableContact[],
   ): BreachNoticeRequirement {
-    const dateList: string[] = []
-    enforceableContactList.forEach((enforcebleContact: EnforceableContact) => {
-      if (enforcebleContact.requirement) {
-        if (enforcebleContact.requirement.id.toString() === breachNoticeRequirement.requirementId.toString()) {
-          if (enforcebleContact.datetime) {
-            dateList.push(enforcebleContact.datetime.toString())
-          }
-        }
-      }
-    })
-
+    const dateList = enforceableContactList
+      .filter(i => i.requirement.id.toString() === breachNoticeRequirement.requirementId.toString())
+      .map(i => i.datetime)
     const maxDate = dateList.reduce((a, b) => (a > b ? a : b))
     const minDate = dateList.reduce((a, b) => (a < b ? a : b))
-    // eslint-disable-next-line no-param-reassign
-    breachNoticeRequirement.toDate = maxDate
-    // eslint-disable-next-line no-param-reassign
-    breachNoticeRequirement.fromDate = minDate
-    return breachNoticeRequirement
+    return {
+      ...breachNoticeRequirement,
+      fromDate: minDate.toString(),
+      toDate: maxDate.toString(),
+    }
   }
 
   function validateWarningDetails(breachNotice: BreachNotice, responseRequiredByDate: string): ErrorMessages {
@@ -183,14 +166,11 @@ export default function warningDetailsRoutes(
       return errorMessages
     }
 
-    if (breachNotice) {
-      // check date of letter is not before today
-      if (breachNotice.responseRequiredDate) {
-        const localDateOfResponseRequiredByDate = LocalDate.parse(breachNotice.responseRequiredDate).atStartOfDay()
-        if (localDateOfResponseRequiredByDate.isBefore(currentDateAtStartOfTheDay)) {
-          errorMessages.responseRequiredByDate = {
-            text: 'The Response Required By Date can not be before today',
-          }
+    if (breachNotice && breachNotice.responseRequiredDate) {
+      const localDateOfResponseRequiredByDate = LocalDate.parse(breachNotice.responseRequiredDate).atStartOfDay()
+      if (localDateOfResponseRequiredByDate.isBefore(currentDateAtStartOfTheDay)) {
+        errorMessages.responseRequiredByDate = {
+          text: 'The Response Required By Date can not be before today',
         }
       }
     }
