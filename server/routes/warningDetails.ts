@@ -4,7 +4,6 @@ import BreachNoticeApiClient, {
   BreachNotice,
   BreachNoticeContact,
   BreachNoticeRequirement,
-  EnforceableContactRadioButtonList,
   ErrorMessages,
   ReferenceData,
   ReferenceDataList,
@@ -119,7 +118,14 @@ export default function warningDetailsRoutes(
     if (!hasErrors) {
       breachNotice.warningDetailsSaved = true
       await breachNoticeApiClient.updateBreachNotice(id, breachNotice)
-      res.redirect(`/next-appointment/${id}`)
+      if (req.body.action === 'saveProgressAndClose') {
+        res.send(`<script nonce="${res.locals.cspNonce}">window.close()</script>`)
+      } else if (req.body.action === 'refreshFromNdelius') {
+        // redirect to warning details to force a reload
+        res.redirect(`/warning-details/${id}`)
+      } else {
+        res.redirect(`/next-appointment/${id}`)
+      }
     } else {
       const failuresRecorded: SelectItemList = createSelectItemListFromEnforceableContacts(
         warningDetails.enforceableContacts,
@@ -242,9 +248,6 @@ export default function warningDetailsRoutes(
     breachReasons: ReferenceDataList,
     breachNotice: BreachNotice,
   ): WarningDetailsRequirementSelectItem[] {
-    console.log('enforceablecontactlist')
-    console.log(enforceableContactList)
-
     return enforceableContactList.map((enforceableContact: EnforceableContact) => {
       const { requirement } = enforceableContact
       const breachNoticeRequirement = breachNotice.breachNoticeRequirementList.find(
