@@ -1,0 +1,11 @@
+{%- from "moj/components/alert/macro.njk" import mojAlert -%}
+
+{% if breachNotice.reviewRequiredDate != null %}
+  {{ mojAlert({
+    variant: "warning",
+    title: "Review required",
+    showTitleAsHeading: true,
+    dismissible: false,
+    html: 'Changes have been made in NDelius. Please review this report and discard if necessary.'
+  }) }}
+{% endif %}
