@@ -1,20 +1,11 @@
 import { type RequestHandler, Router } from 'express'
-import { LocalDateTime } from '@js-joda/core'
 import AuditService, { Page } from '../services/auditService'
-import BreachNoticeApiClient, {
-  BreachNotice,
-  ErrorMessages,
-  FutureAppointment,
-  Name,
-  NextAppointmentDetails,
-  Officer,
-  RadioButton,
-} from '../data/breachNoticeApiClient'
+import BreachNoticeApiClient, { BreachNotice, ErrorMessages, RadioButton } from '../data/breachNoticeApiClient'
 import { HmppsAuthClient } from '../data'
 import CommonUtils from '../services/commonUtils'
-import { Address } from '../data/commonModels'
 import { toUserDate, toUserTime } from '../utils/dateUtils'
 import asyncMiddleware from '../middleware/asyncMiddleware'
+import NdeliusIntegrationApiClient, { FutureAppointment, Name } from '../data/ndeliusIntegrationApiClient'
 
 export default function nextAppointmentRoutes(
   router: Router,
@@ -28,11 +19,12 @@ export default function nextAppointmentRoutes(
 
   get('/next-appointment/:id', async (req, res, next) => {
     await auditService.logPageView(Page.NEXT_APPOINTMENT, { who: res.locals.user.username, correlationId: req.id })
-    const breachNoticeApiClient = new BreachNoticeApiClient(
-      await hmppsAuthClient.getSystemClientToken(res.locals.user.username),
-    )
+    const token = await hmppsAuthClient.getSystemClientToken(res.locals.user.username)
+    const breachNoticeApiClient = new BreachNoticeApiClient(token)
+    const ndeliusIntegrationApiClient = new NdeliusIntegrationApiClient(token)
+
     const { id } = req.params
-    const nextAppointmentDetails = fetchNextAppointmentDetails()
+    const nextAppointmentDetails = await ndeliusIntegrationApiClient.getNextAppointmentDetails(id as string)
     const breachNotice: BreachNotice = await breachNoticeApiClient.getBreachNoticeById(id as string)
     const appointmentRadioButtons: Array<RadioButton> = initiateNextAppointmentRadioButtonsAndApplySavedSelections(
       nextAppointmentDetails.futureAppointments,
@@ -53,14 +45,15 @@ export default function nextAppointmentRoutes(
   })
 
   post('/next-appointment/:id', async (req, res, next) => {
-    const breachNoticeApiClient = new BreachNoticeApiClient(
-      await hmppsAuthClient.getSystemClientToken(res.locals.user.username),
-    )
     await auditService.logPageView(Page.NEXT_APPOINTMENT, { who: res.locals.user.username, correlationId: req.id })
+    const token = await hmppsAuthClient.getSystemClientToken(res.locals.user.username)
+    const ndeliusIntegrationApiClient = new NdeliusIntegrationApiClient(token)
+    const breachNoticeApiClient = new BreachNoticeApiClient(token)
+
     const { id } = req.params
     let breachNotice: BreachNotice = null
     breachNotice = await breachNoticeApiClient.getBreachNoticeById(id as string)
-    const nextAppointmentDetails = fetchNextAppointmentDetails()
+    const nextAppointmentDetails = await ndeliusIntegrationApiClient.getNextAppointmentDetails(id as string)
     if (await commonUtils.redirectRequired(breachNotice, res)) return
 
     if (req.body.useContactNumber === 'No') {
@@ -168,80 +161,6 @@ export default function nextAppointmentRoutes(
 
   function officerDisplayValue(officer: Name): string {
     return [officer.forename, officer.middleName, officer.surname].filter(item => item).join(', ')
-  }
-
-  // Replace with API call to fetch future appointments
-  function fetchNextAppointmentDetails(): NextAppointmentDetails {
-    return {
-      responsibleOfficer: {
-        name: {
-          forename: 'ROForename',
-          middleName: 'ROMiddleName',
-          surname: 'ROSurname',
-        },
-        telephoneNumber: '01234567891',
-      },
-      futureAppointments: [
-        {
-          contactId: 1,
-          datetime: LocalDateTime.now().toString(),
-          description: 'FIRSTAPPOINTMENT',
-          type: {
-            code: 'FTYPE',
-            description: 'First Appointment Type',
-          },
-          location: createDummyLocation(),
-          officer: createDummyOfficer('first'),
-        },
-        {
-          contactId: 2,
-          datetime: LocalDateTime.now().toString(),
-          description: 'SECONDAPPOINTMENT',
-          type: {
-            code: 'STYPE',
-            description: 'Second Appointment Type',
-          },
-          location: createDummyLocation(),
-          officer: createDummyOfficer('second'),
-        },
-        {
-          contactId: 3,
-          datetime: LocalDateTime.now().toString(),
-          description: 'THIRDAPPOINTMENT',
-          type: {
-            code: 'TTYPE',
-            description: 'Third Appointment Type',
-          },
-          location: createDummyLocation(),
-          officer: createDummyOfficer('third'),
-        },
-      ],
-    }
-  }
-
-  function createDummyOfficer(variant: string): Officer {
-    return {
-      code: variant,
-      name: {
-        forename: `fname${variant}`,
-        middleName: `mname${variant}`,
-        surname: `sname${variant}`,
-      },
-    }
-  }
-
-  function createDummyLocation(): Address {
-    return {
-      addressId: 1,
-      type: 'Postal',
-      buildingName: null,
-      buildingNumber: '21',
-      county: 'Reply County',
-      district: 'Reply District',
-      postcode: 'NE22 3AA',
-      streetName: 'Reply Street',
-      townCity: 'Reply City',
-    }
   }
 
   return router
