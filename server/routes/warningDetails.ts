@@ -4,9 +4,6 @@ import BreachNoticeApiClient, {
   BreachNotice,
   BreachNoticeContact,
   BreachNoticeRequirement,
-  ErrorMessages,
-  ReferenceData,
-  SelectItem,
   WarningDetailsRequirementSelectItem,
 } from '../data/breachNoticeApiClient'
 import AuditService, { Page } from '../services/auditService'
@@ -18,8 +15,11 @@ import asArray from '../utils/utils'
 import NdeliusIntegrationApiClient, {
   EnforceableContact,
   EnforceableContactList,
+  ReferenceData,
   WarningDetails,
 } from '../data/ndeliusIntegrationApiClient'
+import logger from '../../logger'
+import { ErrorMessages, SelectItem } from '../data/uiModels'
 
 export default function warningDetailsRoutes(
   router: Router,
@@ -73,29 +73,26 @@ export default function warningDetailsRoutes(
 
     // lookup the requirements
     // this can come in an array or singular
-    const selectedFailureRequirements = asArray(req.body.failuresBeingEnforcedRequirements)
+    breachNotice.breachNoticeRequirementList = asArray(req.body.failuresBeingEnforcedRequirements).map(
+      (requirementId: string) => {
+        const enforceableContactWithRequirement: EnforceableContact = warningDetails.enforceableContacts.find(
+          contact => contact.requirement.id.toString() === requirementId,
+        )
+        const bodyParamBreachReason: string = `breachreason${requirementId}`
+        const currentRequirement: BreachNoticeRequirement = {
+          id: null,
+          breachNoticeId: breachNotice.id,
+          requirementId: enforceableContactWithRequirement.requirement.id,
+          requirementTypeMainCategoryDescription: enforceableContactWithRequirement.requirement.type.description,
+          requirementTypeSubCategoryDescription: enforceableContactWithRequirement.requirement.subType.description,
+          rejectionReason: req.body[bodyParamBreachReason],
+          fromDate: null,
+          toDate: null,
+        }
+        return applyContactDateRangesToRequirement(currentRequirement, warningDetails.enforceableContacts)
+      },
+    )
 
-    selectedFailureRequirements.forEach((requirementId: string) => {
-      const enforceableContactWithRequirement: EnforceableContact = warningDetails.enforceableContacts.find(
-        contact => contact.requirement.id.toString() === requirementId,
-      )
-      const bodyParamBreachReason: string = `breachreason${requirementId}`
-
-      const currentRequirement: BreachNoticeRequirement = {
-        id: null,
-        breachNoticeId: breachNotice.id,
-        requirementId: enforceableContactWithRequirement.requirement.id,
-        requirementTypeMainCategoryDescription: enforceableContactWithRequirement.requirement.type.description,
-        requirementTypeSubCategoryDescription: enforceableContactWithRequirement.requirement.subType.description,
-        rejectionReason: req.body[bodyParamBreachReason],
-        fromDate: null,
-        toDate: null,
-      }
-
-      requirementList.push(applyContactDateRangesToRequirement(currentRequirement, warningDetails.enforceableContacts))
-    })
-
-    breachNotice.breachNoticeRequirementList = requirementList
     const errorMessages: ErrorMessages = validateWarningDetails(breachNotice, req.body.responseRequiredByDate)
 
     const hasErrors: boolean = Object.keys(errorMessages).length > 0
@@ -155,8 +152,9 @@ export default function warningDetailsRoutes(
     try {
       // eslint-disable-next-line no-param-reassign
       breachNotice.responseRequiredDate = fromUserDate(responseRequiredByDate)
-      // eslint-disable-next-line @typescript-eslint/no-unused-vars
     } catch (error: unknown) {
+      // this error will be thrown if a user inputs a non date format into the date field
+      logger.error(error)
       // eslint-disable-next-line no-param-reassign
       breachNotice.responseRequiredDate = responseRequiredByDate
       errorMessages.responseRequiredByDate = {

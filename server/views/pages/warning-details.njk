@@ -26,48 +26,6 @@
     {% endif %}
     <input type="hidden" name="_csrf" value="{{ csrfToken }}">
 
-    {% set phoneHtml %}
-      {{ govukInput({
-        id: "contact-by-phone",
-        name: "contactByPhone",
-        type: "tel",
-        autocomplete: "tel",
-        classes: "govuk-!-width-one-third",
-        label: {
-          text: "Phone number"
-        }
-      }) }}
-    {% endset -%}
-
-    {% set govselectHtml %}
-      {{ govukSelect({
-        id: "sort",
-        name: "sort",
-        label: {
-          text: "Reason"
-        },
-        items: [
-          {
-            value: "failed",
-            text: "Failed to attend"
-          },
-          {
-            value: "late",
-            text: "Attended Late",
-            selected: true
-          },
-          {
-            value: "failedcomply",
-            text: "Failed to comply"
-          },
-          {
-            value: "touch",
-            text: "Failed to keep in touch"
-          }
-        ]
-      }) }}
-    {% endset -%}
-
     <div class="govuk-grid-row">
       <div class="govuk-grid-column-one-third">
         {% include "pages/side-nav.njk" %}

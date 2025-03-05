@@ -1,6 +1,6 @@
 import { type RequestHandler, Response, Router } from 'express'
 import AuditService, { Page } from '../services/auditService'
-import BreachNoticeApiClient, { BreachNotice, ErrorMessages } from '../data/breachNoticeApiClient'
+import BreachNoticeApiClient, { BreachNotice } from '../data/breachNoticeApiClient'
 import { HmppsAuthClient } from '../data'
 import SnsService from '../services/snsService'
 import CommonUtils from '../services/commonUtils'
@@ -8,6 +8,7 @@ import { HmppsDomainEvent } from '../data/hmppsSnsClient'
 import config from '../config'
 import { toUserDate, toUserDateFromDateTime, toUserTimeFromDateTime } from '../utils/dateUtils'
 import asyncMiddleware from '../middleware/asyncMiddleware'
+import { ErrorMessages } from '../data/uiModels'
 
 export default function checkYourReportRoutes(
   router: Router,

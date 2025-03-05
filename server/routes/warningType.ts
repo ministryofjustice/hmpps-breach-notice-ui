@@ -1,15 +1,11 @@
 import { type RequestHandler, Router } from 'express'
 import AuditService, { Page } from '../services/auditService'
-import BreachNoticeApiClient, {
-  BreachNotice,
-  ErrorMessages,
-  RadioButton,
-  SelectItem,
-} from '../data/breachNoticeApiClient'
+import BreachNoticeApiClient, { BreachNotice } from '../data/breachNoticeApiClient'
 import NdeliusIntegrationApiClient, { SentenceType, WarningType } from '../data/ndeliusIntegrationApiClient'
 import { HmppsAuthClient } from '../data'
 import CommonUtils from '../services/commonUtils'
 import asyncMiddleware from '../middleware/asyncMiddleware'
+import { ErrorMessages, RadioButton, SelectItem } from '../data/uiModels'
 
 export default function warningTypeRoutes(
   router: Router,

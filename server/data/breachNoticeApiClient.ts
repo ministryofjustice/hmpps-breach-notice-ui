@@ -99,31 +99,6 @@ export interface BreachNoticeRequirement {
   toDate: string
 }
 
-export interface Name {
-  forename: string
-  middleName: string
-  surname: string
-}
-
-// these must be value, text, boolean so they can be fed into MOJ components
-export interface SelectItem {
-  value: string
-  text: string
-  selected: boolean
-}
-
-// Reference Data
-export interface ReferenceData {
-  code: string
-  description: string
-}
-
-export interface RadioButton {
-  value: string
-  text: string
-  checked: boolean
-}
-
 export interface WarningDetailsRequirementSelectItem {
   value: string
   text: string
@@ -131,8 +106,4 @@ export interface WarningDetailsRequirementSelectItem {
   conditional: {
     html: string
   }
-}
-
-export interface ErrorMessages {
-  [key: string]: { text: string }
 }
