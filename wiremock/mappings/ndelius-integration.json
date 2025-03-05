@@ -94,12 +94,12 @@
             {
               "code": "CO",
               "description": "Community Order",
-              "conditionBeingEnforced": "string"
+              "conditionBeingEnforced": "sample condition being enforced"
             },
             {
               "code": "123",
               "description": "Another Typer",
-              "conditionBeingEnforced": "string"
+              "conditionBeingEnforced": "another condition being enforced"
             }
           ],
           "defaultSentenceTypeCode": "CO"

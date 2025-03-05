@@ -78,11 +78,12 @@
     ]
   },
   "dependencies": {
-    "@aws-sdk/client-sqs": "^3.750.0",
     "@aws-sdk/client-sns": "^3.750.0",
+    "@aws-sdk/client-sqs": "^3.750.0",
     "@js-joda/core": "^5.6.4",
     "@ministryofjustice/frontend": "^3.7.0",
     "@ministryofjustice/hmpps-monitoring": "^0.0.1-beta.2",
+    "@types/qs": "^6.9.18",
     "agentkeepalive": "^4.6.0",
     "applicationinsights": "^2.9.6",
     "body-parser": "^1.20.3",

@@ -1,15 +1,11 @@
 import { type RequestHandler, Router } from 'express'
 import AuditService, { Page } from '../services/auditService'
-import BreachNoticeApiClient, {
-  BreachNotice,
-  ErrorMessages,
-  RadioButton,
-  SelectItem,
-} from '../data/breachNoticeApiClient'
+import BreachNoticeApiClient, { BreachNotice } from '../data/breachNoticeApiClient'
 import NdeliusIntegrationApiClient, { SentenceType, WarningType } from '../data/ndeliusIntegrationApiClient'
 import { HmppsAuthClient } from '../data'
 import CommonUtils from '../services/commonUtils'
 import asyncMiddleware from '../middleware/asyncMiddleware'
+import { ErrorMessages, RadioButton, SelectItem } from '../data/uiModels'
 
 export default function warningTypeRoutes(
   router: Router,
@@ -54,11 +50,13 @@ export default function warningTypeRoutes(
     const breachNoticeApiClient = new BreachNoticeApiClient(token)
     const ndeliusIntegrationApiClient = new NdeliusIntegrationApiClient(token)
     const { id } = req.params
-    let breachNotice: BreachNotice = null
-    breachNotice = await breachNoticeApiClient.getBreachNoticeById(id as string)
+    const breachNotice: BreachNotice = await breachNoticeApiClient.getBreachNoticeById(id as string)
     if (await commonUtils.redirectRequired(breachNotice, res)) return
     const { warningTypes, sentenceTypes } = await ndeliusIntegrationApiClient.getWarningTypes(breachNotice.crn, id)
-    const sentenceTypeList: SelectItem[] = getSentenceTypeSelectItems(sentenceTypes)
+    const sentenceTypeList: SelectItem[] = initiateSentenceTypeSelectItemsAndApplySavedSelections(
+      sentenceTypes,
+      breachNotice,
+    )
     const warningTypeRadioButtons: Array<RadioButton> = initiateWarningTypeRadioButtonsAndApplySavedSelections(
       warningTypes,
       breachNotice,
@@ -67,6 +65,14 @@ export default function warningTypeRoutes(
     // add new details
     breachNotice.breachNoticeTypeCode = req.body.warningType
     breachNotice.breachSentenceTypeCode = req.body.sentenceType
+    // find the condition Being Enforced
+    const conditionBeingEnforced: SentenceType = sentenceTypes.find(
+      sentenceType => sentenceType.code === breachNotice.breachSentenceTypeCode,
+    )
+    if (conditionBeingEnforced) {
+      breachNotice.conditionBeingEnforced = conditionBeingEnforced.conditionBeingEnforced
+    }
+
     const checkedButton: RadioButton = warningTypeRadioButtons.find(r => r.value === req.body.warningType)
     if (checkedButton) {
       breachNotice.breachNoticeTypeDescription = checkedButton.text
@@ -125,30 +131,20 @@ export default function warningTypeRoutes(
     warningTypes: WarningType[],
     breachNotice: BreachNotice,
   ): RadioButton[] {
-    const warningTypeRadioButtons: RadioButton[] = [
+    return [
       ...warningTypes.map(warningType => ({
         text: `${warningType.description}`,
         value: `${warningType.code}`,
         selected: false,
-        checked: false,
+        checked: breachNotice.breachNoticeTypeCode && breachNotice.breachNoticeTypeCode === warningType.code,
       })),
     ]
-
-    if (breachNotice.breachNoticeTypeCode) {
-      warningTypeRadioButtons.forEach((radioButton: RadioButton) => {
-        if (breachNotice.breachNoticeTypeCode && breachNotice.breachNoticeTypeCode === radioButton.value) {
-          // eslint-disable-next-line no-param-reassign
-          radioButton.checked = true
-        } else {
-          // eslint-disable-next-line no-param-reassign
-          radioButton.checked = false
-        }
-      })
-    }
-    return warningTypeRadioButtons
   }
 
-  function getSentenceTypeSelectItems(sentenceTypes: SentenceType[]): SelectItem[] {
+  function initiateSentenceTypeSelectItemsAndApplySavedSelections(
+    sentenceTypes: SentenceType[],
+    breachNotice: BreachNotice,
+  ): SelectItem[] {
     return [
       {
         text: 'Please Select',
@@ -158,41 +154,9 @@ export default function warningTypeRoutes(
       ...sentenceTypes.map(sentenceType => ({
         text: `${sentenceType.description}`,
         value: `${sentenceType.code}`,
-        selected: false,
+        selected: breachNotice.breachSentenceTypeCode && breachNotice.breachSentenceTypeCode === sentenceType.code,
       })),
     ]
-  }
-
-  function initiateSentenceTypeSelectItemsAndApplySavedSelections(
-    sentenceTypes: SentenceType[],
-    breachNotice: BreachNotice,
-  ): SelectItem[] {
-    const sentenceTypeSelectItems: SelectItem[] = [
-      {
-        text: 'Please Select',
-        value: '-1',
-        selected: true,
-      },
-      ...sentenceTypes.map(sentenceType => ({
-        text: `${sentenceType.description}`,
-        value: `${sentenceType.code}`,
-        selected: false,
-      })),
-    ]
-
-    if (breachNotice.breachSentenceTypeCode) {
-      sentenceTypeSelectItems.forEach((sentenceTypeSelectItem: SelectItem) => {
-        if (
-          breachNotice.breachSentenceTypeCode &&
-          breachNotice.breachSentenceTypeCode === sentenceTypeSelectItem.value
-        ) {
-          // eslint-disable-next-line no-param-reassign
-          sentenceTypeSelectItem.selected = true
-        }
-      })
-    }
-
-    return sentenceTypeSelectItems
   }
 
   return router

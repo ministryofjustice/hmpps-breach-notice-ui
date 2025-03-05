@@ -1,3 +1,4 @@
+import { ParsedQs } from 'qs'
 import { Name } from '../data/ndeliusIntegrationApiClient'
 
 const properCase = (word: string): string =>
@@ -26,4 +27,9 @@ export const initialiseName = (fullName?: string): string | null => {
 
 export function combineName(title: string, name: Name) {
   return [title, name.forename, name.middleName, name.surname].filter(n => n).join(' ')
+}
+
+export default function asArray(param: undefined | string | ParsedQs | (string | ParsedQs)[]): string[] {
+  if (param === undefined) return []
+  return Array.isArray(param) ? (param as string[]) : [param as string]
 }

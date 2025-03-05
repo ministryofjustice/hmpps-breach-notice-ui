@@ -79,7 +79,7 @@ export interface WarningTypeWrapper {
 
 export interface WarningDetails {
   breachReasons: ReferenceData[]
-  enforceableContactList: EnforceableContact[]
+  enforceableContacts: EnforceableContact[]
 }
 
 export interface ReferenceData {
@@ -144,3 +144,5 @@ export interface Officer {
   code: string
   name: Name
 }
+
+export type EnforceableContactList = Array<EnforceableContact>

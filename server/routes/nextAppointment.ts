@@ -1,11 +1,12 @@
 import { type RequestHandler, Router } from 'express'
 import AuditService, { Page } from '../services/auditService'
-import BreachNoticeApiClient, { BreachNotice, ErrorMessages, RadioButton } from '../data/breachNoticeApiClient'
+import BreachNoticeApiClient, { BreachNotice } from '../data/breachNoticeApiClient'
 import { HmppsAuthClient } from '../data'
 import CommonUtils from '../services/commonUtils'
 import { toUserDate, toUserTime } from '../utils/dateUtils'
 import asyncMiddleware from '../middleware/asyncMiddleware'
 import NdeliusIntegrationApiClient, { FutureAppointment, Name } from '../data/ndeliusIntegrationApiClient'
+import { ErrorMessages, RadioButton } from '../data/uiModels'
 
 export default function nextAppointmentRoutes(
   router: Router,

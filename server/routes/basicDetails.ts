@@ -5,10 +5,11 @@ import { fromUserDate, toUserDate } from '../utils/dateUtils'
 import { HmppsAuthClient } from '../data'
 import CommonUtils from '../services/commonUtils'
 import { combineName } from '../utils/utils'
-import BreachNoticeApiClient, { BreachNotice, ErrorMessages, SelectItem } from '../data/breachNoticeApiClient'
+import BreachNoticeApiClient, { BreachNotice } from '../data/breachNoticeApiClient'
 import NdeliusIntegrationApiClient, { BasicDetails } from '../data/ndeliusIntegrationApiClient'
 import { Address } from '../data/commonModels'
 import asyncMiddleware from '../middleware/asyncMiddleware'
+import { ErrorMessages, SelectItem } from '../data/uiModels'
 
 export default function basicDetailsRoutes(
   router: Router,

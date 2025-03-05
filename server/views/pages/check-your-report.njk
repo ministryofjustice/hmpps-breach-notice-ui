@@ -319,14 +319,14 @@
                                     Response Required By
                                 </dt>
                                 <dd class="govuk-summary-list__value">
-                                    {% if breachNotice.responseRequiredByDate == null and breachNotice.warningTypeSaved %}
+                                    {% if breachNotice.responseRequiredDate == null and breachNotice.warningDetailsSaved %}
                                         <a href="/warning-details/{{ breachNotice.id }}" class="govuk-link">enter
                                             required information</a>
                                     {% else %}
-                                        {{ responseRequiredByDate }}
+                                        {{ responseRequiredDate }}
                                     {% endif %}
                                 </dd>
-                                {% if breachNotice.responseRequiredByDate == null %}
+                                {% if breachNotice.responseRequiredDate == null %}
                                     <dd class="govuk-summary-list__actions">
 
                                         <span class="govuk-tag--light-blue">
@@ -502,58 +502,58 @@
 
 
                 <div class="moj-button-group">
-                {% if reportValidated %}
-                  {{ govukButton({
-                    text: "Publish",
-                    preventDoubleClick: "true",
-                    type: "submit",
-                    attributes: {
-                      id: "publish"
-                    }
-                  }) }}
-                  {{ govukButton({
-                    text: "View Draft Report",
-                    classes: "govuk-button--secondary",
-                    preventDoubleClick: "true",
-                    href: '/pdf/'+breachNotice.id,
-                    attributes: {
-                      target: "_blank"
-                    }
-                  }) }}
-                  {{ govukButton({
-                    text: "Delete draft",
-                    href: '/report-deleted/'+breachNotice.id,
-                    classes: "govuk-button--secondary",
-                    preventDoubleClick: "true"
-                  }) }}
-                  {{ govukButton({
-                    text: "Close",
-                    href: "/close",
-                    classes: "govuk-button--secondary",
-                    preventDoubleClick: "true"
-                  }) }}
+                    {% if reportValidated %}
+                        {{ govukButton({
+                            text: "Publish",
+                            preventDoubleClick: "true",
+                            type: "submit",
+                            attributes: {
+                                id: "publish"
+                            }
+                        }) }}
+                        {{ govukButton({
+                            text: "View Draft Report",
+                            classes: "govuk-button--secondary",
+                            preventDoubleClick: "true",
+                            href: '/pdf/'+breachNotice.id,
+                            attributes: {
+                                target: "_blank"
+                            }
+                        }) }}
+                        {{ govukButton({
+                            text: "Delete draft",
+                            href: '/report-deleted/'+breachNotice.id,
+                            classes: "govuk-button--secondary",
+                            preventDoubleClick: "true"
+                        }) }}
+                        {{ govukButton({
+                            text: "Close",
+                            href: "/close",
+                            classes: "govuk-button--secondary",
+                            preventDoubleClick: "true"
+                        }) }}
                 {% else %}
-                    {{ govukButton({
-                      text: "View Draft Report",
-                      classes: "govuk-button--secondary",
-                      preventDoubleClick: "true",
-                      href: '/pdf/'+breachNotice.id,
-                      attributes: {
-                        target: "_blank"
-                      }
-                    }) }}
-                    {{ govukButton({
-                      text: "Delete draft",
-                      href: '/report-deleted/'+breachNotice.id,
-                      classes: "govuk-button--secondary",
-                      preventDoubleClick: "true"
-                    }) }}
-                    {{ govukButton({
-                      text: "Close",
-                      href: "/close",
-                      classes: "govuk-button--secondary",
-                      preventDoubleClick: "true"
-                    }) }}
+                        {{ govukButton({
+                            text: "View Draft Report",
+                            classes: "govuk-button--secondary",
+                            preventDoubleClick: "true",
+                            href: '/pdf/'+breachNotice.id,
+                            attributes: {
+                                target: "_blank"
+                            }
+                        }) }}
+                        {{ govukButton({
+                            text: "Delete draft",
+                            href: '/report-deleted/'+breachNotice.id,
+                            classes: "govuk-button--secondary",
+                            preventDoubleClick: "true"
+                        }) }}
+                        {{ govukButton({
+                            text: "Close",
+                            href: "/close",
+                            classes: "govuk-button--secondary",
+                            preventDoubleClick: "true"
+                        }) }}
                 {% endif %}
                 </div>
             </div>

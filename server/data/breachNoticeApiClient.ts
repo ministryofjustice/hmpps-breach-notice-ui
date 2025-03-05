@@ -1,6 +1,5 @@
 import config from '../config'
 import RestClient from './restClient'
-import { ReferenceData } from './ndeliusIntegrationApiClient'
 import { Address } from './commonModels'
 
 export default class BreachNoticeApiClient extends RestClient {
@@ -48,7 +47,7 @@ export interface BreachNotice {
   titleAndFullName: string
   dateOfLetter: string
   referenceNumber: string
-  responseRequiredByDate: string
+  responseRequiredDate: string
   breachNoticeTypeCode: string
   breachNoticeTypeDescription: string
   breachConditionTypeCode: string
@@ -75,6 +74,7 @@ export interface BreachNotice {
   breachNoticeRequirementList: BreachNoticeRequirement[]
   optionalNumberChecked: boolean
   optionalNumber: string
+  conditionBeingEnforced: string
 }
 
 export interface BreachNoticeContact {
@@ -92,48 +92,18 @@ export interface BreachNoticeRequirement {
   id: string
   breachNoticeId: string
   requirementId: number
-  mainCategoryDescription: string
-  subCategoryDescription: string
+  requirementTypeMainCategoryDescription: string
+  requirementTypeSubCategoryDescription: string
   rejectionReason: string
-}
-
-// these must be value, text, boolean so they can be fed into MOJ components
-export interface SelectItem {
-  value: string
-  text: string
-  selected: boolean
-}
-
-export interface RadioButton {
-  value: string
-  text: string
-  checked: boolean
-}
-
-export interface EnforceableContactRadioButton {
-  datetime: string
-  type: ReferenceData
-  outcome: ReferenceData
-  notes: string
-  requirement: Requirement
-  checked: string
-  value: string
-  text: string
-}
-
-export interface Requirement {
-  id: number
-  type: ReferenceData
-  subType: ReferenceData
+  fromDate: string
+  toDate: string
 }
 
 export interface WarningDetailsRequirementSelectItem {
   value: string
   text: string
-  selected: boolean
-  requirements: SelectItem[]
-}
-
-export interface ErrorMessages {
-  [key: string]: { text: string }
+  checked: boolean
+  conditional: {
+    html: string
+  }
 }

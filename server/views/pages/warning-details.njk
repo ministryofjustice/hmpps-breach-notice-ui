@@ -5,6 +5,120 @@
 
 {% block content %}
 
- <p>placeholder</p>
+  {% from "moj/components/side-navigation/macro.njk" import mojSideNavigation %}
+  {% from "govuk/components/radios/macro.njk" import govukRadios %}
+  {% from "govuk/components/select/macro.njk" import govukSelect %}
+  {% from "govuk/components/button/macro.njk" import govukButton %}
+  {% from "moj/components/date-picker/macro.njk" import mojDatePicker %}
+  {% from "govuk/components/table/macro.njk" import govukTable %}
+  {% from "govuk/components/input/macro.njk" import govukInput %}
+  {% from "govuk/components/checkboxes/macro.njk" import govukCheckboxes %}
+  {% from "govuk/components/details/macro.njk" import govukDetails %}
+
+  <form method="post">
+    {% set errorList =[
+      { text: errorMessages.responseRequiredByDate.text, href: "#responseRequiredByDate" } if errorMessages.responseRequiredByDate else None
+    ] | reject("undefined") %}
+
+    {% if errorMessages | length > 0 %}
+      {% from "govuk/components/error-summary/macro.njk" import govukErrorSummary %}
+      {{ govukErrorSummary({ titleText: "There is a problem", errorList: errorList }) }}
+    {% endif %}
+    <input type="hidden" name="_csrf" value="{{ csrfToken }}">
+
+    <div class="govuk-grid-row">
+      <div class="govuk-grid-column-one-third">
+        {% include "pages/side-nav.njk" %}
+      </div>
+      <div class="govuk-grid-column-two-thirds">
+        <h1
+          class="govuk-heading-x1">{{ applicationName + " - " + breachNotice.breachNoticeTypeDescription + " Details" }}</h1>
+        <h2 class="govuk-heading-m">
+          Condition being enforced
+        </h2>
+        <p id="condition-being-enforced"> {{ breachNotice.conditionBeingEnforced }}</p>
+
+        <h2 class="govuk-heading-m">
+          Failures recorded on this order
+        </h2>
+        {% for failure in warningDetails.enforceableContacts %}
+          <p>
+            {{ failure.datetime | toUserDate }}, {{ failure.type.description }}, {{ failure.outcome.description }},
+
+            {{ govukDetails({
+              summaryText: "View requirement notes",
+              text: failure.notes
+            }) }}
+          </p>
+        {% endfor %}
+
+        {{ govukCheckboxes({
+          name: "failuresBeingEnforcedRequirements",
+          fieldset: {
+            legend: {
+              text: "Select the Failures being enforced",
+              isPageHeading: false,
+              classes: "govuk-fieldset__legend--m"
+            }
+          },
+          hint: {
+            text: "Select all that apply"
+          },
+          items: requirementsList
+        }) }}
+
+        {{ mojDatePicker({
+          id: "responseRequiredByDate",
+          name: "responseRequiredByDate",
+          value: warningDetailsResponseRequiredDate,
+          label: {
+            text: "Response Required By",
+            classes: "govuk-fieldset__legend--m"
+          },
+          hint: {
+            text: "For example, 17/5/2024."
+          },
+          errorMessage: {
+            text: errorMessages.responseRequiredByDate.text
+          } if errorMessages.responseRequiredByDate.text
+        }) }}
+
+        <div class="moj-button-group">
+          {{ govukButton({
+            text: "Continue",
+            preventDoubleClick: "true",
+            type: "submit",
+            attributes: {
+              id: "continue-button"
+            }
+          }) }}
+
+          {{ govukButton({
+            text: "Refresh from Delius",
+            preventDoubleClick: "true",
+            type: "submit",
+            name: "action",
+            value: "refreshFromNdelius",
+            classes: "govuk-button--secondary",
+            attributes: {
+              id: "refresh-from-ndelius--button"
+            }
+          }) }}
+
+          {{ govukButton({
+            text: "Save Progress and Close",
+            preventDoubleClick: "true",
+            type: "submit",
+            name: "action",
+            value: "saveProgressAndClose",
+            classes: "govuk-button--secondary",
+            attributes: {
+              id: "close-button"
+            }
+          }) }}
+        </div>
+      </div>
+    </div>
+  </form>
 
 {% endblock %}

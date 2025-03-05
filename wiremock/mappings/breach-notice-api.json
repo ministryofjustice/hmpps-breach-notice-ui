@@ -13,7 +13,7 @@
           "titleAndFullName": null,
           "dateOfLetter": null,
           "referenceNumber": null,
-          "responseRequiredByDate": null,
+          "responseRequiredDate": null,
           "breachNoticeTypeCode": null,
           "breachNoticeTypeDescription": null,
           "breachConditionTypeCode": null,
@@ -76,6 +76,76 @@
     },
     {
       "request": {
+        "url": "/breach-notice-api/breach-notice/00000000-0000-0000-0000-000000000022",
+        "method": "GET"
+      },
+      "response": {
+        "status": 200,
+        "jsonBody": {
+          "id": "00000000-0000-0000-0000-000000000022",
+          "crn": "X017052",
+          "titleAndFullName": null,
+          "dateOfLetter": null,
+          "referenceNumber": null,
+          "responseRequiredDate": null,
+          "breachNoticeTypeCode": null,
+          "breachNoticeTypeDescription": null,
+          "breachConditionTypeCode": null,
+          "breachConditionTypeDescription": null,
+          "breachSentenceTypeCode": null,
+          "breachSentenceTypeDescription": null,
+          "responsibleOfficer": null,
+          "contactNumber": null,
+          "nextAppointmentType": null,
+          "nextAppointmentDate": null,
+          "nextAppointmentLocation": null,
+          "nextAppointmentOfficer": null,
+          "nextAppointmentContact": null,
+          "completedDate": null,
+          "offenderAddress": {
+            "addressId": 12345,
+            "type": "Postal",
+            "buildingName": null,
+            "buildingNumber": "21",
+            "streetName": "Postal Street",
+            "district": "Postal District",
+            "townCity": "PostCity",
+            "county": "Postal County",
+            "postcode": "NE30 3ZZ"
+          },
+          "replyAddress": {
+            "addressId": 33333,
+            "type": "Postal",
+            "buildingName": null,
+            "buildingNumber": "21",
+            "streetName": "Reply Street",
+            "district": "Reply District",
+            "townCity": "Reply City",
+            "county": "Reply County",
+            "postcode": "NE22 3AA"
+          },
+          "basicDetailsSaved": null,
+          "warningTypeSaved": null,
+          "warningDetailsSaved": null,
+          "nextAppointmentSaved": null,
+          "useDefaultAddress": null,
+          "useDefaultReplyAddress": null,
+          "breachNoticeContactList": [
+            {
+              "contactId": 1
+            }
+          ],
+          "breachNoticeRequirementList": null,
+          "conditionBeingEnforced": "a condition being enforced"
+        },
+        "headers": {
+          "Content-Type": "application/json;charset=UTF-8"
+        },
+        "transformers": ["response-template"]
+      }
+    },
+    {
+      "request": {
         "url": "/breach-notice-api/breach-notice/00000000-0000-0000-0000-000000000001",
         "method": "DELETE"
       },
@@ -124,7 +194,7 @@
           "titleAndFullName": "Mr Billy The Kid",
           "dateOfLetter": null,
           "referenceNumber": null,
-          "responseRequiredByDate": null,
+          "responseRequiredDate": null,
           "breachNoticeTypeCode": "BW",
           "breachNoticeTypeDescription": "Breach Warning",
           "breachConditionTypeCode": null,
@@ -189,7 +259,7 @@
           "titleAndFullName": "Mr Billy The Kid",
           "dateOfLetter": null,
           "referenceNumber": null,
-          "responseRequiredByDate": null,
+          "responseRequiredDate": null,
           "breachNoticeTypeCode": "BW",
           "breachNoticeTypeDescription": "Breach Warning",
           "breachConditionTypeCode": null,
@@ -254,7 +324,7 @@
           "titleAndFullName": "Mr Billy The Kid",
           "dateOfLetter": null,
           "referenceNumber": null,
-          "responseRequiredByDate": null,
+          "responseRequiredDate": null,
           "breachNoticeTypeCode": "BW",
           "breachNoticeTypeDescription": "Breach Warning",
           "breachConditionTypeCode": null,
@@ -319,7 +389,7 @@
           "titleAndFullName": "Mr Billy The Kid",
           "dateOfLetter": "2025-01-01",
           "referenceNumber": "REF0001",
-          "responseRequiredByDate": "2025-01-01",
+          "responseRequiredDate": "2025-01-01",
           "breachNoticeTypeCode": "BW",
           "breachNoticeTypeDescription": "Breach Warning",
           "breachConditionTypeCode": "BRE",
@@ -401,7 +471,7 @@
           "titleAndFullName": "Mr Billy The Kid",
           "dateOfLetter": "2025-01-01",
           "referenceNumber": "REF0001",
-          "responseRequiredByDate": "2025-01-01",
+          "responseRequiredDate": "2025-01-01",
           "breachNoticeTypeCode": "BW",
           "breachNoticeTypeDescription": "Breach Warning",
           "breachConditionTypeCode": "BRE",
@@ -474,7 +544,7 @@
           "titleAndFullName": "Mr Billy The Kid",
           "dateOfLetter": "2025-01-01",
           "referenceNumber": "REF0001",
-          "responseRequiredByDate": "2025-01-01",
+          "responseRequiredDate": "2025-01-01",
           "breachNoticeTypeCode": "BW",
           "breachNoticeTypeDescription": "Breach Warning",
           "breachConditionTypeCode": "BRE",
@@ -547,7 +617,7 @@
           "titleAndFullName": "Mr Billy The Kid",
           "dateOfLetter": "2025-01-01",
           "referenceNumber": "REF0001",
-          "responseRequiredByDate": "2025-01-01",
+          "responseRequiredDate": "2025-01-01",
           "breachNoticeTypeCode": "BW",
           "breachNoticeTypeDescription": "Breach Warning",
           "breachConditionTypeCode": "BRE",
@@ -620,7 +690,7 @@
           "titleAndFullName": "Mr Billy The Kid",
           "dateOfLetter": "2025-01-01",
           "referenceNumber": "REF0001",
-          "responseRequiredByDate": "2025-01-01",
+          "responseRequiredDate": "2025-01-01",
           "breachNoticeTypeCode": "BW",
           "breachNoticeTypeDescription": "Breach Warning",
           "breachConditionTypeCode": "BRE",
