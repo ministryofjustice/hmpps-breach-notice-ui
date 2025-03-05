@@ -45,9 +45,6 @@ export default function warningDetailsRoutes(
     // failures recorded on this order
     // list of contacts
     const contactList: BreachNoticeContact[] = []
-    // select the failures being enforced
-    // list of requirements
-    const requirementList: BreachNoticeRequirement[] = []
 
     // for final warning theres only 1 of these for first warning screen
     const failureRecordedContactId: string = req.body.failureRecordedContact
