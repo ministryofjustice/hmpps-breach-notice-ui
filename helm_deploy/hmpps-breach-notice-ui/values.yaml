@@ -65,4 +65,5 @@ generic-service:
       - unilink_staff
 
 generic-prometheus-alerts:
-  targetApplication: breach-notice-notifications
+  targetApplication: hmpps-breach-notice-ui
+  alertSeverity: breach-notice-notifications
