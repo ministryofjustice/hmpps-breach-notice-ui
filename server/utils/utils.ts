@@ -1,5 +1,6 @@
 import { ParsedQs } from 'qs'
-import { Name } from '../data/ndeliusIntegrationApiClient'
+import { DeliusAddress, Name } from '../data/ndeliusIntegrationApiClient'
+import { BreachNoticeAddress } from '../data/breachNoticeApiClient'
 
 const properCase = (word: string): string =>
   word.length >= 1 ? word[0].toUpperCase() + word.toLowerCase().slice(1) : word
@@ -32,4 +33,21 @@ export function combineName(title: string, name: Name) {
 export default function asArray(param: undefined | string | ParsedQs | (string | ParsedQs)[]): string[] {
   if (param === undefined) return []
   return Array.isArray(param) ? (param as string[]) : [param as string]
+}
+
+export function mapDeliusAddressToBreachNoticeAddress(deliusAddress: DeliusAddress): BreachNoticeAddress {
+  if (deliusAddress) {
+    return {
+      addressId: deliusAddress.id,
+      status: deliusAddress.status,
+      buildingName: deliusAddress.buildingName,
+      buildingNumber: deliusAddress.buildingNumber,
+      streetName: deliusAddress.streetName,
+      townCity: deliusAddress.townCity,
+      district: deliusAddress.district,
+      county: deliusAddress.county,
+      postcode: deliusAddress.postcode,
+    }
+  }
+  return null
 }
