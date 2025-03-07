@@ -30,7 +30,7 @@
           "completedDate": null,
           "offenderAddress": {
             "addressId": 12345,
-            "type": "Postal",
+            "status": "Postal",
             "buildingName": null,
             "buildingNumber": "21",
             "streetName": "Postal Street",
@@ -41,7 +41,7 @@
           },
           "replyAddress": {
             "addressId": 33333,
-            "type": "Postal",
+            "status": "Reply",
             "buildingName": null,
             "buildingNumber": "21",
             "streetName": "Reply Street",
@@ -104,7 +104,7 @@
           "completedDate": null,
           "offenderAddress": {
             "addressId": 12345,
-            "type": "Postal",
+            "status": "Postal",
             "buildingName": null,
             "buildingNumber": "21",
             "streetName": "Postal Street",
@@ -115,7 +115,7 @@
           },
           "replyAddress": {
             "addressId": 33333,
-            "type": "Postal",
+            "status": "Reply",
             "buildingName": null,
             "buildingNumber": "21",
             "streetName": "Reply Street",
@@ -211,7 +211,7 @@
           "completedDate": null,
           "offenderAddress": {
             "addressId": 12345,
-            "type": "Postal",
+            "status": "Postal",
             "buildingName": null,
             "buildingNumber": "21",
             "streetName": "Postal Street",
@@ -222,7 +222,7 @@
           },
           "replyAddress": {
             "addressId": 33333,
-            "type": "Postal",
+            "status": "Reply",
             "buildingName": null,
             "buildingNumber": "21",
             "streetName": "Reply Street",
@@ -276,7 +276,7 @@
           "completedDate": null,
           "offenderAddress": {
             "addressId": 12345,
-            "type": "Postal",
+            "status": "Postal",
             "buildingName": null,
             "buildingNumber": "21",
             "streetName": "Postal Street",
@@ -287,7 +287,7 @@
           },
           "replyAddress": {
             "addressId": 33333,
-            "type": "Postal",
+            "status": "Reply",
             "buildingName": null,
             "buildingNumber": "21",
             "streetName": "Reply Street",
@@ -341,7 +341,7 @@
           "completedDate": null,
           "offenderAddress": {
             "addressId": 12345,
-            "type": "Postal",
+            "status": "Postal",
             "buildingName": null,
             "buildingNumber": "21",
             "streetName": "Postal Street",
@@ -352,7 +352,7 @@
           },
           "replyAddress": {
             "addressId": 33333,
-            "type": "Postal",
+            "status": "Reply",
             "buildingName": null,
             "buildingNumber": "21",
             "streetName": "Reply Street",
@@ -406,7 +406,7 @@
           "completedDate": null,
           "offenderAddress": {
             "addressId": 12345,
-            "type": "Postal",
+            "status": "Postal",
             "buildingName": null,
             "buildingNumber": "21",
             "streetName": "Postal Street",
@@ -417,7 +417,7 @@
           },
           "replyAddress": {
             "addressId": 33333,
-            "type": "Postal",
+            "status": "Reply",
             "buildingName": null,
             "buildingNumber": "21",
             "streetName": "Reply Street",
@@ -488,7 +488,7 @@
           "completedDate": null,
           "offenderAddress": {
             "addressId": 12345,
-            "type": "Postal",
+            "status": "Postal",
             "buildingName": null,
             "buildingNumber": "21",
             "streetName": "Postal Street",
@@ -499,7 +499,7 @@
           },
           "replyAddress": {
             "addressId": 33333,
-            "type": "Postal",
+            "status": "Reply",
             "buildingName": null,
             "buildingNumber": "21",
             "streetName": "Reply Street",
@@ -561,7 +561,7 @@
           "completedDate": null,
           "offenderAddress": {
             "addressId": 12345,
-            "type": "Postal",
+            "status": "Postal",
             "buildingName": null,
             "buildingNumber": "21",
             "streetName": "Postal Street",
@@ -572,7 +572,7 @@
           },
           "replyAddress": {
             "addressId": 33333,
-            "type": "Postal",
+            "status": "Postal",
             "buildingName": null,
             "buildingNumber": "21",
             "streetName": "Reply Street",
@@ -634,7 +634,7 @@
           "completedDate": null,
           "offenderAddress": {
             "addressId": 12345,
-            "type": "Postal",
+            "status": "Postal",
             "buildingName": null,
             "buildingNumber": "21",
             "streetName": "Postal Street",
@@ -645,7 +645,7 @@
           },
           "replyAddress": {
             "addressId": 33333,
-            "type": "Postal",
+            "status": "Postal",
             "buildingName": null,
             "buildingNumber": "21",
             "streetName": "Reply Street",
@@ -707,7 +707,7 @@
           "completedDate": null,
           "offenderAddress": {
             "addressId": 12345,
-            "type": "Postal",
+            "status": "Postal",
             "buildingName": null,
             "buildingNumber": "21",
             "streetName": "Postal Street",
@@ -718,7 +718,7 @@
           },
           "replyAddress": {
             "addressId": 33333,
-            "type": "Postal",
+            "status": "Reply",
             "buildingName": null,
             "buildingNumber": "21",
             "streetName": "Reply Street",
