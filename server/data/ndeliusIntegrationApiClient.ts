@@ -26,6 +26,12 @@ export default class NdeliusIntegrationApiClient extends RestClient {
     })
   }
 
+  async getNextAppointmentDetails(crn: string): Promise<NextAppointmentDetails> {
+    return this.get({
+      path: `/next-appointment-details/${crn}`,
+    })
+  }
+
   async getLimitedAccessCheck(crn: string, username: string): Promise<LimitedAccessCheck> {
     return this.get({
       path: `/users/${username}/access/${crn}`,
@@ -73,7 +79,7 @@ export interface WarningTypeWrapper {
 
 export interface WarningDetails {
   breachReasons: ReferenceData[]
-  enforceableContactList: EnforceableContact[]
+  enforceableContacts: EnforceableContact[]
 }
 
 export interface ReferenceData {
@@ -114,3 +120,29 @@ export interface Requirement {
   type: ReferenceData
   subType: ReferenceData
 }
+
+export interface FutureAppointment {
+  contactId: number
+  datetime: string
+  description: string
+  type: ReferenceData
+  location: Address
+  officer: Officer
+}
+
+export interface NextAppointmentDetails {
+  responsibleOfficer: ResponsibleOfficer
+  futureAppointments: Array<FutureAppointment>
+}
+
+export interface ResponsibleOfficer {
+  telephoneNumber: string
+  name: Name
+}
+
+export interface Officer {
+  code: string
+  name: Name
+}
+
+export type EnforceableContactList = Array<EnforceableContact>

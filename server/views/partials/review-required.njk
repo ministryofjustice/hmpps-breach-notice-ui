@@ -1,11 +1,24 @@
 {%- from "moj/components/alert/macro.njk" import mojAlert -%}
 
 {% if breachNotice.reviewRequiredDate != null %}
+
+  {% set messageHtml %}
+    {% if breachNotice.reviewEvent == 'MERGE' %}
+      A Merge occurred on {{ breachNotice.reviewRequiredDate | toUserDate() }} in NDelius and important details have chaged. This report should be reviewed before proceeding. Please confirm all information or discard this report.
+    {% endif %}
+    {% if breachNotice.reviewEvent == 'UNMERGE' %}
+      A Unmerge occurred on {{ breachNotice.reviewRequiredDate | toUserDate() }} in NDelius and important details have chaged. This report should be reviewed before proceeding. Please confirm all information or discard this report.
+    {% endif %}
+  {% endset -%}
+
   {{ mojAlert({
     variant: "warning",
-    title: "Review required",
+    title: "Review Required",
     showTitleAsHeading: true,
     dismissible: false,
-    html: 'Changes have been made in NDelius. Please review this report and delete if necessary.'
+    html: messageHtml,
+    attributes: {
+      id: "reviewAlert"
+    }
   }) }}
 {% endif %}

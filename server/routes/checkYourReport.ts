@@ -1,6 +1,6 @@
 import { type RequestHandler, Response, Router } from 'express'
 import AuditService, { Page } from '../services/auditService'
-import BreachNoticeApiClient, { BreachNotice, ErrorMessages } from '../data/breachNoticeApiClient'
+import BreachNoticeApiClient, { BreachNotice } from '../data/breachNoticeApiClient'
 import { HmppsAuthClient } from '../data'
 import SnsService from '../services/snsService'
 import CommonUtils from '../services/commonUtils'
@@ -8,6 +8,7 @@ import { HmppsDomainEvent } from '../data/hmppsSnsClient'
 import config from '../config'
 import { toUserDate, toUserDateFromDateTime, toUserTimeFromDateTime } from '../utils/dateUtils'
 import asyncMiddleware from '../middleware/asyncMiddleware'
+import { ErrorMessages } from '../data/uiModels'
 
 export default function checkYourReportRoutes(
   router: Router,
@@ -35,7 +36,7 @@ export default function checkYourReportRoutes(
     })
 
     const basicDetailsDateOfLetter: string = toUserDate(breachNotice.dateOfLetter)
-    const responseRequiredByDate: string = toUserDate(breachNotice.responseRequiredByDate)
+    const responseRequiredByDate: string = toUserDate(breachNotice.responseRequiredDate)
     const nextAppointmentDate: string = toUserDateFromDateTime(breachNotice.nextAppointmentDate)
     const nextAppointmentTime: string = toUserTimeFromDateTime(breachNotice.nextAppointmentDate)
 
@@ -112,7 +113,7 @@ export default function checkYourReportRoutes(
   })
 
   function validateCheckYourReport(breachNotice: BreachNotice): boolean {
-    if (
+    return (
       breachNotice.crn != null &&
       breachNotice.titleAndFullName != null &&
       breachNotice.offenderAddress != null &&
@@ -124,16 +125,13 @@ export default function checkYourReportRoutes(
       breachNotice.breachNoticeContactList.length > 0 &&
       breachNotice.breachNoticeRequirementList != null &&
       breachNotice.breachNoticeRequirementList.length > 0 &&
-      breachNotice.responseRequiredByDate != null &&
+      breachNotice.responseRequiredDate != null &&
       breachNotice.nextAppointmentType != null &&
       breachNotice.nextAppointmentDate != null &&
       breachNotice.nextAppointmentLocation != null &&
       breachNotice.nextAppointmentOfficer != null &&
       breachNotice.responsibleOfficer != null
-    ) {
-      return true
-    }
-    return false
+    )
   }
 
   return router
