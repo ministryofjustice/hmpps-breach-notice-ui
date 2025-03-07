@@ -1,6 +1,5 @@
 import config from '../config'
 import RestClient from './restClient'
-import { Address } from './commonModels'
 
 export default class BreachNoticeApiClient extends RestClient {
   constructor(token: string) {
@@ -62,8 +61,8 @@ export interface BreachNotice {
   nextAppointmentOfficer: string
   nextAppointmentId: number
   completedDate: Date
-  offenderAddress: Address
-  replyAddress: Address
+  offenderAddress: BreachNoticeAddress
+  replyAddress: BreachNoticeAddress
   basicDetailsSaved: boolean
   warningTypeSaved: boolean
   warningDetailsSaved: boolean
@@ -99,6 +98,19 @@ export interface BreachNoticeRequirement {
   rejectionReason: string
   fromDate: string
   toDate: string
+}
+
+export interface BreachNoticeAddress {
+  id?: string
+  addressId: number
+  status: string
+  buildingName: string
+  buildingNumber: string
+  streetName: string
+  townCity: string
+  district: string
+  county: string
+  postcode: string
 }
 
 export interface WarningDetailsRequirementSelectItem {

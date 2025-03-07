@@ -1,7 +1,6 @@
 import { LocalDateTime } from '@js-joda/core'
 import config from '../config'
 import RestClient from './restClient'
-import { Address } from './commonModels'
 
 export default class NdeliusIntegrationApiClient extends RestClient {
   constructor(token: string) {
@@ -48,8 +47,8 @@ export interface Name {
 export interface BasicDetails {
   title: string
   name: Name
-  addresses: Address[]
-  replyAddresses: Address[]
+  addresses: DeliusAddress[]
+  replyAddresses: DeliusAddress[]
 }
 
 export interface LimitedAccessCheck {
@@ -126,7 +125,7 @@ export interface FutureAppointment {
   datetime: string
   description: string
   type: ReferenceData
-  location: Address
+  location: DeliusAddress
   officer: Officer
 }
 
@@ -143,6 +142,18 @@ export interface ResponsibleOfficer {
 export interface Officer {
   code: string
   name: Name
+}
+
+export interface DeliusAddress {
+  id: number
+  status: string
+  buildingName: string
+  buildingNumber: string
+  streetName: string
+  townCity: string
+  district: string
+  county: string
+  postcode: string
 }
 
 export type EnforceableContactList = Array<EnforceableContact>
