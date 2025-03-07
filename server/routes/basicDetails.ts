@@ -4,10 +4,9 @@ import AuditService, { Page } from '../services/auditService'
 import { fromUserDate, toUserDate } from '../utils/dateUtils'
 import { HmppsAuthClient } from '../data'
 import CommonUtils from '../services/commonUtils'
-import { combineName } from '../utils/utils'
+import { combineName, mapDeliusAddressToBreachNoticeAddress } from '../utils/utils'
 import BreachNoticeApiClient, { BreachNotice } from '../data/breachNoticeApiClient'
-import NdeliusIntegrationApiClient, { BasicDetails } from '../data/ndeliusIntegrationApiClient'
-import { Address } from '../data/commonModels'
+import NdeliusIntegrationApiClient, { BasicDetails, DeliusAddress } from '../data/ndeliusIntegrationApiClient'
 import asyncMiddleware from '../middleware/asyncMiddleware'
 import { ErrorMessages, SelectItem } from '../data/uiModels'
 
@@ -42,8 +41,8 @@ export default function basicDetailsRoutes(
       breachNotice.replyAddress?.addressId,
     )
 
-    const defaultOffenderAddress: Address = findDefaultAddressInAddressList(basicDetails.addresses)
-    const defaultReplyAddress: Address = findDefaultAddressInAddressList(basicDetails.replyAddresses)
+    const defaultOffenderAddress: DeliusAddress = findDefaultAddressInAddressList(basicDetails.addresses)
+    const defaultReplyAddress: DeliusAddress = findDefaultAddressInAddressList(basicDetails.replyAddresses)
     const basicDetailsDateOfLetter: string = toUserDate(breachNotice.dateOfLetter)
     res.render('pages/basic-details', {
       breachNotice: applyDefaults(breachNotice, basicDetails),
@@ -70,26 +69,29 @@ export default function basicDetailsRoutes(
     const basicDetails = await ndeliusIntegrationApiClient.getBasicDetails(currentBreachNotice.crn, req.user.username)
     const updatedBreachNotice = applyDefaults(currentBreachNotice, basicDetails)
 
-    const defaultOffenderAddress: Address = findDefaultAddressInAddressList(basicDetails.addresses)
-    const defaultReplyAddress: Address = findDefaultAddressInAddressList(basicDetails.replyAddresses)
+    const defaultOffenderAddress: DeliusAddress = findDefaultAddressInAddressList(basicDetails.addresses)
+    const defaultReplyAddress: DeliusAddress = findDefaultAddressInAddressList(basicDetails.replyAddresses)
     updatedBreachNotice.referenceNumber = req.body.officeReference
     if (req.body.offenderAddressSelectOne === 'No') {
-      // we are using a selected address. Find it in the list
-      updatedBreachNotice.offenderAddress = getSelectedAddress(basicDetails.addresses, req.body.alternateAddress)
+      updatedBreachNotice.offenderAddress = mapDeliusAddressToBreachNoticeAddress(
+        getSelectedAddress(basicDetails.addresses, req.body.alternateAddress),
+      )
       updatedBreachNotice.useDefaultAddress = false
     } else if (req.body.offenderAddressSelectOne === 'Yes') {
       // otherwise use default
-      updatedBreachNotice.offenderAddress = defaultOffenderAddress
+      updatedBreachNotice.offenderAddress = mapDeliusAddressToBreachNoticeAddress(defaultOffenderAddress)
       updatedBreachNotice.useDefaultAddress = true
     } else {
       updatedBreachNotice.useDefaultAddress = null
     }
     // reply address
     if (req.body.replyAddressSelectOne === 'No') {
-      updatedBreachNotice.replyAddress = getSelectedAddress(basicDetails.replyAddresses, req.body.alternateReplyAddress)
+      updatedBreachNotice.replyAddress = mapDeliusAddressToBreachNoticeAddress(
+        getSelectedAddress(basicDetails.replyAddresses, req.body.alternateReplyAddress),
+      )
       updatedBreachNotice.useDefaultReplyAddress = false
     } else if (req.body.replyAddressSelectOne === 'Yes') {
-      updatedBreachNotice.replyAddress = defaultReplyAddress
+      updatedBreachNotice.replyAddress = mapDeliusAddressToBreachNoticeAddress(defaultReplyAddress)
       updatedBreachNotice.useDefaultReplyAddress = true
     } else {
       updatedBreachNotice.useDefaultReplyAddress = null
@@ -114,7 +116,9 @@ export default function basicDetailsRoutes(
 
       // if the user selected saveProgressAndClose then send a close back to the client
       if (req.body.action === 'saveProgressAndClose') {
-        res.send(`<script nonce="${res.locals.cspNonce}">window.close()</script>`)
+        res.send(
+          `<p>You can now safely close this window</p><script nonce="${res.locals.cspNonce}">window.close()</script>`,
+        )
       } else {
         res.redirect(`/warning-type/${id}`)
       }
@@ -187,9 +191,9 @@ export default function basicDetailsRoutes(
     return errorMessages
   }
 
-  function getSelectedAddress(addressList: Address[], addressIdentifier: string): Address {
+  function getSelectedAddress(addressList: DeliusAddress[], addressIdentifier: string): DeliusAddress {
     const addressIdentifierNumber: number = +addressIdentifier
-    return addressList.find(address => address.addressId === addressIdentifierNumber)
+    return addressList.find(address => address.id === addressIdentifierNumber)
   }
 
   // if this page hasnt been saved we want to go through and apply defaults otherwise dont do this
@@ -210,7 +214,7 @@ export default function basicDetailsRoutes(
   }
 
   function addressListToSelectItemList(
-    addresses: Address[],
+    addresses: DeliusAddress[],
     breachNoticeSaved: boolean,
     selectedAddressId: number,
   ): SelectItem[] {
@@ -231,22 +235,22 @@ export default function basicDetailsRoutes(
         ]
           .filter(item => item)
           .join(', '),
-        value: `${address.addressId}`,
-        selected: breachNoticeSaved && address.addressId === selectedAddressId,
+        value: `${address.id}`,
+        selected: breachNoticeSaved && address.id === selectedAddressId,
       })),
     ]
   }
 
-  function findDefaultAddressInAddressList(addressList: Array<Address>): Address {
-    let defaultAddress: Address = null
+  function findDefaultAddressInAddressList(addressList: Array<DeliusAddress>): DeliusAddress {
+    let defaultAddress: DeliusAddress = null
 
-    addressList.forEach((address: Address) => {
-      if (address.type === 'Postal') {
+    addressList.forEach((address: DeliusAddress) => {
+      if (address.status === 'Postal') {
         defaultAddress = address
       }
 
       if (defaultAddress === null) {
-        if (address.type === 'Main') {
+        if (address.status === 'Main') {
           defaultAddress = address
         }
       }

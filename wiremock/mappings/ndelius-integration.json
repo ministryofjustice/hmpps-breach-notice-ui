@@ -16,8 +16,8 @@
           },
           "addresses": [
             {
-              "addressId": 1,
-              "type": "Postal",
+              "id": 1,
+              "status": "Postal",
               "buildingName": null,
               "buildingNumber": "281",
               "streetName": "Postal Street",
@@ -27,39 +27,50 @@
               "postcode": "NE30 3ZZ"
             },
             {
-              "addressId": 2,
-              "type": "Postal",
+              "id": 2,
+              "status": "Main",
               "buildingName": null,
-              "buildingNumber": "21",
-              "streetName": "Postal Street",
-              "townCity": "Upper Posty",
-              "district": "POHO",
-              "county": "North Posts",
-              "postcode": "NE30 3ZZ"
+              "buildingNumber": "2789",
+              "streetName": "Main Street",
+              "townCity": "Maintown",
+              "district": "MainDistrict",
+              "county": "Maincounty",
+              "postcode": "MA30 3IN"
             }
           ],
           "replyAddresses": [
             {
-              "addressId": 3,
-              "type": "Postal",
+              "id": 3,
+              "status": "Previous",
               "buildingName": null,
-              "buildingNumber": "21",
-              "streetName": "Reply Street",
-              "townCity": "Replyinton",
-              "district": "Replyrict",
-              "county": "County Reply",
-              "postcode": "NE22 3AA"
+              "buildingNumber": "1",
+              "streetName": "Previous Street",
+              "townCity": "Previous Town",
+              "district": "Previous District",
+              "county": "Prev County",
+              "postcode": "PR1 3EV"
             },
             {
-              "addressId": 4,
-              "type": "Reply",
-              "buildingName": "Replay Manor",
-              "buildingNumber": "79",
-              "streetName": "Reply Blvd",
-              "townCity": "Upper Reply",
-              "district": "REHO",
-              "county": "North Reply",
+              "id": 4,
+              "status": "Bail",
+              "buildingName": "Bail House",
+              "buildingNumber": "100",
+              "streetName": "Bail Street",
+              "townCity": "Bail Town",
+              "district": "Bail District",
+              "county": "North Bail",
               "postcode": "RE4 5PL"
+            },
+            {
+              "id": 5,
+              "status": "Secondary",
+              "buildingName": "Secondary Manor",
+              "buildingNumber": "90",
+              "streetName": "Secondary Street",
+              "townCity": "Secondary Town",
+              "district": "Some District",
+              "county": "North Secondary",
+              "postcode": "SEC 1AB"
             }
           ]
         },
@@ -250,7 +261,7 @@
                 "description": "First Appointment Type"
               },
               "location": {
-                "addressId": 1,
+                "id": 1,
                 "type": "Postal",
                 "buildingName": null,
                 "buildingNumber": "281",
