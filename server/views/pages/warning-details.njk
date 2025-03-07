@@ -31,6 +31,7 @@
         {% include "pages/side-nav.njk" %}
       </div>
       <div class="govuk-grid-column-two-thirds">
+        {% include "partials/review-required.njk" %}
         <h1
           class="govuk-heading-x1">{{ applicationName + " - " + breachNotice.breachNoticeTypeDescription + " Details" }}</h1>
         <h2 class="govuk-heading-m">

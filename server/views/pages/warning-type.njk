@@ -5,85 +5,87 @@
 
 {% block content %}
 
-    {% from "moj/components/side-navigation/macro.njk" import mojSideNavigation %}
-    {% from "govuk/components/radios/macro.njk" import govukRadios %}
-    {% from "govuk/components/select/macro.njk" import govukSelect %}
-    {% from "govuk/components/button/macro.njk" import govukButton %}
-    {% from "moj/components/date-picker/macro.njk" import mojDatePicker %}
-    {% from "govuk/components/table/macro.njk" import govukTable %}
-    {% from "govuk/components/select/macro.njk" import govukSelect %}
+  {% from "moj/components/side-navigation/macro.njk" import mojSideNavigation %}
+  {% from "govuk/components/radios/macro.njk" import govukRadios %}
+  {% from "govuk/components/select/macro.njk" import govukSelect %}
+  {% from "govuk/components/button/macro.njk" import govukButton %}
+  {% from "moj/components/date-picker/macro.njk" import mojDatePicker %}
+  {% from "govuk/components/table/macro.njk" import govukTable %}
+  {% from "govuk/components/select/macro.njk" import govukSelect %}
 
-    <form method="post">
-        {% set errorList =[
-            { text: errorMessages.warningType.text, href: "#warning-type" } if errorMessages.warningType else None,
-            { text: errorMessages.sentenceType.text, href: "#sentence-type" } if errorMessages.sentenceType else None
-        ] | reject("undefined") %}
+  <form method="post">
+    {% set errorList =[
+      { text: errorMessages.warningType.text, href: "#warning-type" } if errorMessages.warningType else None,
+      { text: errorMessages.sentenceType.text, href: "#sentence-type" } if errorMessages.sentenceType else None
+    ] | reject("undefined") %}
 
-        {% if errorMessages | length > 0 %}
-            {% from "govuk/components/error-summary/macro.njk" import govukErrorSummary %}
-            {{ govukErrorSummary({ titleText: "There is a problem", errorList: errorList }) }}
-        {% endif %}
+    {% if errorMessages | length > 0 %}
+      {% from "govuk/components/error-summary/macro.njk" import govukErrorSummary %}
+      {{ govukErrorSummary({ titleText: "There is a problem", errorList: errorList }) }}
+    {% endif %}
 
-        <input type="hidden" name="_csrf" value="{{ csrfToken }}">
-        <div class="govuk-grid-row">
-            <div class="govuk-grid-column-one-third">
+    <input type="hidden" name="_csrf" value="{{ csrfToken }}">
+    <div class="govuk-grid-row">
+      <div class="govuk-grid-column-one-third">
 
-                {% include "pages/side-nav.njk" %}
+        {% include "pages/side-nav.njk" %}
 
-            </div>
+      </div>
 
-            <div class="govuk-grid-column-two-thirds">
-                <h1 class="govuk-heading-x1">Breach Notice - Warning Type</h1>
+      <div class="govuk-grid-column-two-thirds">
+        {% include "partials/review-required.njk" %}
 
-                {{ govukRadios({
-                    id: "warning-type",
-                    name: "warningType",
-                    fieldset: {
-                        legend: {
-                            text: "Select a Warning Type",
-                            isPageHeading: false,
-                            classes: "govuk-fieldset__legend--m"
-                        }
-                    },
-                    items: warningTypeRadioButtons,
-                    errorMessage: {
-                        text: errorMessages.warningType.text
-                    } if errorMessages.warningType.text
-                }) }}
+        <h1 class="govuk-heading-x1">Breach Notice - Warning Type</h1>
 
-                {{ govukSelect({
-                    id: "sentence-type",
-                    name: "sentenceType",
-                    label: {
-                        text: "Select the Sentence Type being enforced",
-                        classes: "govuk-fieldset__legend--m"
-                    },
-                    items: sentenceTypeSelectItems,
-                    errorMessage: {
-                        text: errorMessages.sentenceType.text
-                    } if errorMessages.sentenceType.text
-                }) }}
+        {{ govukRadios({
+          id: "warning-type",
+          name: "warningType",
+          fieldset: {
+            legend: {
+              text: "Select a Warning Type",
+              isPageHeading: false,
+              classes: "govuk-fieldset__legend--m"
+            }
+          },
+          items: warningTypeRadioButtons,
+          errorMessage: {
+            text: errorMessages.warningType.text
+          } if errorMessages.warningType.text
+        }) }}
 
-                <div class="moj-button-group">
-                  {{ govukButton({
-                    text: "Continue",
-                    preventDoubleClick: "true",
-                    type: "submit",
-                    attributes: {
-                      id: "continue-button"
-                    }
-                  }) }}
-                  {{ govukButton({
-                    text: "Save Progress and Close",
-                    href: "/basic-details/"+breachNotice.id,
-                    classes: "govuk-button--secondary",
-                    preventDoubleClick: "true",
-                    attributes: {
-                      id: "close-button"
-                    }
-                  }) }}
-                </div>
-            </div>
+        {{ govukSelect({
+          id: "sentence-type",
+          name: "sentenceType",
+          label: {
+            text: "Select the Sentence Type being enforced",
+            classes: "govuk-fieldset__legend--m"
+          },
+          items: sentenceTypeSelectItems,
+          errorMessage: {
+            text: errorMessages.sentenceType.text
+          } if errorMessages.sentenceType.text
+        }) }}
+
+        <div class="moj-button-group">
+          {{ govukButton({
+            text: "Continue",
+            preventDoubleClick: "true",
+            type: "submit",
+            attributes: {
+              id: "continue-button"
+            }
+          }) }}
+          {{ govukButton({
+            text: "Save Progress and Close",
+            href: "/basic-details/"+breachNotice.id,
+            classes: "govuk-button--secondary",
+            preventDoubleClick: "true",
+            attributes: {
+              id: "close-button"
+            }
+          }) }}
         </div>
-    </form>
+      </div>
+    </div>
+  </form>
 {% endblock %}

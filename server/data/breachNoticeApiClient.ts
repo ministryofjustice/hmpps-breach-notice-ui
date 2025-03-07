@@ -69,6 +69,8 @@ export interface BreachNotice {
   nextAppointmentSaved: boolean
   useDefaultAddress: boolean
   useDefaultReplyAddress: boolean
+  reviewRequiredDate: Date
+  reviewEvent: string
   breachNoticeContactList: BreachNoticeContact[]
   breachNoticeRequirementList: BreachNoticeRequirement[]
   optionalNumberChecked: boolean
