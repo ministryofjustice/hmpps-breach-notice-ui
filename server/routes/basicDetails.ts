@@ -4,7 +4,7 @@ import AuditService, { Page } from '../services/auditService'
 import { fromUserDate, toUserDate } from '../utils/dateUtils'
 import { HmppsAuthClient } from '../data'
 import CommonUtils from '../services/commonUtils'
-import { combineName, mapDeliusAddressToBreachNoticeAddress } from '../utils/utils'
+import { combineName, formatAddressForSelectMenuDisplay, mapDeliusAddressToBreachNoticeAddress } from '../utils/utils'
 import BreachNoticeApiClient, { BreachNotice } from '../data/breachNoticeApiClient'
 import NdeliusIntegrationApiClient, { BasicDetails, DeliusAddress } from '../data/ndeliusIntegrationApiClient'
 import asyncMiddleware from '../middleware/asyncMiddleware'
@@ -225,16 +225,7 @@ export default function basicDetailsRoutes(
         selected: true,
       },
       ...addresses.map(address => ({
-        text: [
-          address.buildingName,
-          `${address.buildingNumber} ${address.streetName}`.trim(),
-          address.district,
-          address.townCity,
-          address.county,
-          address.postcode,
-        ]
-          .filter(item => item)
-          .join(', '),
+        text: formatAddressForSelectMenuDisplay(address),
         value: `${address.id}`,
         selected: breachNoticeSaved && address.id === selectedAddressId,
       })),
