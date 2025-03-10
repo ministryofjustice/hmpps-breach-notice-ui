@@ -42,7 +42,7 @@
             {
               "id": 3,
               "status": "Previous",
-              "buildingName": null,
+              "buildingName": "Something",
               "buildingNumber": "1",
               "streetName": "Previous Street",
               "townCity": "Previous Town",
