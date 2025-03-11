@@ -51,3 +51,22 @@ export function mapDeliusAddressToBreachNoticeAddress(deliusAddress: DeliusAddre
   }
   return null
 }
+
+export function formatAddressForSelectMenuDisplay(deliusAddress: DeliusAddress): string {
+  if (deliusAddress) {
+    return [
+      deliusAddress.buildingName,
+      [deliusAddress.buildingNumber, deliusAddress.streetName]
+        .filter(item => item)
+        .join(' ')
+        .trim(),
+      deliusAddress.district,
+      deliusAddress.townCity,
+      deliusAddress.county,
+      deliusAddress.postcode,
+    ]
+      .filter(item => item)
+      .join(', ')
+  }
+  return null
+}

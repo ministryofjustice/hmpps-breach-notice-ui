@@ -1,5 +1,5 @@
-import { convertToTitleCase, initialiseName, combineName } from './utils'
-import { Name } from '../data/ndeliusIntegrationApiClient'
+import { convertToTitleCase, initialiseName, combineName, formatAddressForSelectMenuDisplay } from './utils'
+import { DeliusAddress, Name } from '../data/ndeliusIntegrationApiClient'
 
 describe('convert to title case', () => {
   it.each([
@@ -37,5 +37,54 @@ describe('Combine name', () => {
     [null, { forename: 'Test', middleName: 'Test', surname: 'Test' }, 'Test Test Test'],
   ])('%s combineName(%s, %s)', (_: string, a: Name, expected: string) => {
     expect(combineName(_, a)).toEqual(expected)
+  })
+})
+
+describe('Format address for select menu', () => {
+  it.each([
+    [
+      {
+        id: 1,
+        status: 'Postal',
+        buildingName: 'Namy',
+        buildingNumber: '23',
+        streetName: 'streety',
+        townCity: 'towny',
+        district: 'district',
+        county: 'county',
+        postcode: 'NE1 1SA',
+      },
+      'Namy, 23 streety, district, towny, county, NE1 1SA',
+    ],
+    [
+      {
+        id: 2,
+        status: 'Main',
+        buildingName: null,
+        buildingNumber: null,
+        streetName: null,
+        townCity: null,
+        district: null,
+        county: 'county',
+        postcode: 'NE1 1SA',
+      },
+      'county, NE1 1SA',
+    ],
+    [
+      {
+        id: 2,
+        status: 'Main',
+        buildingName: null,
+        buildingNumber: null,
+        streetName: null,
+        townCity: null,
+        district: null,
+        county: null,
+        postcode: null,
+      },
+      '',
+    ],
+  ])('%s formatAddressForSelectMenuDisplay(%s)', (deliusAddress: DeliusAddress, expected: string) => {
+    expect(formatAddressForSelectMenuDisplay(deliusAddress)).toEqual(expected)
   })
 })
