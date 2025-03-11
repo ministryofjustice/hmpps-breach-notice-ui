@@ -65,6 +65,73 @@
         "transformers": ["response-template"]
       }
     },
+
+    {
+      "request": {
+        "url": "/breach-notice-api/breach-notice/00000000-0000-0000-0000-900000000001",
+        "method": "GET"
+      },
+      "response": {
+        "status": 200,
+        "jsonBody": {
+          "id": "00000000-0000-0000-0000-900000000001",
+          "crn": "X017052",
+          "titleAndFullName": null,
+          "dateOfLetter": null,
+          "referenceNumber": null,
+          "responseRequiredDate": null,
+          "breachNoticeTypeCode": null,
+          "breachNoticeTypeDescription": null,
+          "breachConditionTypeCode": null,
+          "breachConditionTypeDescription": null,
+          "breachSentenceTypeCode": "CO",
+          "breachSentenceTypeDescription": "Community Order",
+          "responsibleOfficer": null,
+          "contactNumber": null,
+          "nextAppointmentType": null,
+          "nextAppointmentDate": null,
+          "nextAppointmentLocation": null,
+          "nextAppointmentOfficer": null,
+          "nextAppointmentContact": null,
+          "completedDate": null,
+          "offenderAddress": {
+            "addressId": 12345,
+            "status": "Postal",
+            "buildingName": null,
+            "buildingNumber": "21",
+            "streetName": "Postal Street",
+            "district": "Postal District",
+            "townCity": "PostCity",
+            "county": "Postal County",
+            "postcode": "NE30 3ZZ"
+          },
+          "replyAddress": {
+            "addressId": 33333,
+            "status": "Reply",
+            "buildingName": null,
+            "buildingNumber": "21",
+            "streetName": "Reply Street",
+            "district": "Reply District",
+            "townCity": "Reply City",
+            "county": "Reply County",
+            "postcode": "NE22 3AA"
+          },
+          "basicDetailsSaved": null,
+          "warningTypeSaved": true,
+          "warningDetailsSaved": null,
+          "nextAppointmentSaved": null,
+          "useDefaultAddress": null,
+          "useDefaultReplyAddress": null,
+          "breachNoticeContactList": null,
+          "breachNoticeRequirementList": null
+        },
+        "headers": {
+          "Content-Type": "application/json;charset=UTF-8"
+        },
+        "transformers": ["response-template"]
+      }
+    },
+
     {
       "request": {
         "url": "/breach-notice-api/breach-notice/00000000-0000-0000-0000-000000000001",

@@ -25,7 +25,10 @@ export default function warningTypeRoutes(
     const { id } = req.params
     const breachNotice: BreachNotice = await breachNoticeApiClient.getBreachNoticeById(id)
     if (await commonUtils.redirectRequired(breachNotice, res)) return
-    const { warningTypes, sentenceTypes } = await ndeliusIntegrationApiClient.getWarningTypes(breachNotice.crn, id)
+    const { warningTypes, sentenceTypes, defaultSentenceTypeCode } = await ndeliusIntegrationApiClient.getWarningTypes(
+      breachNotice.crn,
+      id,
+    )
 
     const warningTypeRadioButtons: Array<RadioButton> = initiateWarningTypeRadioButtonsAndApplySavedSelections(
       warningTypes,
@@ -34,6 +37,7 @@ export default function warningTypeRoutes(
 
     const sentenceTypeSelectItems: Array<SelectItem> = initiateSentenceTypeSelectItemsAndApplySavedSelections(
       sentenceTypes,
+      defaultSentenceTypeCode,
       breachNotice,
     )
 
@@ -52,9 +56,13 @@ export default function warningTypeRoutes(
     const { id } = req.params
     const breachNotice: BreachNotice = await breachNoticeApiClient.getBreachNoticeById(id as string)
     if (await commonUtils.redirectRequired(breachNotice, res)) return
-    const { warningTypes, sentenceTypes } = await ndeliusIntegrationApiClient.getWarningTypes(breachNotice.crn, id)
+    const { warningTypes, sentenceTypes, defaultSentenceTypeCode } = await ndeliusIntegrationApiClient.getWarningTypes(
+      breachNotice.crn,
+      id,
+    )
     const sentenceTypeList: SelectItem[] = initiateSentenceTypeSelectItemsAndApplySavedSelections(
       sentenceTypes,
+      defaultSentenceTypeCode,
       breachNotice,
     )
     const warningTypeRadioButtons: Array<RadioButton> = initiateWarningTypeRadioButtonsAndApplySavedSelections(
@@ -97,6 +105,7 @@ export default function warningTypeRoutes(
     } else {
       const sentenceTypeSelectItems: Array<SelectItem> = initiateSentenceTypeSelectItemsAndApplySavedSelections(
         sentenceTypes,
+        defaultSentenceTypeCode,
         breachNotice,
       )
 
@@ -143,6 +152,7 @@ export default function warningTypeRoutes(
 
   function initiateSentenceTypeSelectItemsAndApplySavedSelections(
     sentenceTypes: SentenceType[],
+    defaultSentenceTypeCode: string,
     breachNotice: BreachNotice,
   ): SelectItem[] {
     return [
@@ -154,7 +164,9 @@ export default function warningTypeRoutes(
       ...sentenceTypes.map(sentenceType => ({
         text: `${sentenceType.description}`,
         value: `${sentenceType.code}`,
-        selected: breachNotice.breachSentenceTypeCode && breachNotice.breachSentenceTypeCode === sentenceType.code,
+        selected: breachNotice.warningTypeSaved
+          ? breachNotice.breachSentenceTypeCode && breachNotice.breachSentenceTypeCode === sentenceType.code
+          : defaultSentenceTypeCode === sentenceType.code,
       })),
     ]
   }
