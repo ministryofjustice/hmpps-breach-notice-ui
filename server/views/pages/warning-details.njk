@@ -46,7 +46,7 @@
             {{ failure.datetime | toUserDate }}, {{ failure.type.description }}, {{ failure.outcome.description }},
 
             {{ govukDetails({
-              summaryText: "View requirement notes",
+              summaryText: "View failure notes",
               text: failure.notes
             }) }}
           </p>
