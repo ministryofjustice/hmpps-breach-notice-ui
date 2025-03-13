@@ -1,4 +1,10 @@
-import { convertToTitleCase, initialiseName, combineName, formatAddressForSelectMenuDisplay } from './utils'
+import {
+  convertToTitleCase,
+  initialiseName,
+  combineName,
+  formatAddressForSelectMenuDisplay,
+  removeDeliusAddressFromDeliusAddressList,
+} from './utils'
 import { DeliusAddress, Name } from '../data/ndeliusIntegrationApiClient'
 
 describe('convert to title case', () => {
@@ -86,5 +92,77 @@ describe('Format address for select menu', () => {
     ],
   ])('%s formatAddressForSelectMenuDisplay(%s)', (deliusAddress: DeliusAddress, expected: string) => {
     expect(formatAddressForSelectMenuDisplay(deliusAddress)).toEqual(expected)
+  })
+})
+
+describe('Removes an address from a list of addresses ', () => {
+  const addressToRemove: DeliusAddress = {
+    id: 1,
+    status: 'Postal',
+    buildingName: 'Namy',
+    buildingNumber: '23',
+    streetName: 'streety',
+    townCity: 'towny',
+    district: 'district',
+    county: 'county',
+    postcode: 'NE1 1SA',
+  }
+
+  const addressNotInList: DeliusAddress = {
+    id: 999,
+    status: 'Postal',
+    buildingName: 'Namy',
+    buildingNumber: '23',
+    streetName: 'streety',
+    townCity: 'towny',
+    district: 'district',
+    county: 'county',
+    postcode: 'NE1 1SA',
+  }
+
+  const testAddressList: DeliusAddress[] = [
+    {
+      id: 1,
+      status: 'Postal',
+      buildingName: 'Namy',
+      buildingNumber: '23',
+      streetName: 'streety',
+      townCity: 'towny',
+      district: 'district',
+      county: 'county',
+      postcode: 'NE1 1SA',
+    },
+    {
+      id: 2,
+      status: 'Main',
+      buildingName: null,
+      buildingNumber: null,
+      streetName: null,
+      townCity: null,
+      district: null,
+      county: 'county',
+      postcode: 'NE1 1SA',
+    },
+    {
+      id: 3,
+      status: 'Reply',
+      buildingName: null,
+      buildingNumber: null,
+      streetName: null,
+      townCity: null,
+      district: null,
+      county: null,
+      postcode: null,
+    },
+  ]
+
+  test('Address should be removed from the list', () => {
+    const currentLength = testAddressList.length
+    expect(removeDeliusAddressFromDeliusAddressList(testAddressList, addressToRemove).length).toBe(currentLength - 1)
+  })
+
+  test('Address should not be removed if it doesnt exist in the list', () => {
+    const currentLength = testAddressList.length
+    expect(removeDeliusAddressFromDeliusAddressList(testAddressList, addressNotInList).length).toBe(currentLength)
   })
 })

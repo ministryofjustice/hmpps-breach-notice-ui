@@ -70,3 +70,13 @@ export function formatAddressForSelectMenuDisplay(deliusAddress: DeliusAddress):
   }
   return null
 }
+
+export function removeDeliusAddressFromDeliusAddressList(
+  deliusAddressList: DeliusAddress[],
+  defaultAddress: DeliusAddress,
+): DeliusAddress[] {
+  if (defaultAddress) {
+    return deliusAddressList.filter(obj => obj.id !== defaultAddress.id)
+  }
+  return deliusAddressList
+}
