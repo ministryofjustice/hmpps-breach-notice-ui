@@ -4,7 +4,12 @@ import AuditService, { Page } from '../services/auditService'
 import { fromUserDate, toUserDate } from '../utils/dateUtils'
 import { HmppsAuthClient } from '../data'
 import CommonUtils from '../services/commonUtils'
-import { combineName, formatAddressForSelectMenuDisplay, mapDeliusAddressToBreachNoticeAddress } from '../utils/utils'
+import {
+  combineName,
+  formatAddressForSelectMenuDisplay,
+  mapDeliusAddressToBreachNoticeAddress,
+  removeDeliusAddressFromDeliusAddressList,
+} from '../utils/utils'
 import BreachNoticeApiClient, { BreachNotice } from '../data/breachNoticeApiClient'
 import NdeliusIntegrationApiClient, { BasicDetails, DeliusAddress } from '../data/ndeliusIntegrationApiClient'
 import asyncMiddleware from '../middleware/asyncMiddleware'
@@ -29,21 +34,22 @@ export default function basicDetailsRoutes(
     const breachNotice = await breachNoticeApiClient.getBreachNoticeById(req.params.id as string)
     const basicDetails = await ndeliusIntegrationApiClient.getBasicDetails(breachNotice.crn, req.user.username)
     if (await commonUtils.redirectRequired(breachNotice, res)) return
+    const defaultOffenderAddress: DeliusAddress = findDefaultAddressInAddressList(basicDetails.addresses)
+    const defaultReplyAddress: DeliusAddress = findDefaultAddressInAddressList(basicDetails.replyAddresses)
+    const basicDetailsDateOfLetter: string = toUserDate(breachNotice.dateOfLetter)
 
     const alternateAddressOptions = addressListToSelectItemList(
-      basicDetails.addresses,
+      removeDeliusAddressFromDeliusAddressList(basicDetails.addresses, defaultOffenderAddress),
       breachNotice.basicDetailsSaved,
       breachNotice.offenderAddress?.addressId,
     )
+
     const replyAddressOptions = addressListToSelectItemList(
       basicDetails.replyAddresses,
       breachNotice.basicDetailsSaved,
       breachNotice.replyAddress?.addressId,
     )
 
-    const defaultOffenderAddress: DeliusAddress = findDefaultAddressInAddressList(basicDetails.addresses)
-    const defaultReplyAddress: DeliusAddress = findDefaultAddressInAddressList(basicDetails.replyAddresses)
-    const basicDetailsDateOfLetter: string = toUserDate(breachNotice.dateOfLetter)
     res.render('pages/basic-details', {
       breachNotice: applyDefaults(breachNotice, basicDetails),
       basicDetails,
