@@ -51,3 +51,32 @@ export function mapDeliusAddressToBreachNoticeAddress(deliusAddress: DeliusAddre
   }
   return null
 }
+
+export function formatAddressForSelectMenuDisplay(deliusAddress: DeliusAddress): string {
+  if (deliusAddress) {
+    return [
+      deliusAddress.buildingName,
+      [deliusAddress.buildingNumber, deliusAddress.streetName]
+        .filter(item => item)
+        .join(' ')
+        .trim(),
+      deliusAddress.district,
+      deliusAddress.townCity,
+      deliusAddress.county,
+      deliusAddress.postcode,
+    ]
+      .filter(item => item)
+      .join(', ')
+  }
+  return null
+}
+
+export function removeDeliusAddressFromDeliusAddressList(
+  deliusAddressList: DeliusAddress[],
+  defaultAddress: DeliusAddress,
+): DeliusAddress[] {
+  if (defaultAddress) {
+    return deliusAddressList.filter(obj => obj.id !== defaultAddress.id)
+  }
+  return deliusAddressList
+}

@@ -42,7 +42,7 @@
             {
               "id": 3,
               "status": "Previous",
-              "buildingName": null,
+              "buildingName": "Something",
               "buildingNumber": "1",
               "streetName": "Previous Street",
               "townCity": "Previous Town",
@@ -108,12 +108,32 @@
               "conditionBeingEnforced": "sample condition being enforced"
             },
             {
-              "code": "123",
-              "description": "Another Typer",
-              "conditionBeingEnforced": "another condition being enforced"
+              "code": "SSO",
+              "description": "sso",
+              "conditionBeingEnforced": "sso condition being enforced"
+            },
+            {
+              "code": "SDO",
+              "description": "sdo",
+              "conditionBeingEnforced": "sdo condition being enforced"
+            },
+            {
+              "code": "YRO",
+              "description": "yro",
+              "conditionBeingEnforced": "yro condition being enforced"
+            },
+            {
+              "code": "PSS",
+              "description": "pss",
+              "conditionBeingEnforced": "pss condition being enforced"
+            },
+            {
+              "code": "SC",
+              "description": "sc",
+              "conditionBeingEnforced": "sc condition being enforced"
             }
           ],
-          "defaultSentenceTypeCode": "CO"
+          "defaultSentenceTypeCode": "SDO"
         },
         "headers": {
           "Content-Type": "application/json;charset=UTF-8"
