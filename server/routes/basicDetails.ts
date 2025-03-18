@@ -239,23 +239,11 @@ export default function basicDetailsRoutes(
   }
 
   function findDefaultAddressInAddressList(addressList: Array<DeliusAddress>): DeliusAddress {
-    let defaultAddress: DeliusAddress = null
-    addressList.forEach((address: DeliusAddress) => {
-      if (address.status === 'Default') {
-        defaultAddress = address
-      }
-      if (defaultAddress === null) {
-        if (address.status === 'Postal') {
-          defaultAddress = address
-        }
-      }
-      if (defaultAddress === null) {
-        if (address.status === 'Main') {
-          defaultAddress = address
-        }
-      }
-    })
-    return defaultAddress
+    return (
+      addressList.find(a => a.status === 'Default') ??
+      addressList.find(a => a.status === 'Postal') ??
+      addressList.find(a => a.status === 'Main')
+    )
   }
 
   return router
