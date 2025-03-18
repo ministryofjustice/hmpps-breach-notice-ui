@@ -4,10 +4,13 @@
 
   {% set messageHtml %}
     {% if breachNotice.reviewEvent == 'MERGE' %}
-      A Merge occurred on {{ breachNotice.reviewRequiredDate | toUserDate() }} in NDelius and important details have chaged. This report should be reviewed before proceeding. Please confirm all information or discard this report.
+      A Merge occurred on {{ breachNotice.reviewRequiredDate | toUserDate() }} in NDelius and important details have changed. This report should be reviewed before proceeding. Please confirm all information or discard this report.
     {% endif %}
     {% if breachNotice.reviewEvent == 'UNMERGE' %}
-      A Unmerge occurred on {{ breachNotice.reviewRequiredDate | toUserDate() }} in NDelius and important details have chaged. This report should be reviewed before proceeding. Please confirm all information or discard this report.
+      A Unmerge occurred on {{ breachNotice.reviewRequiredDate | toUserDate() }} in NDelius and important details have changed. This report should be reviewed before proceeding. Please confirm all information or discard this report.
+    {% endif %}
+    {% if breachNotice.reviewEvent == 'EVENT_MOVE' %}
+      A Move Event occurred on {{ breachNotice.reviewRequiredDate | toUserDate() }} in NDelius and important details have changed. This report should be reviewed before proceeding. Please confirm all information or discard this report.
     {% endif %}
   {% endset -%}
 
