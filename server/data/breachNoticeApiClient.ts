@@ -104,6 +104,7 @@ export interface BreachNoticeAddress {
   id?: string
   addressId: number
   status: string
+  officeDescription?: string
   buildingName: string
   buildingNumber: string
   streetName: string

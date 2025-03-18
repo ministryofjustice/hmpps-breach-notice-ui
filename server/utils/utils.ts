@@ -40,6 +40,7 @@ export function mapDeliusAddressToBreachNoticeAddress(deliusAddress: DeliusAddre
     return {
       addressId: deliusAddress.id,
       status: deliusAddress.status,
+      officeDescription: deliusAddress.officeDescription,
       buildingName: deliusAddress.buildingName,
       buildingNumber: deliusAddress.buildingNumber,
       streetName: deliusAddress.streetName,
