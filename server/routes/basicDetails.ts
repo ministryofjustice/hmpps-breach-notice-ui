@@ -45,7 +45,7 @@ export default function basicDetailsRoutes(
     )
 
     const replyAddressOptions = addressListToSelectItemList(
-      basicDetails.replyAddresses,
+      removeDeliusAddressFromDeliusAddressList(basicDetails.replyAddresses, defaultReplyAddress),
       breachNotice.basicDetailsSaved,
       breachNotice.replyAddress?.addressId,
     )
@@ -240,12 +240,15 @@ export default function basicDetailsRoutes(
 
   function findDefaultAddressInAddressList(addressList: Array<DeliusAddress>): DeliusAddress {
     let defaultAddress: DeliusAddress = null
-
     addressList.forEach((address: DeliusAddress) => {
-      if (address.status === 'Postal') {
+      if (address.status === 'Default') {
         defaultAddress = address
       }
-
+      if (defaultAddress === null) {
+        if (address.status === 'Postal') {
+          defaultAddress = address
+        }
+      }
       if (defaultAddress === null) {
         if (address.status === 'Main') {
           defaultAddress = address

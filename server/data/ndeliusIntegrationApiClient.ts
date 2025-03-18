@@ -147,6 +147,7 @@ export interface Officer {
 export interface DeliusAddress {
   id: number
   status: string
+  officeDescription?: string
   buildingName: string
   buildingNumber: string
   streetName: string

@@ -55,6 +55,7 @@ export function mapDeliusAddressToBreachNoticeAddress(deliusAddress: DeliusAddre
 export function formatAddressForSelectMenuDisplay(deliusAddress: DeliusAddress): string {
   if (deliusAddress) {
     return [
+      deliusAddress.officeDescription,
       deliusAddress.buildingName,
       [deliusAddress.buildingNumber, deliusAddress.streetName]
         .filter(item => item)

@@ -17,7 +17,6 @@ services:
     image: localstack/localstack:4
     networks:
       - hmpps
-    container_name: localstack-external
     ports:
       - "4566:4566"
     environment:

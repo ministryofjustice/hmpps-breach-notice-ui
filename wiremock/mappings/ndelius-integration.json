@@ -20,7 +20,7 @@
               "status": "Postal",
               "buildingName": null,
               "buildingNumber": "281",
-              "streetName": "Postal Street",
+              "streetName": "Postal Default Street",
               "townCity": "Postinton",
               "district": "Postrict",
               "county": "County Post",
@@ -42,6 +42,7 @@
             {
               "id": 3,
               "status": "Previous",
+              "officeDescription": "Marked as Previous",
               "buildingName": "Something",
               "buildingNumber": "1",
               "streetName": "Previous Street",
@@ -52,8 +53,9 @@
             },
             {
               "id": 4,
-              "status": "Bail",
-              "buildingName": "Bail House",
+              "status": "Default",
+              "officeDescription": "Marked as Default",
+              "buildingName": "Default House",
               "buildingNumber": "100",
               "streetName": "Bail Street",
               "townCity": "Bail Town",
@@ -64,6 +66,19 @@
             {
               "id": 5,
               "status": "Secondary",
+              "officeDescription": "Marked as Secondary",
+              "buildingName": "Secondary Manor",
+              "buildingNumber": "90",
+              "streetName": "Secondary Street",
+              "townCity": "Secondary Town",
+              "district": "Some District",
+              "county": "North Secondary",
+              "postcode": "SEC 1AB"
+            },
+            {
+              "id": 6,
+              "status": "Postal",
+              "officeDescription": "Marked as Postal",
               "buildingName": "Secondary Manor",
               "buildingNumber": "90",
               "streetName": "Secondary Street",
