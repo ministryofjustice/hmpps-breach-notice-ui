@@ -112,6 +112,7 @@
 
                 <h2 class="govuk-heading-m">Reply Address</h2>
                 <p id="reply-address">
+                    {% if defaultReplyAddress.officeDescription %} {{ defaultReplyAddress.officeDescription }}<br/>{% endif %}
                     {% if defaultReplyAddress.buildingName %} {{ defaultReplyAddress.buildingName }}<br/>{% endif %}
                     {% if defaultReplyAddress.buildingNumber or  defaultReplyAddress.streetName %}{{ defaultReplyAddress.buildingNumber }} {{ defaultReplyAddress.streetName }}
                         <br/>{% endif %}

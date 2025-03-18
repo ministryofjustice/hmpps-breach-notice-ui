@@ -40,6 +40,7 @@ export function mapDeliusAddressToBreachNoticeAddress(deliusAddress: DeliusAddre
     return {
       addressId: deliusAddress.id,
       status: deliusAddress.status,
+      officeDescription: deliusAddress.officeDescription,
       buildingName: deliusAddress.buildingName,
       buildingNumber: deliusAddress.buildingNumber,
       streetName: deliusAddress.streetName,
@@ -55,6 +56,7 @@ export function mapDeliusAddressToBreachNoticeAddress(deliusAddress: DeliusAddre
 export function formatAddressForSelectMenuDisplay(deliusAddress: DeliusAddress): string {
   if (deliusAddress) {
     return [
+      deliusAddress.officeDescription,
       deliusAddress.buildingName,
       [deliusAddress.buildingNumber, deliusAddress.streetName]
         .filter(item => item)
