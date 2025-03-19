@@ -1,13 +1,11 @@
 import { dataAccess } from '../data'
 import AuditService from './auditService'
-import SnsService from './snsService'
 import CommonUtils from './commonUtils'
 
 export const services = () => {
-  const { applicationInfo, hmppsAuditClient, hmppsAuthClient, hmppsSnsClient } = dataAccess()
+  const { applicationInfo, hmppsAuditClient, hmppsAuthClient } = dataAccess()
 
   const auditService = new AuditService(hmppsAuditClient)
-  const snsService = new SnsService(hmppsSnsClient)
   const commonUtils = new CommonUtils(hmppsAuthClient)
 
   return {
@@ -15,7 +13,6 @@ export const services = () => {
     auditService,
     hmppsAuditClient,
     hmppsAuthClient,
-    snsService,
     commonUtils,
   }
 }
