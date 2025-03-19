@@ -101,7 +101,13 @@ export default function warningTypeRoutes(
     if (!hasErrors) {
       breachNotice.warningTypeSaved = true
       await breachNoticeApiClient.updateBreachNotice(id, breachNotice)
-      res.redirect(`/warning-details/${req.params.id}`)
+      if (req.body.action === 'saveProgressAndClose') {
+        res.send(
+          `<p>You can now safely close this window</p><script nonce="${res.locals.cspNonce}">window.close()</script>`,
+        )
+      } else {
+        res.redirect(`/warning-details/${req.params.id}`)
+      }
     } else {
       const sentenceTypeSelectItems: Array<SelectItem> = initiateSentenceTypeSelectItemsAndApplySavedSelections(
         sentenceTypes,
