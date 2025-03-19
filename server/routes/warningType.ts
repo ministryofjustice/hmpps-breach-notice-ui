@@ -91,7 +91,7 @@ export default function warningTypeRoutes(
     )
 
     if (selectedSentenceType) {
-      breachNotice.breachSentenceTypeDescription = selectedSentenceType.value
+      breachNotice.breachSentenceTypeDescription = selectedSentenceType.text
     }
 
     // perform validation
