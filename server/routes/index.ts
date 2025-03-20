@@ -11,7 +11,7 @@ import reportCompletedRoutes from './reportCompleted'
 import warningDetailsRoutes from './warningDetails'
 import nextAppointmentRoutes from './nextAppointment'
 
-export default function routes({ auditService, hmppsAuthClient, snsService, commonUtils }: Services): Router {
+export default function routes({ auditService, hmppsAuthClient, commonUtils }: Services): Router {
   const router = Router()
   const get = (path: string | string[], handler: RequestHandler) => router.get(path, asyncMiddleware(handler))
 
@@ -32,7 +32,7 @@ export default function routes({ auditService, hmppsAuthClient, snsService, comm
   warningDetailsRoutes(router, auditService, hmppsAuthClient, commonUtils)
   checkYourReportRoutes(router, auditService, hmppsAuthClient, commonUtils)
   pdfMaintenanceRoutes(router, auditService, hmppsAuthClient, commonUtils)
-  reportDeletedRoutes(router, auditService, hmppsAuthClient, snsService)
+  reportDeletedRoutes(router, auditService, hmppsAuthClient)
   reportCompletedRoutes(router, auditService, hmppsAuthClient)
   nextAppointmentRoutes(router, auditService, hmppsAuthClient, commonUtils)
   return router
