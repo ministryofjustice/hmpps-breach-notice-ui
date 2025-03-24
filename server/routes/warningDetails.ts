@@ -49,10 +49,14 @@ export default function warningDetailsRoutes(
     // for final warning theres only 1 of these for first warning screen
     const failureRecordedContactId: string = req.body.failureRecordedContact
 
+    let enforceableContact: EnforceableContact = null
     // lookup the contact and push to the list of contacts to be saved
-    const enforceableContact: EnforceableContact = warningDetails.enforceableContacts.find(
-      contact => contact.id.toString() === failureRecordedContactId,
-    )
+    // if we have enforceable contacts
+    if (warningDetails.enforceableContacts) {
+      enforceableContact = warningDetails.enforceableContacts.find(
+        contact => contact.id.toString() === failureRecordedContactId,
+      )
+    }
 
     if (enforceableContact) {
       contactList.push({
@@ -215,29 +219,31 @@ export default function warningDetailsRoutes(
     breachNotice: BreachNotice,
   ): WarningDetailsRequirementSelectItem[] {
     if (enforceableContactList) {
-      return enforceableContactList.map((enforceableContact: EnforceableContact) => {
-        const { requirement } = enforceableContact
-        let breachNoticeRequirement: BreachNoticeRequirement = null
-        if (breachNotice.breachNoticeRequirementList) {
-          breachNoticeRequirement = breachNotice.breachNoticeRequirementList.find(
-            savedRequirement => savedRequirement.requirementId?.toString() === requirement.id?.toString(),
-          )
-        }
-        const breachReasonSelectItems = craftTheBreachReasonSelectItems(breachReasons, breachNoticeRequirement)
-        return {
-          text: `${requirement.type.description} - ${requirement.subType.description}`,
-          value: requirement.id.toString(),
-          checked: !!breachNoticeRequirement,
-          conditional: {
-            html: `<div class="govuk-form-group">
+      return enforceableContactList
+        .filter(c => c.requirement)
+        .map((enforceableContact: EnforceableContact) => {
+          const { requirement } = enforceableContact
+          let breachNoticeRequirement: BreachNoticeRequirement = null
+          if (breachNotice.breachNoticeRequirementList) {
+            breachNoticeRequirement = breachNotice.breachNoticeRequirementList.find(
+              savedRequirement => savedRequirement.requirementId?.toString() === requirement.id?.toString(),
+            )
+          }
+          const breachReasonSelectItems = craftTheBreachReasonSelectItems(breachReasons, breachNoticeRequirement)
+          return {
+            text: `${requirement.type.description} - ${requirement.subType.description}`,
+            value: requirement.id.toString(),
+            checked: !!breachNoticeRequirement,
+            conditional: {
+              html: `<div class="govuk-form-group">
               <label class="govuk-label" for="breachreason${requirement.id}">Why is this being enforced?</label>
               <select class="govuk-select" id="breachreason${requirement.id}" name="breachreason${requirement.id}">
               ${breachReasonSelectItems.map(item => `<option value="${item.value}" ${item.selected ? 'selected' : ''}>${item.text}</option>`).join()}
               </select>
             </div>`,
-          },
-        }
-      })
+            },
+          }
+        })
     }
     return []
   }

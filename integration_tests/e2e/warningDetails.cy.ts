@@ -24,4 +24,11 @@ context('Warning Details page', () => {
       .should('exist')
       .should('contain.text', 'The proposed date for this letter is in an invalid format')
   })
+
+  it('screen loads when there are no enforceable contacts returned from the integration', () => {
+    cy.visit('/warning-details/f1234567-12e3-45ba-ba67-1b34bf7b009d')
+    cy.url().should('include', '/warning-details/f1234567-12e3-45ba-ba67-1b34bf7b009d')
+    cy.get('#no-enforceable-contacts-message').should('contain.text', 'No failures to display')
+    cy.get('#no-requirements-message').should('contain.text', 'No failures being enforced to display')
+  })
 })
