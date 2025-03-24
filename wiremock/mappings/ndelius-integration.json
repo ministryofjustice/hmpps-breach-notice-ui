@@ -194,8 +194,44 @@
                   "description": "string"
                 }
               }
+            },
+            {
+              "id": 1,
+              "datetime": "2025-02-02T12:00:00",
+              "description": "string",
+              "type": {
+                "code": "string",
+                "description": "string"
+              },
+              "outcome": {
+                "code": "string",
+                "description": "string"
+              },
+              "notes": "string",
+              "requirement": null
             }
           ]
+        },
+        "headers": {
+          "Content-Type": "application/json;charset=UTF-8"
+        }
+      }
+    },
+    {
+      "request": {
+        "urlPattern": "/warning-details/X012495/f1234567-12e3-45ba-ba67-1b34bf7b009d",
+        "method": "GET"
+      },
+      "response": {
+        "status": 200,
+        "jsonBody": {
+          "breachReasons": [
+            {
+              "code": "BR03",
+              "description": "Attended late"
+            }
+          ],
+          "enforceableContacts": null
         },
         "headers": {
           "Content-Type": "application/json;charset=UTF-8"
