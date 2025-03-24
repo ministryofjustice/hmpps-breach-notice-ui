@@ -42,31 +42,43 @@
         <h2 class="govuk-heading-m">
           Failures recorded on this order
         </h2>
-        {% for failure in warningDetails.enforceableContacts %}
-          <p>
-            {{ failure.datetime | toUserDate }}, {{ failure.type.description }}, {{ failure.outcome.description }},
+        {% if warningDetails.enforceableContacts | length > 0 %}
+          {% for failure in warningDetails.enforceableContacts %}
+            <p>
+              {{ failure.datetime | toUserDate }}, {{ failure.type.description }}, {{ failure.outcome.description }},
 
-            {{ govukDetails({
-              summaryText: "View failure notes",
-              text: failure.notes
-            }) }}
-          </p>
-        {% endfor %}
+              {{ govukDetails({
+                summaryText: "View failure notes",
+                text: failure.notes
+              }) }}
+            </p>
+          {% endfor %}
+        {% else %}
+          <p id="no-enforceable-contacts-message">No failures to display</p>
+        {% endif %}
 
-        {{ govukCheckboxes({
-          name: "failuresBeingEnforcedRequirements",
-          fieldset: {
-            legend: {
-              text: "Select the Failures being enforced",
-              isPageHeading: false,
-              classes: "govuk-fieldset__legend--m"
-            }
-          },
-          hint: {
-            text: "Select all that apply"
-          },
-          items: requirementsList
-        }) }}
+
+        {% if requirementsList | length > 0 %}
+          {{ govukCheckboxes({
+            name: "failuresBeingEnforcedRequirements",
+            fieldset: {
+              legend: {
+                text: "Select the Failures being enforced",
+                isPageHeading: false,
+                classes: "govuk-fieldset__legend--m"
+              }
+            },
+            hint: {
+              text: "Select all that apply"
+            },
+            items: requirementsList
+          }) }}
+        {% else %}
+          <h2 class="govuk-heading-m">
+            Select the Failures being enforced
+          </h2>
+          <p id="no-requirements-message">No failures being enforced to display</p>
+        {% endif %}
 
         {{ mojDatePicker({
           id: "responseRequiredByDate",
