@@ -308,7 +308,7 @@
     },
     {
       "request": {
-        "urlPattern": "/next-appointment-details/(.*?)",
+        "urlPattern": "/next-appointment-details/[A-Z][0-9]{6}",
         "method": "GET"
       },
       "response": {
