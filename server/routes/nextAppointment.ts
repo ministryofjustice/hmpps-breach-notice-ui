@@ -54,7 +54,7 @@ export default function nextAppointmentRoutes(
     const { id } = req.params
     let breachNotice: BreachNotice = null
     breachNotice = await breachNoticeApiClient.getBreachNoticeById(id as string)
-    const nextAppointmentDetails = await ndeliusIntegrationApiClient.getNextAppointmentDetails(id as string)
+    const nextAppointmentDetails = await ndeliusIntegrationApiClient.getNextAppointmentDetails(breachNotice.crn)
     if (await commonUtils.redirectRequired(breachNotice, res)) return
 
     if (req.body.useContactNumber === 'No') {
