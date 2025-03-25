@@ -95,15 +95,9 @@ export default function checkYourReportRoutes(
       breachNotice.replyAddress != null &&
       breachNotice.breachNoticeTypeDescription != null &&
       breachNotice.breachSentenceTypeDescription &&
-      breachNotice.breachNoticeContactList != null &&
-      breachNotice.breachNoticeContactList.length > 0 &&
       breachNotice.breachNoticeRequirementList != null &&
       breachNotice.breachNoticeRequirementList.length > 0 &&
       breachNotice.responseRequiredDate != null &&
-      breachNotice.nextAppointmentType != null &&
-      breachNotice.nextAppointmentDate != null &&
-      breachNotice.nextAppointmentLocation != null &&
-      breachNotice.nextAppointmentOfficer != null &&
       breachNotice.responsibleOfficer != null
     )
   }

@@ -32,7 +32,7 @@
 
             <div class="govuk-grid-column-two-thirds">
                 {% include "partials/review-required.njk" %}
-                
+
                 <h1 class="govuk-heading-x1">Breach Notice - Check Your Answers</h1>
 
                 <div class="govuk-summary-card">
@@ -269,31 +269,6 @@
                         <dl class="govuk-summary-list">
                             <div class="govuk-summary-list__row">
                                 <dt class="govuk-summary-list__key">
-                                    Failures recorded on this order
-                                </dt>
-                                <dd class="govuk-summary-list__value">
-                                    {% if ( breachNotice.breachNoticeContactList == null or breachNotice.breachNoticeContactList.length == 0 ) and breachNotice.warningTypeSaved %}
-                                        <a href="/warning-details/{{ breachNotice.id }}" class="govuk-link">enter
-                                            required information</a>
-                                    {% else %}
-                                        {% for contact in breachNotice.breachNoticeContactList %}
-                                            <pr>{{ contact.contactDateString }} {{ contact.contactTimeString }}
-                                                - {{ contact.contactType }} - {{ contact.contactOutcome }}</pr>
-                                        {% endfor %}
-                                    {% endif %}
-                                </dd>
-                                {% if breachNotice.breachNoticeContactList == null or breachNotice.breachNoticeContactList.length == 0 %}
-                                    <dd class="govuk-summary-list__actions">
-
-                                        <span class="govuk-tag--light-blue">
-                                                                                  Required
-                                                                      </span>
-
-                                    </dd>
-                                {% endif %}
-                            </div>
-                            <div class="govuk-summary-list__row">
-                                <dt class="govuk-summary-list__key">
                                     Failures being enforced
                                 </dt>
                                 <dd class="govuk-summary-list__value">
@@ -325,7 +300,7 @@
                                         <a href="/warning-details/{{ breachNotice.id }}" class="govuk-link">enter
                                             required information</a>
                                     {% else %}
-                                        {{ responseRequiredDate }}
+                                        {{ responseRequiredByDate }}
                                     {% endif %}
                                 </dd>
                                 {% if breachNotice.responseRequiredDate == null %}
@@ -403,19 +378,9 @@
                                     Next Appointment Type
                                 </dt>
                                 <dd class="govuk-summary-list__value">
-                                    {% if breachNotice.nextAppointmentType == null and breachNotice.warningDetailsSaved %}
-                                        <a href="/next-appointment/{{ breachNotice.id }}" class="govuk-link">enter
-                                            required information</a>
-                                    {% else %}
-                                        {{ breachNotice.nextAppointmentType }}
-                                    {% endif %}
+                                  {{ breachNotice.nextAppointmentType }}
                                 </dd>
                                 <dd class="govuk-summary-list__actions">
-                                    {% if breachNotice.nextAppointmentType == null %}
-                                        <span class="govuk-tag--light-blue">
-                                                                                  Required
-                                                                      </span>
-                                    {% endif %}
                                 </dd>
                             </div>
                             <div class="govuk-summary-list__row">
@@ -423,19 +388,9 @@
                                     Next Appointment Date
                                 </dt>
                                 <dd class="govuk-summary-list__value">
-                                    {% if breachNotice.nextAppointmentDate == null and breachNotice.warningDetailsSaved %}
-                                        <a href="/next-appointment/{{ breachNotice.id }}" class="govuk-link">enter
-                                            required information</a>
-                                    {% else %}
-                                        {{ nextAppointmentDate }}
-                                    {% endif %}
+                                  {{ nextAppointmentDate }}
                                 </dd>
                                 <dd class="govuk-summary-list__actions">
-                                    {% if breachNotice.nextAppointmentDate == null %}
-                                        <span class="govuk-tag--light-blue">
-                                                                                  Required
-                                                                      </span>
-                                    {% endif %}
                                 </dd>
                             </div>
                             <div class="govuk-summary-list__row">
@@ -443,19 +398,9 @@
                                     Next Appointment Time
                                 </dt>
                                 <dd class="govuk-summary-list__value">
-                                    {% if breachNotice.nextAppointmentDate == null and breachNotice.warningDetailsSaved %}
-                                        <a href="/next-appointment/{{ breachNotice.id }}" class="govuk-link">enter
-                                            required information</a>
-                                    {% else %}
-                                        {{ nextAppointmentTime }}
-                                    {% endif %}
+                                  {{ nextAppointmentTime }}
                                 </dd>
                                 <dd class="govuk-summary-list__actions">
-                                    {% if breachNotice.nextAppointmentDate == null %}
-                                        <span class="govuk-tag--light-blue">
-                                                                                  Required
-                                                                      </span>
-                                    {% endif %}
                                 </dd>
                             </div>
                             <div class="govuk-summary-list__row">
@@ -463,19 +408,9 @@
                                     Next Appointment Location
                                 </dt>
                                 <dd class="govuk-summary-list__value">
-                                    {% if breachNotice.nextAppointmentLocation == null and breachNotice.warningDetailsSaved %}
-                                        <a href="/next-appointment/{{ breachNotice.id }}" class="govuk-link">enter
-                                            required information</a>
-                                    {% else %}
-                                        {{ breachNotice.nextAppointmentLocation }}
-                                    {% endif %}
+                                  {{ breachNotice.nextAppointmentLocation }}
                                 </dd>
                                 <dd class="govuk-summary-list__actions">
-                                    {% if breachNotice.nextAppointmentLocation == null %}
-                                        <span class="govuk-tag--light-blue">
-                                                                                                Required
-                                                                                    </span>
-                                    {% endif %}
                                 </dd>
                             </div>
                             <div class="govuk-summary-list__row">
@@ -483,19 +418,9 @@
                                     Next Appointment Officer
                                 </dt>
                                 <dd class="govuk-summary-list__value">
-                                    {% if breachNotice.nextAppointmentOfficer == null and breachNotice.warningDetailsSaved %}
-                                        <a href="/next-appointment/{{ breachNotice.id }}" class="govuk-link">enter
-                                            required information</a>
-                                    {% else %}
-                                        {{ breachNotice.nextAppointmentOfficer }}
-                                    {% endif %}
+                                  {{ breachNotice.nextAppointmentOfficer }}
                                 </dd>
                                 <dd class="govuk-summary-list__actions">
-                                    {% if breachNotice.nextAppointmentOfficer == null %}
-                                        <span class="govuk-tag--light-blue">
-                                                                                  Required
-                                                                      </span>
-                                    {% endif %}
                                 </dd>
                             </div>
                         </dl>
