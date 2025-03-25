@@ -25,8 +25,8 @@ export default function nextAppointmentRoutes(
     const ndeliusIntegrationApiClient = new NdeliusIntegrationApiClient(token)
 
     const { id } = req.params
-    const nextAppointmentDetails = await ndeliusIntegrationApiClient.getNextAppointmentDetails(id as string)
     const breachNotice: BreachNotice = await breachNoticeApiClient.getBreachNoticeById(id as string)
+    const nextAppointmentDetails = await ndeliusIntegrationApiClient.getNextAppointmentDetails(breachNotice.crn)
     const appointmentRadioButtons: Array<RadioButton> = initiateNextAppointmentRadioButtonsAndApplySavedSelections(
       nextAppointmentDetails.futureAppointments,
       breachNotice,

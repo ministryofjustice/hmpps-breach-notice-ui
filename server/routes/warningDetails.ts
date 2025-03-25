@@ -76,6 +76,7 @@ export default function warningDetailsRoutes(
     // this can come in an array or singular
     breachNotice.breachNoticeRequirementList = asArray(req.body.failuresBeingEnforcedRequirements).map(
       (requirementId: string) => {
+        // it is possible to have an enforceable contact without a requirement
         const enforceableContactWithRequirement: EnforceableContact = warningDetails.enforceableContacts.find(
           contact => contact.requirement.id.toString() === requirementId,
         )
@@ -83,9 +84,9 @@ export default function warningDetailsRoutes(
         const currentRequirement: BreachNoticeRequirement = {
           id: null,
           breachNoticeId: breachNotice.id,
-          requirementId: enforceableContactWithRequirement.requirement.id,
-          requirementTypeMainCategoryDescription: enforceableContactWithRequirement.requirement.type.description,
-          requirementTypeSubCategoryDescription: enforceableContactWithRequirement.requirement.subType.description,
+          requirementId: enforceableContactWithRequirement?.requirement?.id,
+          requirementTypeMainCategoryDescription: enforceableContactWithRequirement?.requirement?.type?.description,
+          requirementTypeSubCategoryDescription: enforceableContactWithRequirement?.requirement?.subType?.description,
           rejectionReason: req.body[bodyParamBreachReason],
           fromDate: null,
           toDate: null,
@@ -135,16 +136,19 @@ export default function warningDetailsRoutes(
     breachNoticeRequirement: BreachNoticeRequirement,
     enforceableContactList: EnforceableContact[],
   ): BreachNoticeRequirement {
-    const dateList = enforceableContactList
-      .filter(i => i.requirement.id.toString() === breachNoticeRequirement.requirementId.toString())
-      .map(i => i.datetime)
-    const maxDate = dateList.reduce((a, b) => (a > b ? a : b))
-    const minDate = dateList.reduce((a, b) => (a < b ? a : b))
-    return {
-      ...breachNoticeRequirement,
-      fromDate: minDate.toString(),
-      toDate: maxDate.toString(),
+    if (breachNoticeRequirement && enforceableContactList) {
+      const dateList = enforceableContactList
+        .filter(i => i.requirement?.id?.toString() === breachNoticeRequirement.requirementId.toString())
+        .map(i => i.datetime)
+      const maxDate = dateList.reduce((a, b) => (a > b ? a : b))
+      const minDate = dateList.reduce((a, b) => (a < b ? a : b))
+      return {
+        ...breachNoticeRequirement,
+        fromDate: minDate.toString(),
+        toDate: maxDate.toString(),
+      }
     }
+    return breachNoticeRequirement
   }
 
   function validateWarningDetails(breachNotice: BreachNotice, responseRequiredByDate: string): ErrorMessages {
