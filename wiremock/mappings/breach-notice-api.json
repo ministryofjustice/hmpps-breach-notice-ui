@@ -499,6 +499,7 @@
           "nextAppointmentContact": "0292827177",
           "completedDate": null,
           "offenderAddress": {
+            "officeDescription": "Office Desc",
             "addressId": 12345,
             "status": "Postal",
             "buildingName": null,
@@ -510,6 +511,7 @@
             "postcode": "NE30 3ZZ"
           },
           "replyAddress": {
+            "officeDescription": "Office Desc",
             "addressId": 33333,
             "status": "Reply",
             "buildingName": null,

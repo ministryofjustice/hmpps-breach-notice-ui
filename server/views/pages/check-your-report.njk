@@ -89,6 +89,8 @@
                                         <a href="/basic-details/{{ breachNotice.id }}" class="govuk-link">enter required
                                             information</a>
                                     {% else %}
+                                        {% if breachNotice.offenderAddress.officeDescription != null %} {{ breachNotice.offenderAddress.officeDescription }}
+                                            <br> {% endif %}
                                         {% if breachNotice.offenderAddress.buildingName != null %} {{ breachNotice.offenderAddress.buildingName }}
                                             <br> {% endif %}
                                         {% if breachNotice.offenderAddress.buildingNumber != null or breachNotice.offenderAddress.streetName != null %} {{ breachNotice.offenderAddress.buildingNumber }} {{ breachNotice.offenderAddress.streetName }}
@@ -119,6 +121,8 @@
                                         <a href="/basic-details/{{ breachNotice.id }}" class="govuk-link">enter required
                                             information</a>
                                     {% else %}
+                                        {% if breachNotice.replyAddress.officeDescription != null %} {{ breachNotice.replyAddress.officeDescription }}
+                                            <br> {% endif %}
                                         {% if breachNotice.replyAddress.buildingName != null %} {{ breachNotice.replyAddress.buildingName }}
                                             <br> {% endif %}
                                         {% if breachNotice.replyAddress.buildingNumber != null or breachNotice.replyAddress.streetName != null %} {{ breachNotice.replyAddress.buildingNumber }} {{ breachNotice.replyAddress.streetName }}
