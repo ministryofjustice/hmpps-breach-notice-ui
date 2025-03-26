@@ -18,7 +18,6 @@ import NdeliusIntegrationApiClient, {
   ReferenceData,
   WarningDetails,
 } from '../data/ndeliusIntegrationApiClient'
-import logger from '../../logger'
 import { ErrorMessages, SelectItem } from '../data/uiModels'
 
 export default function warningDetailsRoutes(
@@ -168,6 +167,7 @@ export default function warningDetailsRoutes(
     try {
       // eslint-disable-next-line no-param-reassign
       breachNotice.responseRequiredDate = fromUserDate(responseRequiredByDate)
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
     } catch (error: unknown) {
       // eslint-disable-next-line no-param-reassign
       breachNotice.responseRequiredDate = responseRequiredByDate
