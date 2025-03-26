@@ -4,8 +4,10 @@ import {
   combineName,
   formatAddressForSelectMenuDisplay,
   removeDeliusAddressFromDeliusAddressList,
+  arrangeSelectItemListAlphabetically,
 } from './utils'
 import { DeliusAddress, Name } from '../data/ndeliusIntegrationApiClient'
+import { SelectItem } from '../data/uiModels'
 
 describe('convert to title case', () => {
   it.each([
@@ -43,6 +45,33 @@ describe('Combine name', () => {
     [null, { forename: 'Test', middleName: 'Test', surname: 'Test' }, 'Test Test Test'],
   ])('%s combineName(%s, %s)', (_: string, a: Name, expected: string) => {
     expect(combineName(_, a)).toEqual(expected)
+  })
+})
+
+describe('Should Arrange SelectItem List Alphabetically', () => {
+  test('Should arrange select item list Alphabetically', () => {
+    const selectItemList: SelectItem[] = [
+      {
+        value: 'zzz',
+        text: 'a1',
+        selected: false,
+      },
+      {
+        value: 'zzz',
+        text: 'a2',
+        selected: false,
+      },
+      {
+        value: 'zzz',
+        text: '100',
+        selected: false,
+      },
+    ]
+
+    const sortedList = arrangeSelectItemListAlphabetically(selectItemList)
+    expect(sortedList[0].text).toBe('100')
+    expect(sortedList[1].text).toBe('a1')
+    expect(sortedList[2].text).toBe('a2')
   })
 })
 

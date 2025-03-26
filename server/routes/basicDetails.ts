@@ -5,6 +5,7 @@ import { fromUserDate, toUserDate } from '../utils/dateUtils'
 import { HmppsAuthClient } from '../data'
 import CommonUtils from '../services/commonUtils'
 import {
+  arrangeSelectItemListAlphabetically,
   combineName,
   formatAddressForSelectMenuDisplay,
   mapDeliusAddressToBreachNoticeAddress,
@@ -38,16 +39,20 @@ export default function basicDetailsRoutes(
     const defaultReplyAddress: DeliusAddress = findDefaultAddressInAddressList(basicDetails.replyAddresses)
     const basicDetailsDateOfLetter: string = toUserDate(breachNotice.dateOfLetter)
 
-    const alternateAddressOptions = addressListToSelectItemList(
-      removeDeliusAddressFromDeliusAddressList(basicDetails.addresses, defaultOffenderAddress),
-      breachNotice.basicDetailsSaved,
-      breachNotice.offenderAddress?.addressId,
+    const alternateAddressOptions = arrangeSelectItemListAlphabetically(
+      addressListToSelectItemList(
+        removeDeliusAddressFromDeliusAddressList(basicDetails.addresses, defaultOffenderAddress),
+        breachNotice.basicDetailsSaved,
+        breachNotice.offenderAddress?.addressId,
+      ),
     )
 
-    const replyAddressOptions = addressListToSelectItemList(
-      removeDeliusAddressFromDeliusAddressList(basicDetails.replyAddresses, defaultReplyAddress),
-      breachNotice.basicDetailsSaved,
-      breachNotice.replyAddress?.addressId,
+    const replyAddressOptions = arrangeSelectItemListAlphabetically(
+      addressListToSelectItemList(
+        removeDeliusAddressFromDeliusAddressList(basicDetails.replyAddresses, defaultReplyAddress),
+        breachNotice.basicDetailsSaved,
+        breachNotice.replyAddress?.addressId,
+      ),
     )
 
     res.render('pages/basic-details', {
@@ -129,15 +134,19 @@ export default function basicDetailsRoutes(
         res.redirect(`/warning-type/${id}`)
       }
     } else {
-      const alternateAddressOptions = addressListToSelectItemList(
-        basicDetails.addresses,
-        updatedBreachNotice.basicDetailsSaved,
-        updatedBreachNotice.offenderAddress?.addressId,
+      const alternateAddressOptions = arrangeSelectItemListAlphabetically(
+        addressListToSelectItemList(
+          basicDetails.addresses,
+          updatedBreachNotice.basicDetailsSaved,
+          updatedBreachNotice.offenderAddress?.addressId,
+        ),
       )
-      const replyAddressOptions = addressListToSelectItemList(
-        basicDetails.replyAddresses,
-        updatedBreachNotice.basicDetailsSaved,
-        updatedBreachNotice.replyAddress?.addressId,
+      const replyAddressOptions = arrangeSelectItemListAlphabetically(
+        addressListToSelectItemList(
+          basicDetails.replyAddresses,
+          updatedBreachNotice.basicDetailsSaved,
+          updatedBreachNotice.replyAddress?.addressId,
+        ),
       )
 
       const basicDetailsDateOfLetter: string = req.body.dateOfLetter
