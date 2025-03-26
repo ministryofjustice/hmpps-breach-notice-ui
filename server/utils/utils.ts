@@ -1,6 +1,7 @@
 import { ParsedQs } from 'qs'
 import { DeliusAddress, Name } from '../data/ndeliusIntegrationApiClient'
 import { BreachNoticeAddress } from '../data/breachNoticeApiClient'
+import { SelectItem } from '../data/uiModels'
 
 const properCase = (word: string): string =>
   word.length >= 1 ? word[0].toUpperCase() + word.toLowerCase().slice(1) : word
@@ -71,6 +72,13 @@ export function formatAddressForSelectMenuDisplay(deliusAddress: DeliusAddress):
       .join(', ')
   }
   return null
+}
+
+export function arrangeSelectItemListAlphabetically(selectItemsToSort: SelectItem[]): SelectItem[] {
+  if (selectItemsToSort) {
+    return selectItemsToSort.sort((a, b) => a?.text.localeCompare(b?.text, 'en', { numeric: true }))
+  }
+  return selectItemsToSort
 }
 
 export function removeDeliusAddressFromDeliusAddressList(
