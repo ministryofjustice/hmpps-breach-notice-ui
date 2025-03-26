@@ -169,8 +169,6 @@ export default function warningDetailsRoutes(
       // eslint-disable-next-line no-param-reassign
       breachNotice.responseRequiredDate = fromUserDate(responseRequiredByDate)
     } catch (error: unknown) {
-      // this error will be thrown if a user inputs a non date format into the date field
-      logger.error(error)
       // eslint-disable-next-line no-param-reassign
       breachNotice.responseRequiredDate = responseRequiredByDate
       errorMessages.responseRequiredByDate = {
