@@ -21,7 +21,7 @@ export default function pdfMaintenanceRoutes(
     const { id } = req.params
     const breachNotice = await breachNoticeApiClient.getBreachNoticeById(id as string)
 
-    if (await commonUtils.redirectRequired(breachNotice, res)) return
+    if (await commonUtils.redirectRequiredForLao(breachNotice, res)) return
 
     const stream: ArrayBuffer = await breachNoticeApiClient.getDraftPdfById(id as string)
 
