@@ -35,7 +35,7 @@ generic-service:
     AWS_REGION: 'eu-west-2'
     AUDIT_ENABLED: 'true'
     AUDIT_SQS_REGION: 'eu-west-2'
-    AUDIT_SERVICE_NAME: 'UNASSIGNED' # Your audit service name
+    AUDIT_SERVICE_NAME: 'hmpps-breach-notice-ui'
 
   # Pre-existing kubernetes secrets to load as environment variables in the deployment.
   # namespace_secrets:
