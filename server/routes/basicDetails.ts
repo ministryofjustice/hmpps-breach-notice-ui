@@ -71,8 +71,6 @@ export default function basicDetailsRoutes(
     })
   })
 
-  // function validateAddressesPresent()
-
   post('/basic-details/:id', async (req, res, next) => {
     const token = await hmppsAuthClient.getSystemClientToken(res.locals.user.username)
     const breachNoticeApiClient = new BreachNoticeApiClient(token)
