@@ -67,7 +67,7 @@ context('Basic Details page', () => {
     cy.get('.govuk-error-summary__list > li > a').should('have.attr', 'href').and('include', 'reply-address')
     cy.get('.govuk-error-summary__list > li > a').should(
       'have.text',
-      'The previously selected address is no longer available. Please select an alternative.',
+      'Reply Address: The previously selected address is no longer available. Please select an alternative.',
     )
   })
 })
