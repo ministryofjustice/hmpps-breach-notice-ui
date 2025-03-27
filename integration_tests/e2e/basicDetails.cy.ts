@@ -57,6 +57,6 @@ context('Basic Details page', () => {
     cy.get('.govuk-error-summary__title').should('exist').should('contain.text', 'There is a problem')
     cy.get('#office-reference-error')
       .should('exist')
-      .should('contain.text', 'The Office Reference entered is greater than the 30 character limit.')
+      .should('contain.text', 'Office Reference must be 30 characters or less')
   })
 })
