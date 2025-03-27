@@ -59,4 +59,15 @@ context('Basic Details page', () => {
       .should('exist')
       .should('contain.text', 'Office Reference must be 30 characters or less')
   })
+
+  it('return to screen after save and address no longer returned from integrations', () => {
+    cy.visit('/basic-details/f1234567-12e3-45ba-ba67-1b34bf7b0099')
+    cy.get('.govuk-error-summary__title').should('exist').should('contain.text', 'There is a problem')
+    // cy.contains('a', '#')
+    cy.get('.govuk-error-summary__list > li > a').should('have.attr', 'href').and('include', 'reply-address')
+    cy.get('.govuk-error-summary__list > li > a').should(
+      'have.text',
+      'The previously selected address is no longer available. Please select an alternative.',
+    )
+  })
 })

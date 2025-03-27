@@ -56,7 +56,10 @@ export default function basicDetailsRoutes(
     )
 
     // show a warning is a previously saved address is no longer returned from the integration
-    const errorMessages: ErrorMessages = {}
+    const errorMessages: ErrorMessages = validateAddressesPresent(
+      breachNotice.replyAddress?.addressId,
+      basicDetails.replyAddresses,
+    )
 
     res.render('pages/basic-details', {
       breachNotice: applyDefaults(breachNotice, basicDetails),
@@ -70,6 +73,18 @@ export default function basicDetailsRoutes(
       errorMessages,
     })
   })
+
+  function validateAddressesPresent(selectedAddressId: number, replyAddresses: DeliusAddress[]): ErrorMessages {
+    const errorMessages: ErrorMessages = {}
+    if (selectedAddressId) {
+      if (!replyAddresses.find(a => a.id === selectedAddressId)) {
+        errorMessages.replyAddress = {
+          text: 'Reply Address: The previously selected address is no longer available. Please select an alternative.',
+        }
+      }
+    }
+    return errorMessages
+  }
 
   post('/basic-details/:id', async (req, res, next) => {
     const token = await hmppsAuthClient.getSystemClientToken(res.locals.user.username)
