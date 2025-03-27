@@ -27,4 +27,21 @@ export default class CommonUtils {
     }
     return false
   }
+
+  async redirectRequiredForLao(breachNotice: BreachNotice, res: Response): Promise<boolean> {
+    const token = await this.hmppsAuthClient.getSystemClientToken(res.locals.user.username)
+    const ndeliusIntegrationApiClient = new NdeliusIntegrationApiClient(token)
+
+    const laoCheck: LimitedAccessCheck = await ndeliusIntegrationApiClient.getLimitedAccessCheck(
+      breachNotice.crn,
+      res.locals.user.username,
+    )
+    if (laoCheck.isExcluded || laoCheck.isRestricted) {
+      res.render('pages/limited-access', {
+        laoCheck,
+      })
+      return true
+    }
+    return false
+  }
 }
