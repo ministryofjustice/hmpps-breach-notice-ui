@@ -55,6 +55,9 @@ export default function basicDetailsRoutes(
       ),
     )
 
+    // show a warning is a previously saved address is no longer returned from the integration
+    const errorMessages: ErrorMessages = {}
+
     res.render('pages/basic-details', {
       breachNotice: applyDefaults(breachNotice, basicDetails),
       basicDetails,
@@ -64,8 +67,11 @@ export default function basicDetailsRoutes(
       defaultReplyAddress,
       basicDetailsDateOfLetter,
       currentPage,
+      errorMessages,
     })
   })
+
+  // function validateAddressesPresent()
 
   post('/basic-details/:id', async (req, res, next) => {
     const token = await hmppsAuthClient.getSystemClientToken(res.locals.user.username)
