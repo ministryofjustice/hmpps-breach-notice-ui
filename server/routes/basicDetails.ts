@@ -169,7 +169,7 @@ export default function basicDetailsRoutes(
     const currentDateAtStartOfTheDay: LocalDateTime = LocalDate.now().atStartOfDay()
     if (breachNotice.referenceNumber && breachNotice.referenceNumber.trim().length > 30) {
       errorMessages.officeReferenceNumber = {
-        text: 'The Office Reference entered is greater than the 30 character limit.',
+        text: 'Office Reference must be 30 characters or less',
       }
     }
 
