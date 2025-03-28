@@ -98,7 +98,8 @@ export default function checkYourReportRoutes(
       breachNotice.breachNoticeRequirementList != null &&
       breachNotice.breachNoticeRequirementList.length > 0 &&
       breachNotice.responseRequiredDate != null &&
-      breachNotice.responsibleOfficer != null
+      breachNotice.responsibleOfficer != null &&
+      breachNotice.contactNumber != null
     )
   }
 
