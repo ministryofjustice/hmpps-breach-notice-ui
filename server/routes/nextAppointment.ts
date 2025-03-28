@@ -68,11 +68,9 @@ export default function nextAppointmentRoutes(
     }
 
     nextAppointmentDetails.futureAppointments
-      .filter(
-        (futureAppointment: FutureAppointment) => futureAppointment.contactId === Number(req.body.appointmentSelection),
-      )
+      .filter((futureAppointment: FutureAppointment) => futureAppointment.id === Number(req.body.appointmentSelection))
       .forEach((futureAppointment: FutureAppointment) => {
-        breachNotice.nextAppointmentId = futureAppointment.contactId
+        breachNotice.nextAppointmentId = futureAppointment.id
         breachNotice.nextAppointmentDate = futureAppointment.datetime
         breachNotice.nextAppointmentType = futureAppointment.type.code
         breachNotice.nextAppointmentLocation = futureAppointment.location.buildingNumber
@@ -90,7 +88,9 @@ export default function nextAppointmentRoutes(
       await breachNoticeApiClient.updateBreachNotice(id, breachNotice)
 
       if (req.body.action === 'saveProgressAndClose') {
-        res.send(`<script nonce="${res.locals.cspNonce}">window.close()</script>`)
+        res.send(
+          `<p>You can now safely close this window</p><script nonce="${res.locals.cspNonce}">window.close()</script>`,
+        )
       } else {
         res.redirect(`/check-your-report/${id}`)
       }
@@ -154,9 +154,9 @@ export default function nextAppointmentRoutes(
       ]
         .filter(item => item)
         .join(', '),
-      value: `${futureAppointment.contactId}`,
+      value: `${futureAppointment.id}`,
       selected: false,
-      checked: breachNotice.nextAppointmentId && breachNotice.nextAppointmentId === futureAppointment.contactId,
+      checked: breachNotice.nextAppointmentId && breachNotice.nextAppointmentId === futureAppointment.id,
     }))
   }
 

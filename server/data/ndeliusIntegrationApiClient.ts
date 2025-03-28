@@ -121,7 +121,7 @@ export interface Requirement {
 }
 
 export interface FutureAppointment {
-  contactId: number
+  id: number
   datetime: string
   description: string
   type: ReferenceData
