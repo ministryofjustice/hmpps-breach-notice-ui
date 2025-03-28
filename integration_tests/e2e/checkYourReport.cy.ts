@@ -55,4 +55,9 @@ context('Check your report page', () => {
     cy.get('#publish').click()
     cy.url().should('include', '/report-completed/00000000-0000-0000-0000-100000000004')
   })
+
+  it('Publish button should not be present when contact number is missing', () => {
+    cy.visit('/check-your-report/00000000-0000-0000-0000-100000000094')
+    cy.get('#publish').should('not.exist')
+  })
 })
