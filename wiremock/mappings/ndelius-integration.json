@@ -392,7 +392,7 @@
           },
           "futureAppointments": [
             {
-              "contactId": 1,
+              "id": 1,
               "datetime": "2025-01-01T12:34:56",
               "description": "FIRSTAPPOINTMENT",
               "type": {
