@@ -31,4 +31,11 @@ context('Warning Details page', () => {
     cy.get('#no-enforceable-contacts-message').should('contain.text', 'No failures to display')
     cy.get('#no-requirements-message').should('contain.text', 'No failures being enforced to display')
   })
+
+  it('should only show unique requirements when multiple contacts point at the same requirement', () => {
+    cy.visit('/warning-details/f1234567-12e3-45ba-ba67-1b34bf799999')
+    cy.url().should('include', '/warning-details/f1234567-12e3-45ba-ba67-1b34bf799999')
+    cy.get('input[type="checkbox"]').as('checkboxes')
+    cy.get('@checkboxes').should('have.length', 2)
+  })
 })
