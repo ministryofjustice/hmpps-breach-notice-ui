@@ -39,20 +39,16 @@ export default function basicDetailsRoutes(
     const defaultReplyAddress: DeliusAddress = findDefaultAddressInAddressList(basicDetails.replyAddresses)
     const basicDetailsDateOfLetter: string = toUserDate(breachNotice.dateOfLetter)
 
-    const alternateAddressOptions = arrangeSelectItemListAlphabetically(
-      addressListToSelectItemList(
-        removeDeliusAddressFromDeliusAddressList(basicDetails.addresses, defaultOffenderAddress),
-        breachNotice.basicDetailsSaved,
-        breachNotice.offenderAddress?.addressId,
-      ),
+    const alternateAddressOptions = addressListToSelectItemList(
+      removeDeliusAddressFromDeliusAddressList(basicDetails.addresses, defaultOffenderAddress),
+      breachNotice.basicDetailsSaved,
+      breachNotice.offenderAddress?.addressId,
     )
 
-    const replyAddressOptions = arrangeSelectItemListAlphabetically(
-      addressListToSelectItemList(
-        removeDeliusAddressFromDeliusAddressList(basicDetails.replyAddresses, defaultReplyAddress),
-        breachNotice.basicDetailsSaved,
-        breachNotice.replyAddress?.addressId,
-      ),
+    const replyAddressOptions = addressListToSelectItemList(
+      removeDeliusAddressFromDeliusAddressList(basicDetails.replyAddresses, defaultReplyAddress),
+      breachNotice.basicDetailsSaved,
+      breachNotice.replyAddress?.addressId,
     )
 
     // show a warning is a previously saved address is no longer returned from the integration
@@ -153,19 +149,16 @@ export default function basicDetailsRoutes(
         res.redirect(`/warning-type/${id}`)
       }
     } else {
-      const alternateAddressOptions = arrangeSelectItemListAlphabetically(
-        addressListToSelectItemList(
-          basicDetails.addresses,
-          updatedBreachNotice.basicDetailsSaved,
-          updatedBreachNotice.offenderAddress?.addressId,
-        ),
+      const alternateAddressOptions = addressListToSelectItemList(
+        basicDetails.addresses,
+        updatedBreachNotice.basicDetailsSaved,
+        updatedBreachNotice.offenderAddress?.addressId,
       )
-      const replyAddressOptions = arrangeSelectItemListAlphabetically(
-        addressListToSelectItemList(
-          basicDetails.replyAddresses,
-          updatedBreachNotice.basicDetailsSaved,
-          updatedBreachNotice.replyAddress?.addressId,
-        ),
+
+      const replyAddressOptions = addressListToSelectItemList(
+        basicDetails.replyAddresses,
+        updatedBreachNotice.basicDetailsSaved,
+        updatedBreachNotice.replyAddress?.addressId,
       )
 
       const basicDetailsDateOfLetter: string = req.body.dateOfLetter
@@ -252,18 +245,27 @@ export default function basicDetailsRoutes(
     breachNoticeSaved: boolean,
     selectedAddressId: number,
   ): SelectItem[] {
-    return [
+    const returnAddressList: SelectItem[] = [
       {
         text: 'Please Select',
         value: '-1',
         selected: true,
       },
-      ...addresses.map(address => ({
-        text: formatAddressForSelectMenuDisplay(address),
-        value: `${address.id}`,
-        selected: breachNoticeSaved && address.id === selectedAddressId,
-      })),
     ]
+    if (addresses) {
+      const orderedAddressList: SelectItem[] = arrangeSelectItemListAlphabetically(
+        addresses.map(address => ({
+          text: formatAddressForSelectMenuDisplay(address),
+          value: `${address.id}`,
+          selected: breachNoticeSaved && address.id === selectedAddressId,
+        })),
+      )
+
+      // eslint-disable-next-line prefer-spread
+      returnAddressList.push.apply(returnAddressList, orderedAddressList)
+    }
+
+    return returnAddressList
   }
 
   function findDefaultAddressInAddressList(addressList: Array<DeliusAddress>): DeliusAddress {
