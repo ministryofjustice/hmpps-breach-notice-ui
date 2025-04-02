@@ -96,7 +96,10 @@ export default function warningDetailsRoutes(
             requirementId: enforceableContactWithRequirement?.requirement?.id,
             requirementTypeMainCategoryDescription: enforceableContactWithRequirement?.requirement?.type?.description,
             requirementTypeSubCategoryDescription: enforceableContactWithRequirement?.requirement?.subType?.description,
-            rejectionReason: req.body[bodyParamBreachReason],
+            rejectionReason: warningDetails.breachReasons
+              .filter(c => c.code === req.body[bodyParamBreachReason])
+              .map(c => c.description)
+              .toString(),
             fromDate: null,
             toDate: null,
           }
@@ -312,6 +315,8 @@ export default function warningDetailsRoutes(
       value: refData.code,
     }))
   }
+
+  // function rejectReasonStringFromId
 
   return router
 }
