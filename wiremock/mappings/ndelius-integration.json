@@ -308,6 +308,103 @@
     },
     {
       "request": {
+        "urlPattern": "/warning-details/X099999/f1234567-12e3-45ba-ba67-1b34bf799999",
+        "method": "GET"
+      },
+      "response": {
+        "status": 200,
+        "jsonBody": {
+          "breachReasons": [
+            {
+              "code": "BR03",
+              "description": "Attended late"
+            }
+          ],
+          "enforceableContacts": [
+            {
+              "id": 0,
+              "datetime": "2025-01-01T12:34:56",
+              "description": "string",
+              "type": {
+                "code": "string",
+                "description": "string"
+              },
+              "outcome": {
+                "code": "string",
+                "description": "string"
+              },
+              "notes": "string",
+              "requirement": {
+                "id": 0,
+                "type": {
+                  "code": "string",
+                  "description": "string"
+                },
+                "subType": {
+                  "code": "string",
+                  "description": "string"
+                }
+              }
+            },
+            {
+              "id": 1,
+              "datetime": "2025-02-02T12:00:00",
+              "description": "string",
+              "type": {
+                "code": "string",
+                "description": "string"
+              },
+              "outcome": {
+                "code": "string",
+                "description": "string"
+              },
+              "notes": "string",
+              "requirement": {
+                "id": 0,
+                "type": {
+                  "code": "string",
+                  "description": "string"
+                },
+                "subType": {
+                  "code": "string",
+                  "description": "string"
+                }
+              }
+            },
+            {
+              "id": 2,
+              "datetime": "2025-01-01T12:34:56",
+              "description": "string",
+              "type": {
+                "code": "string",
+                "description": "string"
+              },
+              "outcome": {
+                "code": "string",
+                "description": "string"
+              },
+              "notes": "string",
+              "requirement": {
+                "id": 1,
+                "type": {
+                  "code": "string",
+                  "description": "string"
+                },
+                "subType": {
+                  "code": "string",
+                  "description": "string"
+                }
+              }
+            }
+          ]
+        },
+        "headers": {
+          "Content-Type": "application/json;charset=UTF-8"
+        }
+      }
+    },
+    {
+      "request": {
         "urlPattern": "/users/(.*?)/access/(.*?)",
         "method": "GET"
       },

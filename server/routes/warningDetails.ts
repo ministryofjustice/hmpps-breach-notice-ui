@@ -232,7 +232,7 @@ export default function warningDetailsRoutes(
     breachNotice: BreachNotice,
   ): WarningDetailsRequirementSelectItem[] {
     if (enforceableContactList) {
-      return enforceableContactList
+      const nonUniqueRequirementList: WarningDetailsRequirementSelectItem[] = enforceableContactList
         .filter(c => c.requirement)
         .map((enforceableContact: EnforceableContact) => {
           const { requirement } = enforceableContact
@@ -257,8 +257,24 @@ export default function warningDetailsRoutes(
             },
           }
         })
+      return removeDuplicateSelectItems(nonUniqueRequirementList)
     }
     return []
+  }
+
+  function removeDuplicateSelectItems(selectItems: WarningDetailsRequirementSelectItem[]) {
+    if (selectItems) {
+      const uniqueSelectItems: WarningDetailsRequirementSelectItem[] = []
+      const uniqueIds: string[] = []
+      selectItems.forEach((warningDetailsRequirementSelectItem: WarningDetailsRequirementSelectItem) => {
+        if (!uniqueIds.find(a => a === warningDetailsRequirementSelectItem.value)) {
+          uniqueSelectItems.push(warningDetailsRequirementSelectItem)
+          uniqueIds.push(warningDetailsRequirementSelectItem.value)
+        }
+      })
+      return uniqueSelectItems
+    }
+    return selectItems
   }
 
   function createSelectItemListFromEnforceableContacts(enforceableContactList: EnforceableContactList): SelectItem[] {
