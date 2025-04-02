@@ -316,7 +316,5 @@ export default function warningDetailsRoutes(
     }))
   }
 
-  // function rejectReasonStringFromId
-
   return router
 }
