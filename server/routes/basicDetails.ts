@@ -261,8 +261,7 @@ export default function basicDetailsRoutes(
         })),
       )
 
-      // eslint-disable-next-line prefer-spread
-      returnAddressList.push.apply(returnAddressList, orderedAddressList)
+      returnAddressList.push(...orderedAddressList)
     }
 
     return returnAddressList
