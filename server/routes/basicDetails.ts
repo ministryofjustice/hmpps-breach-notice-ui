@@ -15,6 +15,7 @@ import BreachNoticeApiClient, { BreachNotice } from '../data/breachNoticeApiClie
 import NdeliusIntegrationApiClient, { BasicDetails, DeliusAddress } from '../data/ndeliusIntegrationApiClient'
 import asyncMiddleware from '../middleware/asyncMiddleware'
 import { ErrorMessages, SelectItem } from '../data/uiModels'
+import { SanitisedError } from '../sanitisedError'
 
 export default function basicDetailsRoutes(
   router: Router,
@@ -33,7 +34,19 @@ export default function basicDetailsRoutes(
     const ndeliusIntegrationApiClient = new NdeliusIntegrationApiClient(token)
 
     const breachNotice = await breachNoticeApiClient.getBreachNoticeById(req.params.id as string)
-    const basicDetails = await ndeliusIntegrationApiClient.getBasicDetails(breachNotice.crn, req.user.username)
+    let basicDetails: BasicDetails = null
+
+    try {
+      basicDetails = await ndeliusIntegrationApiClient.getBasicDetails(breachNotice.crn, req.user.username)
+    } catch (error) {
+      if (error.status === 400 && error.message.includes('No home area found')) {
+        // redirect to error and pass the message in else throw the error
+        // res.redirect(`/detailed-error/${id}`)
+      } else {
+        throw error
+      }
+    }
+
     if (await commonUtils.redirectRequired(breachNotice, res)) return
     const defaultOffenderAddress: DeliusAddress = findDefaultAddressInAddressList(basicDetails.addresses)
     const defaultReplyAddress: DeliusAddress = findDefaultAddressInAddressList(basicDetails.replyAddresses)

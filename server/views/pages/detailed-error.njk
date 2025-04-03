@@ -1,0 +1,8 @@
+{% extends "../partials/layout.njk" %}
+
+{% set pageTitle = applicationName + " - Error" %}
+{% set mainClasses = "app-container govuk-body" %}
+
+{% block content %}
+  <h1>{{ errormessage }}</h1>
+{% endblock %}
