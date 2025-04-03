@@ -15,7 +15,6 @@ import BreachNoticeApiClient, { BreachNotice } from '../data/breachNoticeApiClie
 import NdeliusIntegrationApiClient, { BasicDetails, DeliusAddress } from '../data/ndeliusIntegrationApiClient'
 import asyncMiddleware from '../middleware/asyncMiddleware'
 import { ErrorMessages, SelectItem } from '../data/uiModels'
-import { SanitisedError } from '../sanitisedError'
 
 export default function basicDetailsRoutes(
   router: Router,
@@ -40,8 +39,11 @@ export default function basicDetailsRoutes(
       basicDetails = await ndeliusIntegrationApiClient.getBasicDetails(breachNotice.crn, req.user.username)
     } catch (error) {
       if (error.status === 400 && error.message.includes('No home area found')) {
-        // redirect to error and pass the message in else throw the error
-        // res.redirect(`/detailed-error/${id}`)
+        const errorMessages: ErrorMessages = {}
+        errorMessages.noHomeAreaFound = {
+          text: 'Your Delius account is missing a home area, please contact the service desk to update your account before using this service.',
+        }
+        res.render(`pages/detailed-error`, { errorMessages })
       } else {
         throw error
       }
