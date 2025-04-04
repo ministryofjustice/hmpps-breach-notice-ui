@@ -96,7 +96,8 @@ export default function warningDetailsRoutes(
             requirementId: enforceableContactWithRequirement?.requirement?.id,
             requirementTypeMainCategoryDescription: enforceableContactWithRequirement?.requirement?.type?.description,
             requirementTypeSubCategoryDescription: enforceableContactWithRequirement?.requirement?.subType?.description,
-            rejectionReason: req.body[bodyParamBreachReason],
+            rejectionReason: warningDetails.breachReasons.find(c => c.code === req.body[bodyParamBreachReason])
+              ?.description,
             fromDate: null,
             toDate: null,
           }

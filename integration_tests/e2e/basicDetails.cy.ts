@@ -69,4 +69,12 @@ context('Basic Details page', () => {
       'Reply Address: The previously selected address is no longer available. Please select an alternative.',
     )
   })
+
+  it('ordered lists should always have please select first', () => {
+    cy.visit('/basic-details/f1234567-12e3-45ba-ba67-1b34bf7b0099')
+    cy.get('#alternate-address').should('exist')
+    cy.get('#alternate-address').children().first().should('have.text', 'Please Select')
+    cy.get('#alternate-reply-address').should('exist')
+    cy.get('#alternate-reply-address').children().first().should('have.text', 'Please Select')
+  })
 })
