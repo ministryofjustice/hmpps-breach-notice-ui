@@ -1,0 +1,15 @@
+{% extends "../partials/layout.njk" %}
+
+{% set pageTitle = applicationName + " - Error" %}
+{% set mainClasses = "app-container govuk-body" %}
+
+{% block content %}
+  {% set errorList =[
+    { text: errorMessages.genericErrorMessage.text, href: "#" } if errorMessages.genericErrorMessage else None
+  ] | reject("undefined") %}
+
+  {% if errorMessages | length > 0 %}
+    {% from "govuk/components/error-summary/macro.njk" import govukErrorSummary %}
+    {{ govukErrorSummary({ titleText: "There is a problem", errorList: errorList }) }}
+  {% endif %}
+{% endblock %}

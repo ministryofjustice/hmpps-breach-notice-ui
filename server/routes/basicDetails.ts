@@ -33,7 +33,31 @@ export default function basicDetailsRoutes(
     const ndeliusIntegrationApiClient = new NdeliusIntegrationApiClient(token)
 
     const breachNotice = await breachNoticeApiClient.getBreachNoticeById(req.params.id as string)
-    const basicDetails = await ndeliusIntegrationApiClient.getBasicDetails(breachNotice.crn, req.user.username)
+    let basicDetails: BasicDetails = null
+
+    try {
+      basicDetails = await ndeliusIntegrationApiClient.getBasicDetails(breachNotice.crn, breachNotice.id)
+    } catch (error) {
+      if (error.status === 400 && error.data?.message?.includes('No home area found')) {
+        const errorMessages: ErrorMessages = {}
+        errorMessages.genericErrorMessage = {
+          text: 'Your Delius account is missing a home area, please contact the service desk to update your account before using this service.',
+        }
+        res.render(`pages/detailed-error`, { errorMessages })
+        return
+      }
+      if (error.status === 400 && error.data?.message?.includes('is not sentenced')) {
+        const errorMessages: ErrorMessages = {}
+        errorMessages.genericErrorMessage = {
+          text: 'Breach actions cannot be created pre-sentence. If this event has a valid sentence please contact the service desk and report this error.',
+        }
+        res.render(`pages/detailed-error`, { errorMessages })
+        return
+      }
+
+      throw error
+    }
+
     if (await commonUtils.redirectRequired(breachNotice, res)) return
     const defaultOffenderAddress: DeliusAddress = findDefaultAddressInAddressList(basicDetails.addresses)
     const defaultReplyAddress: DeliusAddress = findDefaultAddressInAddressList(basicDetails.replyAddresses)
@@ -72,7 +96,14 @@ export default function basicDetailsRoutes(
 
   function validateAddressesPresent(selectedAddressId: number, replyAddresses: DeliusAddress[]): ErrorMessages {
     const errorMessages: ErrorMessages = {}
-    if (selectedAddressId) {
+    // we have a selected address but no addresses returned from the integration
+    if (selectedAddressId && !replyAddresses) {
+      errorMessages.replyAddress = {
+        text: 'Reply Address: The previously selected address is no longer available. Please select an alternative.',
+      }
+    }
+    // we have an address list returned and a previously saved address
+    if (selectedAddressId && replyAddresses) {
       if (!replyAddresses.find(a => a.id === selectedAddressId)) {
         errorMessages.replyAddress = {
           text: 'Reply Address: The previously selected address is no longer available. Please select an alternative.',
@@ -268,11 +299,14 @@ export default function basicDetailsRoutes(
   }
 
   function findDefaultAddressInAddressList(addressList: Array<DeliusAddress>): DeliusAddress {
-    return (
-      addressList.find(a => a.status === 'Default') ??
-      addressList.find(a => a.status === 'Postal') ??
-      addressList.find(a => a.status === 'Main')
-    )
+    if (addressList) {
+      return (
+        addressList.find(a => a.status === 'Default') ??
+        addressList.find(a => a.status === 'Postal') ??
+        addressList.find(a => a.status === 'Main')
+      )
+    }
+    return null
   }
 
   return router
