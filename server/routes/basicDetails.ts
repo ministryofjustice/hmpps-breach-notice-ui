@@ -38,17 +38,17 @@ export default function basicDetailsRoutes(
     try {
       basicDetails = await ndeliusIntegrationApiClient.getBasicDetails(breachNotice.crn, breachNotice.id)
     } catch (error) {
-      if (error.status === 400 && error.data.message.includes('No home area found')) {
+      if (error.status === 400 && error.data?.message?.includes('No home area found')) {
         const errorMessages: ErrorMessages = {}
-        errorMessages.noHomeAreaFound = {
+        errorMessages.genericErrorMessage = {
           text: 'Your Delius account is missing a home area, please contact the service desk to update your account before using this service.',
         }
         res.render(`pages/detailed-error`, { errorMessages })
         return
       }
-      if (error.status === 400 && error.data.message.includes('is not sentenced')) {
+      if (error.status === 400 && error.data?.message?.includes('is not sentenced')) {
         const errorMessages: ErrorMessages = {}
-        errorMessages.noHomeAreaFound = {
+        errorMessages.genericErrorMessage = {
           text: 'Breach actions cannot be created pre-sentence. If this event has a valid sentence please contact the service desk and report this error.',
         }
         res.render(`pages/detailed-error`, { errorMessages })

@@ -5,12 +5,11 @@
 
 {% block content %}
   {% set errorList =[
-    { text: errorMessages.noHomeAreaFound.text, href: "#" } if errorMessages.noHomeAreaFound else None
+    { text: errorMessages.genericErrorMessage.text, href: "#" } if errorMessages.genericErrorMessage else None
   ] | reject("undefined") %}
 
   {% if errorMessages | length > 0 %}
     {% from "govuk/components/error-summary/macro.njk" import govukErrorSummary %}
-
     {{ govukErrorSummary({ titleText: "There is a problem", errorList: errorList }) }}
   {% endif %}
 {% endblock %}
