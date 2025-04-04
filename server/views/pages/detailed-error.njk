@@ -4,5 +4,13 @@
 {% set mainClasses = "app-container govuk-body" %}
 
 {% block content %}
-  <h1>{{ errormessage }}</h1>
+  {% set errorList =[
+    { text: errorMessages.noHomeAreaFound.text, href: "#" } if errorMessages.noHomeAreaFound else None
+  ] | reject("undefined") %}
+
+  {% if errorMessages | length > 0 %}
+    {% from "govuk/components/error-summary/macro.njk" import govukErrorSummary %}
+
+    {{ govukErrorSummary({ titleText: "There is a problem", errorList: errorList }) }}
+  {% endif %}
 {% endblock %}

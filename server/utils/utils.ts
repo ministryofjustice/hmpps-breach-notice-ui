@@ -85,7 +85,7 @@ export function removeDeliusAddressFromDeliusAddressList(
   deliusAddressList: DeliusAddress[],
   defaultAddress: DeliusAddress,
 ): DeliusAddress[] {
-  if (defaultAddress) {
+  if (defaultAddress && deliusAddressList) {
     return deliusAddressList.filter(obj => obj.id !== defaultAddress.id)
   }
   return deliusAddressList
