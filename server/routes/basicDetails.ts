@@ -36,7 +36,7 @@ export default function basicDetailsRoutes(
     let basicDetails: BasicDetails = null
 
     try {
-      basicDetails = await ndeliusIntegrationApiClient.getBasicDetails(breachNotice.crn, breachNotice.id)
+      basicDetails = await ndeliusIntegrationApiClient.getBasicDetails(breachNotice.crn, req.user.username)
     } catch (error) {
       if (error.status === 400 && error.data?.message?.includes('No home area found')) {
         const errorMessages: ErrorMessages = {}
