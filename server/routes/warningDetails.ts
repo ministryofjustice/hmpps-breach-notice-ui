@@ -214,6 +214,11 @@ export default function warningDetailsRoutes(
       breachNotice,
     )
 
+    warningDetails.enforceableContacts.forEach(contact => {
+      // eslint-disable-next-line no-param-reassign
+      contact.notes = contact.notes.replace(/(\r\n|\r|\n)/g, '<br>')
+    })
+
     const failuresRecorded = createSelectItemListFromEnforceableContacts(warningDetails.enforceableContacts)
     res.render(`pages/warning-details`, {
       breachNotice,
