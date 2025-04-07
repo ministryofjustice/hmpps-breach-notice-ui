@@ -5,7 +5,11 @@ import { HmppsAuthClient } from '../data'
 import CommonUtils from '../services/commonUtils'
 import { toUserDate, toUserTime } from '../utils/dateUtils'
 import asyncMiddleware from '../middleware/asyncMiddleware'
-import NdeliusIntegrationApiClient, { FutureAppointment, Name } from '../data/ndeliusIntegrationApiClient'
+import NdeliusIntegrationApiClient, {
+  DeliusAddress,
+  FutureAppointment,
+  Name,
+} from '../data/ndeliusIntegrationApiClient'
 import { ErrorMessages, RadioButton } from '../data/uiModels'
 
 export default function nextAppointmentRoutes(
@@ -73,9 +77,7 @@ export default function nextAppointmentRoutes(
         breachNotice.nextAppointmentId = futureAppointment.id
         breachNotice.nextAppointmentDate = futureAppointment.datetime
         breachNotice.nextAppointmentType = futureAppointment.type.code
-        breachNotice.nextAppointmentLocation = futureAppointment.location.buildingNumber
-          .concat(` ${futureAppointment.location.streetName}`)
-          .trim()
+        breachNotice.nextAppointmentLocation = locationDisplayValue(futureAppointment.location)
         breachNotice.nextAppointmentOfficer = officerDisplayValue(futureAppointment.officer.name)
       })
     breachNotice.responsibleOfficer = officerDisplayValue(nextAppointmentDetails.responsibleOfficer.name)
@@ -149,7 +151,7 @@ export default function nextAppointmentRoutes(
         futureAppointment.type.description,
         toUserDate(futureAppointment.datetime.substring(0, 10)),
         toUserTime(futureAppointment.datetime),
-        `${futureAppointment.location.buildingNumber} ${futureAppointment.location.streetName}`.trim(),
+        locationDisplayValue(futureAppointment.location),
         officerDisplayValue(futureAppointment.officer.name),
       ]
         .filter(item => item)
@@ -162,6 +164,10 @@ export default function nextAppointmentRoutes(
 
   function officerDisplayValue(officer: Name): string {
     return [officer.forename, officer.middleName, officer.surname].filter(item => item).join(', ')
+  }
+
+  function locationDisplayValue(address?: DeliusAddress): string {
+    return [address?.buildingNumber, address?.streetName].filter(item => item).join(' ')
   }
 
   return router
