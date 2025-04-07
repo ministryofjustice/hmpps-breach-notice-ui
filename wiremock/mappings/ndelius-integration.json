@@ -108,7 +108,7 @@
 
     {
       "request": {
-        "urlPattern": "/basic-details/X123459/f9999999-12e3-45ba-ba67-1b34bf7b9999",
+        "urlPattern": "/basic-details/X123459/(.*?)",
         "method": "GET"
       },
       "response": {
@@ -123,7 +123,7 @@
     },
     {
       "request": {
-        "urlPattern": "/basic-details/P121212/f1111111-12e3-45ba-ba67-1b34bf7b1111",
+        "urlPattern": "/basic-details/P121212/(.*?)",
         "method": "GET"
       },
       "response": {
