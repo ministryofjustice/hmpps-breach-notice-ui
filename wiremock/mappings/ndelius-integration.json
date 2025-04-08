@@ -280,7 +280,7 @@
                 "code": "string",
                 "description": "string"
               },
-              "notes": "string",
+              "notes": "Tier Change Date: 09/09/2014\nTier: 1\nTier Change Reason: Initial Assessment",
               "requirement": {
                 "id": 0,
                 "type": {
