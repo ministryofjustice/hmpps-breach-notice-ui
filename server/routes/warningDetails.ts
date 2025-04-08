@@ -214,10 +214,12 @@ export default function warningDetailsRoutes(
       breachNotice,
     )
 
-    warningDetails.enforceableContacts.forEach(contact => {
-      // eslint-disable-next-line no-param-reassign
-      contact.notes = contact.notes.replace(/(\r\n|\r|\n)/g, '<br>')
-    })
+    if (warningDetails.enforceableContacts != null && warningDetails.enforceableContacts.length !== 0) {
+      warningDetails.enforceableContacts.forEach(contact => {
+        // eslint-disable-next-line no-param-reassign
+        contact.notes = contact.notes.replace(/(\r\n|\r|\n)/g, '<br>')
+      })
+    }
 
     const failuresRecorded = createSelectItemListFromEnforceableContacts(warningDetails.enforceableContacts)
     res.render(`pages/warning-details`, {
