@@ -76,7 +76,7 @@ export default function nextAppointmentRoutes(
       .forEach((futureAppointment: FutureAppointment) => {
         breachNotice.nextAppointmentId = futureAppointment.id
         breachNotice.nextAppointmentDate = futureAppointment.datetime
-        breachNotice.nextAppointmentType = futureAppointment.type.code
+        breachNotice.nextAppointmentType = futureAppointment.type.description
         breachNotice.nextAppointmentLocation = locationDisplayValue(futureAppointment.location)
         breachNotice.nextAppointmentOfficer = officerDisplayValue(futureAppointment.officer.name)
       })
