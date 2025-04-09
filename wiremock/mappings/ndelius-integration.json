@@ -265,6 +265,10 @@
             {
               "code": "BR03",
               "description": "Attended late"
+            },
+            {
+              "code": "BR04",
+              "description": "Did Not Comply"
             }
           ],
           "enforceableContacts": [
