@@ -1,7 +1,11 @@
 import { type RequestHandler, Router } from 'express'
 import AuditService, { Page } from '../services/auditService'
 import BreachNoticeApiClient, { BreachNotice } from '../data/breachNoticeApiClient'
-import NdeliusIntegrationApiClient, { SentenceType, WarningType } from '../data/ndeliusIntegrationApiClient'
+import NdeliusIntegrationApiClient, {
+  SentenceType,
+  WarningType,
+  WarningTypeWrapper,
+} from '../data/ndeliusIntegrationApiClient'
 import { HmppsAuthClient } from '../data'
 import CommonUtils from '../services/commonUtils'
 import asyncMiddleware from '../middleware/asyncMiddleware'
@@ -25,10 +29,31 @@ export default function warningTypeRoutes(
     const { id } = req.params
     const breachNotice: BreachNotice = await breachNoticeApiClient.getBreachNoticeById(id)
     if (await commonUtils.redirectRequired(breachNotice, res)) return
-    const { warningTypes, sentenceTypes, defaultSentenceTypeCode } = await ndeliusIntegrationApiClient.getWarningTypes(
-      breachNotice.crn,
-      id,
-    )
+    let warningTypes: WarningType[] = []
+    let sentenceTypes: SentenceType[] = []
+    let defaultSentenceTypeCode: string = null
+
+    try {
+      const warningTypeWrapper: WarningTypeWrapper = await ndeliusIntegrationApiClient.getWarningTypes(
+        breachNotice.crn,
+        id,
+      )
+      if (warningTypeWrapper) {
+        warningTypes = warningTypeWrapper.warningTypes
+        sentenceTypes = warningTypeWrapper.sentenceTypes
+        defaultSentenceTypeCode = warningTypeWrapper.defaultSentenceTypeCode
+      }
+    } catch (error) {
+      if (error.status === 400 && error.data?.message?.includes('is not sentenced')) {
+        const errorMessages: ErrorMessages = {}
+        errorMessages.genericErrorMessage = {
+          text: 'Breach actions cannot be created pre-sentence. If this event has a valid sentence please contact the service desk and report this error.',
+        }
+        res.render(`pages/detailed-error`, { errorMessages })
+        return
+      }
+      throw error
+    }
 
     const warningTypeRadioButtons: Array<RadioButton> = initiateWarningTypeRadioButtonsAndApplySavedSelections(
       warningTypes,
