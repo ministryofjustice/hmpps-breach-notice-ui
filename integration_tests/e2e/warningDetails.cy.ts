@@ -38,4 +38,11 @@ context('Warning Details page', () => {
     cy.get('input[type="checkbox"]').as('checkboxes')
     cy.get('@checkboxes').should('have.length', 2)
   })
+
+  it('should remember the saved failure reason for the requirement', () => {
+    cy.visit('/warning-details/c8888888-12e3-45ba-ba67-1b34bf7b8888')
+    cy.url().should('include', '/warning-details/c8888888-12e3-45ba-ba67-1b34bf7b8888')
+    cy.get('#breachreason0').should('exist')
+    cy.get('#breachreason0').find('option:selected').should('have.text', 'Another Reason')
+  })
 })

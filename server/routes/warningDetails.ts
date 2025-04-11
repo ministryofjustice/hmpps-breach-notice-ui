@@ -308,7 +308,7 @@ export default function warningDetailsRoutes(
       return {
         text: referenceData.description,
         value: referenceData.code,
-        selected: requirement && requirement?.rejectionReason === referenceData.code,
+        selected: requirement && requirement?.rejectionReason === referenceData.description,
       }
     })
   }
