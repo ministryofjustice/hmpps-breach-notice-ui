@@ -123,21 +123,6 @@
     },
     {
       "request": {
-        "urlPattern": "/basic-details/P121212/(.*?)",
-        "method": "GET"
-      },
-      "response": {
-        "status": 400,
-        "jsonBody": {
-          "message": "Event with id 123456 is not sentenced"
-        },
-        "headers": {
-          "Content-Type": "application/json;charset=UTF-8"
-        }
-      }
-    },
-    {
-      "request": {
         "urlPattern": "/basic-details/X012496/f1234567-12e3-45ba-ba67-1b34bf7b0099",
         "method": "GET"
       },
@@ -247,6 +232,21 @@
             }
           ],
           "defaultSentenceTypeCode": "SDO"
+        },
+        "headers": {
+          "Content-Type": "application/json;charset=UTF-8"
+        }
+      }
+    },
+    {
+      "request": {
+        "urlPattern": "/warning-types/P121212/(.*?)",
+        "method": "GET"
+      },
+      "response": {
+        "status": 400,
+        "jsonBody": {
+          "message": "Event with id 123456 is not sentenced"
         },
         "headers": {
           "Content-Type": "application/json;charset=UTF-8"

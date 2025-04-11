@@ -46,15 +46,6 @@ export default function basicDetailsRoutes(
         res.render(`pages/detailed-error`, { errorMessages })
         return
       }
-      if (error.status === 400 && error.data?.message?.includes('is not sentenced')) {
-        const errorMessages: ErrorMessages = {}
-        errorMessages.genericErrorMessage = {
-          text: 'Breach actions cannot be created pre-sentence. If this event has a valid sentence please contact the service desk and report this error.',
-        }
-        res.render(`pages/detailed-error`, { errorMessages })
-        return
-      }
-
       throw error
     }
 
