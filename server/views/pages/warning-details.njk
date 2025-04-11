@@ -45,11 +45,12 @@
         {% if warningDetails.enforceableContacts | length > 0 %}
           {% for failure in warningDetails.enforceableContacts %}
             <p>
+              {% set failureHtml = failure.notes | escape | nl2br | safe %}
               {{ failure.datetime | toUserDate }}, {{ failure.type.description }}, {{ failure.outcome.description }},
 
               {{ govukDetails({
                 summaryText: "View failure notes",
-                html: failure.notes
+                html: failureHtml
               }) }}
             </p>
           {% endfor %}

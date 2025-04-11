@@ -45,4 +45,9 @@ context('Warning Details page', () => {
     cy.get('#breachreason0').should('exist')
     cy.get('#breachreason0').find('option:selected').should('have.text', 'Another Reason')
   })
+
+  it('should load when enforceable contacts have no notes specified', () => {
+    cy.visit('/warning-details/d3333333-12e3-45ba-ba67-1b34bf7b3333')
+    cy.url().should('include', '/warning-details/d3333333-12e3-45ba-ba67-1b34bf7b3333')
+  })
 })
