@@ -50,4 +50,10 @@ context('Warning Details page', () => {
     cy.visit('/warning-details/d3333333-12e3-45ba-ba67-1b34bf7b3333')
     cy.url().should('include', '/warning-details/d3333333-12e3-45ba-ba67-1b34bf7b3333')
   })
+
+  it('should escape the text and show new lines correctly', () => {
+    cy.visit('/warning-details/d3333333-12e3-45ba-ba67-1b34bf7b3333')
+    cy.get('.govuk-details__text').last().as('finalWarningDetail')
+    cy.get('@finalWarningDetail').should('contain.html', '    &lt;script&gt; new<br>\nline')
+  })
 })
