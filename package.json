@@ -81,7 +81,7 @@
     "@aws-sdk/client-sns": "^3.782.0",
     "@aws-sdk/client-sqs": "^3.782.0",
     "@js-joda/core": "^5.6.5",
-    "@ministryofjustice/frontend": "^4.0.2",
+    "@ministryofjustice/frontend": "^5.1.2",
     "@ministryofjustice/hmpps-monitoring": "^0.0.1-beta.2",
     "@types/qs": "^6.9.18",
     "agentkeepalive": "^4.6.0",
