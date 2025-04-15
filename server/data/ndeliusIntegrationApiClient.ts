@@ -52,9 +52,10 @@ export interface BasicDetails {
 }
 
 export interface LimitedAccessCheck {
-  isExcluded: boolean
+  crn: string
+  userExcluded: boolean
   exclusionMessage?: string
-  isRestricted: boolean
+  userRestricted: boolean
   restrictionMessage?: string
 }
 

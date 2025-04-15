@@ -14,7 +14,7 @@ export default class CommonUtils {
       breachNotice.crn,
       res.locals.user.username,
     )
-    if (laoCheck.isExcluded || laoCheck.isRestricted) {
+    if (laoCheck.userExcluded || laoCheck.userRestricted) {
       res.render('pages/limited-access', {
         laoCheck,
       })
@@ -36,7 +36,7 @@ export default class CommonUtils {
       breachNotice.crn,
       res.locals.user.username,
     )
-    if (laoCheck.isExcluded || laoCheck.isRestricted) {
+    if (laoCheck.userExcluded || laoCheck.userRestricted) {
       res.render('pages/limited-access', {
         laoCheck,
       })
