@@ -1,10 +1,9 @@
-import { type RequestHandler, Response, Router } from 'express'
+import { Response, Router } from 'express'
 import AuditService, { Page } from '../services/auditService'
 import BreachNoticeApiClient, { BreachNotice } from '../data/breachNoticeApiClient'
 import { HmppsAuthClient } from '../data'
 import CommonUtils from '../services/commonUtils'
 import { toUserDate, toUserDateFromDateTime, toUserTimeFromDateTime } from '../utils/dateUtils'
-import asyncMiddleware from '../middleware/asyncMiddleware'
 import { ErrorMessages } from '../data/uiModels'
 
 export default function checkYourReportRoutes(
@@ -13,9 +12,7 @@ export default function checkYourReportRoutes(
   hmppsAuthClient: HmppsAuthClient,
   commonUtils: CommonUtils,
 ): Router {
-  const get = (path: string | string[], handler: RequestHandler) => router.get(path, asyncMiddleware(handler))
-  const post = (path: string | string[], handler: RequestHandler) => router.post(path, asyncMiddleware(handler))
-  get('/check-your-report/:id', async (req, res, next) => {
+  router.get('/check-your-report/:id', async (req, res, next) => {
     await auditService.logPageView(Page.CHECK_YOUR_REPORT, { who: res.locals.user.username, correlationId: req.id })
     const breachNoticeApiClient = new BreachNoticeApiClient(
       await hmppsAuthClient.getSystemClientToken(res.locals.user.username),
@@ -70,7 +67,7 @@ export default function checkYourReportRoutes(
     })
   }
 
-  post('/check-your-report/:id', async (req, res, next) => {
+  router.post('/check-your-report/:id', async (req, res, next) => {
     await auditService.logPageView(Page.CHECK_YOUR_REPORT, { who: res.locals.user.username, correlationId: req.id })
     const breachNoticeApiClient = new BreachNoticeApiClient(
       await hmppsAuthClient.getSystemClientToken(res.locals.user.username),
