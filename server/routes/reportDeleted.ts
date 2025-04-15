@@ -1,7 +1,6 @@
-import { type RequestHandler, Router } from 'express'
+import { Router } from 'express'
 import AuditService, { Page } from '../services/auditService'
 import BreachNoticeApiClient from '../data/breachNoticeApiClient'
-import asyncMiddleware from '../middleware/asyncMiddleware'
 import { HmppsAuthClient } from '../data'
 
 export default function reportDeletedRoutes(
@@ -9,8 +8,7 @@ export default function reportDeletedRoutes(
   auditService: AuditService,
   hmppsAuthClient: HmppsAuthClient,
 ): Router {
-  const get = (path: string | string[], handler: RequestHandler) => router.get(path, asyncMiddleware(handler))
-  get('/report-deleted/:id', async (req, res, next) => {
+  router.get('/report-deleted/:id', async (req, res, next) => {
     await auditService.logPageView(Page.REPORT_DELETED, { who: res.locals.user.username, correlationId: req.id })
     const breachNoticeApiClient = new BreachNoticeApiClient(
       await hmppsAuthClient.getSystemClientToken(res.locals.user.username),

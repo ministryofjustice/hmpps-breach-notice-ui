@@ -1,4 +1,4 @@
-import { type RequestHandler, Router } from 'express'
+import { Router } from 'express'
 import AuditService, { Page } from '../services/auditService'
 import BreachNoticeApiClient, { BreachNotice } from '../data/breachNoticeApiClient'
 import NdeliusIntegrationApiClient, {
@@ -8,7 +8,6 @@ import NdeliusIntegrationApiClient, {
 } from '../data/ndeliusIntegrationApiClient'
 import { HmppsAuthClient } from '../data'
 import CommonUtils from '../services/commonUtils'
-import asyncMiddleware from '../middleware/asyncMiddleware'
 import { ErrorMessages, RadioButton, SelectItem } from '../data/uiModels'
 
 export default function warningTypeRoutes(
@@ -18,10 +17,8 @@ export default function warningTypeRoutes(
   commonUtils: CommonUtils,
 ): Router {
   const currentPage = 'warning-type'
-  const get = (path: string | string[], handler: RequestHandler) => router.get(path, asyncMiddleware(handler))
-  const post = (path: string | string[], handler: RequestHandler) => router.post(path, asyncMiddleware(handler))
 
-  get('/warning-type/:id', async (req, res, next) => {
+  router.get('/warning-type/:id', async (req, res, next) => {
     await auditService.logPageView(Page.WARNING_TYPE, { who: res.locals.user.username, correlationId: req.id })
     const token = await hmppsAuthClient.getSystemClientToken(res.locals.user.username)
     const breachNoticeApiClient = new BreachNoticeApiClient(token)
@@ -74,7 +71,7 @@ export default function warningTypeRoutes(
     })
   })
 
-  post('/warning-type/:id', async (req, res, next) => {
+  router.post('/warning-type/:id', async (req, res, next) => {
     const token = await hmppsAuthClient.getSystemClientToken(res.locals.user.username)
     const breachNoticeApiClient = new BreachNoticeApiClient(token)
     const ndeliusIntegrationApiClient = new NdeliusIntegrationApiClient(token)

@@ -1,10 +1,9 @@
-import { type RequestHandler, Router } from 'express'
+import { Router } from 'express'
 import AuditService, { Page } from '../services/auditService'
 import BreachNoticeApiClient, { BreachNotice } from '../data/breachNoticeApiClient'
 import { HmppsAuthClient } from '../data'
 import CommonUtils from '../services/commonUtils'
 import { toUserDate, toUserTime } from '../utils/dateUtils'
-import asyncMiddleware from '../middleware/asyncMiddleware'
 import NdeliusIntegrationApiClient, {
   DeliusAddress,
   FutureAppointment,
@@ -19,10 +18,8 @@ export default function nextAppointmentRoutes(
   commonUtils: CommonUtils,
 ): Router {
   const currentPage = 'next-appointment'
-  const get = (path: string | string[], handler: RequestHandler) => router.get(path, asyncMiddleware(handler))
-  const post = (path: string | string[], handler: RequestHandler) => router.post(path, asyncMiddleware(handler))
 
-  get('/next-appointment/:id', async (req, res, next) => {
+  router.get('/next-appointment/:id', async (req, res, next) => {
     await auditService.logPageView(Page.NEXT_APPOINTMENT, { who: res.locals.user.username, correlationId: req.id })
     const token = await hmppsAuthClient.getSystemClientToken(res.locals.user.username)
     const breachNoticeApiClient = new BreachNoticeApiClient(token)
@@ -49,7 +46,7 @@ export default function nextAppointmentRoutes(
     })
   })
 
-  post('/next-appointment/:id', async (req, res, next) => {
+  router.post('/next-appointment/:id', async (req, res, next) => {
     await auditService.logPageView(Page.NEXT_APPOINTMENT, { who: res.locals.user.username, correlationId: req.id })
     const token = await hmppsAuthClient.getSystemClientToken(res.locals.user.username)
     const ndeliusIntegrationApiClient = new NdeliusIntegrationApiClient(token)

@@ -1,4 +1,4 @@
-import { type RequestHandler, type Router } from 'express'
+import { Router } from 'express'
 import { LocalDate, LocalDateTime } from '@js-joda/core'
 import AuditService, { Page } from '../services/auditService'
 import { fromUserDate, toUserDate } from '../utils/dateUtils'
@@ -13,7 +13,6 @@ import {
 } from '../utils/utils'
 import BreachNoticeApiClient, { BreachNotice } from '../data/breachNoticeApiClient'
 import NdeliusIntegrationApiClient, { BasicDetails, DeliusAddress } from '../data/ndeliusIntegrationApiClient'
-import asyncMiddleware from '../middleware/asyncMiddleware'
 import { ErrorMessages, SelectItem } from '../data/uiModels'
 
 export default function basicDetailsRoutes(
@@ -23,10 +22,8 @@ export default function basicDetailsRoutes(
   commonUtils: CommonUtils,
 ): Router {
   const currentPage = 'basic-details'
-  const get = (path: string | string[], handler: RequestHandler) => router.get(path, asyncMiddleware(handler))
-  const post = (path: string | string[], handler: RequestHandler) => router.post(path, asyncMiddleware(handler))
 
-  get('/basic-details/:id', async (req, res, next) => {
+  router.get('/basic-details/:id', async (req, res, next) => {
     await auditService.logPageView(Page.BASIC_DETAILS, { who: res.locals.user.username, correlationId: req.id })
     const token = await hmppsAuthClient.getSystemClientToken(res.locals.user.username)
     const breachNoticeApiClient = new BreachNoticeApiClient(token)
@@ -104,7 +101,7 @@ export default function basicDetailsRoutes(
     return errorMessages
   }
 
-  post('/basic-details/:id', async (req, res, next) => {
+  router.post('/basic-details/:id', async (req, res, next) => {
     const token = await hmppsAuthClient.getSystemClientToken(res.locals.user.username)
     const breachNoticeApiClient = new BreachNoticeApiClient(token)
     const ndeliusIntegrationApiClient = new NdeliusIntegrationApiClient(token)
