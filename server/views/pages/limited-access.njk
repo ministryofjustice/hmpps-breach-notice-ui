@@ -18,11 +18,11 @@
                     Access to this record is Restricted
                 </h1>
                 <div class="govuk-panel__body">
-                    {% if laoCheck.isExcluded %}
+                    {% if laoCheck.userExcluded %}
                         <span id="exclusionText">{{ laoCheck.exclusionMessage }}</span>
                     {% endif %}
-                    {% if laoCheck.isRestricted %}
-                        {% if laoCheck.isExcluded %}
+                    {% if laoCheck.userRestricted %}
+                        {% if laoCheck.userExcluded %}
                             <br/>
                         {% endif %}
                         <span id="restrictionText">{{ laoCheck.restrictionMessage }}</span>

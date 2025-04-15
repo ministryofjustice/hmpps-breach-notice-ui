@@ -647,8 +647,8 @@
       "response": {
         "status": 200,
         "jsonBody": {
-          "isExcluded": false,
-          "isRestricted": false
+          "userExcluded": false,
+          "userRestricted": false
         },
         "headers": {
           "Content-Type": "application/json;charset=UTF-8"
@@ -663,9 +663,10 @@
       "response": {
         "status": 200,
         "jsonBody": {
-          "isExcluded": true,
+          "crn": "X100501",
+          "userExcluded": true,
           "exclusionMessage": "If you believe you should be able to access this record please contact [whoever]",
-          "isRestricted": false
+          "userRestricted": false
         },
         "headers": {
           "Content-Type": "application/json;charset=UTF-8"
@@ -680,8 +681,9 @@
       "response": {
         "status": 200,
         "jsonBody": {
-          "isExcluded": false,
-          "isRestricted": true,
+          "crn": "X100502",
+          "userExcluded": false,
+          "userRestricted": true,
           "restrictionMessage": "If you believe you should be able to access this record please contact [whoever]"
         },
         "headers": {
@@ -697,9 +699,10 @@
       "response": {
         "status": 200,
         "jsonBody": {
-          "isExcluded": true,
+          "crn": "X100503",
+          "userExcluded": true,
           "exclusionMessage": "If you believe you should be able to access this record please contact [whoever]",
-          "isRestricted": true,
+          "userRestricted": true,
           "restrictionMessage": "If you believe you should be able to access this record please contact [whoever]"
         },
         "headers": {
