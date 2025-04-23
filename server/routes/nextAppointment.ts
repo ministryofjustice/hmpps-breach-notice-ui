@@ -1,4 +1,5 @@
 import { Router } from 'express'
+import { LocalDate, LocalDateTime } from '@js-joda/core'
 import AuditService, { Page } from '../services/auditService'
 import BreachNoticeApiClient, { BreachNotice } from '../data/breachNoticeApiClient'
 import { HmppsAuthClient } from '../data'
@@ -28,6 +29,12 @@ export default function nextAppointmentRoutes(
     const { id } = req.params
     const breachNotice: BreachNotice = await breachNoticeApiClient.getBreachNoticeById(id as string)
     const nextAppointmentDetails = await ndeliusIntegrationApiClient.getNextAppointmentDetails(breachNotice.crn)
+    nextAppointmentDetails.futureAppointments = nextAppointmentDetails.futureAppointments
+      .filter(fa => !LocalDateTime.parse(fa.datetime).isBefore(LocalDate.now().atStartOfDay()))
+      .sort((a: FutureAppointment, b: FutureAppointment) => {
+        return +new Date(a.datetime) - +new Date(b.datetime)
+      })
+      .slice(0, 5)
     const appointmentRadioButtons: Array<RadioButton> = initiateNextAppointmentRadioButtonsAndApplySavedSelections(
       nextAppointmentDetails.futureAppointments,
       breachNotice,
