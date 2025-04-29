@@ -46,4 +46,12 @@ context('Warning Type page', () => {
       'Breach actions cannot be created pre-sentence. If this event has a valid sentence please contact the service desk and report this error.',
     )
   })
+
+  it('should return to check your report if came from check your report', () => {
+    cy.visit('/warning-type/00000000-1111-2222-3333-000000000001/check-your-report')
+    cy.url().should('include', '/warning-type')
+    cy.get('#warningType').click()
+    cy.get('#continue-button').click()
+    cy.url().should('include', '/check-your-report/')
+  })
 })

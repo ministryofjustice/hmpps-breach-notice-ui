@@ -47,6 +47,60 @@
     },
     {
       "request": {
+        "url": "/breach-notice-api/breach-notice/00000000-1111-2222-3333-000000000001",
+        "method": "GET"
+      },
+      "response": {
+        "status": 200,
+        "jsonBody": {
+          "id": "00000000-1111-2222-3333-000000000001",
+          "crn": "R012345",
+          "titleAndFullName": null,
+          "dateOfLetter": null,
+          "referenceNumber": null,
+          "responseRequiredDate": null,
+          "breachNoticeTypeCode": null,
+          "breachNoticeTypeDescription": null,
+          "breachConditionTypeCode": null,
+          "breachConditionTypeDescription": null,
+          "breachSentenceTypeCode": null,
+          "breachSentenceTypeDescription": null,
+          "responsibleOfficer": null,
+          "contactNumber": null,
+          "nextAppointmentType": null,
+          "nextAppointmentDate": null,
+          "nextAppointmentLocation": null,
+          "nextAppointmentOfficer": null,
+          "nextAppointmentContact": null,
+          "completedDate": null,
+          "offenderAddress": null,
+          "replyAddress": null,
+          "basicDetailsSaved": true,
+          "warningTypeSaved": true,
+          "warningDetailsSaved": true,
+          "nextAppointmentSaved": true,
+          "useDefaultAddress": null,
+          "useDefaultReplyAddress": null,
+          "breachNoticeContactList": null,
+          "breachNoticeRequirementList": null
+        },
+        "headers": {
+          "Content-Type": "application/json;charset=UTF-8"
+        },
+        "transformers": ["response-template"]
+      }
+    },
+    {
+      "request": {
+        "url": "/breach-notice-api/breach-notice/00000000-1111-2222-3333-000000000001",
+        "method": "PUT"
+      },
+      "response": {
+        "status": 200
+      }
+    },
+    {
+      "request": {
         "url": "/breach-notice-api/breach-notice/f9999999-12e3-45ba-ba67-1b34bf7b9999",
         "method": "GET"
       },
@@ -445,6 +499,7 @@
         "transformers": ["response-template"]
       }
     },
+
     {
       "request": {
         "url": "/breach-notice-api/breach-notice/00000000-0000-0000-0000-000000000001",

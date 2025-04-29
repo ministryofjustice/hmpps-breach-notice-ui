@@ -23,7 +23,7 @@ export default function basicDetailsRoutes(
 ): Router {
   const currentPage = 'basic-details'
 
-  router.get('/basic-details/:id', async (req, res, next) => {
+  router.get(['/basic-details/:id', '/basic-details/:id/:callingscreen'], async (req, res, next) => {
     await auditService.logPageView(Page.BASIC_DETAILS, { who: res.locals.user.username, correlationId: req.id })
     const token = await hmppsAuthClient.getSystemClientToken(res.locals.user.username)
     const breachNoticeApiClient = new BreachNoticeApiClient(token)
@@ -101,11 +101,11 @@ export default function basicDetailsRoutes(
     return errorMessages
   }
 
-  router.post('/basic-details/:id', async (req, res, next) => {
+  router.post(['/basic-details/:id', '/basic-details/:id/:callingscreen'], async (req, res, next) => {
     const token = await hmppsAuthClient.getSystemClientToken(res.locals.user.username)
     const breachNoticeApiClient = new BreachNoticeApiClient(token)
     const ndeliusIntegrationApiClient = new NdeliusIntegrationApiClient(token)
-
+    const callingScreen: string = req.params.callingscreen
     const { id } = req.params
     const currentBreachNotice = await breachNoticeApiClient.getBreachNoticeById(req.params.id as string)
 
@@ -164,6 +164,8 @@ export default function basicDetailsRoutes(
         res.send(
           `<p>You can now safely close this window</p><script nonce="${res.locals.cspNonce}">window.close()</script>`,
         )
+      } else if (callingScreen && callingScreen === 'check-your-report') {
+        res.redirect(`/check-your-report/${id}`)
       } else {
         res.redirect(`/warning-type/${id}`)
       }

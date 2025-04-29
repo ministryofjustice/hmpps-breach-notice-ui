@@ -39,4 +39,11 @@ context('Next Appointment page', () => {
         'The contact number entered is invalid. Numbers must consist of numerals and spaces only.',
       )
   })
+
+  it('should return to check your report if came from check your report', () => {
+    cy.visit('/next-appointment/00000000-1111-2222-3333-000000000001/check-your-report')
+    cy.url().should('include', '/next-appointment')
+    cy.get('#continue-button').click()
+    cy.url().should('include', '/check-your-report/')
+  })
 })
