@@ -22,7 +22,9 @@ export default function routes({ auditService, hmppsAuthClient, commonUtils }: S
   })
 
   router.get('/close', async (req, res, next) => {
-    res.send(`<script nonce="${res.locals.cspNonce}">window.close()</script>`)
+    res.send(
+      `<p>You can now safely close this window</p><script nonce="${res.locals.cspNonce}">window.close()</script>`,
+    )
   })
 
   basicDetailsRoutes(router, auditService, hmppsAuthClient, commonUtils)
