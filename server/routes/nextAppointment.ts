@@ -29,12 +29,7 @@ export default function nextAppointmentRoutes(
     const { id } = req.params
     const breachNotice: BreachNotice = await breachNoticeApiClient.getBreachNoticeById(id as string)
     const nextAppointmentDetails = await ndeliusIntegrationApiClient.getNextAppointmentDetails(breachNotice.crn)
-    nextAppointmentDetails.futureAppointments = nextAppointmentDetails.futureAppointments
-      .filter(fa => !LocalDateTime.parse(fa.datetime).isBefore(LocalDate.now().atStartOfDay()))
-      .sort((a: FutureAppointment, b: FutureAppointment) => {
-        return +new Date(a.datetime) - +new Date(b.datetime)
-      })
-      .slice(0, 5)
+    nextAppointmentDetails.futureAppointments = filterAppointments(nextAppointmentDetails.futureAppointments)
     const appointmentRadioButtons: Array<RadioButton> = initiateNextAppointmentRadioButtonsAndApplySavedSelections(
       nextAppointmentDetails.futureAppointments,
       breachNotice,
@@ -101,6 +96,7 @@ export default function nextAppointmentRoutes(
         res.redirect(`/check-your-report/${id}`)
       }
     } else {
+      nextAppointmentDetails.futureAppointments = filterAppointments(nextAppointmentDetails.futureAppointments)
       const appointmentRadioButtons: Array<RadioButton> = initiateNextAppointmentRadioButtonsAndApplySavedSelections(
         nextAppointmentDetails.futureAppointments,
         breachNotice,
@@ -172,6 +168,16 @@ export default function nextAppointmentRoutes(
 
   function locationDisplayValue(address?: DeliusAddress): string {
     return [address?.buildingNumber, address?.streetName].filter(item => item).join(' ')
+  }
+
+  function filterAppointments(appointments: Array<FutureAppointment>): Array<FutureAppointment> {
+    return appointments
+      .filter(fa => fa.datetime != null)
+      .filter(fa => !LocalDateTime.parse(fa.datetime).isBefore(LocalDate.now().atStartOfDay()))
+      .sort((a: FutureAppointment, b: FutureAppointment) => {
+        return +new Date(a.datetime) - +new Date(b.datetime)
+      })
+      .slice(0, 5)
   }
 
   return router
