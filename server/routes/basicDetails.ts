@@ -23,7 +23,7 @@ export default function basicDetailsRoutes(
 ): Router {
   const currentPage = 'basic-details'
 
-  router.get(['/basic-details/:id', '/basic-details/:id/:callingscreen'], async (req, res, next) => {
+  router.get('/basic-details/:id', async (req, res, next) => {
     await auditService.logPageView(Page.BASIC_DETAILS, { who: res.locals.user.username, correlationId: req.id })
     const token = await hmppsAuthClient.getSystemClientToken(res.locals.user.username)
     const breachNoticeApiClient = new BreachNoticeApiClient(token)
@@ -101,11 +101,11 @@ export default function basicDetailsRoutes(
     return errorMessages
   }
 
-  router.post(['/basic-details/:id', '/basic-details/:id/:callingscreen'], async (req, res, next) => {
+  router.post('/basic-details/:id', async (req, res, next) => {
     const token = await hmppsAuthClient.getSystemClientToken(res.locals.user.username)
     const breachNoticeApiClient = new BreachNoticeApiClient(token)
     const ndeliusIntegrationApiClient = new NdeliusIntegrationApiClient(token)
-    const callingScreen: string = req.params.callingscreen
+    const callingScreen: string = req.query.returnTo as string
     const { id } = req.params
     const currentBreachNotice = await breachNoticeApiClient.getBreachNoticeById(req.params.id as string)
 

@@ -20,7 +20,7 @@ export default function nextAppointmentRoutes(
 ): Router {
   const currentPage = 'next-appointment'
 
-  router.get(['/next-appointment/:id', '/next-appointment/:id/:callingscreen'], async (req, res, next) => {
+  router.get('/next-appointment/:id', async (req, res, next) => {
     await auditService.logPageView(Page.NEXT_APPOINTMENT, { who: res.locals.user.username, correlationId: req.id })
     const token = await hmppsAuthClient.getSystemClientToken(res.locals.user.username)
     const breachNoticeApiClient = new BreachNoticeApiClient(token)
@@ -53,12 +53,12 @@ export default function nextAppointmentRoutes(
     })
   })
 
-  router.post(['/next-appointment/:id', '/next-appointment/:id/:callingscreen'], async (req, res, next) => {
+  router.post('/next-appointment/:id', async (req, res, next) => {
     await auditService.logPageView(Page.NEXT_APPOINTMENT, { who: res.locals.user.username, correlationId: req.id })
     const token = await hmppsAuthClient.getSystemClientToken(res.locals.user.username)
     const ndeliusIntegrationApiClient = new NdeliusIntegrationApiClient(token)
     const breachNoticeApiClient = new BreachNoticeApiClient(token)
-    const callingScreen: string = req.params.callingscreen
+    const callingScreen: string = req.query.returnTo as string
 
     const { id } = req.params
     let breachNotice: BreachNotice = null

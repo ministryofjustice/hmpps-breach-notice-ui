@@ -18,7 +18,7 @@ export default function warningTypeRoutes(
 ): Router {
   const currentPage = 'warning-type'
 
-  router.get(['/warning-type/:id', '/warning-type/:id/:callingscreen'], async (req, res, next) => {
+  router.get('/warning-type/:id', async (req, res, next) => {
     await auditService.logPageView(Page.WARNING_TYPE, { who: res.locals.user.username, correlationId: req.id })
     const token = await hmppsAuthClient.getSystemClientToken(res.locals.user.username)
     const breachNoticeApiClient = new BreachNoticeApiClient(token)
@@ -71,13 +71,13 @@ export default function warningTypeRoutes(
     })
   })
 
-  router.post(['/warning-type/:id', '/warning-type/:id/:callingscreen'], async (req, res, next) => {
+  router.post('/warning-type/:id', async (req, res, next) => {
     const token = await hmppsAuthClient.getSystemClientToken(res.locals.user.username)
     const breachNoticeApiClient = new BreachNoticeApiClient(token)
     const ndeliusIntegrationApiClient = new NdeliusIntegrationApiClient(token)
     const { id } = req.params
     const breachNotice: BreachNotice = await breachNoticeApiClient.getBreachNoticeById(id as string)
-    const callingScreen: string = req.params.callingscreen
+    const callingScreen: string = req.query.returnTo as string
     if (await commonUtils.redirectRequired(breachNotice, res)) return
     const { warningTypes, sentenceTypes, defaultSentenceTypeCode } = await ndeliusIntegrationApiClient.getWarningTypes(
       breachNotice.crn,

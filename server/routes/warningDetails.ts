@@ -27,13 +27,13 @@ export default function warningDetailsRoutes(
 ): Router {
   const currentPage = 'warning-details'
 
-  router.post(['/warning-details/:id', '/warning-details/:id/:callingscreen'], async (req, res, next) => {
+  router.post('/warning-details/:id', async (req, res, next) => {
     const { id } = req.params
     const token = await hmppsAuthClient.getSystemClientToken(res.locals.user.username)
     const breachNoticeApiClient = new BreachNoticeApiClient(token)
     const ndeliusIntegrationApiClient = new NdeliusIntegrationApiClient(token)
     const breachNotice = await breachNoticeApiClient.getBreachNoticeById(id as string)
-    const callingScreen: string = req.params.callingscreen
+    const callingScreen: string = req.query.returnTo as string
 
     if (await commonUtils.redirectRequired(breachNotice, res)) return
 
