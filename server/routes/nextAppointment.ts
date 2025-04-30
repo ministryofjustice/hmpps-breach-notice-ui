@@ -172,6 +172,7 @@ export default function nextAppointmentRoutes(
 
   function filterAppointments(appointments: Array<FutureAppointment>): Array<FutureAppointment> {
     return appointments
+      .filter(fa => fa.datetime != null)
       .filter(fa => !LocalDateTime.parse(fa.datetime).isBefore(LocalDate.now().atStartOfDay()))
       .sort((a: FutureAppointment, b: FutureAppointment) => {
         return +new Date(a.datetime) - +new Date(b.datetime)
