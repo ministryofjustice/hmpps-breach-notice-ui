@@ -88,4 +88,11 @@ context('Basic Details page', () => {
       'Your Delius account is missing a home area, please contact the service desk to update your account before using this service.',
     )
   })
+
+  it('should return to check your report if came from check your report', () => {
+    cy.visit('/basic-details/00000000-1111-2222-3333-000000000001?returnTo=check-your-report')
+    cy.url().should('include', '/basic-details')
+    cy.get('#continue-button').click()
+    cy.url().should('include', '/check-your-report/')
+  })
 })

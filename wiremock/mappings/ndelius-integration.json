@@ -179,7 +179,7 @@
     },
     {
       "request": {
-        "urlPattern": "/warning-types/.+?/.+?",
+        "urlPattern": "/warning-types/(.*?)/(.*?)",
         "method": "GET"
       },
       "response": {

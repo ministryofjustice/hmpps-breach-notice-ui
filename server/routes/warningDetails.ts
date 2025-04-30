@@ -33,6 +33,7 @@ export default function warningDetailsRoutes(
     const breachNoticeApiClient = new BreachNoticeApiClient(token)
     const ndeliusIntegrationApiClient = new NdeliusIntegrationApiClient(token)
     const breachNotice = await breachNoticeApiClient.getBreachNoticeById(id as string)
+    const callingScreen: string = req.query.returnTo as string
 
     if (await commonUtils.redirectRequired(breachNotice, res)) return
 
@@ -116,6 +117,8 @@ export default function warningDetailsRoutes(
       } else if (req.body.action === 'refreshFromNdelius') {
         // redirect to warning details to force a reload
         res.redirect(`/warning-details/${id}`)
+      } else if (callingScreen && callingScreen === 'check-your-report') {
+        res.redirect(`/check-your-report/${id}`)
       } else {
         res.redirect(`/next-appointment/${id}`)
       }
@@ -187,7 +190,7 @@ export default function warningDetailsRoutes(
     return errorMessages
   }
 
-  router.get('/warning-details/:id', async (req, res, next) => {
+  router.get(['/warning-details/:id', '/warning-details/:id/:callingscreen'], async (req, res, next) => {
     await auditService.logPageView(Page.WARNING_DETAILS, { who: res.locals.user.username, correlationId: req.id })
     const breachNoticeApiClient = new BreachNoticeApiClient(
       await hmppsAuthClient.getSystemClientToken(res.locals.user.username),

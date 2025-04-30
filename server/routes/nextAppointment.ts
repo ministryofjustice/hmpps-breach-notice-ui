@@ -53,6 +53,7 @@ export default function nextAppointmentRoutes(
     const token = await hmppsAuthClient.getSystemClientToken(res.locals.user.username)
     const ndeliusIntegrationApiClient = new NdeliusIntegrationApiClient(token)
     const breachNoticeApiClient = new BreachNoticeApiClient(token)
+    const callingScreen: string = req.query.returnTo as string
 
     const { id } = req.params
     let breachNotice: BreachNotice = null
@@ -92,6 +93,8 @@ export default function nextAppointmentRoutes(
         res.send(
           `<p>You can now safely close this window</p><script nonce="${res.locals.cspNonce}">window.close()</script>`,
         )
+      } else if (callingScreen && callingScreen === 'check-your-report') {
+        res.redirect(`/check-your-report/${id}`)
       } else {
         res.redirect(`/check-your-report/${id}`)
       }
