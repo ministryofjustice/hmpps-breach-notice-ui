@@ -174,7 +174,7 @@
                                 <dd class="govuk-summary-list__value">
                                     {% if breachNotice.referenceNumber == null %}
                                         <a href="/basic-details/{{ breachNotice.id }}" class="govuk-link">enter required
-                                            information<span class="govuk-visually-hidden"> for Reference Number</span></a>
+                                            information<span class="govuk-visually-hidden"> for Office Reference Number</span></a>
                                     {% else %}
                                         {{ breachNotice.referenceNumber }}
                                     {% endif %}
@@ -202,7 +202,7 @@
                                 {% if breachNotice.basicDetailsSaved %}
                                     <a id="change-warning-types" class="govuk-link"
                                        href="/warning-type/{{ breachNotice.id }}">Change<span
-                                                class="govuk-visually-hidden"> Warning Types</span></a>
+                                                class="govuk-visually-hidden"> Warning Type</span></a>
                                 {% endif %}
                             </li>
                         </ul>
@@ -216,7 +216,7 @@
                                 <dd class="govuk-summary-list__value">
                                     {% if breachNotice.breachNoticeTypeDescription == null and breachNotice.basicDetailsSaved %}
                                         <a href="/warning-type/{{ breachNotice.id }}" class="govuk-link">enter required
-                                            information<span class="govuk-visually-hidden"> for Breach Type Description</span></a>
+                                            information<span class="govuk-visually-hidden"> for Warning Type</span></a>
                                     {% else %}
                                         {{ breachNotice.breachNoticeTypeDescription }}
                                     {% endif %}
@@ -237,7 +237,7 @@
                                 <dd class="govuk-summary-list__value">
                                     {% if breachNotice.breachSentenceTypeDescription == null and breachNotice.basicDetailsSaved %}
                                         <a href="/warning-type/{{ breachNotice.id }}" class="govuk-link">enter required
-                                            information<span class="govuk-visually-hidden"> for Breach Sentence Description</span></a>
+                                            information<span class="govuk-visually-hidden"> for Sentence Type</span></a>
                                     {% else %}
                                         {{ breachNotice.breachSentenceTypeDescription }}
                                     {% endif %}
@@ -278,7 +278,7 @@
                                 <dd class="govuk-summary-list__value">
                                     {% if ( breachNotice.breachNoticeRequirementList == null or breachNotice.breachNoticeRequirementList.length == 0 ) and breachNotice.warningTypeSaved %}
                                         <a href="/warning-details/{{ breachNotice.id }}" class="govuk-link">enter
-                                            required information<span class="govuk-visually-hidden"> for Requirement List</span></a>
+                                            required information<span class="govuk-visually-hidden"> for Failures being Enforced</span></a>
                                     {% else %}
                                         {% for req in breachNotice.breachNoticeRequirementList %}
                                             <p>{{ req.requirementTypeMainCategoryDescription }} {% if req.requirementTypeSubCategoryDescription != null %} {{ req.requirementTypeSubCategoryDescription }} {% endif %} {% if req.rejectionReason != null %}- {{ req.rejectionReason }}{% endif %}</p>
@@ -302,7 +302,7 @@
                                 <dd class="govuk-summary-list__value">
                                     {% if breachNotice.responseRequiredDate == null and breachNotice.warningDetailsSaved %}
                                         <a href="/warning-details/{{ breachNotice.id }}" class="govuk-link">enter
-                                            required information<span class="govuk-visually-hidden"> for response required date</span></a>
+                                            required information<span class="govuk-visually-hidden"> for Response Required By date</span></a>
                                     {% else %}
                                         {{ responseRequiredByDate }}
                                     {% endif %}
