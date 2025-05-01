@@ -49,6 +49,7 @@ export default function basicDetailsRoutes(
     if (await commonUtils.redirectRequired(breachNotice, res)) return
     const defaultOffenderAddress: DeliusAddress = findDefaultAddressInAddressList(basicDetails.addresses)
     const defaultReplyAddress: DeliusAddress = findDefaultAddressInAddressList(basicDetails.replyAddresses)
+    // const defaultReplyAddressPopulated: boolean = !!defaultReplyAddress;
     const basicDetailsDateOfLetter: string = toUserDate(breachNotice.dateOfLetter)
 
     const alternateAddressOptions = addressListToSelectItemList(
@@ -139,7 +140,11 @@ export default function basicDetailsRoutes(
       updatedBreachNotice.replyAddress = mapDeliusAddressToBreachNoticeAddress(defaultReplyAddress)
       updatedBreachNotice.useDefaultReplyAddress = true
     } else {
-      updatedBreachNotice.useDefaultReplyAddress = null
+      // no default address found we force the user to select one
+      updatedBreachNotice.useDefaultReplyAddress = false
+      updatedBreachNotice.replyAddress = mapDeliusAddressToBreachNoticeAddress(
+        getSelectedAddress(basicDetails.replyAddresses, req.body.alternateReplyAddress),
+      )
     }
 
     const { title, name } = basicDetails

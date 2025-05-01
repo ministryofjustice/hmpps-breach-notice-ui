@@ -112,44 +112,56 @@
                 }) }}
 
                 <h2 class="govuk-heading-m">Reply Address</h2>
+              {% if defaultReplyAddress %}
                 <p id="reply-address">
-                    {% if defaultReplyAddress.officeDescription %} {{ defaultReplyAddress.officeDescription }}<br/>{% endif %}
-                    {% if defaultReplyAddress.buildingName %} {{ defaultReplyAddress.buildingName }}<br/>{% endif %}
-                    {% if defaultReplyAddress.buildingNumber or  defaultReplyAddress.streetName %}{{ defaultReplyAddress.buildingNumber }} {{ defaultReplyAddress.streetName }}
-                        <br/>{% endif %}
-                    {% if defaultReplyAddress.district %} {{ defaultReplyAddress.district }}<br/>{% endif %}
-                    {% if defaultReplyAddress.townCity %} {{ defaultReplyAddress.townCity }}<br/>{% endif %}
-                    {% if defaultReplyAddress.county %} {{ defaultReplyAddress.county }}<br/>{% endif %}
-                    {% if defaultReplyAddress.postcode %} {{ defaultReplyAddress.postcode }}<br/>{% endif %}
+                  {% if defaultReplyAddress.officeDescription %} {{ defaultReplyAddress.officeDescription }}<br/>{% endif %}
+                  {% if defaultReplyAddress.buildingName %} {{ defaultReplyAddress.buildingName }}<br/>{% endif %}
+                  {% if defaultReplyAddress.buildingNumber or  defaultReplyAddress.streetName %}{{ defaultReplyAddress.buildingNumber }} {{ defaultReplyAddress.streetName }}
+                    <br/>{% endif %}
+                  {% if defaultReplyAddress.district %} {{ defaultReplyAddress.district }}<br/>{% endif %}
+                  {% if defaultReplyAddress.townCity %} {{ defaultReplyAddress.townCity }}<br/>{% endif %}
+                  {% if defaultReplyAddress.county %} {{ defaultReplyAddress.county }}<br/>{% endif %}
+                  {% if defaultReplyAddress.postcode %} {{ defaultReplyAddress.postcode }}<br/>{% endif %}
                 </p>
                 {{ govukRadios({
-                    name: "replyAddressSelectOne",
-                    fieldset: {
-                        legend: {
-                            text: "Would you like to use the reply address above for this breach notice?",
-                            isPageHeading: false,
-                            classes: "govuk-fieldset__legend--m"
-                        }
+                  name: "replyAddressSelectOne",
+                  fieldset: {
+                    legend: {
+                      text: "Would you like to use the reply address above for this breach notice?",
+                      isPageHeading: false,
+                      classes: "govuk-fieldset__legend--m"
+                    }
+                  },
+                  hint: {
+                    text: "Select one option"
+                  },
+                  items: [
+                    {
+                      value: "Yes",
+                      text: "Yes",
+                      checked: breachNotice.useDefaultReplyAddress === true
                     },
-                    hint: {
-                        text: "Select one option"
-                    },
-                    items: [
-                        {
-                            value: "Yes",
-                            text: "Yes",
-                            checked: breachNotice.useDefaultReplyAddress === true
-                        },
-                        {
-                            value: "No",
-                            text: "No, I would like to use a different reply address ",
-                            checked: breachNotice.useDefaultReplyAddress === false,
-                            conditional: {
-                            html: replyAddressHtml
-                        }
-                        }
-                    ]
+                    {
+                      value: "No",
+                      text: "No, I would like to use a different reply address ",
+                      checked: breachNotice.useDefaultReplyAddress === false,
+                      conditional: {
+                      html: replyAddressHtml
+                    }
+                    }
+                  ]
                 }) }}
+              {% else %}
+                {{ govukSelect({
+                  id: "alternate-reply-address",
+                  name: "alternateReplyAddress",
+                  label: {
+                    text: "Please specify the reply address that the Person on Probation should contact.",
+                    classes: "govuk-fieldset__legend--m"
+                  },
+                  items: replyAddressOptions
+                }) }}
+              {% endif %}
 
                 {{ mojDatePicker({
                     id: "date-of-letter",
