@@ -29,12 +29,7 @@ export default function nextAppointmentRoutes(
     const { id } = req.params
     const breachNotice: BreachNotice = await breachNoticeApiClient.getBreachNoticeById(id as string)
     const nextAppointmentDetails = await ndeliusIntegrationApiClient.getNextAppointmentDetails(breachNotice.crn)
-    nextAppointmentDetails.futureAppointments = nextAppointmentDetails.futureAppointments
-      .filter(fa => !LocalDateTime.parse(fa.datetime).isBefore(LocalDate.now().atStartOfDay()))
-      .sort((a: FutureAppointment, b: FutureAppointment) => {
-        return +new Date(a.datetime) - +new Date(b.datetime)
-      })
-      .slice(0, 5)
+    nextAppointmentDetails.futureAppointments = filterAppointments(nextAppointmentDetails.futureAppointments)
     const appointmentRadioButtons: Array<RadioButton> = initiateNextAppointmentRadioButtonsAndApplySavedSelections(
       nextAppointmentDetails.futureAppointments,
       breachNotice,
@@ -58,6 +53,7 @@ export default function nextAppointmentRoutes(
     const token = await hmppsAuthClient.getSystemClientToken(res.locals.user.username)
     const ndeliusIntegrationApiClient = new NdeliusIntegrationApiClient(token)
     const breachNoticeApiClient = new BreachNoticeApiClient(token)
+    const callingScreen: string = req.query.returnTo as string
 
     const { id } = req.params
     let breachNotice: BreachNotice = null
@@ -97,10 +93,13 @@ export default function nextAppointmentRoutes(
         res.send(
           `<p>You can now safely close this window</p><script nonce="${res.locals.cspNonce}">window.close()</script>`,
         )
+      } else if (callingScreen && callingScreen === 'check-your-report') {
+        res.redirect(`/check-your-report/${id}`)
       } else {
         res.redirect(`/check-your-report/${id}`)
       }
     } else {
+      nextAppointmentDetails.futureAppointments = filterAppointments(nextAppointmentDetails.futureAppointments)
       const appointmentRadioButtons: Array<RadioButton> = initiateNextAppointmentRadioButtonsAndApplySavedSelections(
         nextAppointmentDetails.futureAppointments,
         breachNotice,
@@ -172,6 +171,16 @@ export default function nextAppointmentRoutes(
 
   function locationDisplayValue(address?: DeliusAddress): string {
     return [address?.buildingNumber, address?.streetName].filter(item => item).join(' ')
+  }
+
+  function filterAppointments(appointments: Array<FutureAppointment>): Array<FutureAppointment> {
+    return appointments
+      .filter(fa => fa.datetime != null)
+      .filter(fa => !LocalDateTime.parse(fa.datetime).isBefore(LocalDate.now().atStartOfDay()))
+      .sort((a: FutureAppointment, b: FutureAppointment) => {
+        return +new Date(a.datetime) - +new Date(b.datetime)
+      })
+      .slice(0, 5)
   }
 
   return router

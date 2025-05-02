@@ -105,7 +105,7 @@ export default function basicDetailsRoutes(
     const token = await hmppsAuthClient.getSystemClientToken(res.locals.user.username)
     const breachNoticeApiClient = new BreachNoticeApiClient(token)
     const ndeliusIntegrationApiClient = new NdeliusIntegrationApiClient(token)
-
+    const callingScreen: string = req.query.returnTo as string
     const { id } = req.params
     const currentBreachNotice = await breachNoticeApiClient.getBreachNoticeById(req.params.id as string)
 
@@ -139,7 +139,11 @@ export default function basicDetailsRoutes(
       updatedBreachNotice.replyAddress = mapDeliusAddressToBreachNoticeAddress(defaultReplyAddress)
       updatedBreachNotice.useDefaultReplyAddress = true
     } else {
-      updatedBreachNotice.useDefaultReplyAddress = null
+      // no default address found we force the user to select one
+      updatedBreachNotice.useDefaultReplyAddress = false
+      updatedBreachNotice.replyAddress = mapDeliusAddressToBreachNoticeAddress(
+        getSelectedAddress(basicDetails.replyAddresses, req.body.alternateReplyAddress),
+      )
     }
 
     const { title, name } = basicDetails
@@ -164,6 +168,8 @@ export default function basicDetailsRoutes(
         res.send(
           `<p>You can now safely close this window</p><script nonce="${res.locals.cspNonce}">window.close()</script>`,
         )
+      } else if (callingScreen && callingScreen === 'check-your-report') {
+        res.redirect(`/check-your-report/${id}`)
       } else {
         res.redirect(`/warning-type/${id}`)
       }

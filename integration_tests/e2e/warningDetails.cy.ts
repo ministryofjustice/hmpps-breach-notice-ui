@@ -56,4 +56,11 @@ context('Warning Details page', () => {
     cy.get('.govuk-details__text').last().as('finalWarningDetail')
     cy.get('@finalWarningDetail').should('contain.html', '    &lt;script&gt; new<br>\nline')
   })
+
+  it('should return to check your report if came from check your report', () => {
+    cy.visit('/warning-details/00000000-1111-2222-3333-000000000001?returnTo=check-your-report')
+    cy.url().should('include', '/warning-details')
+    cy.get('#continue-button').click()
+    cy.url().should('include', '/check-your-report/')
+  })
 })

@@ -77,6 +77,7 @@ export default function warningTypeRoutes(
     const ndeliusIntegrationApiClient = new NdeliusIntegrationApiClient(token)
     const { id } = req.params
     const breachNotice: BreachNotice = await breachNoticeApiClient.getBreachNoticeById(id as string)
+    const callingScreen: string = req.query.returnTo as string
     if (await commonUtils.redirectRequired(breachNotice, res)) return
     const { warningTypes, sentenceTypes, defaultSentenceTypeCode } = await ndeliusIntegrationApiClient.getWarningTypes(
       breachNotice.crn,
@@ -127,6 +128,8 @@ export default function warningTypeRoutes(
         res.send(
           `<p>You can now safely close this window</p><script nonce="${res.locals.cspNonce}">window.close()</script>`,
         )
+      } else if (callingScreen && callingScreen === 'check-your-report') {
+        res.redirect(`/check-your-report/${id}`)
       } else {
         res.redirect(`/warning-details/${req.params.id}`)
       }
