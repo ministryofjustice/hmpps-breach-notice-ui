@@ -49,7 +49,6 @@ export default function basicDetailsRoutes(
     if (await commonUtils.redirectRequired(breachNotice, res)) return
     const defaultOffenderAddress: DeliusAddress = findDefaultAddressInAddressList(basicDetails.addresses)
     const defaultReplyAddress: DeliusAddress = findDefaultAddressInAddressList(basicDetails.replyAddresses)
-    // const defaultReplyAddressPopulated: boolean = !!defaultReplyAddress;
     const basicDetailsDateOfLetter: string = toUserDate(breachNotice.dateOfLetter)
 
     const alternateAddressOptions = addressListToSelectItemList(
