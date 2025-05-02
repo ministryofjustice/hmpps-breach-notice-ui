@@ -139,7 +139,11 @@ export default function basicDetailsRoutes(
       updatedBreachNotice.replyAddress = mapDeliusAddressToBreachNoticeAddress(defaultReplyAddress)
       updatedBreachNotice.useDefaultReplyAddress = true
     } else {
-      updatedBreachNotice.useDefaultReplyAddress = null
+      // no default address found we force the user to select one
+      updatedBreachNotice.useDefaultReplyAddress = false
+      updatedBreachNotice.replyAddress = mapDeliusAddressToBreachNoticeAddress(
+        getSelectedAddress(basicDetails.replyAddresses, req.body.alternateReplyAddress),
+      )
     }
 
     const { title, name } = basicDetails

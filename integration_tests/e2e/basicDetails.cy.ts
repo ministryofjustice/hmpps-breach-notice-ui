@@ -95,4 +95,11 @@ context('Basic Details page', () => {
     cy.get('#continue-button').click()
     cy.url().should('include', '/check-your-report/')
   })
+
+  it('should show alternate field set if default address not present', () => {
+    cy.visit('/basic-details/92eb37f7-e315-47ea-870a-7fb6eb6e5b0f')
+    cy.url().should('include', '/basic-details')
+    cy.contains('Please specify the reply address that the Person on Probation should contact.').should('exist')
+    cy.get('#reply-address').should('not.exist')
+  })
 })
