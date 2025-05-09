@@ -166,7 +166,7 @@ export default function nextAppointmentRoutes(
   }
 
   function officerDisplayValue(officer: Name): string {
-    return [officer.forename, officer.middleName, officer.surname].filter(item => item).join(', ')
+    return [officer.forename, officer.surname].filter(item => item).join(' ')
   }
 
   function locationDisplayValue(address?: DeliusAddress): string {
