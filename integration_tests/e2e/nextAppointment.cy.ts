@@ -1,7 +1,7 @@
 context('Next Appointment page', () => {
   it('can default readonly fields', () => {
     cy.visit('/next-appointment/00000000-0000-0000-0000-000000000001')
-    cy.get('#responsible-officer').should('contain.text', 'ROForename, ROMiddleName, ROSurname')
+    cy.get('#responsible-officer').should('contain.text', 'ROForename ROSurname')
     cy.get('#contact-number').should('contain.text', '01234567891')
   })
 
