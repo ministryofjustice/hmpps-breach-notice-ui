@@ -7,7 +7,7 @@
       A Merge occurred on {{ breachNotice.reviewRequiredDate | toUserDate() }} in NDelius and important details have changed. This report should be reviewed before proceeding. Please confirm all information or discard this report.
     {% endif %}
     {% if breachNotice.reviewEvent == 'UNMERGE' %}
-      A Unmerge occurred on {{ breachNotice.reviewRequiredDate | toUserDate() }} in NDelius and important details have changed. This report should be reviewed before proceeding. Please confirm all information or discard this report.
+      An Unmerge occurred on {{ breachNotice.reviewRequiredDate | toUserDate() }} in NDelius and important details have changed. This report should be reviewed before proceeding. Please confirm all information or discard this report.
     {% endif %}
     {% if breachNotice.reviewEvent == 'EVENT_MOVE' %}
       A Move Event occurred on {{ breachNotice.reviewRequiredDate | toUserDate() }} in NDelius and important details have changed. This report should be reviewed before proceeding. Please confirm all information or discard this report.
