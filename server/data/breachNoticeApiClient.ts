@@ -76,6 +76,7 @@ export interface BreachNotice {
   optionalNumberChecked: boolean
   optionalNumber: string
   conditionBeingEnforced: string
+  selectNextAppointment: boolean
 }
 
 export interface BreachNoticeContact {
