@@ -1,7 +1,7 @@
 import { ParsedQs } from 'qs'
 import { DeliusAddress, Name } from '../data/ndeliusIntegrationApiClient'
 import { BreachNoticeAddress } from '../data/breachNoticeApiClient'
-import { SelectItem } from '../data/uiModels'
+import { ErrorMessages, SelectItem } from '../data/uiModels'
 
 const properCase = (word: string): string =>
   word.length >= 1 ? word[0].toUpperCase() + word.toLowerCase().slice(1) : word
@@ -89,4 +89,35 @@ export function removeDeliusAddressFromDeliusAddressList(
     return deliusAddressList.filter(obj => obj.id !== defaultAddress.id)
   }
   return deliusAddressList
+}
+
+export function handleIntegrationErrors(status: number, message: string, integrationService: string): ErrorMessages {
+  const errorMessages: ErrorMessages = {}
+  if (status === 400) {
+    if (message?.includes('No home area found')) {
+      errorMessages.genericErrorMessage = {
+        text: 'Your Delius account is missing a home area, please contact the service desk to update your account before using this service.',
+      }
+    }
+    if (message?.includes('is not sentenced')) {
+      errorMessages.genericErrorMessage = {
+        text: 'Breach actions cannot be created pre-sentence. If this event has a valid sentence please contact the service desk and report this error.',
+      }
+    }
+    return errorMessages
+  }
+
+  if (status === 500) {
+    if (integrationService === 'NDelius Integration') {
+      errorMessages.genericErrorMessage = {
+        text: 'There has been a problem fetching information from NDelius. Please try again later.',
+      }
+    } else {
+      errorMessages.genericErrorMessage = {
+        text: 'There has been a problem fetching information from the Breach Notice Service. Please try again later.',
+      }
+      return errorMessages
+    }
+  }
+  return errorMessages
 }

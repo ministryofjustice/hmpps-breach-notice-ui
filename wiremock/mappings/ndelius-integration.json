@@ -121,7 +121,21 @@
         }
       }
     },
-
+    {
+      "request": {
+        "urlPattern": "/basic-details/D017500/(.*?)",
+        "method": "GET"
+      },
+      "response": {
+        "status": 500,
+        "jsonBody": {
+          "message": "Some server side error occurred"
+        },
+        "headers": {
+          "Content-Type": "application/json;charset=UTF-8"
+        }
+      }
+    },
     {
       "request": {
         "urlPattern": "/basic-details/X050510/(.*)",
