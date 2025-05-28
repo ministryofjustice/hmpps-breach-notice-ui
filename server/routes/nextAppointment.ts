@@ -37,6 +37,8 @@ export default function nextAppointmentRoutes(
     const responsibleOfficerDisplayValue = officerDisplayValue(nextAppointmentDetails.responsibleOfficer.name)
     if (await commonUtils.redirectRequired(breachNotice, res)) return
     const useContactNumber = breachNotice.optionalNumberChecked ? 'No' : 'Yes'
+    const selectNextAppointment =
+      breachNotice.selectNextAppointment === null || !breachNotice.selectNextAppointment ? 'No' : 'Yes'
 
     res.render('pages/next-appointment', {
       breachNotice,
@@ -45,6 +47,7 @@ export default function nextAppointmentRoutes(
       responsibleOfficerDisplayValue,
       useContactNumber,
       currentPage,
+      selectNextAppointment,
     })
   })
 
@@ -81,6 +84,7 @@ export default function nextAppointmentRoutes(
         breachNotice.nextAppointmentOfficer = officerDisplayValue(futureAppointment.officer.name)
       })
     breachNotice.responsibleOfficer = officerDisplayValue(nextAppointmentDetails.responsibleOfficer.name)
+    breachNotice.selectNextAppointment = req.body.selectNextAppointment === 'Yes'
 
     const errorMessages: ErrorMessages = validateNextAppointment(breachNotice)
     const hasErrors: boolean = Object.keys(errorMessages).length > 0
@@ -106,6 +110,8 @@ export default function nextAppointmentRoutes(
       )
       const responsibleOfficerDisplayValue = officerDisplayValue(nextAppointmentDetails.responsibleOfficer.name)
       const useContactNumber = breachNotice.optionalNumberChecked ? 'No' : 'Yes'
+      const selectNextAppointment =
+        breachNotice.selectNextAppointment === null || !breachNotice.selectNextAppointment ? 'No' : 'Yes'
 
       res.render('pages/next-appointment', {
         breachNotice,
@@ -115,6 +121,7 @@ export default function nextAppointmentRoutes(
         useContactNumber,
         errorMessages,
         currentPage,
+        selectNextAppointment,
       })
     }
   })

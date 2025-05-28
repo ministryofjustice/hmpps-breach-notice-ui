@@ -88,21 +88,43 @@
                     ]
                 }) }}
 
+              {% set appointmentSelection %}
                 {{ govukRadios({
-                    name: "appointmentSelection",
-                    fieldset: {
-                        legend: {
-                            text: "Would you like to select a next appointment?",
-                            isPageHeading: false,
-                            classes: "govuk-fieldset__legend--m"
-                        }
-                    },
-                    items: appointmentRadioButtons,
-
-                    errorMessage: {
-                        text: "No appointments on file. Please add one on the contact file"
-                    } if appointmentRadioButtons.length <= 0
+                  name: "appointmentSelection",
+                  items: appointmentRadioButtons,
+                  errorMessage: {
+                    text: "No future appointments are available to select at this time. Please add an appointment in NDelius and refresh this screen if one is required"
+                  } if appointmentRadioButtons.length <= 0
                 }) }}
+              {% endset -%}
+
+              {{ govukRadios({
+                name: "selectNextAppointment",
+                value: selectNextAppointment,
+                fieldset: {
+                  legend: {
+                    text: "Do you want to select a Next Appointment?",
+                    isPageHeading: false,
+                    classes: "govuk-fieldset__legend--m"
+                  }
+                },
+                hint: {
+                  text: "Select one option"
+                },
+                items: [
+                  {
+                    value: "No",
+                    text: "No"
+                  },
+                  {
+                    value: "Yes",
+                    text: "Yes",
+                    conditional: {
+                    html: appointmentSelection
+                  }
+                  }
+                ]
+              }) }}
 
 
                 <div class="moj-button-group">

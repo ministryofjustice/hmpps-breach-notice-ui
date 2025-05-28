@@ -46,4 +46,28 @@ context('Next Appointment page', () => {
     cy.get('#continue-button').click()
     cy.url().should('include', '/check-your-report/')
   })
+
+  it('appointments should only show when select a next appointment is yes', () => {
+    cy.visit('/next-appointment/00000000-0000-0000-0000-000000000001')
+    cy.get('#selectNextAppointment').should('be.checked')
+    cy.get('#selectNextAppointment-2').should('not.be.checked')
+    cy.get('#conditional-selectNextAppointment-2').should('not.be.visible')
+    cy.get('#selectNextAppointment-2').should('exist').click()
+    cy.get('#selectNextAppointment').should('not.be.checked')
+    cy.get('#selectNextAppointment-2').should('be.checked')
+    cy.get('#conditional-selectNextAppointment-2').should('be.visible')
+    cy.get('#appointmentSelection').should('exist').click()
+  })
+
+  it('message should appear when no appointments exist for offender', () => {
+    cy.visit('/next-appointment/00000000-0000-0000-0000-100000000002')
+    cy.get('#selectNextAppointment-2').should('exist').click()
+    cy.get('#conditional-selectNextAppointment-2').should('exist')
+    cy.get('#appointmentSelection-error')
+      .should('exist')
+      .should(
+        'contain.text',
+        'No future appointments are available to select at this time. Please add an appointment in NDelius and refresh this screen if one is required',
+      )
+  })
 })
