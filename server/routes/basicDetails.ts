@@ -8,6 +8,7 @@ import {
   arrangeSelectItemListAlphabetically,
   combineName,
   formatAddressForSelectMenuDisplay,
+  handleIntegrationErrors,
   mapDeliusAddressToBreachNoticeAddress,
   removeDeliusAddressFromDeliusAddressList,
 } from '../utils/utils'
@@ -29,21 +30,42 @@ export default function basicDetailsRoutes(
     const breachNoticeApiClient = new BreachNoticeApiClient(token)
     const ndeliusIntegrationApiClient = new NdeliusIntegrationApiClient(token)
 
-    const breachNotice = await breachNoticeApiClient.getBreachNoticeById(req.params.id as string)
     let basicDetails: BasicDetails = null
+    let breachNotice: BreachNotice = null
 
     try {
+      // get the existing breach notice
+      breachNotice = await breachNoticeApiClient.getBreachNoticeById(req.params.id as string)
+    } catch (error) {
+      const errorMessages: ErrorMessages = handleIntegrationErrors(error.status, error.data?.message, 'Breach Notice')
+      const showEmbeddedError = true
+      // always stay on page and display the error when there are isssues retrieving the breach notice
+      res.render(`pages/basic-details`, { errorMessages, showEmbeddedError })
+      return
+    }
+
+    try {
+      // get details from the integration service
       basicDetails = await ndeliusIntegrationApiClient.getBasicDetails(breachNotice.crn, req.user.username)
     } catch (error) {
-      if (error.status === 400 && error.data?.message?.includes('No home area found')) {
-        const errorMessages: ErrorMessages = {}
-        errorMessages.genericErrorMessage = {
-          text: 'Your Delius account is missing a home area, please contact the service desk to update your account before using this service.',
-        }
+      const errorMessages: ErrorMessages = handleIntegrationErrors(
+        error.status,
+        error.data?.message,
+        'NDelius Integration',
+      )
+      // take the user to detailed error page for 400 type errors
+      if (error.status === 400) {
         res.render(`pages/detailed-error`, { errorMessages })
         return
       }
-      throw error
+      // stay on the current page for 500 errors
+      if (error.status === 500) {
+        const showEmbeddedError = true
+        res.render(`pages/basic-details`, { errorMessages, showEmbeddedError })
+        return
+      }
+      res.render(`pages/detailed-error`, { errorMessages })
+      return
     }
 
     if (await commonUtils.redirectRequired(breachNotice, res)) return

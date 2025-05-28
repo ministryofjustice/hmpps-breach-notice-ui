@@ -82,11 +82,9 @@ context('Basic Details page', () => {
     cy.visit('/basic-details/f9999999-12e3-45ba-ba67-1b34bf7b9999')
     cy.url().should('include', '/basic-details')
     cy.get('.govuk-error-summary__title').should('exist').should('contain.text', 'There is a problem')
-    cy.get('.govuk-error-summary__list > li > a').should('have.attr', 'href').and('include', '#')
-    cy.get('.govuk-error-summary__list > li > a').should(
-      'have.text',
+    cy.contains(
       'Your Delius account is missing a home area, please contact the service desk to update your account before using this service.',
-    )
+    ).should('exist')
   })
 
   it('should return to check your report if came from check your report', () => {
@@ -101,5 +99,19 @@ context('Basic Details page', () => {
     cy.url().should('include', '/basic-details')
     cy.contains('Please specify the reply address that the Person on Probation should contact.').should('exist')
     cy.get('#reply-address').should('not.exist')
+  })
+
+  it('should stay on page and show NDelius error message if 500 thrown from NDelius integration service', () => {
+    cy.visit('/basic-details/00000000-0000-5555-500000000005')
+    cy.get('.govuk-error-summary__title').should('exist').should('contain.text', 'There is a problem')
+    cy.contains('There has been a problem fetching information from NDelius. Please try again later.').should('exist')
+  })
+
+  it('should stay on page and show Breach Notice Service error message if 500 thrown from Nat Breach Service', () => {
+    cy.visit('/basic-details/00000000-0000-8888-800000000008')
+    cy.get('.govuk-error-summary__title').should('exist').should('contain.text', 'There is a problem')
+    cy.contains(
+      'There has been a problem fetching information from the Breach Notice Service. Please try again later.',
+    ).should('exist')
   })
 })

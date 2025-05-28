@@ -18,7 +18,8 @@
         {% set errorList =[
             { text: errorMessages.dateOfLetter.text, href: "#date-of-letter" } if errorMessages.dateOfLetter else None,
             { text: errorMessages.officeReferenceNumber.text, href: "#office-reference" } if errorMessages.officeReferenceNumber else None,
-            { text: errorMessages.replyAddress.text, href: "#reply-address" } if errorMessages.replyAddress else None
+            { text: errorMessages.replyAddress.text, href: "#reply-address" } if errorMessages.replyAddress else None,
+            { text: errorMessages.genericErrorMessage.text, href: "#" } if errorMessages.genericErrorMessage else None
         ] | reject("undefined") %}
 
         {% if errorMessages | length > 0 %}
@@ -60,6 +61,10 @@
             </div>
 
             <div class="govuk-grid-column-two-thirds">
+
+              {% if not showEmbeddedError %}
+
+
                 {% include "partials/review-required.njk" %}
 
                 <h1 class="govuk-heading-l">Breach Notice - Basic Details</h1>
@@ -214,7 +219,9 @@
                     }
                   }) }}
                 </div>
+              {% endif %}
             </div>
+
         </div>
     </form>
 
