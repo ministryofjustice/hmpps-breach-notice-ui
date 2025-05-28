@@ -16,7 +16,8 @@
   <form method="post">
     {% set errorList =[
       { text: errorMessages.warningType.text, href: "#warning-type" } if errorMessages.warningType else None,
-      { text: errorMessages.sentenceType.text, href: "#sentence-type" } if errorMessages.sentenceType else None
+      { text: errorMessages.sentenceType.text, href: "#sentence-type" } if errorMessages.sentenceType else None,
+      { text: errorMessages.genericErrorMessage.text, href: "#" } if errorMessages.genericErrorMessage else None
     ] | reject("undefined") %}
 
     {% if errorMessages | length > 0 %}
@@ -33,6 +34,7 @@
       </div>
 
       <div class="govuk-grid-column-two-thirds">
+        {% if not showEmbeddedError %}
         {% include "partials/review-required.njk" %}
 
         <h1 class="govuk-heading-x1">Breach Notice - Warning Type</h1>
@@ -87,6 +89,7 @@
             }
           }) }}
         </div>
+        {% endif %}
       </div>
     </div>
   </form>

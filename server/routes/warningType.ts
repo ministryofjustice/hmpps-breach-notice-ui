@@ -9,6 +9,7 @@ import NdeliusIntegrationApiClient, {
 import { HmppsAuthClient } from '../data'
 import CommonUtils from '../services/commonUtils'
 import { ErrorMessages, RadioButton, SelectItem } from '../data/uiModels'
+import { handleIntegrationErrors } from '../utils/utils'
 
 export default function warningTypeRoutes(
   router: Router,
@@ -24,11 +25,24 @@ export default function warningTypeRoutes(
     const breachNoticeApiClient = new BreachNoticeApiClient(token)
     const ndeliusIntegrationApiClient = new NdeliusIntegrationApiClient(token)
     const { id } = req.params
-    const breachNotice: BreachNotice = await breachNoticeApiClient.getBreachNoticeById(id)
-    if (await commonUtils.redirectRequired(breachNotice, res)) return
+
+    let breachNotice: BreachNotice = null
     let warningTypes: WarningType[] = []
     let sentenceTypes: SentenceType[] = []
     let defaultSentenceTypeCode: string = null
+
+    try {
+      // get the existing breach notice
+      breachNotice = await breachNoticeApiClient.getBreachNoticeById(req.params.id as string)
+    } catch (error) {
+      const errorMessages: ErrorMessages = handleIntegrationErrors(error.status, error.data?.message, 'Breach Notice')
+      const showEmbeddedError = true
+      // always stay on page and display the error when there are isssues retrieving the breach notice
+      res.render(`pages/warning-type`, { errorMessages, showEmbeddedError })
+      return
+    }
+
+    if (await commonUtils.redirectRequired(breachNotice, res)) return
 
     try {
       const warningTypeWrapper: WarningTypeWrapper = await ndeliusIntegrationApiClient.getWarningTypes(
@@ -41,15 +55,24 @@ export default function warningTypeRoutes(
         defaultSentenceTypeCode = warningTypeWrapper.defaultSentenceTypeCode
       }
     } catch (error) {
-      if (error.status === 400 && error.data?.message?.includes('is not sentenced')) {
-        const errorMessages: ErrorMessages = {}
-        errorMessages.genericErrorMessage = {
-          text: 'Breach actions cannot be created pre-sentence. If this event has a valid sentence please contact the service desk and report this error.',
-        }
+      const errorMessages: ErrorMessages = handleIntegrationErrors(
+        error.status,
+        error.data?.message,
+        'NDelius Integration',
+      )
+      // take the user to detailed error page for 400 type errors
+      if (error.status === 400) {
         res.render(`pages/detailed-error`, { errorMessages })
         return
       }
-      throw error
+      // stay on the current page for 500 errors
+      if (error.status === 500) {
+        const showEmbeddedError = true
+        res.render(`pages/warning-type`, { errorMessages, showEmbeddedError })
+        return
+      }
+      res.render(`pages/detailed-error`, { errorMessages })
+      return
     }
 
     const warningTypeRadioButtons: Array<RadioButton> = initiateWarningTypeRadioButtonsAndApplySavedSelections(
