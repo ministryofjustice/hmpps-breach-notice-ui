@@ -1058,7 +1058,7 @@
               "middleName": "ROMiddleName",
               "surname": "ROSurname"
             },
-            "telephoneNumber": "01234567891"
+            "telephoneNumber": null
           },
           "futureAppointments": [{}]
         },
