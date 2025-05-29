@@ -24,7 +24,6 @@
 
         {% if errorMessages | length > 0 %}
             {% from "govuk/components/error-summary/macro.njk" import govukErrorSummary %}
-
             {{ govukErrorSummary({ titleText: "There is a problem", errorList: errorList }) }}
         {% endif %}
 
