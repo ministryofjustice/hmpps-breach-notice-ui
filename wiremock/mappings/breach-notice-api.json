@@ -1404,7 +1404,6 @@
         "transformers": ["response-template"]
       }
     },
-
     {
       "request": {
         "url": "/breach-notice-api/breach-notice/12345678-7777-5555-500000000005",
