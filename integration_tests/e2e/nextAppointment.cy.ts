@@ -70,4 +70,12 @@ context('Next Appointment page', () => {
         'No future appointments are available to select at this time. Please add an appointment in NDelius and refresh this screen if one is required',
       )
   })
+
+  it('message should appear when officer has no number in LDAP', () => {
+    cy.visit('/next-appointment/00000000-0000-0000-0000-100000000002')
+    cy.get('#contact-number').should('exist')
+    cy.get('#contact-number')
+      .should('be.visible')
+      .should('contain.text', 'No Contact Number found for this Responsible Officer')
+  })
 })

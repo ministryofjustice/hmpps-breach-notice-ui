@@ -41,7 +41,13 @@
                 <p id="responsible-officer">{{ responsibleOfficerDisplayValue }}</p>
 
                 <h2 class="govuk-heading-m">Contact Number</h2>
-                <p id="contact-number">{{ nextAppointmentDetails.responsibleOfficer.telephoneNumber }}</p>
+                <p id="contact-number">
+                  {% if nextAppointmentDetails.responsibleOfficer.telephoneNumber %}
+                    {{ nextAppointmentDetails.responsibleOfficer.telephoneNumber }}
+                  {% else %}
+                    No Contact Number found for this Responsible Officer
+                  {% endif %}
+                </p>
 
                 {% set phoneHtml %}
                     {{ govukInput({
