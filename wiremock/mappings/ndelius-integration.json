@@ -447,6 +447,21 @@
     },
     {
       "request": {
+        "urlPattern": "/warning-details/GGG0001/(.*?)",
+        "method": "GET"
+      },
+      "response": {
+        "status": 500,
+        "jsonBody": {
+          "message": "Some server side error occurred"
+        },
+        "headers": {
+          "Content-Type": "application/json;charset=UTF-8"
+        }
+      }
+    },
+    {
+      "request": {
         "urlPattern": "/warning-details/X012495/f1234567-12e3-45ba-ba67-1b34bf7b009d",
         "method": "GET"
       },

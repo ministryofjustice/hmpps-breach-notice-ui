@@ -10,7 +10,7 @@ import AuditService, { Page } from '../services/auditService'
 import { fromUserDate, toUserDate } from '../utils/dateUtils'
 import { HmppsAuthClient } from '../data'
 import CommonUtils from '../services/commonUtils'
-import asArray from '../utils/utils'
+import asArray, { handleIntegrationErrors } from '../utils/utils'
 import NdeliusIntegrationApiClient, {
   EnforceableContact,
   EnforceableContactList,
@@ -26,6 +26,75 @@ export default function warningDetailsRoutes(
   commonUtils: CommonUtils,
 ): Router {
   const currentPage = 'warning-details'
+
+  router.get(['/warning-details/:id', '/warning-details/:id/:callingscreen'], async (req, res, next) => {
+    await auditService.logPageView(Page.WARNING_DETAILS, { who: res.locals.user.username, correlationId: req.id })
+    const breachNoticeApiClient = new BreachNoticeApiClient(
+      await hmppsAuthClient.getSystemClientToken(res.locals.user.username),
+    )
+
+    let breachNotice: BreachNotice = null
+    let warningDetails: WarningDetails = null
+
+    try {
+      // get the existing breach notice
+      breachNotice = await breachNoticeApiClient.getBreachNoticeById(req.params.id as string)
+    } catch (error) {
+      const errorMessages: ErrorMessages = handleIntegrationErrors(error.status, error.data?.message, 'Breach Notice')
+      const showEmbeddedError = true
+      // always stay on page and display the error when there are isssues retrieving the breach notice
+      res.render(`pages/warning-details`, { errorMessages, showEmbeddedError })
+      return
+    }
+
+    if (await commonUtils.redirectRequired(breachNotice, res)) return
+    const ndeliusIntegrationApiClient = new NdeliusIntegrationApiClient(
+      await hmppsAuthClient.getSystemClientToken(res.locals.user.username),
+    )
+
+    try {
+      // get details from the integration service
+      warningDetails = await ndeliusIntegrationApiClient.getWarningDetails(breachNotice.crn, breachNotice.id)
+    } catch (error) {
+      const errorMessages: ErrorMessages = handleIntegrationErrors(
+        error.status,
+        error.data?.message,
+        'NDelius Integration',
+      )
+      // take the user to detailed error page for 400 type errors
+      if (error.status === 400) {
+        res.render(`pages/detailed-error`, { errorMessages })
+        return
+      }
+      // stay on the current page for 500 errors
+      if (error.status === 500) {
+        const showEmbeddedError = true
+        res.render(`pages/warning-details`, { errorMessages, showEmbeddedError })
+        return
+      }
+      res.render(`pages/detailed-error`, { errorMessages })
+      return
+    }
+
+    const warningDetailsResponseRequiredDate: string = toUserDate(breachNotice.responseRequiredDate)
+    const breachReasons = convertReferenceDataListToSelectItemList(warningDetails.breachReasons)
+    const requirementsList = createFailuresBeingEnforcedRequirementSelectList(
+      warningDetails.enforceableContacts,
+      warningDetails.breachReasons,
+      breachNotice,
+    )
+
+    const failuresRecorded = createSelectItemListFromEnforceableContacts(warningDetails.enforceableContacts)
+    res.render(`pages/warning-details`, {
+      breachNotice,
+      warningDetails,
+      failuresRecorded,
+      breachReasons,
+      requirementsList,
+      currentPage,
+      warningDetailsResponseRequiredDate,
+    })
+  })
 
   router.post('/warning-details/:id', async (req, res, next) => {
     const { id } = req.params
@@ -189,43 +258,6 @@ export default function warningDetailsRoutes(
     }
     return errorMessages
   }
-
-  router.get(['/warning-details/:id', '/warning-details/:id/:callingscreen'], async (req, res, next) => {
-    await auditService.logPageView(Page.WARNING_DETAILS, { who: res.locals.user.username, correlationId: req.id })
-    const breachNoticeApiClient = new BreachNoticeApiClient(
-      await hmppsAuthClient.getSystemClientToken(res.locals.user.username),
-    )
-    const breachNoticeId = req.params.id
-    const breachNotice = await breachNoticeApiClient.getBreachNoticeById(breachNoticeId as string)
-    if (await commonUtils.redirectRequired(breachNotice, res)) return
-    const ndeliusIntegrationApiClient = new NdeliusIntegrationApiClient(
-      await hmppsAuthClient.getSystemClientToken(res.locals.user.username),
-    )
-
-    const warningDetails: WarningDetails = await ndeliusIntegrationApiClient.getWarningDetails(
-      breachNotice.crn,
-      breachNotice.id,
-    )
-
-    const warningDetailsResponseRequiredDate: string = toUserDate(breachNotice.responseRequiredDate)
-    const breachReasons = convertReferenceDataListToSelectItemList(warningDetails.breachReasons)
-    const requirementsList = createFailuresBeingEnforcedRequirementSelectList(
-      warningDetails.enforceableContacts,
-      warningDetails.breachReasons,
-      breachNotice,
-    )
-
-    const failuresRecorded = createSelectItemListFromEnforceableContacts(warningDetails.enforceableContacts)
-    res.render(`pages/warning-details`, {
-      breachNotice,
-      warningDetails,
-      failuresRecorded,
-      breachReasons,
-      requirementsList,
-      currentPage,
-      warningDetailsResponseRequiredDate,
-    })
-  })
 
   function createFailuresBeingEnforcedRequirementSelectList(
     enforceableContactList: EnforceableContactList,

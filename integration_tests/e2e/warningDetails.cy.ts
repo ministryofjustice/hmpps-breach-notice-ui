@@ -63,4 +63,20 @@ context('Warning Details page', () => {
     cy.get('#continue-button').click()
     cy.url().should('include', '/check-your-report/')
   })
+
+  it('should stay on page and show Breach Notice Service error message if 500 thrown from Nat Breach Service', () => {
+    cy.visit('/warning-details/22222222-3333-4444-900000000009')
+    cy.url().should('include', '/warning-details')
+    cy.get('.govuk-error-summary__title').should('exist').should('contain.text', 'There is a problem')
+    cy.contains(
+      'There has been a problem fetching information from the Breach Notice Service. Please try again later.',
+    ).should('exist')
+  })
+
+  it('should stay on page and show NDelius error message if 500 thrown from NDelius integration service with no buttons', () => {
+    cy.visit('/warning-details/12345678-7777-5555-500000000005')
+    cy.get('.govuk-error-summary__title').should('exist').should('contain.text', 'There is a problem')
+    cy.contains('There has been a problem fetching information from NDelius. Please try again later.').should('exist')
+    cy.get('#close-button').should('not.exist')
+  })
 })
