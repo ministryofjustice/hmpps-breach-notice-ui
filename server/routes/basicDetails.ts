@@ -190,6 +190,9 @@ export default function basicDetailsRoutes(
         res.send(
           `<p>You can now safely close this window</p><script nonce="${res.locals.cspNonce}">window.close()</script>`,
         )
+      } else if (req.body.action === 'refreshFromNdelius') {
+        // redirect to warning details to force a reload
+        res.redirect(`/basic-details/${id}`)
       } else if (callingScreen && callingScreen === 'check-your-report') {
         res.redirect(`/check-your-report/${id}`)
       } else {
