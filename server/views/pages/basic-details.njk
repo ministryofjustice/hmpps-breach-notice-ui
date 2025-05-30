@@ -217,6 +217,18 @@
                       id: "close-button"
                     }
                   }) }}
+
+                  {{ govukButton({
+                    text: "Refresh from Delius",
+                    preventDoubleClick: "true",
+                    type: "submit",
+                    name: "action",
+                    value: "refreshFromNdelius",
+                    classes: "govuk-button--secondary",
+                    attributes: {
+                      id: "refresh-from-ndelius--button"
+                    }
+                  }) }}
                 </div>
               {% endif %}
             </div>
