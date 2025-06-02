@@ -151,21 +151,23 @@ export default function basicDetailsRoutes(
     } else {
       updatedBreachNotice.useDefaultAddress = null
     }
-    // reply address
-    if (req.body.replyAddressSelectOne === 'No') {
-      updatedBreachNotice.replyAddress = mapDeliusAddressToBreachNoticeAddress(
-        getSelectedAddress(basicDetails.replyAddresses, req.body.alternateReplyAddress),
-      )
-      updatedBreachNotice.useDefaultReplyAddress = false
-    } else if (req.body.replyAddressSelectOne === 'Yes') {
-      updatedBreachNotice.replyAddress = mapDeliusAddressToBreachNoticeAddress(defaultReplyAddress)
-      updatedBreachNotice.useDefaultReplyAddress = true
-    } else {
-      // no default address found we force the user to select one
-      updatedBreachNotice.useDefaultReplyAddress = false
-      updatedBreachNotice.replyAddress = mapDeliusAddressToBreachNoticeAddress(
-        getSelectedAddress(basicDetails.replyAddresses, req.body.alternateReplyAddress),
-      )
+    // reply address (skip if we need to add one)
+    if (req.body.action !== 'addAddress') {
+      if (req.body.replyAddressSelectOne === 'No') {
+        updatedBreachNotice.replyAddress = mapDeliusAddressToBreachNoticeAddress(
+          getSelectedAddress(basicDetails.replyAddresses, req.body.alternateReplyAddress),
+        )
+        updatedBreachNotice.useDefaultReplyAddress = false
+      } else if (req.body.replyAddressSelectOne === 'Yes') {
+        updatedBreachNotice.replyAddress = mapDeliusAddressToBreachNoticeAddress(defaultReplyAddress)
+        updatedBreachNotice.useDefaultReplyAddress = true
+      } else {
+        // no default address found we force the user to select one
+        updatedBreachNotice.useDefaultReplyAddress = false
+        updatedBreachNotice.replyAddress = mapDeliusAddressToBreachNoticeAddress(
+          getSelectedAddress(basicDetails.replyAddresses, req.body.alternateReplyAddress),
+        )
+      }
     }
 
     const { title, name } = basicDetails
@@ -193,6 +195,8 @@ export default function basicDetailsRoutes(
       } else if (req.body.action === 'refreshFromNdelius') {
         // redirect to warning details to force a reload
         res.redirect(`/basic-details/${id}`)
+      } else if (req.body.action === 'addAddress') {
+        res.redirect(`/add-address`)
       } else if (callingScreen && callingScreen === 'check-your-report') {
         res.redirect(`/check-your-report/${id}`)
       } else {

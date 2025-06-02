@@ -156,15 +156,29 @@
                   ]
                 }) }}
               {% else %}
-                {{ govukSelect({
-                  id: "alternate-reply-address",
-                  name: "alternateReplyAddress",
-                  label: {
-                    text: "Please specify the reply address that the Person on Probation should contact.",
-                    classes: "govuk-fieldset__legend--m"
-                  },
-                  items: replyAddressOptions
-                }) }}
+                {% if basicDetails.replyAddresses|length %}
+                  {{ govukSelect({
+                    id: "alternate-reply-address",
+                    name: "alternateReplyAddress",
+                    label: {
+                      text: "Please specify the reply address that the Person on Probation should contact.",
+                      classes: "govuk-fieldset__legend--m"
+                    },
+                    items: replyAddressOptions
+                  }) }}
+                {% else %}
+                  <p id="AddAddressMessage">No reply address can be found for this responsible officer. Please add an
+                    address by selecting the button below</p>
+                  {{ govukButton({
+                    text: "Add Address",
+                    type: "submit",
+                    name: "action",
+                    value: "addAddress",
+                    attributes: {
+                      id: "add-address-button"
+                    }
+                  }) }}
+                {% endif %}
               {% endif %}
 
                 {{ mojDatePicker({

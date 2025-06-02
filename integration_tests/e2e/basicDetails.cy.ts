@@ -114,4 +114,15 @@ context('Basic Details page', () => {
       'There has been a problem fetching information from the Breach Notice Service. Please try again later.',
     ).should('exist')
   })
+
+  it('add address button should display when no reply addresses are present', () => {
+    cy.visit('/basic-details/f1234567-12e3-45ba-9999-1b34bf7b9999')
+    cy.url().should('include', '/basic-details')
+    cy.get('#AddAddressMessage').should('be.visible')
+    cy.contains(
+      'No reply address can be found for this responsible officer. Please add an address by selecting the button below',
+    )
+    cy.get('#add-address-button').should('exist').should('be.visible').click()
+    cy.url().should('include', '/add-address')
+  })
 })

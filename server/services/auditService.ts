@@ -9,6 +9,7 @@ export enum Page {
   REPORT_DELETED = 'REPORT_DELETED',
   WARNING_DETAILS = 'WARNING_DETAILS',
   VIEW_PDF = 'VIEW_PDF',
+  ADD_ADDRESS = 'ADD_ADDRESS',
 }
 
 export interface PageViewEventDetails {
