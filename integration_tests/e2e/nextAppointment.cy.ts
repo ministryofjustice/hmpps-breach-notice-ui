@@ -79,8 +79,9 @@ context('Next Appointment page', () => {
       .should('contain.text', 'No Contact Number found for this Responsible Officer')
   })
 
+  // first test needs to fail at the breach notice integration
   it('should stay on page and show Breach Notice Service error message if 500 thrown from Nat Breach Service', () => {
-    cy.visit('/next-appointment/88888888-1111-8888-800000000008')
+    cy.visit('/next-appointment/44444444-1122-8338-800000000008')
     cy.url().should('include', '/next-appointment')
     cy.get('.govuk-error-summary__title').should('exist').should('contain.text', 'There is a problem')
     cy.contains(
@@ -89,7 +90,7 @@ context('Next Appointment page', () => {
   })
 
   it('should stay on page and show NDelius error message if 500 thrown from NDelius integration service with no buttons', () => {
-    cy.visit('/next-appointment/12345678-7777-5555-500000000005')
+    cy.visit('/next-appointment/44444444-1122-8338-900000000099')
     cy.get('.govuk-error-summary__title').should('exist').should('contain.text', 'There is a problem')
     cy.contains('There has been a problem fetching information from NDelius. Please try again later.').should('exist')
     cy.get('#close-button').should('not.exist')
