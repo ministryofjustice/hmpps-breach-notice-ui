@@ -1355,7 +1355,51 @@
         "transformers": ["response-template"]
       }
     },
-
+    {
+      "request": {
+        "url": "/breach-notice-api/breach-notice/44444444-1122-8338-900000000099",
+        "method": "GET"
+      },
+      "response": {
+        "status": 200,
+        "jsonBody": {
+          "id": "00000000-0000-5555-500000000005",
+          "crn": "P019999",
+          "titleAndFullName": null,
+          "dateOfLetter": null,
+          "referenceNumber": null,
+          "responseRequiredDate": null,
+          "breachNoticeTypeCode": null,
+          "breachNoticeTypeDescription": null,
+          "breachConditionTypeCode": null,
+          "breachConditionTypeDescription": null,
+          "breachSentenceTypeCode": null,
+          "breachSentenceTypeDescription": null,
+          "responsibleOfficer": null,
+          "contactNumber": null,
+          "nextAppointmentType": null,
+          "nextAppointmentDate": null,
+          "nextAppointmentLocation": null,
+          "nextAppointmentOfficer": null,
+          "nextAppointmentContact": null,
+          "completedDate": null,
+          "offenderAddress": null,
+          "replyAddress": null,
+          "basicDetailsSaved": null,
+          "warningTypeSaved": null,
+          "warningDetailsSaved": null,
+          "nextAppointmentSaved": null,
+          "useDefaultAddress": null,
+          "useDefaultReplyAddress": null,
+          "breachNoticeContactList": null,
+          "breachNoticeRequirementList": null
+        },
+        "headers": {
+          "Content-Type": "application/json;charset=UTF-8"
+        },
+        "transformers": ["response-template"]
+      }
+    },
     {
       "request": {
         "url": "/breach-notice-api/breach-notice/00000000-0000-8888-800000000008",
@@ -1388,6 +1432,23 @@
         "transformers": ["response-template"]
       }
     },
+    {
+      "request": {
+        "url": "/breach-notice-api/breach-notice/44444444-1122-8338-800000000008",
+        "method": "GET"
+      },
+      "response": {
+        "status": 500,
+        "jsonBody": {
+          "message": "Some server side error occurred in the breach notice service"
+        },
+        "headers": {
+          "Content-Type": "application/json;charset=UTF-8"
+        },
+        "transformers": ["response-template"]
+      }
+    },
+
     {
       "request": {
         "url": "/breach-notice-api/breach-notice/22222222-3333-4444-900000000009",
@@ -1578,51 +1639,6 @@
         "status": 500,
         "jsonBody": {
           "message": "Some server side error occurred in the breach notice service"
-        },
-        "headers": {
-          "Content-Type": "application/json;charset=UTF-8"
-        },
-        "transformers": ["response-template"]
-      }
-    },
-    {
-      "request": {
-        "url": "/breach-notice-api/breach-notice/12345678-7777-5555-500000000005",
-        "method": "GET"
-      },
-      "response": {
-        "status": 200,
-        "jsonBody": {
-          "id": "12345678-7777-5555-500000000005",
-          "crn": "G000420",
-          "titleAndFullName": null,
-          "dateOfLetter": null,
-          "referenceNumber": null,
-          "responseRequiredDate": null,
-          "breachNoticeTypeCode": null,
-          "breachNoticeTypeDescription": null,
-          "breachConditionTypeCode": null,
-          "breachConditionTypeDescription": null,
-          "breachSentenceTypeCode": null,
-          "breachSentenceTypeDescription": null,
-          "responsibleOfficer": null,
-          "contactNumber": null,
-          "nextAppointmentType": null,
-          "nextAppointmentDate": null,
-          "nextAppointmentLocation": null,
-          "nextAppointmentOfficer": null,
-          "nextAppointmentContact": null,
-          "completedDate": null,
-          "offenderAddress": null,
-          "replyAddress": null,
-          "basicDetailsSaved": null,
-          "warningTypeSaved": null,
-          "warningDetailsSaved": null,
-          "nextAppointmentSaved": null,
-          "useDefaultAddress": null,
-          "useDefaultReplyAddress": null,
-          "breachNoticeContactList": null,
-          "breachNoticeRequirementList": null
         },
         "headers": {
           "Content-Type": "application/json;charset=UTF-8"

@@ -354,9 +354,10 @@
         }
       }
     },
+
     {
       "request": {
-        "urlPattern": "/warning-details/.+?/.+?",
+        "urlPattern": "/warning-details/(.*?)/(.*?)",
         "method": "GET"
       },
       "response": {
@@ -462,7 +463,7 @@
     },
     {
       "request": {
-        "urlPattern": "/warning-details/X012495/f1234567-12e3-45ba-ba67-1b34bf7b009d",
+        "urlPattern": "/warning-details/X012495/(.*?)",
         "method": "GET"
       },
       "response": {
@@ -483,7 +484,7 @@
     },
     {
       "request": {
-        "urlPattern": "/warning-details/X099999/f1234567-12e3-45ba-ba67-1b34bf799999",
+        "urlPattern": "/warning-details/X099999/(.*?)",
         "method": "GET"
       },
       "response": {
@@ -853,7 +854,230 @@
     },
     {
       "request": {
-        "urlPattern": "/next-appointment-details/[A-Z][0-9]{6}",
+        "urlPattern": "/next-appointment-details/(.*?)",
+        "method": "GET"
+      },
+      "response": {
+        "status": 200,
+        "jsonBody": {
+          "responsibleOfficer": {
+            "name": {
+              "forename": "ROForename",
+              "middleName": "ROMiddleName",
+              "surname": "ROSurname"
+            },
+            "telephoneNumber": "01234567891"
+          },
+          "futureAppointments": [
+            {
+              "id": 1,
+              "datetime": "2025-01-01T12:34:56",
+              "description": "FIRSTAPPOINTMENT",
+              "type": {
+                "code": "FTYPE",
+                "description": "First Appointment Type"
+              },
+              "location": {
+                "id": 1,
+                "type": "Postal",
+                "buildingName": null,
+                "buildingNumber": "281",
+                "streetName": "Postal Street",
+                "townCity": "Postinton",
+                "district": "Postrict",
+                "county": "County Post",
+                "postcode": "NE30 3ZZ"
+              },
+              "officer": {
+                "code": "N01A001",
+                "name": {
+                  "forename": "Where",
+                  "middleName": "is",
+                  "surname": "Wally"
+                }
+              }
+            },
+            {
+              "id": 2,
+              "datetime": "2026-01-06T12:34:56",
+              "description": "SECONDAPPOINTMENT",
+              "type": {
+                "code": "STYPE",
+                "description": "Second Appointment Type"
+              },
+              "location": {
+                "id": 3,
+                "status": "Other",
+                "buildingName": null,
+                "buildingNumber": "1a",
+                "streetName": "The One A",
+                "townCity": "The One A",
+                "district": "The One A",
+                "county": "The One A",
+                "postcode": "MA30 31A"
+              },
+              "officer": {
+                "code": "N01A002",
+                "name": {
+                  "forename": "Where",
+                  "middleName": "is",
+                  "surname": "Waldo"
+                }
+              }
+            },
+            {
+              "id": 3,
+              "datetime": "2026-02-01T12:34:56",
+              "description": "THIRDAPPOINTMENT",
+              "type": {
+                "code": "TTYPE",
+                "description": "Third Appointment Type"
+              },
+              "location": {
+                "id": 1,
+                "type": "Postal",
+                "buildingName": null,
+                "buildingNumber": "281",
+                "streetName": "Postal Street",
+                "townCity": "Postinton",
+                "district": "Postrict",
+                "county": "County Post",
+                "postcode": "NE30 3ZZ"
+              },
+              "officer": {
+                "code": "N01A003",
+                "name": {
+                  "forename": "Where",
+                  "middleName": "is",
+                  "surname": "Wanda"
+                }
+              }
+            },
+            {
+              "id": 4,
+              "datetime": "2026-01-02T12:34:56",
+              "description": "FOURTHAPPOINTMENT",
+              "type": {
+                "code": "FoTYPE",
+                "description": "Fourth Appointment Type"
+              },
+              "location": {
+                "id": 2,
+                "status": "Main",
+                "buildingName": null,
+                "buildingNumber": "2789",
+                "streetName": "Main Street",
+                "townCity": "Maintown",
+                "district": "MainDistrict",
+                "county": "Maincounty",
+                "postcode": "MA30 3IN"
+              },
+              "officer": {
+                "code": "N01A004",
+                "name": {
+                  "forename": "Where",
+                  "middleName": "is",
+                  "surname": "Wizzo"
+                }
+              }
+            },
+            {
+              "id": 5,
+              "datetime": "2026-01-05T12:34:56",
+              "description": "FIFTHAPPOINTMENT",
+              "type": {
+                "code": "FiTYPE",
+                "description": "Fifth Appointment Type"
+              },
+              "location": {
+                "id": 6,
+                "status": "Postal",
+                "officeDescription": "Marked as Postal",
+                "buildingName": "Secondary Manor",
+                "buildingNumber": "90",
+                "streetName": "Secondary Street",
+                "townCity": "Secondary Town",
+                "district": "Some District",
+                "county": "North Secondary",
+                "postcode": "SEC 1AB"
+              },
+              "officer": {
+                "code": "N01A005",
+                "name": {
+                  "forename": "Random",
+                  "middleName": "who",
+                  "surname": "Officer"
+                }
+              }
+            },
+            {
+              "id": 6,
+              "datetime": "2026-01-12T12:34:56",
+              "description": "SIXTHAPPOINTMENT",
+              "type": {
+                "code": "SiTYPE",
+                "description": "Sixth Appointment Type"
+              },
+              "location": {
+                "id": 5,
+                "status": "Secondary",
+                "officeDescription": "Marked as Secondary",
+                "buildingName": "Secondary Manor",
+                "buildingNumber": "90",
+                "streetName": "Secondary Street",
+                "townCity": "Secondary Town",
+                "district": "Some District",
+                "county": "North Secondary",
+                "postcode": "SEC 1AB"
+              },
+              "officer": {
+                "code": "N01A001",
+                "name": {
+                  "forename": "Where",
+                  "middleName": "is",
+                  "surname": "Wally"
+                }
+              }
+            },
+            {
+              "id": 7,
+              "datetime": "2026-01-20T12:34:56",
+              "description": "SEVENTHAPPOINTMENT",
+              "type": {
+                "code": "SeTYPE",
+                "description": "Seventh Appointment Type"
+              },
+              "location": {
+                "id": 4,
+                "status": "Default",
+                "officeDescription": "Marked as Default",
+                "buildingName": "Default House",
+                "buildingNumber": "100",
+                "streetName": "Bail Street",
+                "townCity": "Bail Town",
+                "district": "Bail District",
+                "county": "North Bail",
+                "postcode": "RE4 5PL"
+              },
+              "officer": {
+                "code": "N01A006",
+                "name": {
+                  "forename": "Officer",
+                  "middleName": "um",
+                  "surname": "McSaftey"
+                }
+              }
+            }
+          ]
+        },
+        "headers": {
+          "Content-Type": "application/json;charset=UTF-8"
+        }
+      }
+    },
+    {
+      "request": {
+        "urlPattern": "/next-appointment-details/X017052",
         "method": "GET"
       },
       "response": {
@@ -1097,6 +1321,23 @@
         }
       }
     },
+
+    {
+      "request": {
+        "urlPattern": "/next-appointment-details/P019999",
+        "method": "GET"
+      },
+      "response": {
+        "status": 500,
+        "jsonBody": {
+          "message": "Some server side error occurred"
+        },
+        "headers": {
+          "Content-Type": "application/json;charset=UTF-8"
+        }
+      }
+    },
+
     {
       "request": {
         "urlPattern": "/next-appointment-details/G000420",
