@@ -196,7 +196,7 @@ export default function basicDetailsRoutes(
         // redirect to warning details to force a reload
         res.redirect(`/basic-details/${id}`)
       } else if (req.body.action === 'addAddress') {
-        res.redirect(`/add-address`)
+        res.redirect(`/add-address/${id}`)
       } else if (callingScreen && callingScreen === 'check-your-report') {
         res.redirect(`/check-your-report/${id}`)
       } else {

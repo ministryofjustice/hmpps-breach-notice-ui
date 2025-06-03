@@ -156,7 +156,7 @@
                   ]
                 }) }}
               {% else %}
-                {% if basicDetails.replyAddresses|length %}
+                {% if basicDetails.replyAddresses and basicDetails.replyAddresses|length > 0 %}
                   {{ govukSelect({
                     id: "alternate-reply-address",
                     name: "alternateReplyAddress",
