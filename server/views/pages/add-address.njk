@@ -5,6 +5,179 @@
 
 {% block content %}
 
-Add Address Placeholder
+  {% from "govuk/components/phase-banner/macro.njk" import govukPhaseBanner %}
+  {% from "govuk/components/input/macro.njk" import govukInput %}
+  {% from "govuk/components/button/macro.njk" import govukButton %}
+
+  <form method="post">
+
+    {% set errorList =[
+      { text: errorMessages.identifier.text, href: "#description" } if errorMessages.identifier else None,
+      { text: errorMessages.streetName.text, href: "#streetName" } if errorMessages.streetName else None,
+      { text: errorMessages.townCity.text, href: "#townCity" } if errorMessages.townCity else None,
+      { text: errorMessages.county.text, href: "#county" } if errorMessages.county else None,
+      { text: errorMessages.postcode.text, href: "#postcode" } if errorMessages.postcode else None,
+      { text: errorMessages.genericErrorMessage.text, href: "#" } if errorMessages.genericErrorMessage else None
+    ] | reject("undefined") %}
+
+    {% if errorMessages | length > 0 %}
+      {% from "govuk/components/error-summary/macro.njk" import govukErrorSummary %}
+      {{ govukErrorSummary({ titleText: "There is a problem", errorList: errorList }) }}
+    {% endif %}
+
+
+    <input type="hidden" name="_csrf" value="{{ csrfToken }}">
+    <div class="govuk-grid-row">
+      <div class="govuk-grid-column-one-third"></div>
+      <div class="govuk-grid-column-two-thirds">
+
+        {% if not showEmbeddedError %}
+
+          {% include "partials/review-required.njk" %}
+
+          <h1 class="govuk-heading-l">Please enter a Reply Address</h1>
+
+          {{ govukInput({
+            label: {
+              text: "Description",
+              classes: "govuk-label--m",
+              isPageHeading: false
+            },
+            id: "description",
+            value: address.officeDescription,
+            classes: "govuk-input--width-30",
+            name: "officeDescription",
+            errorMessage: {
+              text: errorMessages.identifier.text
+            } if errorMessages.identifier.text
+          }) }}
+
+          {{ govukInput({
+            label: {
+              text: "Building Name",
+              classes: "govuk-label--m",
+              isPageHeading: false
+            },
+            id: "buildingName",
+            value: address.buildingName,
+            classes: "govuk-input--width-30",
+            name: "buildingName",
+            errorMessage: {
+              text: errorMessages.identifier.text
+            } if errorMessages.identifier.text
+          }) }}
+
+          {{ govukInput({
+            label: {
+              text: "House Number",
+              classes: "govuk-label--m",
+              isPageHeading: false
+            },
+            id: "houseNumber",
+            value: address.buildingNumber,
+            classes: "govuk-input--width-30",
+            name: "buildingNumber",
+            errorMessage: {
+              text: errorMessages.identifier.text
+            } if errorMessages.identifier.text
+          }) }}
+
+          {{ govukInput({
+            label: {
+              text: "Street Name",
+              classes: "govuk-label--m",
+              isPageHeading: false
+            },
+            id: "streetName",
+            value: address.streetName,
+            classes: "govuk-input--width-30",
+            name: "streetName",
+            errorMessage: {
+              text: errorMessages.streetName.text
+            } if errorMessages.streetName.text
+          }) }}
+
+          {{ govukInput({
+            label: {
+              text: "District",
+              classes: "govuk-label--m",
+              isPageHeading: false
+            },
+            id: "district",
+            value: address.district,
+            classes: "govuk-input--width-30",
+            name: "district"
+          }) }}
+
+          {{ govukInput({
+            label: {
+              text: "Town/City",
+              classes: "govuk-label--m",
+              isPageHeading: false
+            },
+            id: "townCity",
+            value: address.townCity,
+            classes: "govuk-input--width-20",
+            name: "townCity",
+            errorMessage: {
+              text: errorMessages.townCity.text
+            } if errorMessages.townCity.text
+          }) }}
+
+          {{ govukInput({
+            label: {
+              text: "County",
+              classes: "govuk-label--m",
+              isPageHeading: false
+            },
+            id: "county",
+            value: address.county,
+            classes: "govuk-input--width-20",
+            name: "county",
+            errorMessage: {
+              text: errorMessages.county.text
+            } if errorMessages.county.text
+          }) }}
+
+          {{ govukInput({
+            label: {
+              text: "Postcode",
+              classes: "govuk-label--m",
+              isPageHeading: false
+            },
+            id: "postcode",
+            value: address.postcode,
+            classes: "govuk-input--width-10",
+            name: "postcode",
+            errorMessage: {
+              text: errorMessages.postcode.text
+            } if errorMessages.postcode.text
+          }) }}
+
+          <div class="moj-button-group">
+            {{ govukButton({
+              text: "Save",
+              preventDoubleClick: "true",
+              type: "submit",
+              attributes: {
+                id: "save-button"
+              }
+            }) }}
+            {{ govukButton({
+              text: "Cancel",
+              type: "submit",
+              name: "action",
+              value: "cancel",
+              classes: "govuk-button--secondary",
+              attributes: {
+                id: "cancel-button"
+              }
+            }) }}
+          </div>
+
+        {% endif %}
+      </div>
+    </div>
+  </form>
 
 {% endblock %}

@@ -36,6 +36,6 @@ export default function routes({ auditService, hmppsAuthClient, commonUtils }: S
   reportDeletedRoutes(router, auditService, hmppsAuthClient)
   reportCompletedRoutes(router, auditService, hmppsAuthClient)
   nextAppointmentRoutes(router, auditService, hmppsAuthClient, commonUtils)
-  addAddressRoutes(router, auditService)
+  addAddressRoutes(router, auditService, hmppsAuthClient)
   return router
 }

@@ -70,7 +70,10 @@ export default function basicDetailsRoutes(
 
     if (await commonUtils.redirectRequired(breachNotice, res)) return
     const defaultOffenderAddress: DeliusAddress = findDefaultAddressInAddressList(basicDetails.addresses)
-    const defaultReplyAddress: DeliusAddress = findDefaultAddressInAddressList(basicDetails.replyAddresses)
+    const defaultReplyAddress: DeliusAddress = findDefaultReplyAddressInAddressList(
+      basicDetails.replyAddresses,
+      breachNotice,
+    )
     const basicDetailsDateOfLetter: string = toUserDate(breachNotice.dateOfLetter)
 
     const alternateAddressOptions = addressListToSelectItemList(
@@ -137,7 +140,10 @@ export default function basicDetailsRoutes(
     const updatedBreachNotice = applyDefaults(currentBreachNotice, basicDetails)
 
     const defaultOffenderAddress: DeliusAddress = findDefaultAddressInAddressList(basicDetails.addresses)
-    const defaultReplyAddress: DeliusAddress = findDefaultAddressInAddressList(basicDetails.replyAddresses)
+    const defaultReplyAddress: DeliusAddress = findDefaultReplyAddressInAddressList(
+      basicDetails.replyAddresses,
+      updatedBreachNotice,
+    )
     updatedBreachNotice.referenceNumber = req.body.officeReference
     if (req.body.offenderAddressSelectOne === 'No') {
       updatedBreachNotice.offenderAddress = mapDeliusAddressToBreachNoticeAddress(
@@ -328,6 +334,34 @@ export default function basicDetailsRoutes(
         addressList.find(a => a.status === 'Postal') ??
         addressList.find(a => a.status === 'Main')
       )
+    }
+    return null
+  }
+
+  function findDefaultReplyAddressInAddressList(
+    addressList: Array<DeliusAddress>,
+    breachNotice: BreachNotice,
+  ): DeliusAddress {
+    if (addressList && addressList.length > 0) {
+      return (
+        addressList.find(a => a.status === 'Default') ??
+        addressList.find(a => a.status === 'Postal') ??
+        addressList.find(a => a.status === 'Main')
+      )
+    }
+    if (breachNotice.replyAddress != null) {
+      return {
+        buildingName: breachNotice.replyAddress.buildingName,
+        buildingNumber: breachNotice.replyAddress.buildingNumber,
+        county: breachNotice.replyAddress.county,
+        district: breachNotice.replyAddress.district,
+        id: breachNotice.replyAddress.addressId,
+        officeDescription: breachNotice.replyAddress.officeDescription,
+        postcode: breachNotice.replyAddress.postcode,
+        status: breachNotice.replyAddress.status,
+        streetName: breachNotice.replyAddress.streetName,
+        townCity: breachNotice.replyAddress.townCity,
+      }
     }
     return null
   }
