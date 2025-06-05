@@ -125,4 +125,13 @@ context('Basic Details page', () => {
     cy.get('#add-address-button').should('exist').should('be.visible').click()
     cy.url().should('include', '/add-address')
   })
+
+  it('basic details correctly shows stored breach notice reply address when none returned from integration', () => {
+    cy.visit('/basic-details/a18eab88-7729-4000-a628-33f0b7670393')
+    cy.url().should('include', '/basic-details')
+    cy.get('#reply-address').should(
+      'contain.text',
+      '\n                   Description\n                   Name\n                  21 Jump Street\n                    \n                   District 9\n                   London\n                   Westminster\n                   SW1 1AA\n                ',
+    )
+  })
 })

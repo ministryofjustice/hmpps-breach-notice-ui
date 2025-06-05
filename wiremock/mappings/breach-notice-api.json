@@ -1844,6 +1844,61 @@
       "response": {
         "status": 200
       }
+    },
+    {
+      "request": {
+        "url": "/breach-notice-api/breach-notice/a18eab88-7729-4000-a628-33f0b7670393",
+        "method": "GET"
+      },
+      "response": {
+        "status": 200,
+        "jsonBody": {
+          "id": "a18eab88-7729-4000-a628-33f0b7670393",
+          "crn": "X012496",
+          "titleAndFullName": null,
+          "dateOfLetter": null,
+          "referenceNumber": null,
+          "responseRequiredDate": null,
+          "breachNoticeTypeCode": null,
+          "breachNoticeTypeDescription": null,
+          "breachConditionTypeCode": null,
+          "breachConditionTypeDescription": null,
+          "breachSentenceTypeCode": null,
+          "breachSentenceTypeDescription": null,
+          "responsibleOfficer": null,
+          "contactNumber": null,
+          "nextAppointmentType": null,
+          "nextAppointmentDate": null,
+          "nextAppointmentLocation": null,
+          "nextAppointmentOfficer": null,
+          "nextAppointmentContact": null,
+          "completedDate": null,
+          "offenderAddress": null,
+          "replyAddress": {
+            "type": "Default",
+            "officeDescription": "Description",
+            "buildingName": "Name",
+            "buildingNumber": "21",
+            "streetName": "Jump Street",
+            "district": "District 9",
+            "townCity": "London",
+            "county": "Westminster",
+            "postcode": "SW1 1AA"
+          },
+          "basicDetailsSaved": null,
+          "warningTypeSaved": null,
+          "warningDetailsSaved": null,
+          "nextAppointmentSaved": null,
+          "useDefaultAddress": null,
+          "useDefaultReplyAddress": null,
+          "breachNoticeContactList": null,
+          "breachNoticeRequirementList": null
+        },
+        "headers": {
+          "Content-Type": "application/json;charset=UTF-8"
+        },
+        "transformers": ["response-template"]
+      }
     }
   ]
 }
