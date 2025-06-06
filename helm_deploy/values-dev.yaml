@@ -13,7 +13,7 @@ generic-service:
     TOKEN_VERIFICATION_API_URL: "https://token-verification-api-dev.prison.service.justice.gov.uk"
     BREACH_NOTICE_API_URL: "https://breach-notice-api-dev.hmpps.service.justice.gov.uk"
     NDELIUS_INTEGRATION_URL: "https://breach-notice-and-delius-dev.hmpps.service.justice.gov.uk"
-    DELIUS_HOST: "http://192.168.163.128"
+    DELIUS_HOST: "http://localhost"
     DELIUS_PORT: "7001"
     ENVIRONMENT_NAME: DEV
 
