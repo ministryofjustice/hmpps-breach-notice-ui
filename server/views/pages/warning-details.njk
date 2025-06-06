@@ -57,9 +57,14 @@
             </p>
           {% endfor %}
         {% else %}
-          <p id="no-enforceable-contacts-message">No failures to display</p>
+          <p id="no-enforceable-contacts-message">No failures to display.</p>
+          <p id="no-enforceable-contacts-supplimentary-message">This notice cannot be completed without evidence of the failure that has prompted its creation.</p>
+          <p id="contact-deeplink-message">
+            <a href="{{ contactListDeeplink }}" target="_blank" id="contactListDeeplink">
+              click this hyperlink to open Delius in a new tab and check
+            </a>
+          </p>
         {% endif %}
-
 
         {% if requirementsList | length > 0 %}
           {{ govukCheckboxes({
