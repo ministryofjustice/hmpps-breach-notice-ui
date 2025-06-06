@@ -482,6 +482,29 @@
         }
       }
     },
+
+    {
+      "request": {
+        "urlPattern": "/warning-details/G565656/(.*?)",
+        "method": "GET"
+      },
+      "response": {
+        "status": 200,
+        "jsonBody": {
+          "breachReasons": [
+            {
+              "code": "BR03",
+              "description": "Attended late"
+            }
+          ],
+          "enforceableContacts": null
+        },
+        "headers": {
+          "Content-Type": "application/json;charset=UTF-8"
+        }
+      }
+    },
+
     {
       "request": {
         "urlPattern": "/warning-details/X099999/(.*?)",

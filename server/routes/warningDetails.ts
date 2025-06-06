@@ -85,6 +85,7 @@ export default function warningDetailsRoutes(
     )
 
     const failuresRecorded = createSelectItemListFromEnforceableContacts(warningDetails.enforceableContacts)
+    const contactListDeeplink = `${process.env.DELIUS_HOST}:${process.env.DELIUS_PORT}/NDelius-war/delius/JSP/deeplink.xhtml?component=ContactList&CRN=${breachNotice.crn}`
     res.render(`pages/warning-details`, {
       breachNotice,
       warningDetails,
@@ -93,6 +94,7 @@ export default function warningDetailsRoutes(
       requirementsList,
       currentPage,
       warningDetailsResponseRequiredDate,
+      contactListDeeplink,
     })
   })
 
@@ -200,6 +202,7 @@ export default function warningDetailsRoutes(
         breachNotice,
       )
 
+      const contactListDeeplink = `${process.env.DELIUS_HOST}:${process.env.DELIUS_PORT}/NDelius-war/delius/JSP/deeplink.xhtml?component=ContactList&CRN=${breachNotice.crn}`
       res.render(`pages/warning-details`, {
         breachNotice,
         warningDetails,
@@ -208,6 +211,7 @@ export default function warningDetailsRoutes(
         requirementsList,
         currentPage,
         errorMessages,
+        contactListDeeplink,
       })
     }
   })
