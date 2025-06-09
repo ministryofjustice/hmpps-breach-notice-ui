@@ -114,19 +114,6 @@ export default {
       },
       agent: new AgentConfig(Number(get('BREACH_NOTICE_API_TIMEOUT_RESPONSE', 5000))),
     },
-    ndeliusDeeplink: {
-      url: get(
-        'NDELIUS_DEEPLINK_URL',
-        'http://localhost:7001/NDelius-war/delius/JSP/deeplink.xhtml',
-        requiredInProduction,
-      ),
-      healthPath: '/health/ping',
-      timeout: {
-        response: Number(get('NDELIUS_INTEGRATION_TIMEOUT_RESPONSE', 10000)),
-        deadline: Number(get('NDELIUS_INTEGRATION_TIMEOUT_DEADLINE', 10000)),
-      },
-      agent: new AgentConfig(Number(get('NDELIUS_INTEGRATION_TIMEOUT_RESPONSE', 10000))),
-    },
     ndeliusIntegration: {
       url: get('NDELIUS_INTEGRATION_URL', 'http://localhost:9091', requiredInProduction),
       healthPath: '/health/ping',
@@ -136,6 +123,13 @@ export default {
       },
       agent: new AgentConfig(Number(get('NDELIUS_INTEGRATION_TIMEOUT_RESPONSE', 10000))),
     },
+  },
+  ndeliusDeeplink: {
+    url: get(
+      'NDELIUS_DEEPLINK_URL',
+      'http://localhost:7001/NDelius-war/delius/JSP/deeplink.xhtml',
+      requiredInProduction,
+    ),
   },
   sqs: {
     audit: auditConfig(),

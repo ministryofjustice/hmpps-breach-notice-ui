@@ -86,7 +86,7 @@ export default function warningDetailsRoutes(
     )
 
     const failuresRecorded = createSelectItemListFromEnforceableContacts(warningDetails.enforceableContacts)
-    const contactListDeeplink = `${config.apis.ndeliusDeeplink.url}?component=ContactList&CRN=${breachNotice.crn}`
+    const contactListDeeplink = `${config.ndeliusDeeplink.url}?component=ContactList&CRN=${breachNotice.crn}`
     res.render(`pages/warning-details`, {
       breachNotice,
       warningDetails,
@@ -203,7 +203,7 @@ export default function warningDetailsRoutes(
         breachNotice,
       )
 
-      const contactListDeeplink = `${config.apis.ndeliusDeeplink.url}?component=ContactList&CRN=${breachNotice.crn}`
+      const contactListDeeplink = `${config.ndeliusDeeplink.url}?component=ContactList&CRN=${breachNotice.crn}`
       res.render(`pages/warning-details`, {
         breachNotice,
         warningDetails,
