@@ -11,6 +11,7 @@ generic-service:
     TOKEN_VERIFICATION_API_URL: "https://token-verification-api.prison.service.justice.gov.uk"
     BREACH_NOTICE_API_URL: "https://breach-notice-api.hmpps.service.justice.gov.uk"
     NDELIUS_INTEGRATION_URL: "https://breach-notice-and-delius.hmpps.service.justice.gov.uk"
+    NDELIUS_DEEPLINK_URL: "https://ndelius.probation.service.justice.gov.uk/NDelius-war/delius/JSP/deeplink.xhtml"
 
   allowlist:
     groups:

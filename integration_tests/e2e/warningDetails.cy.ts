@@ -79,4 +79,19 @@ context('Warning Details page', () => {
     cy.contains('There has been a problem fetching information from NDelius. Please try again later.').should('exist')
     cy.get('#close-button').should('not.exist')
   })
+
+  it('should show deeplink in place of enforceable contacts if no enforceable contacts are returned', () => {
+    cy.visit('/warning-details/56565656-5656-5656-5656-560000000156')
+    cy.get('#no-enforceable-contacts-message').should('exist').should('contain.text', 'No failures to display.')
+    cy.get('#no-enforceable-contacts-supplimentary-message')
+      .should('exist')
+      .should(
+        'contain.text',
+        'This notice cannot be completed without evidence of the failure that has prompted its creation.',
+      )
+    cy.get('#contact-deeplink-message').should('exist')
+    cy.get('#contactListDeeplink')
+      .should('exist')
+      .should('contain.text', 'click this hyperlink to open Delius in a new tab and check')
+  })
 })

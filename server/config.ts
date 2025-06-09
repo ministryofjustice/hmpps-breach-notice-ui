@@ -124,6 +124,13 @@ export default {
       agent: new AgentConfig(Number(get('NDELIUS_INTEGRATION_TIMEOUT_RESPONSE', 10000))),
     },
   },
+  ndeliusDeeplink: {
+    url: get(
+      'NDELIUS_DEEPLINK_URL',
+      'http://localhost:7001/NDelius-war/delius/JSP/deeplink.xhtml',
+      requiredInProduction,
+    ),
+  },
   sqs: {
     audit: auditConfig(),
   },
