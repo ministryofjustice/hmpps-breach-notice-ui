@@ -13,6 +13,7 @@ generic-service:
     TOKEN_VERIFICATION_API_URL: "https://token-verification-api-preprod.prison.service.justice.gov.uk"
     BREACH_NOTICE_API_URL: "https://breach-notice-api-preprod.hmpps.service.justice.gov.uk"
     NDELIUS_INTEGRATION_URL: "https://breach-notice-and-delius-preprod.hmpps.service.justice.gov.uk"
+    NDELIUS_DEEPLINK_URL: "https://ndelius.pre-prod.delius.probation.hmpps.dsd.io/NDelius-war/delius/JSP/deeplink.xhtml"
     ENVIRONMENT_NAME: PRE-PRODUCTION
 
 generic-prometheus-alerts:

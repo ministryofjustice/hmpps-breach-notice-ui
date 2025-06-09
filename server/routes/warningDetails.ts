@@ -18,6 +18,7 @@ import NdeliusIntegrationApiClient, {
   WarningDetails,
 } from '../data/ndeliusIntegrationApiClient'
 import { ErrorMessages, SelectItem } from '../data/uiModels'
+import config from '../config'
 
 export default function warningDetailsRoutes(
   router: Router,
@@ -85,7 +86,7 @@ export default function warningDetailsRoutes(
     )
 
     const failuresRecorded = createSelectItemListFromEnforceableContacts(warningDetails.enforceableContacts)
-    const contactListDeeplink = `${process.env.DELIUS_HOST}:${process.env.DELIUS_PORT}/NDelius-war/delius/JSP/deeplink.xhtml?component=ContactList&CRN=${breachNotice.crn}`
+    const contactListDeeplink = `${config.apis.ndeliusDeeplink.url}?component=ContactList&CRN=${breachNotice.crn}`
     res.render(`pages/warning-details`, {
       breachNotice,
       warningDetails,
@@ -202,7 +203,7 @@ export default function warningDetailsRoutes(
         breachNotice,
       )
 
-      const contactListDeeplink = `${process.env.DELIUS_HOST}:${process.env.DELIUS_PORT}/NDelius-war/delius/JSP/deeplink.xhtml?component=ContactList&CRN=${breachNotice.crn}`
+      const contactListDeeplink = `${config.apis.ndeliusDeeplink.url}?component=ContactList&CRN=${breachNotice.crn}`
       res.render(`pages/warning-details`, {
         breachNotice,
         warningDetails,
