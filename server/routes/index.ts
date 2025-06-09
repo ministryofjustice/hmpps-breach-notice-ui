@@ -10,6 +10,7 @@ import reportCompletedRoutes from './reportCompleted'
 import warningDetailsRoutes from './warningDetails'
 import nextAppointmentRoutes from './nextAppointment'
 import addAddressRoutes from './addAddress'
+import confirmDeleteRoutes from './confirmDelete'
 
 export default function routes({ auditService, hmppsAuthClient, commonUtils }: Services): Router {
   const router = Router()
@@ -37,5 +38,6 @@ export default function routes({ auditService, hmppsAuthClient, commonUtils }: S
   reportCompletedRoutes(router, auditService, hmppsAuthClient)
   nextAppointmentRoutes(router, auditService, hmppsAuthClient, commonUtils)
   addAddressRoutes(router, auditService, hmppsAuthClient)
+  confirmDeleteRoutes(router, auditService)
   return router
 }

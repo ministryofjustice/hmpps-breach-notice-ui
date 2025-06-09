@@ -1,0 +1,41 @@
+{% extends "../partials/layout.njk" %}
+
+{% set pageTitle = applicationName + " - Confirm Delete" %}
+{% set mainClasses = "app-container govuk-body" %}
+
+{% block content %}
+
+  {% from "govuk/components/button/macro.njk" import govukButton %}
+
+    <input type="hidden" name="_csrf" value="{{ csrfToken }}">
+
+    <div class="govuk-grid-row">
+      <div class="govuk-grid-column-one-third"></div>
+
+      <div class="govuk-grid-column-two-thirds">
+
+          <h1 class="govuk-heading-l">Are you sure you wish to delete this document?</h1>
+
+          <div class="moj-button-group">
+            {{ govukButton({
+              text: "Confirm",
+              href: '/report-deleted/'+id,
+              preventDoubleClick: "true",
+              attributes: {
+                id: "confirm-button"
+              }
+            }) }}
+            {{ govukButton({
+              text: "Cancel",
+              href: '/check-your-report/'+id,
+              preventDoubleClick: "true",
+              classes: "govuk-button--secondary",
+              attributes: {
+                id: "cancel-button"
+              }
+            }) }}
+          </div>
+      </div>
+    </div>
+
+{% endblock %}
