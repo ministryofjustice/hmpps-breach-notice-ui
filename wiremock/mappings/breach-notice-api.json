@@ -1946,6 +1946,20 @@
         },
         "transformers": ["response-template"]
       }
+    },
+    {
+      "request": {
+        "url": "/breach-notice-api/breach-notice/9b5fe239-827f-4934-bbd1-4bf6f78b15c0",
+        "method": "GET"
+      },
+      "response": {
+        "status": 200,
+        "jsonBody": {},
+        "headers": {
+          "Content-Type": "application/json;charset=UTF-8"
+        },
+        "transformers": ["response-template"]
+      }
     }
   ]
 }

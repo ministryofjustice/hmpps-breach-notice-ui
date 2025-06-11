@@ -134,4 +134,11 @@ context('Basic Details page', () => {
       '\n                   Description\n                   Name\n                  21 Jump Street\n                    \n                   District 9\n                   London\n                   Westminster\n                   SW1 1AA\n                ',
     )
   })
+
+  it('when breach notice has been deleted, landing page should give useful error', () => {
+    cy.visit('/basic-details/9b5fe239-827f-4934-bbd1-4bf6f78b15c0')
+    cy.url().should('include', '/basic-details')
+    cy.get('.govuk-error-summary__title').should('exist').should('contain.text', 'There is a problem')
+    cy.contains('The document has not been found or has been deleted. An error has been logged. 404').should('exist')
+  })
 })
