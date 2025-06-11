@@ -33,7 +33,7 @@
             <div class="govuk-grid-column-two-thirds">
                 {% include "partials/review-required.njk" %}
 
-                <h1 class="govuk-heading-x1">Breach Notice - Check Your Answers</h1>
+                <h1 class="govuk-heading-l">Breach Notice - Check Your Answers</h1>
 
                 <div class="govuk-summary-card">
                     <div class="govuk-summary-card__title-wrapper">
@@ -453,7 +453,7 @@
                         }) }}
                         {{ govukButton({
                             text: "Delete draft",
-                            href: '/report-deleted/'+breachNotice.id,
+                            href: '/confirm-delete/'+breachNotice.id,
                             classes: "govuk-button--secondary",
                             preventDoubleClick: "true"
                         }) }}
@@ -475,7 +475,7 @@
                         }) }}
                         {{ govukButton({
                             text: "Delete draft",
-                            href: '/report-deleted/'+breachNotice.id,
+                            href: '/confirm-delete/'+breachNotice.id,
                             classes: "govuk-button--secondary",
                             preventDoubleClick: "true"
                         }) }}
