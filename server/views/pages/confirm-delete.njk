@@ -7,6 +7,8 @@
 
   {% from "govuk/components/button/macro.njk" import govukButton %}
 
+  <form method="post">
+
     <input type="hidden" name="_csrf" value="{{ csrfToken }}">
 
     <div class="govuk-grid-row">
@@ -14,28 +16,32 @@
 
       <div class="govuk-grid-column-two-thirds">
 
-          <h1 class="govuk-heading-l">Are you sure you wish to delete this document?</h1>
+        <h1 class="govuk-heading-l">Are you sure you wish to delete this document?</h1>
 
-          <div class="moj-button-group">
-            {{ govukButton({
-              text: "Confirm",
-              href: '/report-deleted/'+id,
-              preventDoubleClick: "true",
-              attributes: {
-                id: "confirm-button"
-              }
-            }) }}
-            {{ govukButton({
-              text: "Cancel",
-              href: '/check-your-report/'+id,
-              preventDoubleClick: "true",
-              classes: "govuk-button--secondary",
-              attributes: {
-                id: "cancel-button"
-              }
-            }) }}
-          </div>
+        <div class="moj-button-group">
+          {{ govukButton({
+            text: "Confirm",
+            type: "submit",
+            name: "action",
+            value: "confirm",
+            attributes: {
+              id: "confirm-button"
+            }
+          }) }}
+          {{ govukButton({
+            text: "Cancel",
+            type: "submit",
+            name: "action",
+            value: "cancel",
+            classes: "govuk-button--secondary",
+            attributes: {
+              id: "cancel-button"
+            }
+          }) }}
+        </div>
       </div>
     </div>
+
+  </form>
 
 {% endblock %}

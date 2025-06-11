@@ -34,10 +34,10 @@ export default function routes({ auditService, hmppsAuthClient, commonUtils }: S
   warningDetailsRoutes(router, auditService, hmppsAuthClient, commonUtils)
   checkYourReportRoutes(router, auditService, hmppsAuthClient, commonUtils)
   pdfMaintenanceRoutes(router, auditService, hmppsAuthClient, commonUtils)
-  reportDeletedRoutes(router, auditService, hmppsAuthClient)
+  reportDeletedRoutes(router, auditService)
   reportCompletedRoutes(router, auditService, hmppsAuthClient)
   nextAppointmentRoutes(router, auditService, hmppsAuthClient, commonUtils)
   addAddressRoutes(router, auditService, hmppsAuthClient)
-  confirmDeleteRoutes(router, auditService)
+  confirmDeleteRoutes(router, auditService, hmppsAuthClient)
   return router
 }
