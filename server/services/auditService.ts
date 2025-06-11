@@ -10,6 +10,7 @@ export enum Page {
   WARNING_DETAILS = 'WARNING_DETAILS',
   VIEW_PDF = 'VIEW_PDF',
   ADD_ADDRESS = 'ADD_ADDRESS',
+  CONFIRM_DELETE = 'CONFIRM_DELETE',
 }
 
 export interface PageViewEventDetails {
