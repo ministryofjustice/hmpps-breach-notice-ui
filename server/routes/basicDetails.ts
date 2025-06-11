@@ -36,6 +36,14 @@ export default function basicDetailsRoutes(
     try {
       // get the existing breach notice
       breachNotice = await breachNoticeApiClient.getBreachNoticeById(req.params.id as string)
+      if (Object.keys(breachNotice).length === 0) {
+        const errorMessages: ErrorMessages = {}
+        errorMessages.genericErrorMessage = {
+          text: 'The document has not been found or has been deleted. An error has been logged. 404',
+        }
+        res.render(`pages/detailed-error`, { errorMessages })
+        return
+      }
     } catch (error) {
       const errorMessages: ErrorMessages = handleIntegrationErrors(error.status, error.data?.message, 'Breach Notice')
       const showEmbeddedError = true
