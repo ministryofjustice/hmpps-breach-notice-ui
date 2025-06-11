@@ -1,4 +1,6 @@
 import { Response, Router } from 'express'
+import { ZonedDateTime, ZoneId } from '@js-joda/core'
+import '@js-joda/timezone'
 import AuditService, { Page } from '../services/auditService'
 import BreachNoticeApiClient, { BreachNotice } from '../data/breachNoticeApiClient'
 import { HmppsAuthClient } from '../data'
@@ -74,12 +76,9 @@ export default function checkYourReportRoutes(
     )
     const { id } = req.params
     const breachNotice = await breachNoticeApiClient.getBreachNoticeById(id as string)
-
     if (await commonUtils.redirectRequired(breachNotice, res)) return
-
-    breachNotice.completedDate = new Date()
+    breachNotice.completedDate = ZonedDateTime.now(ZoneId.of('Europe/London'))
     await breachNoticeApiClient.updateBreachNotice(id, breachNotice)
-
     res.redirect(`/report-completed/${req.params.id}`)
   })
 

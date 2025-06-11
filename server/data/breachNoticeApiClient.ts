@@ -1,3 +1,4 @@
+import { ZonedDateTime } from '@js-joda/core'
 import config from '../config'
 import RestClient from './restClient'
 
@@ -60,7 +61,7 @@ export interface BreachNotice {
   nextAppointmentLocation: string
   nextAppointmentOfficer: string
   nextAppointmentId: number
-  completedDate: Date
+  completedDate: ZonedDateTime
   offenderAddress: BreachNoticeAddress
   replyAddress: BreachNoticeAddress
   basicDetailsSaved: boolean
