@@ -117,17 +117,20 @@ export default function basicDetailsRoutes(
 
   function validateAddressesPresent(selectedAddressId: number, replyAddresses: DeliusAddress[]): ErrorMessages {
     const errorMessages: ErrorMessages = {}
-    // we have a selected address but no addresses returned from the integration
-    if (selectedAddressId && !replyAddresses) {
-      errorMessages.replyAddress = {
-        text: 'Reply Address: The previously selected address is no longer available. Please select an alternative.',
-      }
-    }
-    // we have an address list returned and a previously saved address
-    if (selectedAddressId && replyAddresses) {
-      if (!replyAddresses.find(a => a.id === selectedAddressId)) {
+    // Skip error message if added address is a custom address
+    if (selectedAddressId && selectedAddressId !== -1) {
+      // we have a selected address but no addresses returned from the integration
+      if (selectedAddressId && !replyAddresses) {
         errorMessages.replyAddress = {
           text: 'Reply Address: The previously selected address is no longer available. Please select an alternative.',
+        }
+      }
+      // we have an address list returned and a previously saved address
+      if (selectedAddressId && replyAddresses) {
+        if (!replyAddresses.find(a => a.id === selectedAddressId)) {
+          errorMessages.replyAddress = {
+            text: 'Reply Address: The previously selected address is no longer available. Please select an alternative.',
+          }
         }
       }
     }
@@ -350,7 +353,11 @@ export default function basicDetailsRoutes(
     addressList: Array<DeliusAddress>,
     breachNotice: BreachNotice,
   ): DeliusAddress {
-    if (addressList && addressList.length > 0) {
+    if (
+      addressList &&
+      addressList.length > 0 &&
+      (breachNotice.replyAddress === null || breachNotice.replyAddress.addressId !== -1)
+    ) {
       return (
         addressList.find(a => a.status === 'Default') ??
         addressList.find(a => a.status === 'Postal') ??

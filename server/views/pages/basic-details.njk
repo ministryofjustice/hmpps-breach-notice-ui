@@ -44,6 +44,7 @@
                 {% endset -%}
 
                 {% set replyAddressHtml %}
+                  {% if basicDetails.replyAddresses and basicDetails.replyAddresses|length > 0 %}
                     {{ govukSelect({
                         id: "alternate-reply-address",
                         name: "alternateReplyAddress",
@@ -53,6 +54,17 @@
                         },
                         items: replyAddressOptions
                     }) }}
+                  {% else %}
+                  {{ govukButton({
+                    text: "Add Address",
+                    type: "submit",
+                    name: "action",
+                    value: "addAddress",
+                    attributes: {
+                      id: "add-address-button-2"
+                    }
+                  }) }}
+                  {%  endif %}
                 {% endset -%}
 
      {% include "pages/side-nav.njk" %}

@@ -40,7 +40,7 @@ export default function addAddressRoutes(
       res.redirect(`/basic-details/${id}`)
     } else {
       const address: BreachNoticeAddress = {
-        addressId: null,
+        addressId: -1,
         officeDescription: req.body.officeDescription,
         buildingName: req.body.buildingName,
         buildingNumber: req.body.buildingNumber,

@@ -141,4 +141,43 @@ context('Basic Details page', () => {
     cy.get('.govuk-error-summary__title').should('exist').should('contain.text', 'There is a problem')
     cy.contains('The document has not been found or has been deleted. An error has been logged. 404').should('exist')
   })
+
+  it('add address button should appear when no longer available address is current address', () => {
+    cy.visit('/basic-details/bcdc7e19-6307-46e1-8165-ffcb90f1fc6e')
+    cy.url().should('include', '/basic-details')
+    cy.get('#add-address-button').should('not.exist')
+    cy.get('#add-address-button-2').should('not.be.visible')
+    cy.get('.govuk-error-summary__title').should('exist').should('contain.text', 'There is a problem')
+    cy.get('.govuk-error-summary__list > li > a').should('have.attr', 'href').and('include', 'reply-address')
+    cy.get('.govuk-error-summary__list > li > a').should(
+      'have.text',
+      'Reply Address: The previously selected address is no longer available. Please select an alternative.',
+    )
+    cy.get('#reply-address').should('contain.text', 'Add Address Test')
+    cy.get('[for="replyAddressSelectOne-2"')
+      .should('exist')
+      .should('contain.text', 'No, I would like to use a different reply address')
+    cy.get('#replyAddressSelectOne-2').click()
+    cy.get('#add-address-button-2').should('be.visible')
+    cy.get('#alternate-reply-address').should('not.exist')
+    cy.get('#add-address-button-2').click()
+    cy.url().should('include', '/add-address')
+  })
+
+  it('add address button should appear when only added address is only address', () => {
+    cy.visit('/basic-details/59023b32-c1b5-48ad-af8c-cae0e17d514f')
+    cy.url().should('include', '/basic-details')
+    cy.get('#add-address-button').should('not.exist')
+    cy.get('#add-address-button-2').should('not.be.visible')
+    cy.get('.govuk-error-summary__title').should('not.exist')
+    cy.get('#reply-address').should('contain.text', 'Added by Add Address')
+    cy.get('[for="replyAddressSelectOne-2"')
+      .should('exist')
+      .should('contain.text', 'No, I would like to use a different reply address')
+    cy.get('#replyAddressSelectOne-2').click()
+    cy.get('#add-address-button-2').should('be.visible')
+    cy.get('#alternate-reply-address').should('not.exist')
+    cy.get('#add-address-button-2').click()
+    cy.url().should('include', '/add-address')
+  })
 })

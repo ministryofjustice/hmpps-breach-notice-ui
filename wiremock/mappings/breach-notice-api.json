@@ -2099,6 +2099,154 @@
         },
         "transformers": ["response-template"]
       }
+    },
+    {
+      "request": {
+        "url": "/breach-notice-api/breach-notice/bcdc7e19-6307-46e1-8165-ffcb90f1fc6e",
+        "method": "GET"
+      },
+      "response": {
+        "status": 200,
+        "jsonBody": {
+          "id": "bcdc7e19-6307-46e1-8165-ffcb90f1fc6e",
+          "crn": "X100404",
+          "titleAndFullName": "Mr Billy The Kid",
+          "dateOfLetter": null,
+          "referenceNumber": "REF0001",
+          "responseRequiredDate": null,
+          "breachNoticeTypeCode": "BW",
+          "breachNoticeTypeDescription": "Breach Warning",
+          "breachConditionTypeCode": "BRE",
+          "breachConditionTypeDescription": "Breach",
+          "breachSentenceTypeCode": "CO",
+          "breachSentenceTypeDescription": "Community Order(s)",
+          "responsibleOfficer": "An Officer",
+          "contactNumber": "0892929187",
+          "nextAppointmentType": "App Type",
+          "nextAppointmentDate": "2025-01-01T12:34:56",
+          "nextAppointmentLocation": "Location",
+          "nextAppointmentOfficer": "Officer",
+          "nextAppointmentContact": "0292827177",
+          "completedDate": null,
+          "offenderAddress": {
+            "addressId": 12345,
+            "status": "Postal",
+            "buildingName": null,
+            "buildingNumber": "21",
+            "streetName": "Postal Street",
+            "district": "Postal District",
+            "townCity": "PostCity",
+            "county": "Postal County",
+            "postcode": "NE30 3ZZ"
+          },
+          "replyAddress": {
+            "addressId": 33333,
+            "status": "Reply",
+            "buildingName": null,
+            "buildingNumber": "21",
+            "streetName": "Add Address Test",
+            "district": "District",
+            "townCity": "City",
+            "county": "County",
+            "postcode": "AB12 3CD"
+          },
+          "basicDetailsSaved": true,
+          "warningTypeSaved": true,
+          "warningDetailsSaved": true,
+          "nextAppointmentSaved": true,
+          "useDefaultAddress": true,
+          "useDefaultReplyAddress": true,
+          "breachNoticeContactList": null,
+          "breachNoticeRequirementList": null
+        },
+        "headers": {
+          "Content-Type": "application/json;charset=UTF-8"
+        },
+        "transformers": ["response-template"]
+      }
+    },
+    {
+      "request": {
+        "url": "/breach-notice-api/breach-notice/59023b32-c1b5-48ad-af8c-cae0e17d514f",
+        "method": "GET"
+      },
+      "response": {
+        "status": 200,
+        "jsonBody": {
+          "id": "59023b32-c1b5-48ad-af8c-cae0e17d514f",
+          "crn": "X100404",
+          "titleAndFullName": "Mr Billy The Kid",
+          "dateOfLetter": null,
+          "referenceNumber": "REF0001",
+          "responseRequiredDate": null,
+          "breachNoticeTypeCode": "BW",
+          "breachNoticeTypeDescription": "Breach Warning",
+          "breachConditionTypeCode": "BRE",
+          "breachConditionTypeDescription": "Breach",
+          "breachSentenceTypeCode": "CO",
+          "breachSentenceTypeDescription": "Community Order(s)",
+          "responsibleOfficer": "An Officer",
+          "contactNumber": "0892929187",
+          "nextAppointmentType": "App Type",
+          "nextAppointmentDate": "2025-01-01T12:34:56",
+          "nextAppointmentLocation": "Location",
+          "nextAppointmentOfficer": "Officer",
+          "nextAppointmentContact": "0292827177",
+          "completedDate": null,
+          "offenderAddress": {
+            "addressId": 12345,
+            "status": "Postal",
+            "buildingName": null,
+            "buildingNumber": "21",
+            "streetName": "Postal Street",
+            "district": "Postal District",
+            "townCity": "PostCity",
+            "county": "Postal County",
+            "postcode": "NE30 3ZZ"
+          },
+          "replyAddress": {
+            "addressId": -1,
+            "status": "Default",
+            "buildingName": null,
+            "buildingNumber": "11",
+            "streetName": "Added by Add Address",
+            "district": "District",
+            "townCity": "City",
+            "county": "County",
+            "postcode": "AB12 3CD"
+          },
+          "basicDetailsSaved": true,
+          "warningTypeSaved": true,
+          "warningDetailsSaved": true,
+          "nextAppointmentSaved": true,
+          "useDefaultAddress": true,
+          "useDefaultReplyAddress": true,
+          "breachNoticeContactList": null,
+          "breachNoticeRequirementList": null
+        },
+        "headers": {
+          "Content-Type": "application/json;charset=UTF-8"
+        },
+        "transformers": ["response-template"]
+      }
+    },
+    {
+      "request": {
+        "url": "/breach-notice-api/breach-notice/bcdc7e19-6307-46e1-8165-ffcb90f1fc6e",
+        "method": "PUT"
+      },
+      "response": {
+        "status": 200
+      }
+    },
+    {
+      "request": {
+        "url": "/breach-notice-api/breach-notice/59023b32-c1b5-48ad-af8c-cae0e17d514f",
+        "method": "PUT"
+      },
+      "response": {
+        "status": 200
+      }
     }
   ]
 }

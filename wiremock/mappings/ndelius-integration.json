@@ -1375,6 +1375,40 @@
           "Content-Type": "application/json;charset=UTF-8"
         }
       }
+    },
+    {
+      "request": {
+        "urlPattern": "/basic-details/X100404/(.*?)",
+        "method": "GET"
+      },
+      "response": {
+        "status": 200,
+        "jsonBody": {
+          "title": "Mr",
+          "name": {
+            "forename": "Billy",
+            "middleName": "The",
+            "surname": "Kid"
+          },
+          "addresses": [
+            {
+              "id": 1,
+              "status": "Postal",
+              "buildingName": null,
+              "buildingNumber": "281",
+              "streetName": "Postal Default Street",
+              "townCity": "Postinton",
+              "district": "Postrict",
+              "county": "County Post",
+              "postcode": "NE30 3ZZ"
+            }
+          ],
+          "replyAddresses": []
+        },
+        "headers": {
+          "Content-Type": "application/json;charset=UTF-8"
+        }
+      }
     }
   ]
 }
