@@ -17,10 +17,8 @@ context('Report Completed page', () => {
     cy.get('#reviewReport .govuk-link').invoke('attr', 'href').should('eq', '/pdf/00000000-0000-0000-0000-000000000001')
   })
 
-  it('should navigate to report-deleted if delete link is clicked', () => {
+  it('delete report link should no longer exist', () => {
     cy.visit('/report-completed/00000000-0000-0000-0000-000000000001')
-    cy.get('#deleteReport').should('exist').should('contain.text', 'Delete this document')
-    cy.get('#deleteReport .govuk-link').click()
-    cy.url().should('include', '/report-deleted/00000000-0000-0000-0000-000000000001')
+    cy.get('#deleteReport').should('not.exist')
   })
 })
