@@ -12,13 +12,14 @@ export default function addAddressRoutes(
 ): Router {
   router.get('/add-address/:id', async (req, res, next) => {
     await auditService.logPageView(Page.ADD_ADDRESS, { who: res.locals.user.username, correlationId: req.id })
+    const { id } = req.params
     const token = await hmppsAuthClient.getSystemClientToken(res.locals.user.username)
     const breachNoticeApiClient = new BreachNoticeApiClient(token)
-    const address: BreachNoticeAddress = null
+    let breachNotice: BreachNotice = null
 
     try {
       // get the existing breach notice
-      await breachNoticeApiClient.getBreachNoticeById(req.params.id as string)
+      breachNotice = await breachNoticeApiClient.getBreachNoticeById(id as string)
     } catch (error) {
       const errorMessages: ErrorMessages = handleIntegrationErrors(error.status, error.data?.message, 'Breach Notice')
       const showEmbeddedError = true
@@ -27,6 +28,7 @@ export default function addAddressRoutes(
       return
     }
 
+    const address = breachNotice.replyAddress
     res.render('pages/add-address', { address })
   })
 
@@ -58,6 +60,9 @@ export default function addAddressRoutes(
       if (!hasErrors) {
         try {
           const breachNotice: BreachNotice = await breachNoticeApiClient.getBreachNoticeById(id as string)
+          if (breachNotice.replyAddress) {
+            address.id = breachNotice.replyAddress.id
+          }
           breachNotice.replyAddress = address
           await breachNoticeApiClient.updateBreachNotice(id, breachNotice)
           res.redirect(`/basic-details/${id}`)

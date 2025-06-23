@@ -44,7 +44,6 @@
                 {% endset -%}
 
                 {% set replyAddressHtml %}
-                  {% if basicDetails.replyAddresses and basicDetails.replyAddresses|length > 0 %}
                     {{ govukSelect({
                         id: "alternate-reply-address",
                         name: "alternateReplyAddress",
@@ -54,17 +53,6 @@
                         },
                         items: replyAddressOptions
                     }) }}
-                  {% else %}
-                  {{ govukButton({
-                    text: "Add Address",
-                    type: "submit",
-                    name: "action",
-                    value: "addAddress",
-                    attributes: {
-                      id: "add-address-button-2"
-                    }
-                  }) }}
-                  {%  endif %}
                 {% endset -%}
 
      {% include "pages/side-nav.njk" %}
@@ -139,6 +127,7 @@
                   {% if defaultReplyAddress.county %} {{ defaultReplyAddress.county }}<br/>{% endif %}
                   {% if defaultReplyAddress.postcode %} {{ defaultReplyAddress.postcode }}<br/>{% endif %}
                 </p>
+                {% if basicDetails.replyAddresses and basicDetails.replyAddresses|length > 0 %}
                 {{ govukRadios({
                   name: "replyAddressSelectOne",
                   fieldset: {
@@ -167,6 +156,17 @@
                     }
                   ]
                 }) }}
+                {% else %}
+                  {{ govukButton({
+                    text: "Update Address",
+                    type: "submit",
+                    name: "action",
+                    value: "addAddress",
+                    attributes: {
+                      id: "update-address-button"
+                    }
+                  }) }}
+                {% endif %}
               {% else %}
                 {% if basicDetails.replyAddresses and basicDetails.replyAddresses|length > 0 %}
                   {{ govukSelect({
