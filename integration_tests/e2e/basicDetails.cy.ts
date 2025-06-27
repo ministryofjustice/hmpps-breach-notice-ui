@@ -87,6 +87,15 @@ context('Basic Details page', () => {
     ).should('exist')
   })
 
+  it('should show generic 400 error if it isnt home area or is not sentenced type', () => {
+    cy.visit('/basic-details/45600000-4560-0000-0000-100000000456')
+    cy.url().should('include', '/basic-details')
+    cy.get('.govuk-error-summary__title').should('exist').should('contain.text', 'There is a problem')
+    cy.contains(
+      'An unexpected 400 type error has occurred. Please contact the service desk and report this error.',
+    ).should('exist')
+  })
+
   it('should return to check your report if came from check your report', () => {
     cy.visit('/basic-details/00000000-1111-2222-3333-000000000001?returnTo=check-your-report')
     cy.url().should('include', '/basic-details')
@@ -103,6 +112,12 @@ context('Basic Details page', () => {
 
   it('should stay on page and show NDelius error message if 500 thrown from NDelius integration service', () => {
     cy.visit('/basic-details/00000000-0000-5555-500000000005')
+    cy.get('.govuk-error-summary__title').should('exist').should('contain.text', 'There is a problem')
+    cy.contains('There has been a problem fetching information from NDelius. Please try again later.').should('exist')
+  })
+
+  it('should stay on page and show NDelius error message if 502 thrown from NDelius integration service', () => {
+    cy.visit('/basic-details/56780000-0000-5678-500000005678')
     cy.get('.govuk-error-summary__title').should('exist').should('contain.text', 'There is a problem')
     cy.contains('There has been a problem fetching information from NDelius. Please try again later.').should('exist')
   })
