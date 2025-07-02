@@ -94,4 +94,24 @@ context('Warning Details page', () => {
       .should('exist')
       .should('contain.text', 'click this hyperlink to open Delius in a new tab and check')
   })
+
+  it('should display saved saved further reason details value', () => {
+    cy.visit('/warning-details/9c9cb998-6782-4c23-8cb1-ff2e169c7209')
+    cy.url().should('include', '/warning-details')
+    cy.get('#furtherReasonDetails').should('exist').should('be.visible')
+    cy.get('#furtherReasonDetails').should('contain.text', 'Here are some further reason details')
+  })
+
+  it('further reason details field shows error when over 4000 characters entered', () => {
+    const errorLimit: string = 'A'.repeat(4001)
+    cy.visit('/warning-details/f0be99cd-7939-44fa-adde-43c22d800cd9')
+    cy.url().should('include', '/warning-details')
+    cy.get('#furtherReasonDetails').should('exist').should('be.visible')
+    cy.get('#furtherReasonDetails').invoke('val', errorLimit)
+    cy.get('#continue-button').click()
+    cy.get('.govuk-error-summary__title').should('exist').should('contain.text', 'There is a problem')
+    cy.get('#furtherReasonDetails-error')
+      .should('exist')
+      .should('contain.text', 'Further reason details: Please use 4000 characters or less for this field.')
+  })
 })

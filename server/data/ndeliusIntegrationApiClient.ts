@@ -80,6 +80,7 @@ export interface WarningTypeWrapper {
 export interface WarningDetails {
   breachReasons: ReferenceData[]
   enforceableContacts: EnforceableContact[]
+  requirements: Requirement[]
 }
 
 export interface ReferenceData {
@@ -112,7 +113,6 @@ export interface EnforceableContact {
   type: ReferenceData
   outcome: ReferenceData
   notes: string
-  requirement: Requirement
 }
 
 export interface Requirement {
@@ -159,3 +159,4 @@ export interface DeliusAddress {
 }
 
 export type EnforceableContactList = Array<EnforceableContact>
+export type RequirementList = Array<Requirement>
