@@ -87,45 +87,58 @@
                 <p id="crn">{{ breachNotice.crn }}</p>
 
                 <h2 class="govuk-heading-m">Postal Address</h2>
-                <p id="postal-address">
+
+                {% if defaultOffenderAddress or (basicDetails.addresses and basicDetails.addresses|length > 0) %}
+                  <p id="postal-address">
                     {% if defaultOffenderAddress.buildingName %} {{ defaultOffenderAddress.buildingName }}
-                        <br/>{% endif %}
+                      <br/>{% endif %}
                     {% if defaultOffenderAddress.buildingName or defaultOffenderAddress.streetName %} {{ defaultOffenderAddress.buildingNumber }} {{ defaultOffenderAddress.streetName }}
-                        <br/>{% endif %}
+                      <br/>{% endif %}
                     {% if defaultOffenderAddress.district %} {{ defaultOffenderAddress.district }}<br/>{% endif %}
                     {% if defaultOffenderAddress.townCity %} {{ defaultOffenderAddress.townCity }}<br/>{% endif %}
                     {% if defaultOffenderAddress.county %} {{ defaultOffenderAddress.county }}<br/>{% endif %}
                     {% if defaultOffenderAddress.postcode %} {{ defaultOffenderAddress.postcode }}<br/>{% endif %}
-                </p>
+                  </p>
 
-                {{ govukRadios({
+                  {{ govukRadios({
                     name: "offenderAddressSelectOne",
                     fieldset: {
-                        legend: {
-                            text: "Would you like to use the postal address above for this breach notice?",
-                            isPageHeading: false,
-                            classes: "govuk-fieldset__legend--m"
-                        }
+                      legend: {
+                        text: "Would you like to use the postal address above for this breach notice?",
+                        isPageHeading: false,
+                        classes: "govuk-fieldset__legend--m"
+                      }
                     },
                     hint: {
-                        text: "Select one option"
+                      text: "Select one option"
                     },
                     items: [
-                        {
-                            value: "Yes",
-                            text: "Yes",
-                            checked: breachNotice.useDefaultAddress
-                        },
-                        {
-                            value: "No",
-                            text: "No, I would like to use a different postal address ",
-                            checked: breachNotice.useDefaultAddress === false,
-                            conditional: {
-                            html: alternateAddressHtml
-                        }
-                        }
+                      {
+                        value: "Yes",
+                        text: "Yes",
+                        checked: breachNotice.useDefaultAddress
+                      },
+                      {
+                        value: "No",
+                        text: "No, I would like to use a different postal address ",
+                        checked: breachNotice.useDefaultAddress === false,
+                        conditional: {
+                        html: alternateAddressHtml
+                      }
+                      }
                     ]
-                }) }}
+                  }) }}
+                {% else %}
+                  <p id="no-address-message">No Postal Address found in National Delius</p>
+                  <p id="no-address-supplementary-message">In order to complete a Breach Notice you must add an address to Delius.</p>
+                  <p id="no-address-supplementary-message-2">Please use the below link to add an address.</p>
+                  <p id="address-deeplink-message">
+                    <a href="{{ addAddressDeeplink }}" target="_blank" id="addAddressDeeplink">
+                      click this hyperlink to open Delius in a new tab and check
+                    </a>
+                  </p>
+                  <p id="no-address-suffix">Once this is completed, click the Refresh from Delius button.</p>
+                {% endif %}
 
                 <h2 class="govuk-heading-m">Reply Address</h2>
               {% if defaultReplyAddress %}
