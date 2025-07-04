@@ -195,4 +195,20 @@ context('Basic Details page', () => {
     cy.get('#add-address-button-2').click()
     cy.url().should('include', '/add-address')
   })
+
+  it('add address deeplink should appear when only no address available', () => {
+    cy.visit('/basic-details/00000000-ff00-0000-0000-000000000001')
+    cy.url().should('include', '/basic-details')
+    cy.get('#no-address-message').should('be.visible')
+    cy.get('#no-address-supplementary-message').should('be.visible')
+    cy.get('#no-address-supplementary-message-2').should('be.visible')
+    cy.get('#address-deeplink-message').should('be.visible')
+    cy.get('#no-address-suffix').should('be.visible')
+    cy.get('#postal-address').should('not.exist')
+    cy.get('#addAddressDeeplink').should(
+      'have.attr',
+      'href',
+      'http://localhost:7001/NDelius-war/delius/JSP/deeplink.xhtml?component=AddressandAccommodation&CRN=X100500',
+    )
+  })
 })

@@ -15,6 +15,7 @@ import {
 import BreachNoticeApiClient, { BreachNotice } from '../data/breachNoticeApiClient'
 import NdeliusIntegrationApiClient, { BasicDetails, DeliusAddress } from '../data/ndeliusIntegrationApiClient'
 import { ErrorMessages, SelectItem } from '../data/uiModels'
+import config from '../config'
 
 export default function basicDetailsRoutes(
   router: Router,
@@ -102,6 +103,8 @@ export default function basicDetailsRoutes(
       basicDetails.replyAddresses,
     )
 
+    const addAddressDeeplink = `${config.ndeliusDeeplink.url}?component=AddressandAccommodation&CRN=${breachNotice.crn}`
+
     res.render('pages/basic-details', {
       breachNotice: applyDefaults(breachNotice, basicDetails),
       basicDetails,
@@ -112,6 +115,7 @@ export default function basicDetailsRoutes(
       basicDetailsDateOfLetter,
       currentPage,
       errorMessages,
+      addAddressDeeplink,
     })
   })
 
@@ -187,6 +191,8 @@ export default function basicDetailsRoutes(
       }
     }
 
+    const addAddressDeeplink = `${config.ndeliusDeeplink.url}?component=AddressandAccommodation&CRN=${currentBreachNotice.crn}`
+
     const { title, name } = basicDetails
     const combinedName = combineName(title, name)
 
@@ -243,6 +249,7 @@ export default function basicDetailsRoutes(
         replyAddressOptions,
         basicDetailsDateOfLetter,
         currentPage,
+        addAddressDeeplink,
       })
     }
   })
