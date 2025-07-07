@@ -108,6 +108,98 @@
 
     {
       "request": {
+        "urlPattern": "/basic-details/P666666/(.*)",
+        "method": "GET"
+      },
+      "response": {
+        "status": 200,
+        "jsonBody": {
+          "title": "Mr",
+          "name": {
+            "forename": "Terry",
+            "middleName": "The",
+            "surname": "Kid"
+          },
+          "addresses": [
+            {
+              "id": 1,
+              "status": "Brought",
+              "buildingName": null,
+              "buildingNumber": "281",
+              "streetName": "Postal rought Street",
+              "townCity": "Postinton",
+              "district": "Postrict",
+              "county": "County Post",
+              "postcode": "NE30 3ZZ"
+            },
+            {
+              "id": 3,
+              "status": "Default",
+              "buildingName": null,
+              "buildingNumber": "1a",
+              "streetName": "SET AS DEFAULT",
+              "townCity": "The One A",
+              "district": "The One A",
+              "county": "The One A",
+              "postcode": "MA30 31A"
+            }
+          ],
+          "replyAddresses": []
+        },
+        "headers": {
+          "Content-Type": "application/json;charset=UTF-8"
+        }
+      }
+    },
+
+    {
+      "request": {
+        "urlPattern": "/basic-details/R111111/(.*)",
+        "method": "GET"
+      },
+      "response": {
+        "status": 200,
+        "jsonBody": {
+          "title": "Mr",
+          "name": {
+            "forename": "Terry",
+            "middleName": "The",
+            "surname": "Kid"
+          },
+          "addresses": [
+            {
+              "id": 1,
+              "status": "Brought",
+              "buildingName": null,
+              "buildingNumber": "281",
+              "streetName": "Postal rought Street",
+              "townCity": "Postinton",
+              "district": "Postrict",
+              "county": "County Post",
+              "postcode": "NE30 3ZZ"
+            },
+            {
+              "id": 3,
+              "status": "Default",
+              "buildingName": null,
+              "buildingNumber": "1a",
+              "streetName": "SET AS DEFAULT",
+              "townCity": "The One A",
+              "district": "The One A",
+              "county": "The One A",
+              "postcode": "MA30 31A"
+            }
+          ],
+          "replyAddresses": []
+        },
+        "headers": {
+          "Content-Type": "application/json;charset=UTF-8"
+        }
+      }
+    },
+
+    {
+      "request": {
         "urlPattern": "/basic-details/X123459/(.*?)",
         "method": "GET"
       },

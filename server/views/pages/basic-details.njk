@@ -116,6 +116,7 @@
                 }) }}
 
                 <h2 class="govuk-heading-m">Reply Address</h2>
+
               {% if defaultReplyAddress %}
                 <p id="reply-address">
                   {% if defaultReplyAddress.officeDescription %} {{ defaultReplyAddress.officeDescription }}<br/>{% endif %}
@@ -127,7 +128,8 @@
                   {% if defaultReplyAddress.county %} {{ defaultReplyAddress.county }}<br/>{% endif %}
                   {% if defaultReplyAddress.postcode %} {{ defaultReplyAddress.postcode }}<br/>{% endif %}
                 </p>
-                {% if basicDetails.replyAddresses and basicDetails.replyAddresses|length > 0 %}
+
+                {% if not showReplyAddressAddButton and not showReplyAddressUpdateButton %}
                 {{ govukRadios({
                   name: "replyAddressSelectOne",
                   fieldset: {
@@ -157,6 +159,7 @@
                   ]
                 }) }}
                 {% else %}
+
                   {{ govukButton({
                     text: "Update Address",
                     type: "submit",
@@ -168,7 +171,8 @@
                   }) }}
                 {% endif %}
               {% else %}
-                {% if basicDetails.replyAddresses and basicDetails.replyAddresses|length > 0 %}
+
+                {% if not showReplyAddressAddButton and not showReplyAddressUpdateButton %}
                   {{ govukSelect({
                     id: "alternate-reply-address",
                     name: "alternateReplyAddress",

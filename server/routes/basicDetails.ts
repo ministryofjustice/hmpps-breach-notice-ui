@@ -102,6 +102,9 @@ export default function basicDetailsRoutes(
       basicDetails.replyAddresses,
     )
 
+    const showReplyAddressAddButton: boolean = determineIfAddAddressButtonIsShown(breachNotice, basicDetails)
+    const showReplyAddressUpdateButton: boolean = determineIfUpdateAddressButtonIsShown(breachNotice, basicDetails)
+
     res.render('pages/basic-details', {
       breachNotice: applyDefaults(breachNotice, basicDetails),
       basicDetails,
@@ -112,8 +115,27 @@ export default function basicDetailsRoutes(
       basicDetailsDateOfLetter,
       currentPage,
       errorMessages,
+      showReplyAddressAddButton,
+      showReplyAddressUpdateButton,
     })
   })
+
+  function determineIfAddAddressButtonIsShown(breachNotice: BreachNotice, basicDetails: BasicDetails): boolean {
+    if (basicDetails.replyAddresses && basicDetails.replyAddresses.length > 0) {
+      return false
+    }
+
+    // we have a previously saved breach notice that used the add freature
+    return !(breachNotice.basicDetailsSaved && breachNotice.replyAddress && breachNotice.replyAddress.addressId === -1)
+  }
+
+  function determineIfUpdateAddressButtonIsShown(breachNotice: BreachNotice, basicDetails: BasicDetails): boolean {
+    if (!basicDetails.replyAddresses || !(basicDetails.replyAddresses.length > 0)) {
+      return false
+    }
+
+    return breachNotice.basicDetailsSaved && breachNotice.replyAddress && breachNotice.replyAddress.addressId === -1
+  }
 
   function validateAddressesPresent(selectedAddressId: number, replyAddresses: DeliusAddress[]): ErrorMessages {
     const errorMessages: ErrorMessages = {}
@@ -232,6 +254,12 @@ export default function basicDetailsRoutes(
         updatedBreachNotice.replyAddress?.addressId,
       )
 
+      const showReplyAddressAddButton: boolean = determineIfAddAddressButtonIsShown(currentBreachNotice, basicDetails)
+      const showReplyAddressUpdateButton: boolean = determineIfUpdateAddressButtonIsShown(
+        currentBreachNotice,
+        basicDetails,
+      )
+
       const basicDetailsDateOfLetter: string = req.body.dateOfLetter
       res.render(`pages/basic-details`, {
         errorMessages,
@@ -243,6 +271,8 @@ export default function basicDetailsRoutes(
         replyAddressOptions,
         basicDetailsDateOfLetter,
         currentPage,
+        showReplyAddressAddButton,
+        showReplyAddressUpdateButton,
       })
     }
   })
