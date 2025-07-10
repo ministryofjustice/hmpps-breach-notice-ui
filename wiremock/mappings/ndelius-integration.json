@@ -215,6 +215,36 @@
     },
     {
       "request": {
+        "urlPattern": "/basic-details/X456456/(.*?)",
+        "method": "GET"
+      },
+      "response": {
+        "status": 400,
+        "jsonBody": {
+          "message": "Some Random error"
+        },
+        "headers": {
+          "Content-Type": "application/json;charset=UTF-8"
+        }
+      }
+    },
+    {
+      "request": {
+        "urlPattern": "/basic-details/Y000001/(.*?)",
+        "method": "GET"
+      },
+      "response": {
+        "status": 502,
+        "jsonBody": {
+          "message": "Some Random error"
+        },
+        "headers": {
+          "Content-Type": "application/json;charset=UTF-8"
+        }
+      }
+    },
+    {
+      "request": {
         "urlPattern": "/basic-details/D017500/(.*?)",
         "method": "GET"
       },
@@ -478,18 +508,7 @@
                 "code": "string",
                 "description": "string"
               },
-              "notes": "Tier Change Date: 09/09/2014\nTier: 1\nTier Change Reason: Initial Assessment",
-              "requirement": {
-                "id": 0,
-                "type": {
-                  "code": "string",
-                  "description": "string"
-                },
-                "subType": {
-                  "code": "string",
-                  "description": "string"
-                }
-              }
+              "notes": "Tier Change Date: 09/09/2014\nTier: 1\nTier Change Reason: Initial Assessment"
             },
             {
               "id": 1,
@@ -503,8 +522,7 @@
                 "code": "string",
                 "description": "string"
               },
-              "notes": "string",
-              "requirement": null
+              "notes": "string"
             },
             {
               "id": 2,
@@ -518,17 +536,30 @@
                 "code": "HMMMM",
                 "description": "HMMM"
               },
-              "notes": "Hmmm yes, the floor here is made out of floor",
-              "requirement": {
-                "id": 2,
-                "type": {
-                  "code": "STR",
-                  "description": "A STRING"
-                },
-                "subType": {
-                  "code": "SSTR",
-                  "description": "A SUBSTRING"
-                }
+              "notes": "Hmmm yes, the floor here is made out of floor"
+            }
+          ],
+          "requirements": [
+            {
+              "id": 0,
+              "type": {
+                "code": "string",
+                "description": "string"
+              },
+              "subType": {
+                "code": "string",
+                "description": "string"
+              }
+            },
+            {
+              "id": 2,
+              "type": {
+                "code": "STR",
+                "description": "A STRING"
+              },
+              "subType": {
+                "code": "SSTR",
+                "description": "A SUBSTRING"
               }
             }
           ]
@@ -624,18 +655,7 @@
                 "code": "string",
                 "description": "string"
               },
-              "notes": "string",
-              "requirement": {
-                "id": 0,
-                "type": {
-                  "code": "string",
-                  "description": "string"
-                },
-                "subType": {
-                  "code": "string",
-                  "description": "string"
-                }
-              }
+              "notes": "string"
             },
             {
               "id": 1,
@@ -649,18 +669,7 @@
                 "code": "string",
                 "description": "string"
               },
-              "notes": "string",
-              "requirement": {
-                "id": 0,
-                "type": {
-                  "code": "string",
-                  "description": "string"
-                },
-                "subType": {
-                  "code": "string",
-                  "description": "string"
-                }
-              }
+              "notes": "string"
             },
             {
               "id": 2,
@@ -674,17 +683,30 @@
                 "code": "string",
                 "description": "string"
               },
-              "notes": "string",
-              "requirement": {
-                "id": 1,
-                "type": {
-                  "code": "string",
-                  "description": "string"
-                },
-                "subType": {
-                  "code": "string",
-                  "description": "string"
-                }
+              "notes": "string"
+            }
+          ],
+          "requirements": [
+            {
+              "id": 0,
+              "type": {
+                "code": "string",
+                "description": "string"
+              },
+              "subType": {
+                "code": "string",
+                "description": "string"
+              }
+            },
+            {
+              "id": 1,
+              "type": {
+                "code": "string",
+                "description": "string"
+              },
+              "subType": {
+                "code": "string",
+                "description": "string"
               }
             }
           ]
@@ -725,18 +747,7 @@
                 "code": "string",
                 "description": "string"
               },
-              "notes": "string",
-              "requirement": {
-                "id": 0,
-                "type": {
-                  "code": "REQ01",
-                  "description": "Requirement Zero"
-                },
-                "subType": {
-                  "code": "string",
-                  "description": "string"
-                }
-              }
+              "notes": "string"
             },
             {
               "id": 1,
@@ -750,18 +761,7 @@
                 "code": "string",
                 "description": "string"
               },
-              "notes": "string",
-              "requirement": {
-                "id": 0,
-                "type": {
-                  "code": "string",
-                  "description": "string"
-                },
-                "subType": {
-                  "code": "string",
-                  "description": "string"
-                }
-              }
+              "notes": "string"
             },
             {
               "id": 2,
@@ -775,17 +775,30 @@
                 "code": "string",
                 "description": "string"
               },
-              "notes": "string",
-              "requirement": {
-                "id": 1,
-                "type": {
-                  "code": "string",
-                  "description": "string"
-                },
-                "subType": {
-                  "code": "string",
-                  "description": "string"
-                }
+              "notes": "string"
+            }
+          ],
+          "requirements": [
+            {
+              "id": 0,
+              "type": {
+                "code": "REQ01",
+                "description": "Requirement Zero"
+              },
+              "subType": {
+                "code": "string",
+                "description": "string"
+              }
+            },
+            {
+              "id": 1,
+              "type": {
+                "code": "string",
+                "description": "string"
+              },
+              "subType": {
+                "code": "string",
+                "description": "string"
               }
             }
           ]
@@ -826,18 +839,7 @@
                 "code": "string",
                 "description": "string"
               },
-              "notes": "string /n \n this on a new line",
-              "requirement": {
-                "id": 0,
-                "type": {
-                  "code": "REQ01",
-                  "description": "Requirement Zero"
-                },
-                "subType": {
-                  "code": "string",
-                  "description": "string"
-                }
-              }
+              "notes": "string /n \n this on a new line"
             },
             {
               "id": 1,
@@ -851,18 +853,7 @@
                 "code": "string",
                 "description": "string"
               },
-              "notes": null,
-              "requirement": {
-                "id": 0,
-                "type": {
-                  "code": "string",
-                  "description": "string"
-                },
-                "subType": {
-                  "code": "string",
-                  "description": "string"
-                }
-              }
+              "notes": null
             },
             {
               "id": 2,
@@ -876,17 +867,30 @@
                 "code": "string",
                 "description": "string"
               },
-              "notes": "<script> new\nline",
-              "requirement": {
-                "id": 1,
-                "type": {
-                  "code": "string",
-                  "description": "string"
-                },
-                "subType": {
-                  "code": "string",
-                  "description": "string"
-                }
+              "notes": "<script> new\nline"
+            }
+          ],
+          "requirements": [
+            {
+              "id": 0,
+              "type": {
+                "code": "REQ01",
+                "description": "Requirement Zero"
+              },
+              "subType": {
+                "code": "string",
+                "description": "string"
+              }
+            },
+            {
+              "id": 1,
+              "type": {
+                "code": "string",
+                "description": "string"
+              },
+              "subType": {
+                "code": "string",
+                "description": "string"
               }
             }
           ]
@@ -1495,6 +1499,28 @@
               "postcode": "NE30 3ZZ"
             }
           ],
+          "replyAddresses": []
+        },
+        "headers": {
+          "Content-Type": "application/json;charset=UTF-8"
+        }
+      }
+    },
+    {
+      "request": {
+        "urlPattern": "/basic-details/X100500/(.*?)",
+        "method": "GET"
+      },
+      "response": {
+        "status": 200,
+        "jsonBody": {
+          "title": "Mr",
+          "name": {
+            "forename": "Billy",
+            "middleName": "The",
+            "surname": "Kid"
+          },
+          "addresses": [],
           "replyAddresses": []
         },
         "headers": {

@@ -15,6 +15,8 @@ import NdeliusIntegrationApiClient, {
   EnforceableContact,
   EnforceableContactList,
   ReferenceData,
+  Requirement,
+  RequirementList,
   WarningDetails,
 } from '../data/ndeliusIntegrationApiClient'
 import { ErrorMessages, SelectItem } from '../data/uiModels'
@@ -80,13 +82,14 @@ export default function warningDetailsRoutes(
     const warningDetailsResponseRequiredDate: string = toUserDate(breachNotice.responseRequiredDate)
     const breachReasons = convertReferenceDataListToSelectItemList(warningDetails.breachReasons)
     const requirementsList = createFailuresBeingEnforcedRequirementSelectList(
-      warningDetails.enforceableContacts,
+      warningDetails.requirements,
       warningDetails.breachReasons,
       breachNotice,
     )
 
     const failuresRecorded = createSelectItemListFromEnforceableContacts(warningDetails.enforceableContacts)
     const contactListDeeplink = `${config.ndeliusDeeplink.url}?component=ContactList&CRN=${breachNotice.crn}`
+    const { furtherReasonDetails } = breachNotice
     res.render(`pages/warning-details`, {
       breachNotice,
       warningDetails,
@@ -96,6 +99,7 @@ export default function warningDetailsRoutes(
       currentPage,
       warningDetailsResponseRequiredDate,
       contactListDeeplink,
+      furtherReasonDetails,
     })
   })
 
@@ -141,6 +145,9 @@ export default function warningDetailsRoutes(
     // add the list of contacts to out breach notice
     breachNotice.breachNoticeContactList = contactList
 
+    // set the further reason details
+    breachNotice.furtherReasonDetails = req.body.furtherReasonDetails
+
     // lookup the requirements
     // this can come in an array or singular
     const requirementsPassedInBody = asArray(req.body.failuresBeingEnforcedRequirements)
@@ -150,12 +157,12 @@ export default function warningDetailsRoutes(
       hasRequirements = Object.keys(requirementsPassedInBody).length > 0
       if (hasRequirements) {
         breachNotice.breachNoticeRequirementList = requirementsPassedInBody.map((requirementId: string) => {
-          let enforceableContactWithRequirement: EnforceableContact = null
+          let matchingRequirement: Requirement = null
 
-          // dont search if we have no enforceable contacts
-          if (warningDetails.enforceableContacts) {
-            enforceableContactWithRequirement = warningDetails.enforceableContacts.find(
-              contact => contact.requirement?.id?.toString() === requirementId,
+          // dont search if we have no requirements contacts
+          if (warningDetails.requirements) {
+            matchingRequirement = warningDetails.requirements.find(
+              requirement => requirement?.id?.toString() === requirementId,
             )
           }
 
@@ -163,9 +170,9 @@ export default function warningDetailsRoutes(
           const currentRequirement: BreachNoticeRequirement = {
             id: null,
             breachNoticeId: breachNotice.id,
-            requirementId: enforceableContactWithRequirement?.requirement?.id,
-            requirementTypeMainCategoryDescription: enforceableContactWithRequirement?.requirement?.type?.description,
-            requirementTypeSubCategoryDescription: enforceableContactWithRequirement?.requirement?.subType?.description,
+            requirementId: matchingRequirement?.id,
+            requirementTypeMainCategoryDescription: matchingRequirement?.type?.description,
+            requirementTypeSubCategoryDescription: matchingRequirement?.subType?.description,
             rejectionReason: warningDetails.breachReasons.find(c => c.code === req.body[bodyParamBreachReason])
               ?.description,
             fromDate: null,
@@ -198,12 +205,13 @@ export default function warningDetailsRoutes(
       const failuresRecorded = createSelectItemListFromEnforceableContacts(warningDetails.enforceableContacts)
       const breachReasons = convertReferenceDataListToSelectItemList(warningDetails.breachReasons)
       const requirementsList = createFailuresBeingEnforcedRequirementSelectList(
-        warningDetails.enforceableContacts,
+        warningDetails.requirements,
         warningDetails.breachReasons,
         breachNotice,
       )
 
       const contactListDeeplink = `${config.ndeliusDeeplink.url}?component=ContactList&CRN=${breachNotice.crn}`
+      const { furtherReasonDetails } = breachNotice
       res.render(`pages/warning-details`, {
         breachNotice,
         warningDetails,
@@ -213,6 +221,7 @@ export default function warningDetailsRoutes(
         currentPage,
         errorMessages,
         contactListDeeplink,
+        furtherReasonDetails,
       })
     }
   })
@@ -222,9 +231,7 @@ export default function warningDetailsRoutes(
     enforceableContactList: EnforceableContact[],
   ): BreachNoticeRequirement {
     if (breachNoticeRequirement && enforceableContactList) {
-      const dateList = enforceableContactList
-        .filter(i => i.requirement?.id?.toString() === breachNoticeRequirement.requirementId.toString())
-        .map(i => i.datetime)
+      const dateList = enforceableContactList.map(i => i.datetime)
       const maxDate = dateList.reduce((a, b) => (a > b ? a : b))
       const minDate = dateList.reduce((a, b) => (a < b ? a : b))
       return {
@@ -252,6 +259,11 @@ export default function warningDetailsRoutes(
       // we cant continue with date validation
       return errorMessages
     }
+    if (breachNotice.furtherReasonDetails && breachNotice.furtherReasonDetails.length > 4000) {
+      errorMessages.furtherReasonDetails = {
+        text: 'Further reason details: Please use 4000 characters or less for this field.',
+      }
+    }
 
     if (breachNotice && breachNotice.responseRequiredDate) {
       const localDateOfResponseRequiredByDate = LocalDate.parse(breachNotice.responseRequiredDate).atStartOfDay()
@@ -265,15 +277,13 @@ export default function warningDetailsRoutes(
   }
 
   function createFailuresBeingEnforcedRequirementSelectList(
-    enforceableContactList: EnforceableContactList,
+    requirements: RequirementList,
     breachReasons: ReferenceData[],
     breachNotice: BreachNotice,
   ): WarningDetailsRequirementSelectItem[] {
-    if (enforceableContactList) {
-      const nonUniqueRequirementList: WarningDetailsRequirementSelectItem[] = enforceableContactList
-        .filter(c => c.requirement)
-        .map((enforceableContact: EnforceableContact) => {
-          const { requirement } = enforceableContact
+    if (requirements) {
+      const nonUniqueRequirementList: WarningDetailsRequirementSelectItem[] = requirements.map(
+        (requirement: Requirement) => {
           let breachNoticeRequirement: BreachNoticeRequirement = null
           if (breachNotice.breachNoticeRequirementList) {
             breachNoticeRequirement = breachNotice.breachNoticeRequirementList.find(
@@ -294,7 +304,8 @@ export default function warningDetailsRoutes(
             </div>`,
             },
           }
-        })
+        },
+      )
       return removeDuplicateSelectItems(nonUniqueRequirementList)
     }
     return []

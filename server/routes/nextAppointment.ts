@@ -111,17 +111,27 @@ export default function nextAppointmentRoutes(
       breachNotice.optionalNumber = null
     }
 
-    nextAppointmentDetails.futureAppointments
-      .filter((futureAppointment: FutureAppointment) => futureAppointment.id === Number(req.body.appointmentSelection))
-      .forEach((futureAppointment: FutureAppointment) => {
-        breachNotice.nextAppointmentId = futureAppointment.id
-        breachNotice.nextAppointmentDate = futureAppointment.datetime
-        breachNotice.nextAppointmentType = futureAppointment.type.description
-        breachNotice.nextAppointmentLocation = locationDisplayValue(futureAppointment.location)
-        breachNotice.nextAppointmentOfficer = officerDisplayValue(futureAppointment.officer.name)
-      })
-    breachNotice.responsibleOfficer = officerDisplayValue(nextAppointmentDetails.responsibleOfficer.name)
     breachNotice.selectNextAppointment = req.body.selectNextAppointment === 'Yes'
+    if (breachNotice.selectNextAppointment) {
+      nextAppointmentDetails.futureAppointments
+        .filter(
+          (futureAppointment: FutureAppointment) => futureAppointment.id === Number(req.body.appointmentSelection),
+        )
+        .forEach((futureAppointment: FutureAppointment) => {
+          breachNotice.nextAppointmentId = futureAppointment.id
+          breachNotice.nextAppointmentDate = futureAppointment.datetime
+          breachNotice.nextAppointmentType = futureAppointment.type.description
+          breachNotice.nextAppointmentLocation = locationDisplayValue(futureAppointment.location)
+          breachNotice.nextAppointmentOfficer = officerDisplayValue(futureAppointment.officer.name)
+        })
+    } else {
+      breachNotice.nextAppointmentId = null
+      breachNotice.nextAppointmentDate = null
+      breachNotice.nextAppointmentType = null
+      breachNotice.nextAppointmentLocation = null
+      breachNotice.nextAppointmentOfficer = null
+    }
+    breachNotice.responsibleOfficer = officerDisplayValue(nextAppointmentDetails.responsibleOfficer.name)
 
     const errorMessages: ErrorMessages = validateNextAppointment(breachNotice)
     const hasErrors: boolean = Object.keys(errorMessages).length > 0

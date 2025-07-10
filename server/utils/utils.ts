@@ -98,26 +98,27 @@ export function handleIntegrationErrors(status: number, message: string, integra
       errorMessages.genericErrorMessage = {
         text: 'Your Delius account is missing a home area, please contact the service desk to update your account before using this service.',
       }
-    }
-    if (message?.includes('is not sentenced')) {
+    } else if (message?.includes('is not sentenced')) {
       errorMessages.genericErrorMessage = {
         text: 'Breach actions cannot be created pre-sentence. If this event has a valid sentence please contact the service desk and report this error.',
+      }
+    } else {
+      errorMessages.genericErrorMessage = {
+        text: 'An unexpected 400 type error has occurred. Please contact the service desk and report this error.',
       }
     }
     return errorMessages
   }
 
-  if (status === 500) {
-    if (integrationService === 'NDelius Integration') {
-      errorMessages.genericErrorMessage = {
-        text: 'There has been a problem fetching information from NDelius. Please try again later.',
-      }
-    } else {
-      errorMessages.genericErrorMessage = {
-        text: 'There has been a problem fetching information from the Breach Notice Service. Please try again later.',
-      }
-      return errorMessages
+  if (integrationService === 'NDelius Integration') {
+    errorMessages.genericErrorMessage = {
+      text: 'There has been a problem fetching information from NDelius. Please try again later.',
+    }
+  } else {
+    errorMessages.genericErrorMessage = {
+      text: 'There has been a problem fetching information from the Breach Notice Service. Please try again later.',
     }
   }
+
   return errorMessages
 }

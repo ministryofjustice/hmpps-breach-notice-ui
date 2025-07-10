@@ -14,10 +14,12 @@
   {% from "govuk/components/input/macro.njk" import govukInput %}
   {% from "govuk/components/checkboxes/macro.njk" import govukCheckboxes %}
   {% from "govuk/components/details/macro.njk" import govukDetails %}
+  {% from "govuk/components/textarea/macro.njk" import govukTextarea %}
 
   <form method="post">
     {% set errorList =[
       { text: errorMessages.responseRequiredByDate.text, href: "#responseRequiredByDate" } if errorMessages.responseRequiredByDate else None,
+      { text: errorMessages.furtherReasonDetails.text, href: "#furtherReasonDetails" } if errorMessages.furtherReasonDetails else None,
       { text: errorMessages.genericErrorMessage.text, href: "#" } if errorMessages.genericErrorMessage else None
     ] | reject("undefined") %}
 
@@ -87,6 +89,21 @@
           </h2>
           <p id="no-requirements-message">No failures being enforced to display</p>
         {% endif %}
+
+          {{ govukTextarea({
+            label: {
+              text: "Further reason details",
+              classes: "govuk-label--m",
+              isPageHeading: false
+            },
+            id: "furtherReasonDetails",
+            value: furtherReasonDetails,
+            classes: "govuk-input--width-30",
+            name: "furtherReasonDetails",
+            errorMessage: {
+              text: errorMessages.furtherReasonDetails.text
+            } if errorMessages.furtherReasonDetails.text
+          }) }}
 
         {{ mojDatePicker({
           id: "responseRequiredByDate",
