@@ -15,6 +15,7 @@ import {
 import BreachNoticeApiClient, { BreachNotice } from '../data/breachNoticeApiClient'
 import NdeliusIntegrationApiClient, { BasicDetails, DeliusAddress } from '../data/ndeliusIntegrationApiClient'
 import { ErrorMessages, SelectItem } from '../data/uiModels'
+import config from '../config'
 
 export default function basicDetailsRoutes(
   router: Router,
@@ -102,6 +103,7 @@ export default function basicDetailsRoutes(
       basicDetails.replyAddresses,
     )
 
+    const addAddressDeeplink = `${config.ndeliusDeeplink.url}?component=AddressandAccommodation&CRN=${breachNotice.crn}`
     const showReplyAddressAddButton: boolean = determineIfAddAddressButtonIsShown(breachNotice, basicDetails)
     const showReplyAddressUpdateButton: boolean = determineIfUpdateAddressButtonIsShown(breachNotice, basicDetails)
 
@@ -115,6 +117,7 @@ export default function basicDetailsRoutes(
       basicDetailsDateOfLetter,
       currentPage,
       errorMessages,
+      addAddressDeeplink,
       showReplyAddressAddButton,
       showReplyAddressUpdateButton,
     })
@@ -261,6 +264,8 @@ export default function basicDetailsRoutes(
       )
 
       const basicDetailsDateOfLetter: string = req.body.dateOfLetter
+      const addAddressDeeplink = `${config.ndeliusDeeplink.url}?component=AddressandAccommodation&CRN=${currentBreachNotice.crn}`
+
       res.render(`pages/basic-details`, {
         errorMessages,
         breachNotice: updatedBreachNotice,
@@ -271,6 +276,7 @@ export default function basicDetailsRoutes(
         replyAddressOptions,
         basicDetailsDateOfLetter,
         currentPage,
+        addAddressDeeplink,
         showReplyAddressAddButton,
         showReplyAddressUpdateButton,
       })
