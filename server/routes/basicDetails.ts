@@ -104,6 +104,8 @@ export default function basicDetailsRoutes(
     )
 
     const addAddressDeeplink = `${config.ndeliusDeeplink.url}?component=AddressandAccommodation&CRN=${breachNotice.crn}`
+    const showReplyAddressAddButton: boolean = determineIfAddAddressButtonIsShown(breachNotice, basicDetails)
+    const showReplyAddressUpdateButton: boolean = determineIfUpdateAddressButtonIsShown(breachNotice, basicDetails)
 
     res.render('pages/basic-details', {
       breachNotice: applyDefaults(breachNotice, basicDetails),
@@ -116,8 +118,27 @@ export default function basicDetailsRoutes(
       currentPage,
       errorMessages,
       addAddressDeeplink,
+      showReplyAddressAddButton,
+      showReplyAddressUpdateButton,
     })
   })
+
+  function determineIfAddAddressButtonIsShown(breachNotice: BreachNotice, basicDetails: BasicDetails): boolean {
+    if (basicDetails.replyAddresses && basicDetails.replyAddresses.length > 0) {
+      return false
+    }
+
+    // we have a previously saved breach notice that used the add freature
+    return !(breachNotice.basicDetailsSaved && breachNotice.replyAddress && breachNotice.replyAddress.addressId === -1)
+  }
+
+  function determineIfUpdateAddressButtonIsShown(breachNotice: BreachNotice, basicDetails: BasicDetails): boolean {
+    if (!basicDetails.replyAddresses || !(basicDetails.replyAddresses.length > 0)) {
+      return false
+    }
+
+    return breachNotice.basicDetailsSaved && breachNotice.replyAddress && breachNotice.replyAddress.addressId === -1
+  }
 
   function validateAddressesPresent(selectedAddressId: number, replyAddresses: DeliusAddress[]): ErrorMessages {
     const errorMessages: ErrorMessages = {}
@@ -191,8 +212,6 @@ export default function basicDetailsRoutes(
       }
     }
 
-    const addAddressDeeplink = `${config.ndeliusDeeplink.url}?component=AddressandAccommodation&CRN=${currentBreachNotice.crn}`
-
     const { title, name } = basicDetails
     const combinedName = combineName(title, name)
 
@@ -238,7 +257,15 @@ export default function basicDetailsRoutes(
         updatedBreachNotice.replyAddress?.addressId,
       )
 
+      const showReplyAddressAddButton: boolean = determineIfAddAddressButtonIsShown(currentBreachNotice, basicDetails)
+      const showReplyAddressUpdateButton: boolean = determineIfUpdateAddressButtonIsShown(
+        currentBreachNotice,
+        basicDetails,
+      )
+
       const basicDetailsDateOfLetter: string = req.body.dateOfLetter
+      const addAddressDeeplink = `${config.ndeliusDeeplink.url}?component=AddressandAccommodation&CRN=${currentBreachNotice.crn}`
+
       res.render(`pages/basic-details`, {
         errorMessages,
         breachNotice: updatedBreachNotice,
@@ -250,6 +277,8 @@ export default function basicDetailsRoutes(
         basicDetailsDateOfLetter,
         currentPage,
         addAddressDeeplink,
+        showReplyAddressAddButton,
+        showReplyAddressUpdateButton,
       })
     }
   })

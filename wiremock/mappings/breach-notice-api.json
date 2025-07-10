@@ -45,6 +45,63 @@
         "transformers": ["response-template"]
       }
     },
+
+    {
+      "request": {
+        "url": "/breach-notice-api/breach-notice/076767676-827f-4934-bbd1-767676767676",
+        "method": "GET"
+      },
+      "response": {
+        "status": 200,
+        "jsonBody": {
+          "id": "076767676-827f-4934-bbd1-767676767676",
+          "crn": "R111111",
+          "titleAndFullName": null,
+          "dateOfLetter": null,
+          "referenceNumber": null,
+          "responseRequiredDate": null,
+          "breachNoticeTypeCode": null,
+          "breachNoticeTypeDescription": null,
+          "breachConditionTypeCode": null,
+          "breachConditionTypeDescription": null,
+          "breachSentenceTypeCode": null,
+          "breachSentenceTypeDescription": null,
+          "responsibleOfficer": null,
+          "contactNumber": null,
+          "nextAppointmentType": null,
+          "nextAppointmentDate": null,
+          "nextAppointmentLocation": null,
+          "nextAppointmentOfficer": null,
+          "nextAppointmentContact": null,
+          "completedDate": null,
+          "offenderAddress": null,
+          "replyAddress": {
+            "addressId": 33333,
+            "status": "Reply",
+            "buildingName": null,
+            "buildingNumber": "21",
+            "streetName": "Reply Street",
+            "district": "Reply District",
+            "townCity": "Reply City",
+            "county": "Reply County",
+            "postcode": "NE22 3AA"
+          },
+          "basicDetailsSaved": true,
+          "warningTypeSaved": null,
+          "warningDetailsSaved": null,
+          "nextAppointmentSaved": null,
+          "useDefaultAddress": null,
+          "useDefaultReplyAddress": null,
+          "breachNoticeContactList": null,
+          "breachNoticeRequirementList": null
+        },
+        "headers": {
+          "Content-Type": "application/json;charset=UTF-8"
+        },
+        "transformers": ["response-template"]
+      }
+    },
+
     {
       "request": {
         "url": "/breach-notice-api/breach-notice/00000000-1111-2222-3333-000000000001",
@@ -479,6 +536,63 @@
         "transformers": ["response-template"]
       }
     },
+
+    {
+      "request": {
+        "url": "/breach-notice-api/breach-notice/12121212-12e3-45ba-9999-121212121212",
+        "method": "GET"
+      },
+      "response": {
+        "status": 200,
+        "jsonBody": {
+          "id": "f12121212-12e3-45ba-9999-121212121212",
+          "crn": "P666666",
+          "titleAndFullName": null,
+          "dateOfLetter": null,
+          "referenceNumber": null,
+          "responseRequiredDate": null,
+          "breachNoticeTypeCode": null,
+          "breachNoticeTypeDescription": null,
+          "breachConditionTypeCode": null,
+          "breachConditionTypeDescription": null,
+          "breachSentenceTypeCode": null,
+          "breachSentenceTypeDescription": null,
+          "responsibleOfficer": null,
+          "contactNumber": null,
+          "nextAppointmentType": null,
+          "nextAppointmentDate": null,
+          "nextAppointmentLocation": null,
+          "nextAppointmentOfficer": null,
+          "nextAppointmentContact": null,
+          "completedDate": null,
+          "offenderAddress": null,
+          "replyAddress": {
+            "addressId": -1,
+            "status": "Reply",
+            "buildingName": null,
+            "buildingNumber": "21",
+            "streetName": "Reply Street",
+            "district": "Reply District",
+            "townCity": "Reply City",
+            "county": "Reply County",
+            "postcode": "NE22 3AA"
+          },
+          "basicDetailsSaved": null,
+          "warningTypeSaved": null,
+          "warningDetailsSaved": null,
+          "nextAppointmentSaved": null,
+          "useDefaultAddress": null,
+          "useDefaultReplyAddress": null,
+          "breachNoticeContactList": null,
+          "breachNoticeRequirementList": null
+        },
+        "headers": {
+          "Content-Type": "application/json;charset=UTF-8"
+        },
+        "transformers": ["response-template"]
+      }
+    },
+
     {
       "request": {
         "url": "/breach-notice-api/breach-notice/f1234567-12e3-45ba-9999-1b34bf7b9999",
