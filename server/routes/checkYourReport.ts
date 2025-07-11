@@ -7,6 +7,7 @@ import { HmppsAuthClient } from '../data'
 import CommonUtils from '../services/commonUtils'
 import { toUserDate, toUserDateFromDateTime, toUserTimeFromDateTime } from '../utils/dateUtils'
 import { ErrorMessages } from '../data/uiModels'
+import { handleIntegrationErrors } from '../utils/utils'
 
 export default function checkYourReportRoutes(
   router: Router,
@@ -20,7 +21,17 @@ export default function checkYourReportRoutes(
       await hmppsAuthClient.getSystemClientToken(res.locals.user.username),
     )
     const { id } = req.params
-    const breachNotice = await breachNoticeApiClient.getBreachNoticeById(id as string)
+    let breachNotice: BreachNotice = null
+
+    try {
+      breachNotice = await breachNoticeApiClient.getBreachNoticeById(id as string)
+    } catch (error) {
+      const errorMessages: ErrorMessages = handleIntegrationErrors(error.status, error.data?.message, 'Breach Notice')
+      const showEmbeddedError = true
+      // always stay on page and display the error when there are isssues retrieving the breach notice
+      res.render(`pages/check-your-report`, { errorMessages, showEmbeddedError })
+      return
+    }
 
     if (await commonUtils.redirectRequired(breachNotice, res)) return
 

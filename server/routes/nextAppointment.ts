@@ -97,8 +97,41 @@ export default function nextAppointmentRoutes(
 
     const { id } = req.params
     let breachNotice: BreachNotice = null
-    breachNotice = await breachNoticeApiClient.getBreachNoticeById(id as string)
-    const nextAppointmentDetails = await ndeliusIntegrationApiClient.getNextAppointmentDetails(breachNotice.crn)
+    let nextAppointmentDetails: NextAppointmentDetails = null
+
+    try {
+      breachNotice = await breachNoticeApiClient.getBreachNoticeById(id as string)
+    } catch (error) {
+      const errorMessages: ErrorMessages = handleIntegrationErrors(error.status, error.data?.message, 'Breach Notice')
+      const showEmbeddedError = true
+      // always stay on page and display the error when there are isssues retrieving the breach notice
+      res.render(`pages/next-appointment`, { errorMessages, showEmbeddedError })
+      return
+    }
+
+    try {
+      nextAppointmentDetails = await ndeliusIntegrationApiClient.getNextAppointmentDetails(breachNotice.crn)
+    } catch (error) {
+      const errorMessages: ErrorMessages = handleIntegrationErrors(
+        error.status,
+        error.data?.message,
+        'NDelius Integration',
+      )
+      // take the user to detailed error page for 400 type errors
+      if (error.status === 400) {
+        res.render('pages/detailed-error', { errorMessages })
+        return
+      }
+      // stay on the current page for 500 errors
+      if (error.status === 500) {
+        const showEmbeddedError = true
+        res.render('pages/next-appointment', { errorMessages, showEmbeddedError })
+        return
+      }
+      res.render('pages/detailed-error', { errorMessages })
+      return
+    }
+
     if (await commonUtils.redirectRequired(breachNotice, res)) return
 
     if (req.body.useContactNumber === 'No') {

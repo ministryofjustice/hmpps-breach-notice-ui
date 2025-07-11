@@ -12,7 +12,8 @@
     <form method="post">
 
         {% set errorList =[
-            { text: errorMessages.pdfRenderError.text } if errorMessages.pdfRenderError else None
+            { text: errorMessages.pdfRenderError.text } if errorMessages.pdfRenderError else None,
+            { text: errorMessages.genericErrorMessage.text, href: "#" } if errorMessages.genericErrorMessage else None
         ] | reject("undefined") %}
 
         {% if errorMessages | length > 0 %}
@@ -31,7 +32,9 @@
             </div>
 
             <div class="govuk-grid-column-two-thirds">
-                {% include "partials/review-required.njk" %}
+              {% if not showEmbeddedError %}
+
+              {% include "partials/review-required.njk" %}
 
                 <h1 class="govuk-heading-l">Breach Notice - Check Your Answers</h1>
 
@@ -487,6 +490,7 @@
                         }) }}
                 {% endif %}
                 </div>
+              {% endif %}
             </div>
         </div>
 
