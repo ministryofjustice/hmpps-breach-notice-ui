@@ -99,13 +99,56 @@ export default function warningTypeRoutes(
     const breachNoticeApiClient = new BreachNoticeApiClient(token)
     const ndeliusIntegrationApiClient = new NdeliusIntegrationApiClient(token)
     const { id } = req.params
-    const breachNotice: BreachNotice = await breachNoticeApiClient.getBreachNoticeById(id as string)
+    let breachNotice: BreachNotice = null
+    let warningTypes: WarningType[] = []
+    let sentenceTypes: SentenceType[] = []
+    let defaultSentenceTypeCode: string = null
+
+    try {
+      breachNotice = await breachNoticeApiClient.getBreachNoticeById(id as string)
+    } catch (error) {
+      const errorMessages: ErrorMessages = handleIntegrationErrors(error.status, error.data?.message, 'Breach Notice')
+      const showEmbeddedError = true
+      // always stay on page and display the error when there are isssues retrieving the breach notice
+      res.render(`pages/warning-type`, { errorMessages, showEmbeddedError })
+      return
+    }
+
     const callingScreen: string = req.query.returnTo as string
+
     if (await commonUtils.redirectRequired(breachNotice, res)) return
-    const { warningTypes, sentenceTypes, defaultSentenceTypeCode } = await ndeliusIntegrationApiClient.getWarningTypes(
-      breachNotice.crn,
-      id,
-    )
+
+    try {
+      const warningTypeWrapper: WarningTypeWrapper = await ndeliusIntegrationApiClient.getWarningTypes(
+        breachNotice.crn,
+        id,
+      )
+      if (warningTypeWrapper) {
+        warningTypes = warningTypeWrapper.warningTypes
+        sentenceTypes = warningTypeWrapper.sentenceTypes
+        defaultSentenceTypeCode = warningTypeWrapper.defaultSentenceTypeCode
+      }
+    } catch (error) {
+      const errorMessages: ErrorMessages = handleIntegrationErrors(
+        error.status,
+        error.data?.message,
+        'NDelius Integration',
+      )
+      // take the user to detailed error page for 400 type errors
+      if (error.status === 400) {
+        res.render(`pages/detailed-error`, { errorMessages })
+        return
+      }
+      // stay on the current page for 500 errors
+      if (error.status === 500) {
+        const showEmbeddedError = true
+        res.render(`pages/warning-type`, { errorMessages, showEmbeddedError })
+        return
+      }
+      res.render(`pages/detailed-error`, { errorMessages })
+      return
+    }
+
     const sentenceTypeList: SelectItem[] = initiateSentenceTypeSelectItemsAndApplySavedSelections(
       sentenceTypes,
       defaultSentenceTypeCode,

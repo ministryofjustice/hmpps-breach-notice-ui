@@ -60,4 +60,12 @@ context('Check your report page', () => {
     cy.visit('/check-your-report/00000000-0000-0000-0000-100000000094')
     cy.get('#publish').should('not.exist')
   })
+
+  it('should stay on page and show NDelius error message if 500 thrown from NDelius integration service', () => {
+    cy.visit('/check-your-report/00000000-0000-8888-999999999999')
+    cy.get('.govuk-error-summary__title').should('exist').should('contain.text', 'There is a problem')
+    cy.contains(
+      'There has been a problem fetching information from the Breach Notice Service. Please try again later.',
+    ).should('exist')
+  })
 })
