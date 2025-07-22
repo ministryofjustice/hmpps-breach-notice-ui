@@ -4,7 +4,7 @@ import AuditService, { Page } from '../services/auditService'
 import BreachNoticeApiClient, { BreachNotice } from '../data/breachNoticeApiClient'
 import { HmppsAuthClient } from '../data'
 import CommonUtils from '../services/commonUtils'
-import { handleIntegrationErrors } from '../utils/utils'
+import { createBlankBreachNoticeWithId, handleIntegrationErrors } from '../utils/utils'
 import { toUserDate, toUserTime } from '../utils/dateUtils'
 import NdeliusIntegrationApiClient, {
   DeliusAddress,
@@ -38,8 +38,9 @@ export default function nextAppointmentRoutes(
     } catch (error) {
       const errorMessages: ErrorMessages = handleIntegrationErrors(error.status, error.data?.message, 'Breach Notice')
       const showEmbeddedError = true
+      breachNotice = createBlankBreachNoticeWithId(req.params.id)
       // always stay on page and display the error when there are isssues retrieving the breach notice
-      res.render(`pages/next-appointment`, { errorMessages, showEmbeddedError })
+      res.render(`pages/next-appointment`, { errorMessages, showEmbeddedError, breachNotice })
       return
     }
 
@@ -59,7 +60,8 @@ export default function nextAppointmentRoutes(
       // stay on the current page for 500 errors
       if (error.status === 500) {
         const showEmbeddedError = true
-        res.render('pages/next-appointment', { errorMessages, showEmbeddedError })
+        breachNotice = createBlankBreachNoticeWithId(req.params.id)
+        res.render('pages/next-appointment', { errorMessages, showEmbeddedError, breachNotice })
         return
       }
       res.render('pages/detailed-error', { errorMessages })
@@ -104,8 +106,9 @@ export default function nextAppointmentRoutes(
     } catch (error) {
       const errorMessages: ErrorMessages = handleIntegrationErrors(error.status, error.data?.message, 'Breach Notice')
       const showEmbeddedError = true
+      breachNotice = createBlankBreachNoticeWithId(req.params.id)
       // always stay on page and display the error when there are isssues retrieving the breach notice
-      res.render(`pages/next-appointment`, { errorMessages, showEmbeddedError })
+      res.render(`pages/next-appointment`, { errorMessages, showEmbeddedError, breachNotice })
       return
     }
 
@@ -125,7 +128,8 @@ export default function nextAppointmentRoutes(
       // stay on the current page for 500 errors
       if (error.status === 500) {
         const showEmbeddedError = true
-        res.render('pages/next-appointment', { errorMessages, showEmbeddedError })
+        breachNotice = createBlankBreachNoticeWithId(req.params.id)
+        res.render('pages/next-appointment', { errorMessages, showEmbeddedError, breachNotice })
         return
       }
       res.render('pages/detailed-error', { errorMessages })

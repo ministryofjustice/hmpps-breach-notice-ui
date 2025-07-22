@@ -9,7 +9,7 @@ import NdeliusIntegrationApiClient, {
 import { HmppsAuthClient } from '../data'
 import CommonUtils from '../services/commonUtils'
 import { ErrorMessages, RadioButton, SelectItem } from '../data/uiModels'
-import { handleIntegrationErrors } from '../utils/utils'
+import { createBlankBreachNoticeWithId, handleIntegrationErrors } from '../utils/utils'
 
 export default function warningTypeRoutes(
   router: Router,
@@ -37,8 +37,9 @@ export default function warningTypeRoutes(
     } catch (error) {
       const errorMessages: ErrorMessages = handleIntegrationErrors(error.status, error.data?.message, 'Breach Notice')
       const showEmbeddedError = true
+      breachNotice = createBlankBreachNoticeWithId(req.params.id)
       // always stay on page and display the error when there are isssues retrieving the breach notice
-      res.render(`pages/warning-type`, { errorMessages, showEmbeddedError })
+      res.render(`pages/warning-type`, { errorMessages, showEmbeddedError, breachNotice })
       return
     }
 
@@ -68,7 +69,8 @@ export default function warningTypeRoutes(
       // stay on the current page for 500 errors
       if (error.status === 500) {
         const showEmbeddedError = true
-        res.render(`pages/warning-type`, { errorMessages, showEmbeddedError })
+        breachNotice = createBlankBreachNoticeWithId(req.params.id)
+        res.render(`pages/warning-type`, { errorMessages, showEmbeddedError, breachNotice })
         return
       }
       res.render(`pages/detailed-error`, { errorMessages })
@@ -109,8 +111,9 @@ export default function warningTypeRoutes(
     } catch (error) {
       const errorMessages: ErrorMessages = handleIntegrationErrors(error.status, error.data?.message, 'Breach Notice')
       const showEmbeddedError = true
+      breachNotice = createBlankBreachNoticeWithId(req.params.id)
       // always stay on page and display the error when there are isssues retrieving the breach notice
-      res.render(`pages/warning-type`, { errorMessages, showEmbeddedError })
+      res.render(`pages/warning-type`, { errorMessages, showEmbeddedError, breachNotice })
       return
     }
 
@@ -142,7 +145,8 @@ export default function warningTypeRoutes(
       // stay on the current page for 500 errors
       if (error.status === 500) {
         const showEmbeddedError = true
-        res.render(`pages/warning-type`, { errorMessages, showEmbeddedError })
+        breachNotice = createBlankBreachNoticeWithId(req.params.id)
+        res.render(`pages/warning-type`, { errorMessages, showEmbeddedError, breachNotice })
         return
       }
       res.render(`pages/detailed-error`, { errorMessages })

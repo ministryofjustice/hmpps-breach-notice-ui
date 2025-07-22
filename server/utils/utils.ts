@@ -1,6 +1,6 @@
 import { ParsedQs } from 'qs'
 import { DeliusAddress, Name } from '../data/ndeliusIntegrationApiClient'
-import { BreachNoticeAddress } from '../data/breachNoticeApiClient'
+import { BreachNotice, BreachNoticeAddress } from '../data/breachNoticeApiClient'
 import { ErrorMessages, SelectItem } from '../data/uiModels'
 
 const properCase = (word: string): string =>
@@ -121,4 +121,46 @@ export function handleIntegrationErrors(status: number, message: string, integra
   }
 
   return errorMessages
+}
+
+export function createBlankBreachNoticeWithId(id: string): BreachNotice {
+  return {
+    basicDetailsSaved: false,
+    breachConditionTypeCode: '',
+    breachConditionTypeDescription: '',
+    breachNoticeContactList: [],
+    breachNoticeRequirementList: [],
+    breachNoticeTypeCode: '',
+    breachNoticeTypeDescription: '',
+    breachSentenceTypeCode: '',
+    breachSentenceTypeDescription: '',
+    completedDate: undefined,
+    conditionBeingEnforced: '',
+    contactNumber: '',
+    crn: '',
+    dateOfLetter: '',
+    furtherReasonDetails: '',
+    nextAppointmentDate: '',
+    nextAppointmentId: 0,
+    nextAppointmentLocation: '',
+    nextAppointmentOfficer: '',
+    nextAppointmentSaved: false,
+    nextAppointmentType: '',
+    offenderAddress: undefined,
+    optionalNumber: '',
+    optionalNumberChecked: false,
+    referenceNumber: '',
+    replyAddress: undefined,
+    responseRequiredDate: '',
+    responsibleOfficer: '',
+    reviewEvent: '',
+    reviewRequiredDate: undefined,
+    selectNextAppointment: false,
+    titleAndFullName: '',
+    useDefaultAddress: false,
+    useDefaultReplyAddress: false,
+    warningDetailsSaved: false,
+    warningTypeSaved: false,
+    id,
+  }
 }

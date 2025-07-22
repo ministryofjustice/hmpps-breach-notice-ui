@@ -7,6 +7,7 @@ import CommonUtils from '../services/commonUtils'
 import {
   arrangeSelectItemListAlphabetically,
   combineName,
+  createBlankBreachNoticeWithId,
   formatAddressForSelectMenuDisplay,
   handleIntegrationErrors,
   mapDeliusAddressToBreachNoticeAddress,
@@ -48,8 +49,9 @@ export default function basicDetailsRoutes(
     } catch (error) {
       const errorMessages: ErrorMessages = handleIntegrationErrors(error.status, error.data?.message, 'Breach Notice')
       const showEmbeddedError = true
+      breachNotice = createBlankBreachNoticeWithId(req.params.id)
       // always stay on page and display the error when there are isssues retrieving the breach notice
-      res.render(`pages/basic-details`, { errorMessages, showEmbeddedError })
+      res.render(`pages/basic-details`, { errorMessages, showEmbeddedError, breachNotice })
       return
     }
 
@@ -70,7 +72,8 @@ export default function basicDetailsRoutes(
       // stay on the current page for 500 errors
       if (error.status === 500) {
         const showEmbeddedError = true
-        res.render(`pages/basic-details`, { errorMessages, showEmbeddedError })
+        breachNotice = createBlankBreachNoticeWithId(req.params.id)
+        res.render(`pages/basic-details`, { errorMessages, showEmbeddedError, breachNotice })
         return
       }
       res.render(`pages/detailed-error`, { errorMessages })
@@ -176,8 +179,9 @@ export default function basicDetailsRoutes(
     } catch (error) {
       const errorMessages: ErrorMessages = handleIntegrationErrors(error.status, error.data?.message, 'Breach Notice')
       const showEmbeddedError = true
+      const breachNotice: BreachNotice = createBlankBreachNoticeWithId(req.params.id)
       // always stay on page and display the error when there are isssues retrieving the breach notice
-      res.render(`pages/basic-details`, { errorMessages, showEmbeddedError })
+      res.render(`pages/basic-details`, { errorMessages, showEmbeddedError, breachNotice })
       return
     }
 
@@ -197,7 +201,8 @@ export default function basicDetailsRoutes(
       // stay on the current page for 500 errors
       if (error.status === 500) {
         const showEmbeddedError = true
-        res.render(`pages/basic-details`, { errorMessages, showEmbeddedError })
+        const breachNotice: BreachNotice = createBlankBreachNoticeWithId(req.params.id)
+        res.render(`pages/basic-details`, { errorMessages, showEmbeddedError, breachNotice })
         return
       }
       res.render(`pages/detailed-error`, { errorMessages })

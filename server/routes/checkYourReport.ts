@@ -7,7 +7,7 @@ import { HmppsAuthClient } from '../data'
 import CommonUtils from '../services/commonUtils'
 import { toUserDate, toUserDateFromDateTime, toUserTimeFromDateTime } from '../utils/dateUtils'
 import { ErrorMessages } from '../data/uiModels'
-import { handleIntegrationErrors } from '../utils/utils'
+import { createBlankBreachNoticeWithId, handleIntegrationErrors } from '../utils/utils'
 
 export default function checkYourReportRoutes(
   router: Router,
@@ -28,8 +28,9 @@ export default function checkYourReportRoutes(
     } catch (error) {
       const errorMessages: ErrorMessages = handleIntegrationErrors(error.status, error.data?.message, 'Breach Notice')
       const showEmbeddedError = true
+      breachNotice = createBlankBreachNoticeWithId(req.params.id)
       // always stay on page and display the error when there are isssues retrieving the breach notice
-      res.render(`pages/check-your-report`, { errorMessages, showEmbeddedError })
+      res.render(`pages/check-your-report`, { errorMessages, showEmbeddedError, breachNotice })
       return
     }
 
