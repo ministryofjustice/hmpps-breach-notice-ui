@@ -176,16 +176,24 @@ context('Basic Details page', () => {
   it('add address deeplink should appear when only no address available', () => {
     cy.visit('/basic-details/00000000-ff00-0000-0000-000000000001')
     cy.url().should('include', '/basic-details')
-    cy.get('#no-address-message').should('be.visible')
-    cy.get('#no-address-supplementary-message').should('be.visible')
-    cy.get('#no-address-supplementary-message-2').should('be.visible')
+    cy.get('#no-address-message')
+      .should('be.visible')
+      .should('contain.text', 'No Postal Address found in National Delius')
+    cy.get('#no-address-supplementary-message')
+      .should('be.visible')
+      .should('contain.text', 'In order to complete a Breach Notice you must add an address to Delius.')
+    cy.get('#no-address-supplementary-message-2')
+      .should('be.visible')
+      .should('contain.text', 'Please use the below link to add an address.')
     cy.get('#address-deeplink-message').should('be.visible')
     cy.get('#no-address-suffix').should('be.visible')
     cy.get('#postal-address').should('not.exist')
-    cy.get('#addAddressDeeplink').should(
-      'have.attr',
-      'href',
-      'http://localhost:7001/NDelius-war/delius/JSP/deeplink.xhtml?component=AddressandAccommodation&CRN=X100500',
-    )
+    cy.get('#addAddressDeeplink')
+      .should(
+        'have.attr',
+        'href',
+        'http://localhost:7001/NDelius-war/delius/JSP/deeplink.xhtml?component=AddressandAccommodation&CRN=X100500',
+      )
+      .should('contain.text', 'click this hyperlink to open a new tab to add an address to Delius')
   })
 })
