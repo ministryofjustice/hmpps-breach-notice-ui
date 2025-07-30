@@ -141,6 +141,20 @@ context('Basic Details page', () => {
     cy.url().should('include', '/add-address')
   })
 
+  it('when address has been added manually and null reeturned for reply addresses from integration dont show alternate address section', () => {
+    cy.visit('/basic-details/29292929-29e3-45ba-2929-1b34bf7b2929')
+    cy.url().should('include', '/basic-details')
+    cy.get('#alternate-reply-address').should('not.exist')
+    cy.get('#update-address-button').should('exist').should('be.visible')
+  })
+
+  it('when address has been added manually and empty list is returned for reply addresses from integration dont show alternate address section', () => {
+    cy.visit('/basic-details/12312312-29b1-45c1-2929-123123123123')
+    cy.url().should('include', '/basic-details')
+    cy.get('#alternate-reply-address').should('not.exist')
+    cy.get('#update-address-button').should('exist').should('be.visible')
+  })
+
   it('update address button should display when no default present or reply addresses and stored address id is -1', () => {
     cy.visit('/basic-details/12121212-12e3-45ba-9999-121212121212')
     cy.url().should('include', '/basic-details')
