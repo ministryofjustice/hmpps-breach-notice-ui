@@ -28,6 +28,7 @@
           "nextAppointmentOfficer": null,
           "nextAppointmentContact": null,
           "completedDate": null,
+          "completedDate": null,
           "offenderAddress": null,
           "replyAddress": null,
           "basicDetailsSaved": null,
@@ -638,6 +639,138 @@
         "transformers": ["response-template"]
       }
     },
+
+    {
+      "request": {
+        "url": "/breach-notice-api/breach-notice/29292929-29e3-45ba-2929-1b34bf7b2929",
+        "method": "GET"
+      },
+      "response": {
+        "status": 200,
+        "jsonBody": {
+          "id": "29292929-29e3-45ba-2929-1b34bf7b2929",
+          "crn": "X727272",
+          "titleAndFullName": null,
+          "dateOfLetter": null,
+          "referenceNumber": null,
+          "responseRequiredDate": null,
+          "breachNoticeTypeCode": null,
+          "breachNoticeTypeDescription": null,
+          "breachConditionTypeCode": null,
+          "breachConditionTypeDescription": null,
+          "breachSentenceTypeCode": null,
+          "breachSentenceTypeDescription": null,
+          "responsibleOfficer": null,
+          "contactNumber": null,
+          "nextAppointmentType": null,
+          "nextAppointmentDate": null,
+          "nextAppointmentLocation": null,
+          "nextAppointmentOfficer": null,
+          "nextAppointmentContact": null,
+          "completedDate": null,
+          "offenderAddress": null,
+          "replyAddress": {
+            "addressId": -1,
+            "status": "Reply",
+            "buildingName": null,
+            "buildingNumber": "21",
+            "streetName": "Reply Street",
+            "district": "Reply District",
+            "townCity": "Reply City",
+            "county": "Reply County",
+            "postcode": "NE22 3AA"
+          },
+          "basicDetailsSaved": null,
+          "warningTypeSaved": null,
+          "warningDetailsSaved": null,
+          "nextAppointmentSaved": null,
+          "useDefaultAddress": null,
+          "useDefaultReplyAddress": null,
+          "breachNoticeContactList": null,
+          "breachNoticeRequirementList": null
+        },
+        "headers": {
+          "Content-Type": "application/json;charset=UTF-8"
+        },
+        "transformers": ["response-template"]
+      }
+    },
+
+    {
+      "request": {
+        "url": "/breach-notice-api/breach-notice/12312312-29b1-45c1-2929-123123123123",
+        "method": "GET"
+      },
+      "response": {
+        "status": 200,
+        "jsonBody": {
+          "id": "12312312-29b1-45c1-2929-123123123123",
+          "crn": "X032703",
+          "titleAndFullName": "Dame breachNObreachcontactsFIRST second third breachNObreachcontactsFAM",
+          "dateOfLetter": null,
+          "referenceNumber": "",
+          "responseRequiredDate": null,
+          "breachNoticeTypeCode": "FO",
+          "breachNoticeTypeDescription": "Formal Warning",
+          "breachConditionTypeCode": null,
+          "breachConditionTypeDescription": null,
+          "breachSentenceTypeCode": "CO",
+          "breachSentenceTypeDescription": "Community Order(s)",
+          "responsibleOfficer": null,
+          "contactNumber": null,
+          "nextAppointmentType": null,
+          "nextAppointmentDate": null,
+          "nextAppointmentLocation": null,
+          "nextAppointmentOfficer": null,
+          "nextAppointmentId": null,
+          "completedDate": null,
+          "offenderAddress": {
+            "addressId": 2500196546,
+            "status": "Postal",
+            "officeDescription": null,
+            "buildingName": null,
+            "buildingNumber": "3",
+            "streetName": "POSATAAALL",
+            "district": null,
+            "townCity": null,
+            "county": null,
+            "postcode": null
+          },
+          "replyAddress": {
+            "addressId": -1,
+            "status": "Default",
+            "officeDescription": "",
+            "buildingName": "",
+            "buildingNumber": "34",
+            "streetName": "CAMBORNE RD",
+            "district": "buttonwood",
+            "townCity": "Warrington",
+            "county": "Cheshire",
+            "postcode": "WA5 4LY"
+          },
+          "basicDetailsSaved": true,
+          "warningTypeSaved": true,
+          "warningDetailsSaved": null,
+          "nextAppointmentSaved": null,
+          "useDefaultAddress": true,
+          "useDefaultReplyAddress": true,
+          "breachNoticeContactList": [],
+          "breachNoticeRequirementList": [],
+          "optionalNumberChecked": null,
+          "optionalNumber": null,
+          "reviewRequiredDate": null,
+          "reviewEvent": null,
+          "conditionBeingEnforced": "2 occasions in a 12 month period",
+          "selectNextAppointment": null,
+          "furtherReasonDetails": null
+        },
+        "headers": {
+          "Content-Type": "application/json;charset=UTF-8"
+        },
+        "transformers": ["response-template"]
+      }
+    },
+
     {
       "request": {
         "url": "/breach-notice-api/breach-notice/f1234567-12e3-45ba-9999-1b34bf7b9999",
