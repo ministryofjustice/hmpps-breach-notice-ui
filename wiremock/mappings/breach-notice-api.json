@@ -639,7 +639,6 @@
         "transformers": ["response-template"]
       }
     },
-
     {
       "request": {
         "url": "/breach-notice-api/breach-notice/29292929-29e3-45ba-2929-1b34bf7b2929",
@@ -695,7 +694,6 @@
         "transformers": ["response-template"]
       }
     },
-
     {
       "request": {
         "url": "/breach-notice-api/breach-notice/12312312-29b1-45c1-2929-123123123123",
@@ -932,28 +930,6 @@
       },
       "response": {
         "status": 200
-      }
-    },
-    {
-      "request": {
-        "url": "/breach-notice-api/next-appointment/00000000-0000-0000-0000-000000000001",
-        "method": "GET"
-      },
-      "response": {
-        "status": 200,
-        "jsonBody": {
-          "id": "00000000-0000-0000-0000-000000000001",
-          "crn": "X017052",
-          "responsibleOfficer": {
-            "name": {
-              "forename": "ROForename",
-              "middleName": "ROMiddleName",
-              "surname": "ROSurname"
-            },
-            "telephoneNumber": "01234567891"
-          },
-          "futureAppointments": []
-        }
       }
     },
     {
