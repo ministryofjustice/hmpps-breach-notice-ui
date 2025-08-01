@@ -103,7 +103,7 @@ context('Basic Details page', () => {
     cy.url().should('include', '/check-your-report/')
   })
 
-  it('should show alternate field set if default address not present', () => {
+  it('should show alternate Reply Address choices if no default but alternates to choose from', () => {
     cy.visit('/basic-details/92eb37f7-e315-47ea-870a-7fb6eb6e5b0f')
     cy.url().should('include', '/basic-details')
     cy.contains('Please specify the reply address that the Person on Probation should contact.').should('exist')
@@ -141,14 +141,14 @@ context('Basic Details page', () => {
     cy.url().should('include', '/add-address')
   })
 
-  it('when address has been added manually and null reeturned for reply addresses from integration dont show alternate address section', () => {
+  it('when address has been added manually and null returned for reply addresses from integration dont show alternate address section', () => {
     cy.visit('/basic-details/29292929-29e3-45ba-2929-1b34bf7b2929')
     cy.url().should('include', '/basic-details')
     cy.get('#alternate-reply-address').should('not.exist')
     cy.get('#update-address-button').should('exist').should('be.visible')
   })
 
-  it('when address has been added manually and empty list is returned for reply addresses from integration dont show alternate address section', () => {
+  it('when address has been added manually and an empty list is returned for reply addresses from integration dont show alternate address section', () => {
     cy.visit('/basic-details/12312312-29b1-45c1-2929-123123123123')
     cy.url().should('include', '/basic-details')
     cy.get('#alternate-reply-address').should('not.exist')
@@ -184,7 +184,7 @@ context('Basic Details page', () => {
     cy.contains(
       'Reply Address: The previously selected address is no longer available. Please select an alternative.',
     ).should('exist')
-    cy.get('#update-address-button').should('exist')
+    cy.get('#add-address-button').should('exist')
   })
 
   it('add address deeplink should appear when only no address available', () => {
