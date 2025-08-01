@@ -472,6 +472,64 @@
         }
       }
     },
+
+    {
+      "request": {
+        "urlPattern": "/basic-details/X727272/(.*)",
+        "method": "GET"
+      },
+      "response": {
+        "status": 200,
+        "jsonBody": {
+          "title": "Mr",
+          "name": {
+            "forename": "Billy",
+            "middleName": "The",
+            "surname": "Kid"
+          },
+          "addresses": [
+            {
+              "id": 1,
+              "status": "Postal",
+              "buildingName": null,
+              "buildingNumber": "281",
+              "streetName": "Postal Default Street",
+              "townCity": "Postinton",
+              "district": "Postrict",
+              "county": "County Post",
+              "postcode": "NE30 3ZZ"
+            },
+            {
+              "id": 2,
+              "status": "Main",
+              "buildingName": null,
+              "buildingNumber": "2789",
+              "streetName": "Main Street",
+              "townCity": "Maintown",
+              "district": "MainDistrict",
+              "county": "Maincounty",
+              "postcode": "MA30 3IN"
+            },
+            {
+              "id": 3,
+              "status": "Other",
+              "buildingName": null,
+              "buildingNumber": "1a",
+              "streetName": "The One A",
+              "townCity": "The One A",
+              "district": "The One A",
+              "county": "The One A",
+              "postcode": "MA30 31A"
+            }
+          ],
+          "replyAddresses": null
+        },
+        "headers": {
+          "Content-Type": "application/json;charset=UTF-8"
+        }
+      }
+    },
+
     {
       "request": {
         "urlPattern": "/basic-details/X727272/(.*)",
