@@ -49,6 +49,63 @@
 
     {
       "request": {
+        "url": "/breach-notice-api/breach-notice/987987987-000f-0000-bbd1-989898989898",
+        "method": "GET"
+      },
+      "response": {
+        "status": 200,
+        "jsonBody": {
+          "id": "987987987-000f-0000-bbd1-989898989898",
+          "crn": "R658957",
+          "titleAndFullName": null,
+          "dateOfLetter": null,
+          "referenceNumber": null,
+          "responseRequiredDate": null,
+          "breachNoticeTypeCode": null,
+          "breachNoticeTypeDescription": null,
+          "breachConditionTypeCode": null,
+          "breachConditionTypeDescription": null,
+          "breachSentenceTypeCode": null,
+          "breachSentenceTypeDescription": null,
+          "responsibleOfficer": null,
+          "contactNumber": null,
+          "nextAppointmentType": null,
+          "nextAppointmentDate": null,
+          "nextAppointmentLocation": null,
+          "nextAppointmentOfficer": null,
+          "nextAppointmentContact": null,
+          "completedDate": null,
+          "completedDate": null,
+          "offenderAddress": null,
+          "replyAddress": {
+            "addressId": -1,
+            "status": "Reply",
+            "buildingName": null,
+            "buildingNumber": "21",
+            "streetName": "Reply Street",
+            "district": "Reply District",
+            "townCity": "Reply City",
+            "county": "Reply County",
+            "postcode": "NE22 3AA"
+          },
+          "basicDetailsSaved": null,
+          "warningTypeSaved": null,
+          "warningDetailsSaved": null,
+          "nextAppointmentSaved": null,
+          "useDefaultAddress": null,
+          "useDefaultReplyAddress": null,
+          "breachNoticeContactList": null,
+          "breachNoticeRequirementList": null
+        },
+        "headers": {
+          "Content-Type": "application/json;charset=UTF-8"
+        },
+        "transformers": ["response-template"]
+      }
+    },
+
+    {
+      "request": {
         "url": "/breach-notice-api/breach-notice/076767676-827f-4934-bbd1-767676767676",
         "method": "GET"
       },
