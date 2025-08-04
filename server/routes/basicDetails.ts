@@ -13,7 +13,7 @@ import {
   mapDeliusAddressToBreachNoticeAddress,
   removeDeliusAddressFromDeliusAddressList,
 } from '../utils/utils'
-import BreachNoticeApiClient, { BreachNotice } from '../data/breachNoticeApiClient'
+import BreachNoticeApiClient, { BreachNotice, BreachNoticeAddress } from '../data/breachNoticeApiClient'
 import NdeliusIntegrationApiClient, { BasicDetails, DeliusAddress } from '../data/ndeliusIntegrationApiClient'
 import { ErrorMessages, SelectItem } from '../data/uiModels'
 import config from '../config'
@@ -257,20 +257,29 @@ export default function basicDetailsRoutes(
     }
     // reply address (skip if we need to add one)
     if (req.body.action !== 'addAddress') {
+      const currentAddressIsManuallyAdded: boolean = currentBreachNotice?.replyAddress?.addressId === -1
+      let tmpReplyAddress: BreachNoticeAddress
+
       if (req.body.replyAddressSelectOne === 'No') {
-        updatedBreachNotice.replyAddress = mapDeliusAddressToBreachNoticeAddress(
+        tmpReplyAddress = mapDeliusAddressToBreachNoticeAddress(
           getSelectedAddress(basicDetails.replyAddresses, req.body.alternateReplyAddress),
         )
         updatedBreachNotice.useDefaultReplyAddress = false
       } else if (req.body.replyAddressSelectOne === 'Yes') {
-        updatedBreachNotice.replyAddress = mapDeliusAddressToBreachNoticeAddress(defaultReplyAddress)
+        tmpReplyAddress = mapDeliusAddressToBreachNoticeAddress(defaultReplyAddress)
         updatedBreachNotice.useDefaultReplyAddress = true
       } else {
-        // no default address found we force the user to select one
+        tmpReplyAddress = null
         updatedBreachNotice.useDefaultReplyAddress = false
-        updatedBreachNotice.replyAddress = mapDeliusAddressToBreachNoticeAddress(
-          getSelectedAddress(basicDetails.replyAddresses, req.body.alternateReplyAddress),
-        )
+      }
+
+      if (currentAddressIsManuallyAdded) {
+        // only overwrite manually added address with a real address
+        if (tmpReplyAddress && tmpReplyAddress.addressId !== null) {
+          updatedBreachNotice.replyAddress = tmpReplyAddress
+        }
+      } else {
+        updatedBreachNotice.replyAddress = tmpReplyAddress
       }
     }
 

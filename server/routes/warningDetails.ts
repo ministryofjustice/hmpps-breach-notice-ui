@@ -173,9 +173,9 @@ export default function warningDetailsRoutes(
         id: null,
         contactId: enforceableContact.id,
         breachNoticeId: breachNotice.id,
-        contactDate: enforceableContact.datetime.toString(),
-        contactType: enforceableContact.type.description,
-        contactOutcome: enforceableContact.outcome.description,
+        contactDate: enforceableContact?.datetime?.toString(),
+        contactType: enforceableContact.type?.description,
+        contactOutcome: enforceableContact.outcome?.description,
       })
     }
 
@@ -329,8 +329,8 @@ export default function warningDetailsRoutes(
           }
           const breachReasonSelectItems = craftTheBreachReasonSelectItems(breachReasons, breachNoticeRequirement)
           return {
-            text: `${requirement.type.description} - ${requirement.subType.description}`,
-            value: requirement.id.toString(),
+            text: `${requirement?.type?.description} - ${requirement?.subType?.description}`,
+            value: requirement?.id?.toString(),
             checked: !!breachNoticeRequirement,
             conditional: {
               html: `<div class="govuk-form-group">
@@ -368,8 +368,8 @@ export default function warningDetailsRoutes(
     if (enforceableContactList) {
       enforceableContactList.forEach((enforceableContact: EnforceableContact) => {
         const selectItem: SelectItem = {
-          text: enforceableContact.description,
-          value: enforceableContact.id.toString(),
+          text: enforceableContact?.description,
+          value: enforceableContact?.id?.toString(),
           selected: false,
         }
         selectItemList.push(selectItem)
@@ -384,9 +384,9 @@ export default function warningDetailsRoutes(
   ): SelectItem[] {
     return refDataList.map((referenceData: ReferenceData) => {
       return {
-        text: referenceData.description,
-        value: referenceData.code,
-        selected: requirement && requirement?.rejectionReason === referenceData.description,
+        text: referenceData?.description,
+        value: referenceData?.code,
+        selected: requirement && requirement?.rejectionReason === referenceData?.description,
       }
     })
   }
@@ -394,8 +394,8 @@ export default function warningDetailsRoutes(
   function convertReferenceDataListToSelectItemList(referenceDataList: ReferenceData[]): SelectItem[] {
     return referenceDataList.map(refData => ({
       selected: false,
-      text: refData.description,
-      value: refData.code,
+      text: refData?.description,
+      value: refData?.code,
     }))
   }
 

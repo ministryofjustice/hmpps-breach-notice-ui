@@ -418,6 +418,49 @@
 
     {
       "request": {
+        "urlPattern": "/basic-details/R658957/(.*)",
+        "method": "GET"
+      },
+      "response": {
+        "status": 200,
+        "jsonBody": {
+          "title": "Dame",
+          "name": {
+            "forename": "manually",
+            "middleName": "added",
+            "surname": "breplyaddress"
+          },
+          "addresses": [
+            {
+              "id": 2500194547,
+              "status": "Main",
+              "buildingNumber": "36",
+              "streetName": "brdford street",
+              "postcode": "SG12 7UU"
+            },
+            {
+              "id": 2500196546,
+              "status": "Postal",
+              "buildingNumber": "3",
+              "streetName": "POSATAAALL"
+            },
+            {
+              "id": 2500196545,
+              "status": "Postal",
+              "buildingNumber": "2",
+              "streetName": "postal"
+            }
+          ],
+          "replyAddresses": []
+        },
+        "headers": {
+          "Content-Type": "application/json;charset=UTF-8"
+        }
+      }
+    },
+
+    {
+      "request": {
         "urlPattern": "/basic-details/X012496/(.*)",
         "method": "GET"
       },

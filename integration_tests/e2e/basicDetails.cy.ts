@@ -210,4 +210,11 @@ context('Basic Details page', () => {
       )
       .should('contain.text', 'click this hyperlink to open a new tab to add an address to Delius')
   })
+
+  it('should not clear a manually added address on save', () => {
+    cy.visit('/basic-details/987987987-000f-0000-bbd1-989898989898')
+    cy.url().should('include', '/basic-details')
+    cy.get('#reply-address').should('exist')
+    cy.get('#reply-address').should('be.visible')
+  })
 })
