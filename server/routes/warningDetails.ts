@@ -328,8 +328,19 @@ export default function warningDetailsRoutes(
             )
           }
           const breachReasonSelectItems = craftTheBreachReasonSelectItems(breachReasons, breachNoticeRequirement)
+
+          const typeString: string = `${requirement?.type?.description}`
+          const subTypeString: string = `${requirement?.subType?.description}`
+          let typeSybtypeString: string
+
+          if (subTypeString && subTypeString !== 'undefined') {
+            typeSybtypeString = `${typeString} - ${subTypeString}`
+          } else {
+            typeSybtypeString = typeString
+          }
+
           return {
-            text: `${requirement?.type?.description} - ${requirement?.subType?.description}`,
+            text: typeSybtypeString,
             value: requirement?.id?.toString(),
             checked: !!breachNoticeRequirement,
             conditional: {

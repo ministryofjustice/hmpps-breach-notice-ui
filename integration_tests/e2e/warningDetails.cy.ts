@@ -15,6 +15,15 @@ context('Warning Details page', () => {
     cy.get('#breachreason0').should('exist')
   })
 
+  it('when a requirement has no sub type it should not appear', () => {
+    cy.visit('/warning-details/90000000-0000-0900-0900-00000000009')
+    cy.get('#failuresBeingEnforcedRequirements-2').should('exist')
+    cy.get('#failuresBeingEnforcedRequirements').should('exist')
+    cy.contains('one with null sub type').should('exist')
+    cy.contains('one with null sub type - undefined').should('not.exist')
+    cy.contains('A STRING - A SUBSTRING').should('exist')
+  })
+
   it('entering a date in an invalid format causes a validation error', () => {
     cy.visit('/warning-details/00000000-0000-0000-0000-000000000022')
     cy.get('#responseRequiredByDate').type('123456')

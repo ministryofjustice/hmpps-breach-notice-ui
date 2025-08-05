@@ -813,6 +813,97 @@
         }
       }
     },
+
+    {
+      "request": {
+        "urlPattern": "/warning-details/H123456/(.*?)",
+        "method": "GET"
+      },
+      "response": {
+        "status": 200,
+        "jsonBody": {
+          "breachReasons": [
+            {
+              "code": "BR03",
+              "description": "Attended late"
+            },
+            {
+              "code": "BR04",
+              "description": "Did Not Comply"
+            }
+          ],
+          "enforceableContacts": [
+            {
+              "id": 0,
+              "datetime": "2025-01-01T12:34:56",
+              "description": "string",
+              "type": {
+                "code": "string",
+                "description": "string"
+              },
+              "outcome": {
+                "code": "string",
+                "description": "string"
+              },
+              "notes": "Tier Change Date: 09/09/2014\nTier: 1\nTier Change Reason: Initial Assessment"
+            },
+            {
+              "id": 1,
+              "datetime": "2025-02-02T12:00:00",
+              "description": "string",
+              "type": {
+                "code": "string",
+                "description": "string"
+              },
+              "outcome": {
+                "code": "string",
+                "description": "string"
+              },
+              "notes": "string"
+            },
+            {
+              "id": 2,
+              "datetime": "2025-01-01T12:34:56",
+              "description": "TEST",
+              "type": {
+                "code": "TEST",
+                "description": "TST"
+              },
+              "outcome": {
+                "code": "HMMMM",
+                "description": "HMMM"
+              },
+              "notes": "Hmmm yes, the floor here is made out of floor"
+            }
+          ],
+          "requirements": [
+            {
+              "id": 0,
+              "type": {
+                "code": "string",
+                "description": "one with null sub type"
+              },
+              "subType": null
+            },
+            {
+              "id": 2,
+              "type": {
+                "code": "STR",
+                "description": "A STRING"
+              },
+              "subType": {
+                "code": "SSTR",
+                "description": "A SUBSTRING"
+              }
+            }
+          ]
+        },
+        "headers": {
+          "Content-Type": "application/json;charset=UTF-8"
+        }
+      }
+    },
+
     {
       "request": {
         "urlPattern": "/warning-details/GGG0001/(.*?)",
