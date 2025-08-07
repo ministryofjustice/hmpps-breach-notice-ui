@@ -78,8 +78,8 @@
     ]
   },
   "dependencies": {
-    "@aws-sdk/client-sns": "^3.857.0",
-    "@aws-sdk/client-sqs": "^3.857.0",
+    "@aws-sdk/client-sns": "^3.859.0",
+    "@aws-sdk/client-sqs": "^3.859.0",
     "@js-joda/core": "^5.6.5",
     "@js-joda/timezone": "^2.22.0",
     "@ministryofjustice/frontend": "^5.1.5",
@@ -109,7 +109,7 @@
   },
   "devDependencies": {
     "@jgoz/esbuild-plugin-typecheck": "^4.0.3",
-    "@ministryofjustice/eslint-config-hmpps": "^0.0.1",
+    "@ministryofjustice/eslint-config-hmpps": "^0.0.2",
     "@tsconfig/node22": "^22.0.2",
     "@types/bunyan": "^1.8.11",
     "@types/bunyan-format": "^0.2.9",
@@ -146,7 +146,7 @@
     "jsonwebtoken": "^9.0.2",
     "lint-staged": "^16.1.2",
     "mocha-junit-reporter": "^2.2.1",
-    "nock": "^14.0.7",
+    "nock": "^14.0.8",
     "prettier": "^3.6.2",
     "prettier-plugin-jinja-template": "^2.1.0",
     "supertest": "^7.1.4",
