@@ -269,7 +269,17 @@ export default function basicDetailsRoutes(
         tmpReplyAddress = mapDeliusAddressToBreachNoticeAddress(defaultReplyAddress)
         updatedBreachNotice.useDefaultReplyAddress = true
       } else {
-        tmpReplyAddress = null
+        // this could be a case where no default is set but alternate options available.
+        // in this case, no yes or no selection is available, so it will hit this block
+        // copy the selected address if we have one
+        if (req.body.alternateReplyAddress) {
+          tmpReplyAddress = mapDeliusAddressToBreachNoticeAddress(
+            getSelectedAddress(basicDetails.replyAddresses, req.body.alternateReplyAddress),
+          )
+        } else {
+          tmpReplyAddress = null
+        }
+
         updatedBreachNotice.useDefaultReplyAddress = false
       }
 
