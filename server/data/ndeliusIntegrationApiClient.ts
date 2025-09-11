@@ -25,6 +25,12 @@ export default class NdeliusIntegrationApiClient extends RestClient {
     })
   }
 
+  async getRequirements(breachNoticeId: string): Promise<Requirements> {
+    return this.get({
+      path: `/requirements/${breachNoticeId}`,
+    })
+  }
+
   async getNextAppointmentDetails(crn: string): Promise<NextAppointmentDetails> {
     return this.get({
       path: `/next-appointment-details/${crn}`,
@@ -78,9 +84,12 @@ export interface WarningTypeWrapper {
 }
 
 export interface WarningDetails {
-  breachReasons: ReferenceData[]
   enforceableContacts: EnforceableContact[]
+}
+
+export interface Requirements {
   requirements: Requirement[]
+  breachReasons: ReferenceData[]
 }
 
 export interface ReferenceData {

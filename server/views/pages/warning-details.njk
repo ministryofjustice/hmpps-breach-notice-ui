@@ -44,21 +44,68 @@
         <p id="condition-being-enforced"> {{ breachNotice.conditionBeingEnforced }}</p>
 
         <h2 class="govuk-heading-m">
-          Failures recorded on this order
+          Select the Failures recorded on this order
         </h2>
-        {% if warningDetails.enforceableContacts | length > 0 %}
-          {% for failure in warningDetails.enforceableContacts %}
-            <p>
-              {% set failureHtml = failure.notes | escape | nl2br | safe %}
-              {{ failure.datetime | toUserDate }}, {{ failure.type.description }}, {{ failure.outcome.description }},
+          {% if warningDetails.enforceableContacts | length > 0 %}
+            <div class="govuk-form-group">
+              <fieldset class="govuk-fieldset">
+                <div class="govuk-checkboxes" data-module="govuk-checkboxes">
+                  {% for failure in warningDetails.enforceableContacts %}
+                    <div class="govuk-checkboxes__item">
+                      <input class="govuk-checkboxes__input" id="contact-{{ failure.id }}" name="contact" {% if failure.id in existingContacts %}checked="checked"{% endif %}
+                             type="checkbox" value="{{ failure.id }}" data-aria-controls="conditional-{{ failure.id }}">
+                      <label class="govuk-label govuk-checkboxes__label" for="contact-{{ failure.id }}">
+                        {% set failureHtml = failure.notes | escape | nl2br | safe %}
+                        {{ failure.datetime | toUserDate }}, {{ failure.type.description }}, {{ failure.outcome.description }}
+                      </label>
+                    </div>
+                    <div class="govuk-checkboxes__conditional govuk-checkboxes__conditional--hidden"
+                         id="conditional-{{ failure.id }}">
+                      <div class="govuk-form-group">
+                        {{ govukDetails({
+                          summaryText: "View Requirement notes",
+                          html: failureHtml
+                        }) }}
 
-              {{ govukDetails({
-                summaryText: "View failure notes",
-                html: failureHtml
-              }) }}
-            </p>
-          {% endfor %}
-        {% else %}
+                        <label class="govuk-heading-m">
+                          Requirements
+                        </label>
+                        {% set matchFound = false %}
+                        {% set buttonText = 'Add Requirement' %}
+                        {% set requirement = null %}
+
+                        {% for cr in contactRequirementList %}
+                          {% if cr.contact.contactId == failure.id %}
+                            {% set matchFound = true %}
+                            {% set buttonText = 'Update Requirement' %}
+                            {% set requirement = cr.requirement %}
+                          {% endif %}
+                        {% endfor %}
+                        {% if matchFound %}
+                          <p>{{ requirement.requirementTypeMainCategoryDescription }}
+                            , {{ requirement.rejectionReason }} </p>
+                        {% else %}
+                          <p>No requirements have been selected, in order to complete this form please use the below
+                            to add requirement</p>
+                        {% endif %}
+                        {{ govukButton({
+                          text: buttonText ,
+                          preventDoubleClick: "true",
+                          type: "submit",
+                          name: "action",
+                          value: "enforceablecontact_"+ failure.id,
+                          classes: "govuk-button--primary",
+                          attributes: {
+                            id: "updatereq-button"
+                          }
+                        }) }}
+                      </div>
+                    </div>
+                  {% endfor %}
+                </div>
+              </fieldset>
+            </div>
+          {% else %}
           <p id="no-enforceable-contacts-message">No failures to display.</p>
           <p id="no-enforceable-contacts-supplimentary-message">This notice cannot be completed without evidence of the failure that has prompted its creation.</p>
           <p id="contact-deeplink-message">
@@ -68,42 +115,20 @@
           </p>
         {% endif %}
 
-        {% if requirementsList | length > 0 %}
-          {{ govukCheckboxes({
-            name: "failuresBeingEnforcedRequirements",
-            fieldset: {
-              legend: {
-                text: "Select the Requirements being enforced",
-                isPageHeading: false,
-                classes: "govuk-fieldset__legend--m"
-              }
-            },
-            hint: {
-              text: "Select all that apply"
-            },
-            items: requirementsList
-          }) }}
-        {% else %}
-          <h2 class="govuk-heading-m">
-            Select the Requirements being enforced
-          </h2>
-          <p id="no-requirements-message">No failures being enforced to display</p>
-        {% endif %}
-
-          {{ govukTextarea({
-            label: {
-              text: "Further reason details",
-              classes: "govuk-label--m",
-              isPageHeading: false
-            },
-            id: "furtherReasonDetails",
-            value: furtherReasonDetails,
-            classes: "govuk-input--width-30",
-            name: "furtherReasonDetails",
-            errorMessage: {
-              text: errorMessages.furtherReasonDetails.text
-            } if errorMessages.furtherReasonDetails.text
-          }) }}
+        {{ govukTextarea({
+          label: {
+            text: "Further reason details",
+            classes: "govuk-label--m",
+            isPageHeading: false
+          },
+          id: "furtherReasonDetails",
+          value: furtherReasonDetails,
+          classes: "govuk-input--width-30",
+          name: "furtherReasonDetails",
+          errorMessage: {
+            text: errorMessages.furtherReasonDetails.text
+          } if errorMessages.furtherReasonDetails.text
+        }) }}
 
         {{ mojDatePicker({
           id: "responseRequiredByDate",

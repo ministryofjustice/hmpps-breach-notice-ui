@@ -1,0 +1,87 @@
+{% extends "../partials/layout.njk" %}
+
+{% set pageTitle = applicationName + " - Requirements" %}
+{% set mainClasses = "app-container govuk-body" %}
+
+{% block content %}
+
+  {% from "govuk/components/phase-banner/macro.njk" import govukPhaseBanner %}
+  {% from "govuk/components/input/macro.njk" import govukInput %}
+  {% from "govuk/components/button/macro.njk" import govukButton %}
+  {% from "govuk/components/select/macro.njk" import govukSelect %}
+  {% from "govuk/components/checkboxes/macro.njk" import govukCheckboxes %}
+
+  <form method="post">
+    {% set errorList =[
+      { text: errorMessages.genericErrorMessage.text, href: "#" } if errorMessages.genericErrorMessage else None,
+      { text: errorMessages.nonSelectedReason.text, href: "#" } if errorMessages.nonSelectedReason else None
+    ] | reject("undefined") %}
+
+    {% if errorMessages | length > 0 %}
+      {% from "govuk/components/error-summary/macro.njk" import govukErrorSummary %}
+      {{ govukErrorSummary({ titleText: "There is a problem", errorList: errorList }) }}
+    {% endif %}
+    <input type="hidden" name="_csrf" value="{{ csrfToken }}">
+
+    <div class="govuk-grid-row">
+      <div class="govuk-grid-column-one-third">
+        {% include "pages/side-nav.njk" %}
+      </div>
+      <div class="govuk-grid-column-two-thirds">
+        {% if not showEmbeddedError %}
+          {% include "partials/review-required.njk" %}
+          <h1
+            class="govuk-heading-l">{{ applicationName + " - Requirements" }}</h1>
+          <h2 class="govuk-heading-m">
+            Please select the Requirements being enforced
+          </h2>
+
+          {% if requirementsList | length > 0 %}
+            {{ govukCheckboxes({
+              id: "failuresBeingEnforcedRequirements",
+              name: "failuresBeingEnforcedRequirements",
+              fieldset: {
+                legend: {
+                  text: "Select the Requirements being enforced",
+                  isPageHeading: false,
+                  classes: "govuk-fieldset__legend--m"
+                }
+              },
+              hint: {
+                text: "Select all that apply"
+              },
+              items: requirementsList
+            }) }}
+          {% else %}
+            <h2 class="govuk-heading-m">
+              Select the Requirements being enforced
+            </h2>
+            <p id="no-requirements-message">No failures being enforced to display</p>
+          {% endif %}
+
+          <div class="moj-button-group">
+            {{ govukButton({
+              text: "Save",
+              preventDoubleClick: "true",
+              type: "submit",
+              attributes: {
+                id: "save-button"
+              }
+            }) }}
+            {{ govukButton({
+              text: "Cancel",
+              type: "submit",
+              name: "action",
+              value: "cancel",
+              classes: "govuk-button--secondary",
+              attributes: {
+                id: "cancel-button"
+              }
+            }) }}
+          </div>
+        {% endif %}
+      </div>
+    </div>
+  </form>
+
+{% endblock %}
