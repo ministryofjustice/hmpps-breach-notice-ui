@@ -4,10 +4,10 @@ context('Domain Event checks', () => {
     cy.get('#reviewAlert').should('exist')
   })
 
-  // it('Warning Details Merge Alert', () => {
-  //   cy.visit('/warning-details/00000000-0000-0000-0000-100000000101')
-  //   cy.get('#reviewAlert').should('exist')
-  // })
+  it('Warning Details Merge Alert', () => {
+    cy.visit('/warning-details/00000000-0000-0000-0000-100000000101')
+    cy.get('#reviewAlert').should('exist')
+  })
 
   it('Warning Type Merge Alert', () => {
     cy.visit('/warning-type/00000000-0000-0000-0000-100000000101')
@@ -29,10 +29,10 @@ context('Domain Event checks', () => {
     cy.get('#reviewAlert').should('exist')
   })
 
-  // it('Warning Details UnMerge Alert', () => {
-  //   cy.visit('/warning-details/00000000-0000-0000-0000-100000000102')
-  //   cy.get('#reviewAlert').should('exist')
-  // })
+  it('Warning Details UnMerge Alert', () => {
+    cy.visit('/warning-details/00000000-0000-0000-0000-100000000102')
+    cy.get('#reviewAlert').should('exist')
+  })
 
   it('Warning Type UnMerge Alert', () => {
     cy.visit('/warning-type/00000000-0000-0000-0000-100000000102')

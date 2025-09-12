@@ -2257,6 +2257,40 @@
 
     {
       "request": {
+        "url": "/breach-notice-api/breach-notice/00000000-0000-0000-0000-100000000101/crlinks",
+        "method": "GET"
+      },
+      "response": {
+        "status": 200,
+        "jsonBody": {
+          "contactRequirementList": []
+        },
+        "headers": {
+          "Content-Type": "application/json;charset=UTF-8"
+        },
+        "transformers": ["response-template"]
+      }
+    },
+
+    {
+      "request": {
+        "url": "/breach-notice-api/breach-notice/00000000-0000-0000-0000-100000000102/crlinks",
+        "method": "GET"
+      },
+      "response": {
+        "status": 200,
+        "jsonBody": {
+          "contactRequirementList": []
+        },
+        "headers": {
+          "Content-Type": "application/json;charset=UTF-8"
+        },
+        "transformers": ["response-template"]
+      }
+    },
+
+    {
+      "request": {
         "url": "/breach-notice-api/breach-notice/45600000-4560-0000-0000-100000000456",
         "method": "GET"
       },
