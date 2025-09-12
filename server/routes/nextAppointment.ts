@@ -136,8 +136,6 @@ export default function nextAppointmentRoutes(
       return
     }
 
-    if (await commonUtils.redirectRequired(breachNotice, res)) return
-
     if (req.body.useContactNumber === 'No') {
       breachNotice.optionalNumberChecked = true
       breachNotice.optionalNumber = req.body.contactByPhone

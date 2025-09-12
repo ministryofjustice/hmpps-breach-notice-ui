@@ -154,8 +154,6 @@ export default function warningDetailsRoutes(
       return
     }
 
-    if (await commonUtils.redirectRequired(breachNotice, res)) return
-
     // set the further reason details
     breachNotice.furtherReasonDetails = req.body.furtherReasonDetails
 

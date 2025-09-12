@@ -78,6 +78,12 @@ export default class BreachNoticeApiClient extends RestClient {
     })
   }
 
+  async getContactRequirementLinksWithContact(id: string, contactId: string): Promise<Array<ContactRequirement>> {
+    return this.get({
+      path: `/breach-notice/${id}/crlinks/${contactId}`,
+    })
+  }
+
   async updateContactRequirementLinks(id: string, contactId: string, crlinks: Array<ContactRequirement>) {
     return this.put({
       path: `/breach-notice/${id}/crlinks/${contactId}`,

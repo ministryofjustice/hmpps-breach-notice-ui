@@ -41,7 +41,10 @@ export default function addRequirementRoutes(
     try {
       // get the existing breach notice
       breachNotice = await breachNoticeApiClient.getBreachNoticeById(req.params.id as string)
-      contactRequirementList = await breachNoticeApiClient.getContactRequirementLinks(req.params.id as string)
+      contactRequirementList = await breachNoticeApiClient.getContactRequirementLinksWithContact(
+        req.params.id as string,
+        contactId,
+      )
     } catch (error) {
       const errorMessages: ErrorMessages = handleIntegrationErrors(error.status, error.data?.message, 'Breach Notice')
       const showEmbeddedError = true
@@ -78,18 +81,13 @@ export default function addRequirementRoutes(
       return
     }
 
-    // Filter contactrequirement links for this contact
-    const filteredContactRequirementList: ContactRequirement[] = contactRequirementList.filter(
-      ct => ct.contact.id === contactId,
-    )
-
     requirements.breachReasons.push({ code: '-1', description: '[Select Breach Reason]' })
     const breachReasons = convertReferenceDataListToSelectItemList(requirements.breachReasons)
 
     const requirementsList = createFailuresBeingEnforcedRequirementSelectList(
       requirements.requirements,
       requirements.breachReasons,
-      filteredContactRequirementList,
+      contactRequirementList,
     )
 
     res.render('pages/add-requirement', {
@@ -116,7 +114,10 @@ export default function addRequirementRoutes(
       try {
         // get the existing breach notice
         breachNotice = await breachNoticeApiClient.getBreachNoticeById(req.params.id as string)
-        contactRequirementList = await breachNoticeApiClient.getContactRequirementLinks(req.params.id as string)
+        contactRequirementList = await breachNoticeApiClient.getContactRequirementLinksWithContact(
+          req.params.id as string,
+          contactId,
+        )
       } catch (error) {
         const errorMessages: ErrorMessages = handleIntegrationErrors(error.status, error.data?.message, 'Breach Notice')
         const showEmbeddedError = true
@@ -125,8 +126,6 @@ export default function addRequirementRoutes(
         res.render(`pages/add-requirement`, { errorMessages, showEmbeddedError, breachNotice })
         return
       }
-
-      if (await commonUtils.redirectRequired(breachNotice, res)) return
 
       try {
         // get details from the integration service
@@ -153,18 +152,13 @@ export default function addRequirementRoutes(
         return
       }
 
-      // Filter contactrequirement links for this contact
-      const filteredContactRequirementList: ContactRequirement[] = contactRequirementList.filter(
-        ct => ct.contact.id === contactId,
-      )
-
       requirements.breachReasons.push({ code: '-1', description: '[Select Breach Reason]' })
       const breachReasons = convertReferenceDataListToSelectItemList(requirements.breachReasons)
 
       const requirementsList = createFailuresBeingEnforcedRequirementSelectList(
         requirements.requirements,
         requirements.breachReasons,
-        filteredContactRequirementList,
+        contactRequirementList,
       )
 
       const errorMessages: ErrorMessages = validateAddRequirements(JSON.stringify(req.body))

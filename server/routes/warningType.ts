@@ -119,8 +119,6 @@ export default function warningTypeRoutes(
 
     const callingScreen: string = req.query.returnTo as string
 
-    if (await commonUtils.redirectRequired(breachNotice, res)) return
-
     try {
       const warningTypeWrapper: WarningTypeWrapper = await ndeliusIntegrationApiClient.getWarningTypes(
         breachNotice.crn,
