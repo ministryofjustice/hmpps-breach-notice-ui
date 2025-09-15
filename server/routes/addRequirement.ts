@@ -245,9 +245,10 @@ export default function addRequirementRoutes(
             savedRequirement => savedRequirement.requirement?.requirementId.toString() === requirement.id?.toString(),
           )
         }
+        const itemSubText = requirement.subType ? `- ${requirement.subType.description}` : ''
         const breachReasonSelectItems = craftTheBreachReasonSelectItems(breachReasons, contactLink)
         return {
-          text: `${requirement.type.description} - ${requirement.subType.description}`,
+          text: `${requirement.type?.description} ${itemSubText}`,
           value: requirement.id.toString(),
           checked: !!contactLink,
           conditional: {

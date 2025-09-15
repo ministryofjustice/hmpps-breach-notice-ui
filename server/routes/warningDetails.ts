@@ -77,10 +77,10 @@ export default function warningDetailsRoutes(
 
     const warningDetailsResponseRequiredDate: string = toUserDate(breachNotice.responseRequiredDate)
 
-    const enforceableContactListIds = warningDetails.enforceableContacts.map(c => c.id)
+    const enforceableContactListIds = warningDetails.enforceableContacts?.map(c => c.id)
     // Add any breach notice contacts not returned in API
     for (const bnContact of breachNotice.breachNoticeContactList) {
-      if (!enforceableContactListIds.includes(bnContact.contactId)) {
+      if (!enforceableContactListIds || !enforceableContactListIds.includes(bnContact.contactId)) {
         warningDetails.enforceableContacts.push({
           id: bnContact.contactId,
           datetime: null,
@@ -112,7 +112,7 @@ export default function warningDetailsRoutes(
     const token = await hmppsAuthClient.getSystemClientToken(res.locals.user.username)
     const breachNoticeApiClient = new BreachNoticeApiClient(token)
     const ndeliusIntegrationApiClient = new NdeliusIntegrationApiClient(token)
-    let breachNotice: BreachNotice
+    let breachNotice: BreachNotice = null
     let warningDetails: WarningDetails = null
     let contactRequirementList: Array<ContactRequirement> = null
     const callingScreen: string = req.query.returnTo as string
@@ -159,6 +159,7 @@ export default function warningDetailsRoutes(
 
     const errorMessages: ErrorMessages = validateWarningDetails(breachNotice, req.body.responseRequiredByDate)
     const hasErrors: boolean = Object.keys(errorMessages).length > 0
+    const existingContacts = breachNotice.breachNoticeContactList.map(c => c.contactId)
 
     // if we dont have validation errors navigate to ...next screen
     if (!hasErrors) {
@@ -171,7 +172,7 @@ export default function warningDetailsRoutes(
       if (selectedContactList && Object.keys(selectedContactList).length > 0) {
         const contactsToPush: BreachNoticeContact[] = []
         for (const selectedContactId of selectedContactList) {
-          if (!breachNoticeContactIds.includes(selectedContactId)) {
+          if (breachNoticeContactIds && !breachNoticeContactIds.includes(selectedContactId)) {
             const selectedContact = warningDetails.enforceableContacts.find(c => c.id.toString() === selectedContactId)
             contactsToPush.push(enforceableContactToContact(breachNotice, selectedContact))
           }
@@ -188,7 +189,7 @@ export default function warningDetailsRoutes(
         res.redirect(`/check-your-report/${id}`)
       } else if (req.body.action && req.body.action.substring(0, 18) === 'enforceablecontact') {
         const contactId = req.body.action.substring(19, req.body.action.length) // <- Delius contact id
-        const selectedContact = warningDetails.enforceableContacts.find(c => c.id.toString() === contactId)
+        const selectedContact = warningDetails.enforceableContacts?.find(c => c.id.toString() === contactId)
         const returnedContact = await breachNoticeApiClient.getBreachNoticeContact(breachNotice.id, selectedContact.id)
         res.redirect(`/add-requirement/${id}?contactId=${returnedContact.id}`)
       } else {
@@ -210,6 +211,7 @@ export default function warningDetailsRoutes(
         breachNotice,
         warningDetails,
         currentPage,
+        existingContacts,
         errorMessages,
         contactListDeeplink,
         furtherReasonDetails,
