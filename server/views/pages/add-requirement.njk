@@ -32,9 +32,6 @@
           {% include "partials/review-required.njk" %}
           <h1
             class="govuk-heading-l">{{ applicationName + " - Requirements" }}</h1>
-          <h2 class="govuk-heading-m">
-            Please select the Requirements being enforced
-          </h2>
 
           {% if requirementsList | length > 0 %}
             {{ govukCheckboxes({
@@ -42,7 +39,7 @@
               name: "failuresBeingEnforcedRequirements",
               fieldset: {
                 legend: {
-                  text: "Select the Requirements being enforced",
+                  text: "Please select the Requirements being enforced",
                   isPageHeading: false,
                   classes: "govuk-fieldset__legend--m"
                 }
@@ -54,7 +51,7 @@
             }) }}
           {% else %}
             <h2 class="govuk-heading-m">
-              Select the Requirements being enforced
+                Please select the Requirements being enforced
             </h2>
             <p id="no-requirements-message">No failures being enforced to display</p>
           {% endif %}

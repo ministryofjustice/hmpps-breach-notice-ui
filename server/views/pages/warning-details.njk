@@ -37,7 +37,7 @@
         {% if not showEmbeddedError %}
         {% include "partials/review-required.njk" %}
         <h1
-          class="govuk-heading-l">{{ applicationName + " - " + breachNotice.breachNoticeTypeDescription + " Details" }}</h1>
+          class="govuk-heading-l">{{ "Warning Details" + " - " + breachNotice.breachNoticeTypeDescription }}</h1>
         <h2 class="govuk-heading-m">
           Failure against requirement and/or condition criteria
         </h2>
@@ -63,7 +63,7 @@
                          id="conditional-{{ failure.id }}">
                       <div class="govuk-form-group">
                         {{ govukDetails({
-                          summaryText: "View Requirement notes",
+                          summaryText: "View failure notes",
                           html: failureHtml
                         }) }}
 

@@ -187,7 +187,7 @@ export default function addRequirementRoutes(
                 breachNoticeId: breachNotice.id,
                 requirementId: requirement.id,
                 requirementTypeMainCategoryDescription: requirement.type.description,
-                requirementTypeSubCategoryDescription: requirement.subType.description,
+                requirementTypeSubCategoryDescription: requirement.subType?.description,
                 rejectionReason: rejectionReasonDescription,
                 fromDate: null,
                 toDate: null,
