@@ -5,7 +5,7 @@ context('Report Completed page', () => {
     cy.get('.govuk-panel--confirmation').should('exist').should('contain.text', 'Letter Published')
     cy.get('.govuk-panel--confirmation')
       .should('exist')
-      .should('contain.text', 'Your Breach Report has been completed and uploaded.')
+      .should('contain.text', 'Your Breach Letter has been completed and uploaded.')
   })
 
   it('should navigate to pdf page if pdf link is clicked', () => {
