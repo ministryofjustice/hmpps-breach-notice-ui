@@ -1733,10 +1733,6 @@
               "type": {
                 "code": "REQ01",
                 "description": "Requirement Zero"
-              },
-              "subType": {
-                "code": "string",
-                "description": "string"
               }
             },
             {
@@ -1776,6 +1772,37 @@
               "description": "Did Not Comply"
             }
           ]
+        },
+        "headers": {
+          "Content-Type": "application/json;charset=UTF-8"
+        }
+      }
+    },
+    {
+      "request": {
+        "urlPattern": "/requirements/4c3dbcf0-f95d-4b67-b925-a0a5da1c1cd4",
+        "method": "GET"
+      },
+      "response": {
+        "status": 200,
+        "jsonBody": {
+          "requirements": [],
+          "breachReasons": []
+        },
+        "headers": {
+          "Content-Type": "application/json;charset=UTF-8"
+        }
+      }
+    },
+    {
+      "request": {
+        "urlPattern": "/requirements/12345678-7777-5555-500000000005",
+        "method": "GET"
+      },
+      "response": {
+        "status": 500,
+        "jsonBody": {
+          "message": "Some server side error occurred"
         },
         "headers": {
           "Content-Type": "application/json;charset=UTF-8"
