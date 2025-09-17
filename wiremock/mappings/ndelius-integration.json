@@ -729,16 +729,6 @@
       "response": {
         "status": 200,
         "jsonBody": {
-          "breachReasons": [
-            {
-              "code": "BR03",
-              "description": "Attended late"
-            },
-            {
-              "code": "BR04",
-              "description": "Did Not Comply"
-            }
-          ],
           "enforceableContacts": [
             {
               "id": 0,
@@ -781,30 +771,6 @@
                 "description": "HMMM"
               },
               "notes": "Hmmm yes, the floor here is made out of floor"
-            }
-          ],
-          "requirements": [
-            {
-              "id": 0,
-              "type": {
-                "code": "string",
-                "description": "string"
-              },
-              "subType": {
-                "code": "string",
-                "description": "string"
-              }
-            },
-            {
-              "id": 2,
-              "type": {
-                "code": "STR",
-                "description": "A STRING"
-              },
-              "subType": {
-                "code": "SSTR",
-                "description": "A SUBSTRING"
-              }
             }
           ]
         },
@@ -927,12 +893,6 @@
       "response": {
         "status": 200,
         "jsonBody": {
-          "breachReasons": [
-            {
-              "code": "BR03",
-              "description": "Attended late"
-            }
-          ],
           "enforceableContacts": null
         },
         "headers": {
@@ -949,12 +909,6 @@
       "response": {
         "status": 200,
         "jsonBody": {
-          "breachReasons": [
-            {
-              "code": "BR03",
-              "description": "Attended late"
-            }
-          ],
           "enforceableContacts": null
         },
         "headers": {
@@ -971,12 +925,6 @@
       "response": {
         "status": 200,
         "jsonBody": {
-          "breachReasons": [
-            {
-              "code": "BR03",
-              "description": "Attended late"
-            }
-          ],
           "enforceableContacts": [
             {
               "id": 0,
@@ -1019,30 +967,6 @@
                 "description": "string"
               },
               "notes": "string"
-            }
-          ],
-          "requirements": [
-            {
-              "id": 0,
-              "type": {
-                "code": "string",
-                "description": "string"
-              },
-              "subType": {
-                "code": "string",
-                "description": "string"
-              }
-            },
-            {
-              "id": 1,
-              "type": {
-                "code": "string",
-                "description": "string"
-              },
-              "subType": {
-                "code": "string",
-                "description": "string"
-              }
             }
           ]
         },
@@ -1059,16 +983,6 @@
       "response": {
         "status": 200,
         "jsonBody": {
-          "breachReasons": [
-            {
-              "code": "BR03",
-              "description": "Attended late"
-            },
-            {
-              "code": "BR04",
-              "description": "Another Reason"
-            }
-          ],
           "enforceableContacts": [
             {
               "id": 0,
@@ -1112,30 +1026,6 @@
               },
               "notes": "string"
             }
-          ],
-          "requirements": [
-            {
-              "id": 0,
-              "type": {
-                "code": "REQ01",
-                "description": "Requirement Zero"
-              },
-              "subType": {
-                "code": "string",
-                "description": "string"
-              }
-            },
-            {
-              "id": 1,
-              "type": {
-                "code": "string",
-                "description": "string"
-              },
-              "subType": {
-                "code": "string",
-                "description": "string"
-              }
-            }
           ]
         },
         "headers": {
@@ -1151,16 +1041,6 @@
       "response": {
         "status": 200,
         "jsonBody": {
-          "breachReasons": [
-            {
-              "code": "BR03",
-              "description": "Attended late"
-            },
-            {
-              "code": "BR04",
-              "description": "Another Reason"
-            }
-          ],
           "enforceableContacts": [
             {
               "id": 0,
@@ -1203,30 +1083,6 @@
                 "description": "string"
               },
               "notes": "<script> new\nline"
-            }
-          ],
-          "requirements": [
-            {
-              "id": 0,
-              "type": {
-                "code": "REQ01",
-                "description": "Requirement Zero"
-              },
-              "subType": {
-                "code": "string",
-                "description": "string"
-              }
-            },
-            {
-              "id": 1,
-              "type": {
-                "code": "string",
-                "description": "string"
-              },
-              "subType": {
-                "code": "string",
-                "description": "string"
-              }
             }
           ]
         },
@@ -1857,6 +1713,96 @@
           },
           "addresses": [],
           "replyAddresses": []
+        },
+        "headers": {
+          "Content-Type": "application/json;charset=UTF-8"
+        }
+      }
+    },
+    {
+      "request": {
+        "urlPattern": "/requirements/(.*?)",
+        "method": "GET"
+      },
+      "response": {
+        "status": 200,
+        "jsonBody": {
+          "requirements": [
+            {
+              "id": 0,
+              "type": {
+                "code": "REQ01",
+                "description": "Requirement Zero"
+              }
+            },
+            {
+              "id": 167,
+              "type": {
+                "code": "string",
+                "description": "string"
+              },
+              "subType": {
+                "code": "string",
+                "description": "string"
+              }
+            },
+            {
+              "id": 2,
+              "type": {
+                "code": "STR",
+                "description": "A STRING"
+              },
+              "subType": {
+                "code": "SSTR",
+                "description": "A SUBSTRING"
+              }
+            }
+          ],
+          "breachReasons": [
+            {
+              "code": "BR03",
+              "description": "Attended late"
+            },
+            {
+              "code": "BR06",
+              "description": "Failed to comply"
+            },
+            {
+              "code": "BR04",
+              "description": "Did Not Comply"
+            }
+          ]
+        },
+        "headers": {
+          "Content-Type": "application/json;charset=UTF-8"
+        }
+      }
+    },
+    {
+      "request": {
+        "urlPattern": "/requirements/4c3dbcf0-f95d-4b67-b925-a0a5da1c1cd4",
+        "method": "GET"
+      },
+      "response": {
+        "status": 200,
+        "jsonBody": {
+          "requirements": [],
+          "breachReasons": []
+        },
+        "headers": {
+          "Content-Type": "application/json;charset=UTF-8"
+        }
+      }
+    },
+    {
+      "request": {
+        "urlPattern": "/requirements/12345678-7777-5555-500000000005",
+        "method": "GET"
+      },
+      "response": {
+        "status": 500,
+        "jsonBody": {
+          "message": "Some server side error occurred"
         },
         "headers": {
           "Content-Type": "application/json;charset=UTF-8"

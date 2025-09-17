@@ -234,7 +234,6 @@ export default function basicDetailsRoutes(
       return
     }
 
-    if (await commonUtils.redirectRequired(currentBreachNotice, res)) return
     const updatedBreachNotice = applyDefaults(currentBreachNotice, basicDetails)
 
     const defaultOffenderAddress: DeliusAddress = findDefaultAddressInAddressList(basicDetails.addresses)

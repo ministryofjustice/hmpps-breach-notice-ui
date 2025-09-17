@@ -39,6 +39,63 @@ export default class BreachNoticeApiClient extends RestClient {
       path: `/breach-notice/${id}`,
     })
   }
+
+  async updateBreachNoticeContact(
+    id: string,
+    breachNoticeContacts: Array<BreachNoticeContact>,
+  ): Promise<Array<BreachNoticeContact>> {
+    return this.put({
+      path: `/breach-notice/${id}/contact`,
+      data: breachNoticeContacts as unknown as Record<string, unknown>,
+    })
+  }
+
+  async getBreachNoticeContact(id: string, deliusContactId: number): Promise<BreachNoticeContact> {
+    return this.get({
+      path: `/breach-notice/${id}/contact/${deliusContactId}`,
+    })
+  }
+
+  async deleteBreachNoticeContact(id: string, deliusContactId: number) {
+    return this.delete({
+      path: `/breach-notice/${id}/contact/${deliusContactId}`,
+    })
+  }
+
+  async updateBreachNoticeRequirement(
+    id: string,
+    breachNoticeRequirement: BreachNoticeRequirement,
+  ): Promise<BreachNoticeRequirement> {
+    return this.put({
+      path: `/breach-notice/${id}/requirement`,
+      data: breachNoticeRequirement as unknown as Record<string, unknown>,
+    })
+  }
+
+  async getContactRequirementLinks(id: string): Promise<Array<ContactRequirement>> {
+    return this.get({
+      path: `/breach-notice/${id}/crlinks`,
+    })
+  }
+
+  async getContactRequirementLinksWithContact(id: string, contactId: string): Promise<Array<ContactRequirement>> {
+    return this.get({
+      path: `/breach-notice/${id}/crlinks/${contactId}`,
+    })
+  }
+
+  async updateContactRequirementLinks(id: string, contactId: string, crlinks: Array<ContactRequirement>) {
+    return this.put({
+      path: `/breach-notice/${id}/crlinks/${contactId}`,
+      data: crlinks as unknown as Record<string, unknown>,
+    })
+  }
+
+  batchDeleteContacts(id: string, contactIds: Array<number>): void {
+    for (const contactId of contactIds) {
+      this.deleteBreachNoticeContact(id, contactId)
+    }
+  }
 }
 
 export interface BreachNotice {
@@ -117,11 +174,19 @@ export interface BreachNoticeAddress {
   postcode: string
 }
 
-export interface WarningDetailsRequirementSelectItem {
+export interface RequirementSelectItem {
   value: string
   text: string
   checked: boolean
   conditional: {
     html: string
   }
+}
+
+export interface ContactRequirement {
+  breachNoticeId: string
+  contactId: string
+  contact: BreachNoticeContact
+  requirementId: string
+  requirement: BreachNoticeRequirement
 }

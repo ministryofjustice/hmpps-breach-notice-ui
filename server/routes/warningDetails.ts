@@ -3,23 +3,15 @@ import { LocalDate, LocalDateTime } from '@js-joda/core'
 import BreachNoticeApiClient, {
   BreachNotice,
   BreachNoticeContact,
-  BreachNoticeRequirement,
-  WarningDetailsRequirementSelectItem,
+  ContactRequirement,
 } from '../data/breachNoticeApiClient'
 import AuditService, { Page } from '../services/auditService'
 import { fromUserDate, toUserDate } from '../utils/dateUtils'
 import { HmppsAuthClient } from '../data'
 import CommonUtils from '../services/commonUtils'
 import asArray, { createBlankBreachNoticeWithId, handleIntegrationErrors } from '../utils/utils'
-import NdeliusIntegrationApiClient, {
-  EnforceableContact,
-  EnforceableContactList,
-  ReferenceData,
-  Requirement,
-  RequirementList,
-  WarningDetails,
-} from '../data/ndeliusIntegrationApiClient'
-import { ErrorMessages, SelectItem } from '../data/uiModels'
+import NdeliusIntegrationApiClient, { EnforceableContact, WarningDetails } from '../data/ndeliusIntegrationApiClient'
+import { ErrorMessages } from '../data/uiModels'
 import config from '../config'
 
 export default function warningDetailsRoutes(
@@ -36,12 +28,14 @@ export default function warningDetailsRoutes(
       await hmppsAuthClient.getSystemClientToken(res.locals.user.username),
     )
 
-    let breachNotice: BreachNotice = null
+    let breachNotice: BreachNotice
     let warningDetails: WarningDetails = null
+    let contactRequirementList: Array<ContactRequirement> = null
 
     try {
       // get the existing breach notice
       breachNotice = await breachNoticeApiClient.getBreachNoticeById(req.params.id as string)
+      contactRequirementList = await breachNoticeApiClient.getContactRequirementLinks(req.params.id as string)
     } catch (error) {
       const errorMessages: ErrorMessages = handleIntegrationErrors(error.status, error.data?.message, 'Breach Notice')
       const showEmbeddedError = true
@@ -82,26 +76,34 @@ export default function warningDetailsRoutes(
     }
 
     const warningDetailsResponseRequiredDate: string = toUserDate(breachNotice.responseRequiredDate)
-    const breachReasons = convertReferenceDataListToSelectItemList(warningDetails.breachReasons)
-    const requirementsList = createFailuresBeingEnforcedRequirementSelectList(
-      warningDetails.requirements,
-      warningDetails.breachReasons,
-      breachNotice,
-    )
 
-    const failuresRecorded = createSelectItemListFromEnforceableContacts(warningDetails.enforceableContacts)
+    const enforceableContactListIds = warningDetails.enforceableContacts?.map(c => c.id)
+    // Add any breach notice contacts not returned in API
+    for (const bnContact of breachNotice.breachNoticeContactList) {
+      if (!enforceableContactListIds || !enforceableContactListIds.includes(bnContact.contactId)) {
+        warningDetails.enforceableContacts.push({
+          id: bnContact.contactId,
+          datetime: null,
+          description: null,
+          type: { code: '-1', description: bnContact.contactType },
+          outcome: { code: '-1', description: bnContact.contactOutcome },
+          notes: null,
+        })
+      }
+    }
+    const existingContacts = breachNotice.breachNoticeContactList.map(c => c.contactId)
+
     const contactListDeeplink = `${config.ndeliusDeeplink.url}?component=ContactList&CRN=${breachNotice.crn}`
     const { furtherReasonDetails } = breachNotice
     res.render(`pages/warning-details`, {
       breachNotice,
       warningDetails,
-      failuresRecorded,
-      breachReasons,
-      requirementsList,
+      existingContacts,
       currentPage,
       warningDetailsResponseRequiredDate,
       contactListDeeplink,
       furtherReasonDetails,
+      contactRequirementList,
     })
   })
 
@@ -112,11 +114,13 @@ export default function warningDetailsRoutes(
     const ndeliusIntegrationApiClient = new NdeliusIntegrationApiClient(token)
     let breachNotice: BreachNotice = null
     let warningDetails: WarningDetails = null
+    let contactRequirementList: Array<ContactRequirement> = null
     const callingScreen: string = req.query.returnTo as string
 
     try {
       // get the existing breach notice
       breachNotice = await breachNoticeApiClient.getBreachNoticeById(id as string)
+      contactRequirementList = await breachNoticeApiClient.getContactRequirementLinks(req.params.id as string)
     } catch (error) {
       const errorMessages: ErrorMessages = handleIntegrationErrors(error.status, error.data?.message, 'Breach Notice')
       const showEmbeddedError = true
@@ -150,135 +154,71 @@ export default function warningDetailsRoutes(
       return
     }
 
-    if (await commonUtils.redirectRequired(breachNotice, res)) return
-
-    // failures recorded on this order
-    // list of contacts
-    const contactList: BreachNoticeContact[] = []
-
-    // for final warning theres only 1 of these for first warning screen
-    const failureRecordedContactId: string = req.body.failureRecordedContact
-
-    let enforceableContact: EnforceableContact = null
-    // lookup the contact and push to the list of contacts to be saved
-    // if we have enforceable contacts
-    if (warningDetails.enforceableContacts) {
-      enforceableContact = warningDetails.enforceableContacts.find(
-        contact => contact.id.toString() === failureRecordedContactId,
-      )
-    }
-
-    if (enforceableContact) {
-      contactList.push({
-        id: null,
-        contactId: enforceableContact.id,
-        breachNoticeId: breachNotice.id,
-        contactDate: enforceableContact?.datetime?.toString(),
-        contactType: enforceableContact.type?.description,
-        contactOutcome: enforceableContact.outcome?.description,
-      })
-    }
-
-    // add the list of contacts to out breach notice
-    breachNotice.breachNoticeContactList = contactList
-
     // set the further reason details
     breachNotice.furtherReasonDetails = req.body.furtherReasonDetails
 
-    // lookup the requirements
-    // this can come in an array or singular
-    const requirementsPassedInBody = asArray(req.body.failuresBeingEnforcedRequirements)
-    let hasRequirements: boolean = false
-    // we only want to map across if there have been some requirements passed in
-    if (requirementsPassedInBody) {
-      hasRequirements = Object.keys(requirementsPassedInBody).length > 0
-      if (hasRequirements) {
-        breachNotice.breachNoticeRequirementList = requirementsPassedInBody.map((requirementId: string) => {
-          let matchingRequirement: Requirement = null
-
-          // dont search if we have no requirements contacts
-          if (warningDetails.requirements) {
-            matchingRequirement = warningDetails.requirements.find(
-              requirement => requirement?.id?.toString() === requirementId,
-            )
-          }
-
-          const bodyParamBreachReason: string = `breachreason${requirementId}`
-          const currentRequirement: BreachNoticeRequirement = {
-            id: null,
-            breachNoticeId: breachNotice.id,
-            requirementId: matchingRequirement?.id,
-            requirementTypeMainCategoryDescription: matchingRequirement?.type?.description,
-            requirementTypeSubCategoryDescription: matchingRequirement?.subType?.description,
-            rejectionReason: warningDetails.breachReasons.find(c => c.code === req.body[bodyParamBreachReason])
-              ?.description,
-            fromDate: null,
-            toDate: null,
-          }
-          return applyContactDateRangesToRequirement(currentRequirement, warningDetails.enforceableContacts)
-        })
-      }
-    }
-
     const errorMessages: ErrorMessages = validateWarningDetails(breachNotice, req.body.responseRequiredByDate)
-
     const hasErrors: boolean = Object.keys(errorMessages).length > 0
+    const existingContacts = breachNotice.breachNoticeContactList.map(c => c.contactId)
 
     // if we dont have validation errors navigate to ...next screen
     if (!hasErrors) {
       breachNotice.warningDetailsSaved = true
       await breachNoticeApiClient.updateBreachNotice(id, breachNotice)
-      if (req.body.action === 'saveProgressAndClose') {
-        res.send(`<script nonce="${res.locals.cspNonce}">window.close()</script>`)
-      } else if (req.body.action === 'refreshFromNdelius') {
+
+      // Add all selected contacts
+      const selectedContactList = asArray(req.body.contact)
+      const breachNoticeContactIds = breachNotice.breachNoticeContactList.map(c => c.contactId.toString())
+      if (selectedContactList && Object.keys(selectedContactList).length > 0) {
+        const contactsToPush: BreachNoticeContact[] = []
+        for (const selectedContactId of selectedContactList) {
+          if (breachNoticeContactIds && !breachNoticeContactIds.includes(selectedContactId)) {
+            const selectedContact = warningDetails.enforceableContacts.find(c => c.id.toString() === selectedContactId)
+            contactsToPush.push(enforceableContactToContact(breachNotice, selectedContact))
+          }
+        }
+        breachNotice.breachNoticeContactList = await breachNoticeApiClient.updateBreachNoticeContact(
+          breachNotice.id,
+          contactsToPush,
+        )
+      }
+      if (req.body.action === 'refreshFromNdelius') {
         // redirect to warning details to force a reload
         res.redirect(`/warning-details/${id}`)
       } else if (callingScreen && callingScreen === 'check-your-report') {
         res.redirect(`/check-your-report/${id}`)
+      } else if (req.body.action && req.body.action.substring(0, 18) === 'enforceablecontact') {
+        const contactId = req.body.action.substring(19, req.body.action.length) // <- Delius contact id
+        const selectedContact = warningDetails.enforceableContacts?.find(c => c.id.toString() === contactId)
+        const returnedContact = await breachNoticeApiClient.getBreachNoticeContact(breachNotice.id, selectedContact.id)
+        res.redirect(`/add-requirement/${id}?contactId=${returnedContact.id}`)
       } else {
-        res.redirect(`/next-appointment/${id}`)
+        const contactsToDelete = breachNotice.breachNoticeContactList
+          .filter(bnContact => !selectedContactList.includes(bnContact.contactId.toString()))
+          .map(c => c.contactId)
+        breachNoticeApiClient.batchDeleteContacts(breachNotice.id, contactsToDelete)
+
+        if (req.body.action === 'saveProgressAndClose') {
+          res.send(`<script nonce="${res.locals.cspNonce}">window.close()</script>`)
+        } else {
+          res.redirect(`/next-appointment/${id}`)
+        }
       }
     } else {
-      const failuresRecorded = createSelectItemListFromEnforceableContacts(warningDetails.enforceableContacts)
-      const breachReasons = convertReferenceDataListToSelectItemList(warningDetails.breachReasons)
-      const requirementsList = createFailuresBeingEnforcedRequirementSelectList(
-        warningDetails.requirements,
-        warningDetails.breachReasons,
-        breachNotice,
-      )
-
       const contactListDeeplink = `${config.ndeliusDeeplink.url}?component=ContactList&CRN=${breachNotice.crn}`
       const { furtherReasonDetails } = breachNotice
       res.render(`pages/warning-details`, {
         breachNotice,
         warningDetails,
-        failuresRecorded,
-        breachReasons,
-        requirementsList,
         currentPage,
+        existingContacts,
         errorMessages,
         contactListDeeplink,
         furtherReasonDetails,
+        contactRequirementList,
       })
     }
   })
-
-  function applyContactDateRangesToRequirement(
-    breachNoticeRequirement: BreachNoticeRequirement,
-    enforceableContactList: EnforceableContact[],
-  ): BreachNoticeRequirement {
-    if (breachNoticeRequirement && enforceableContactList) {
-      const dateList = enforceableContactList.map(i => i.datetime)
-      const maxDate = dateList.reduce((a, b) => (a > b ? a : b))
-      const minDate = dateList.reduce((a, b) => (a < b ? a : b))
-      return {
-        ...breachNoticeRequirement,
-        fromDate: minDate.toString(),
-        toDate: maxDate.toString(),
-      }
-    }
-    return breachNoticeRequirement
-  }
 
   function validateWarningDetails(breachNotice: BreachNotice, responseRequiredByDate: string): ErrorMessages {
     const errorMessages: ErrorMessages = {}
@@ -313,101 +253,18 @@ export default function warningDetailsRoutes(
     return errorMessages
   }
 
-  function createFailuresBeingEnforcedRequirementSelectList(
-    requirements: RequirementList,
-    breachReasons: ReferenceData[],
+  function enforceableContactToContact(
     breachNotice: BreachNotice,
-  ): WarningDetailsRequirementSelectItem[] {
-    if (requirements) {
-      const nonUniqueRequirementList: WarningDetailsRequirementSelectItem[] = requirements.map(
-        (requirement: Requirement) => {
-          let breachNoticeRequirement: BreachNoticeRequirement = null
-          if (breachNotice.breachNoticeRequirementList) {
-            breachNoticeRequirement = breachNotice.breachNoticeRequirementList.find(
-              savedRequirement => savedRequirement.requirementId?.toString() === requirement.id?.toString(),
-            )
-          }
-          const breachReasonSelectItems = craftTheBreachReasonSelectItems(breachReasons, breachNoticeRequirement)
-
-          const typeString: string = `${requirement?.type?.description}`
-          const subTypeString: string = `${requirement?.subType?.description}`
-          let typeSybtypeString: string
-
-          if (subTypeString && subTypeString !== 'undefined') {
-            typeSybtypeString = `${typeString} - ${subTypeString}`
-          } else {
-            typeSybtypeString = typeString
-          }
-
-          return {
-            text: typeSybtypeString,
-            value: requirement?.id?.toString(),
-            checked: !!breachNoticeRequirement,
-            conditional: {
-              html: `<div class="govuk-form-group">
-              <label class="govuk-label" for="breachreason${requirement.id}">Why is this being enforced?</label>
-              <select class="govuk-select" id="breachreason${requirement.id}" name="breachreason${requirement.id}">
-              ${breachReasonSelectItems.map(item => `<option value="${item.value}" ${item.selected ? 'selected' : ''}>${item.text}</option>`).join()}
-              </select>
-            </div>`,
-            },
-          }
-        },
-      )
-      return removeDuplicateSelectItems(nonUniqueRequirementList)
+    enforceableContact: EnforceableContact,
+  ): BreachNoticeContact {
+    return {
+      id: null,
+      contactId: enforceableContact.id,
+      breachNoticeId: breachNotice.id,
+      contactDate: enforceableContact.datetime.toString(),
+      contactType: enforceableContact.type.description,
+      contactOutcome: enforceableContact.outcome.description,
     }
-    return []
-  }
-
-  function removeDuplicateSelectItems(selectItems: WarningDetailsRequirementSelectItem[]) {
-    if (selectItems) {
-      const uniqueSelectItems: WarningDetailsRequirementSelectItem[] = []
-      const uniqueIds: string[] = []
-      selectItems.forEach((warningDetailsRequirementSelectItem: WarningDetailsRequirementSelectItem) => {
-        if (!uniqueIds.find(a => a === warningDetailsRequirementSelectItem.value)) {
-          uniqueSelectItems.push(warningDetailsRequirementSelectItem)
-          uniqueIds.push(warningDetailsRequirementSelectItem.value)
-        }
-      })
-      return uniqueSelectItems
-    }
-    return selectItems
-  }
-
-  function createSelectItemListFromEnforceableContacts(enforceableContactList: EnforceableContactList): SelectItem[] {
-    const selectItemList: SelectItem[] = []
-    if (enforceableContactList) {
-      enforceableContactList.forEach((enforceableContact: EnforceableContact) => {
-        const selectItem: SelectItem = {
-          text: enforceableContact?.description,
-          value: enforceableContact?.id?.toString(),
-          selected: false,
-        }
-        selectItemList.push(selectItem)
-      })
-    }
-    return selectItemList
-  }
-
-  function craftTheBreachReasonSelectItems(
-    refDataList: ReferenceData[],
-    requirement: BreachNoticeRequirement,
-  ): SelectItem[] {
-    return refDataList.map((referenceData: ReferenceData) => {
-      return {
-        text: referenceData?.description,
-        value: referenceData?.code,
-        selected: requirement && requirement?.rejectionReason === referenceData?.description,
-      }
-    })
-  }
-
-  function convertReferenceDataListToSelectItemList(referenceDataList: ReferenceData[]): SelectItem[] {
-    return referenceDataList.map(refData => ({
-      selected: false,
-      text: refData?.description,
-      value: refData?.code,
-    }))
   }
 
   return router
