@@ -20,7 +20,7 @@ context('Add Requirement page', () => {
     cy.get('#conditional-failuresBeingEnforcedRequirements').should('exist').should('be.visible')
     cy.get('#conditional-failuresBeingEnforcedRequirements').should('contain.text', 'Why is this being enforced?')
     cy.get('#breachreason0').should('exist').should('be.visible')
-    cy.get('#breachreason0').children().first().should('have.text', '[Select Breach Reason]')
+    cy.get('#breachreason0').children().first().should('have.text', '[Please Select]')
   })
 
   it('should stay on page and show Breach Notice Service error message if 500 thrown from Nat Breach Service', () => {
@@ -63,7 +63,7 @@ context('Add Requirement page', () => {
     cy.get('#conditional-failuresBeingEnforcedRequirements').should('exist').should('not.be.visible')
     cy.get('#failuresBeingEnforcedRequirements').click()
     cy.get('#breachreason0').should('exist').should('be.visible')
-    cy.get('#breachreason0').select('[Select Breach Reason]')
+    cy.get('#breachreason0').select('[Please Select]')
     cy.get('#save-button').click()
     cy.get('.govuk-error-summary__title').should('exist').should('contain.text', 'There is a problem')
     cy.get('.govuk-error-summary__list a')

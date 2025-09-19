@@ -81,7 +81,7 @@ export default function addRequirementRoutes(
       return
     }
 
-    requirements.breachReasons.push({ code: '-1', description: '[Select Breach Reason]' })
+    requirements.breachReasons.push({ code: '-1', description: '[Please Select]' })
     const breachReasons = convertReferenceDataListToSelectItemList(requirements.breachReasons)
 
     const requirementsList = createFailuresBeingEnforcedRequirementSelectList(
@@ -152,7 +152,7 @@ export default function addRequirementRoutes(
         return
       }
 
-      requirements.breachReasons.push({ code: '-1', description: '[Select Breach Reason]' })
+      requirements.breachReasons.push({ code: '-1', description: '[Please Select]' })
       const breachReasons = convertReferenceDataListToSelectItemList(requirements.breachReasons)
 
       const requirementsList = createFailuresBeingEnforcedRequirementSelectList(

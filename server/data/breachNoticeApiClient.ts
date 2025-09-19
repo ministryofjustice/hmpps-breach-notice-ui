@@ -91,10 +91,19 @@ export default class BreachNoticeApiClient extends RestClient {
     })
   }
 
-  batchDeleteContacts(id: string, contactIds: Array<number>): void {
+  async deleteUnlinkedRequirements(id: string) {
+    return this.delete({
+      path: `/breach-notice/${id}/unlinkedrequirements`,
+    })
+  }
+
+  async batchDeleteContacts(id: string, contactIds: Array<number>): Promise<void> {
+    const promises = []
     for (const contactId of contactIds) {
-      this.deleteBreachNoticeContact(id, contactId)
+      promises.push(this.deleteBreachNoticeContact(id, contactId))
     }
+    await Promise.all(promises)
+    await this.deleteUnlinkedRequirements(id)
   }
 }
 

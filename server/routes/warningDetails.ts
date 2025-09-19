@@ -196,7 +196,7 @@ export default function warningDetailsRoutes(
         const contactsToDelete = breachNotice.breachNoticeContactList
           .filter(bnContact => !selectedContactList.includes(bnContact.contactId.toString()))
           .map(c => c.contactId)
-        breachNoticeApiClient.batchDeleteContacts(breachNotice.id, contactsToDelete)
+        await breachNoticeApiClient.batchDeleteContacts(breachNotice.id, contactsToDelete)
 
         if (req.body.action === 'saveProgressAndClose') {
           res.send(`<script nonce="${res.locals.cspNonce}">window.close()</script>`)
