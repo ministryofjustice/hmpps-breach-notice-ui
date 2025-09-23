@@ -181,9 +181,9 @@ export default function addRequirementRoutes(
             let storedRequirement = breachNotice.breachNoticeRequirementList.find(
               r => r.requirementId === requirement.id,
             )
-            if (!storedRequirement || storedRequirement.rejectionReason !== rejectionReasonDescription) {
+            if (!storedRequirement) {
               const breachNoticeRequirement: BreachNoticeRequirement = {
-                id: storedRequirement?.id,
+                id: null,
                 breachNoticeId: breachNotice.id,
                 requirementId: requirement.id,
                 requirementTypeMainCategoryDescription: requirement.type.description,
@@ -193,10 +193,13 @@ export default function addRequirementRoutes(
                 toDate: null,
               }
               // eslint-disable-next-line no-await-in-loop
-              storedRequirement = await breachNoticeApiClient.updateBreachNoticeRequirement(
-                breachNotice.id,
-                breachNoticeRequirement,
-              )
+              const newId = await breachNoticeApiClient.createBreachNoticeRequirement(breachNoticeRequirement)
+              storedRequirement = breachNoticeRequirement
+              storedRequirement.id = newId
+            } else if (storedRequirement.rejectionReason !== rejectionReasonDescription) {
+              storedRequirement.rejectionReason = rejectionReasonDescription
+              // eslint-disable-next-line no-await-in-loop
+              await breachNoticeApiClient.updateBreachNoticeRequirement(storedRequirement.id, storedRequirement)
             }
             const newContactRequirement: ContactRequirement = {
               breachNoticeId: breachNotice.id,
@@ -208,7 +211,20 @@ export default function addRequirementRoutes(
             newContactRequirementList.push(newContactRequirement)
           }
         }
-        await breachNoticeApiClient.updateContactRequirementLinks(id, contactId, newContactRequirementList)
+
+        // Grab links from DB
+        const existingRequirementLinks = contactRequirementList.map(cr => cr.requirementId)
+        const newRequirementLinks = newContactRequirementList.map(cr => cr.requirementId)
+        const recordsToRemove = contactRequirementList.filter(cr => !newRequirementLinks.includes(cr.requirementId))
+        // Remove any links not present anymore
+        const recordsToAdd = newContactRequirementList.filter(
+          cr => !existingRequirementLinks.includes(cr.requirementId),
+        )
+        await breachNoticeApiClient.batchDeleteContactRequirements(recordsToRemove)
+        await breachNoticeApiClient.batchCreateContactRequirements(recordsToAdd)
+        await breachNoticeApiClient.recalculateRequirementFromToDate(breachNotice.id)
+        // contactRequirementRepository.saveAll(recordsToAdd)
+
         res.redirect(`/warning-details/${id}`)
       } else {
         const selectedIds = asArray(req.body.failuresBeingEnforcedRequirements)

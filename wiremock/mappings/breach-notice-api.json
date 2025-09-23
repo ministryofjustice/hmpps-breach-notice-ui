@@ -47,7 +47,7 @@
     },
     {
       "request": {
-        "url": "/breach-notice-api/breach-notice/00000000-0000-0000-0000-000000000001/crlinks",
+        "url": "/breach-notice-api/crlinks/bybreachnoticeid/00000000-0000-0000-0000-000000000001",
         "method": "GET"
       },
       "response": {
@@ -220,7 +220,7 @@
     },
     {
       "request": {
-        "url": "/breach-notice-api/breach-notice/00000000-1111-2222-3333-000000000001/crlinks",
+        "url": "/breach-notice-api/crlinks/bybreachnoticeid/00000000-1111-2222-3333-000000000001",
         "method": "GET"
       },
       "response": {
@@ -398,7 +398,7 @@
     },
     {
       "request": {
-        "url": "/breach-notice-api/breach-notice/c8888888-12e3-45ba-ba67-1b34bf7b8888/crlinks",
+        "url": "/breach-notice-api/crlinks/bybreachnoticeid/c8888888-12e3-45ba-ba67-1b34bf7b8888",
         "method": "GET"
       },
       "response": {
@@ -481,7 +481,7 @@
     },
     {
       "request": {
-        "url": "/breach-notice-api/breach-notice/d3333333-12e3-45ba-ba67-1b34bf7b3333/crlinks",
+        "url": "/breach-notice-api/crlinks/bybreachnoticeid/d3333333-12e3-45ba-ba67-1b34bf7b3333",
         "method": "GET"
       },
       "response": {
@@ -630,7 +630,7 @@
     },
     {
       "request": {
-        "url": "/breach-notice-api/breach-notice/f1234567-12e3-45ba-ba67-1b34bf7b009d/crlinks",
+        "url": "/breach-notice-api/crlinks/bybreachnoticeid/f1234567-12e3-45ba-ba67-1b34bf7b009d",
         "method": "GET"
       },
       "response": {
@@ -1217,7 +1217,7 @@
     },
     {
       "request": {
-        "url": "/breach-notice-api/breach-notice/00000000-0000-0000-0000-000000000022/crlinks",
+        "url": "/breach-notice-api/crlinks/bybreachnoticeid/00000000-0000-0000-0000-000000000022",
         "method": "GET"
       },
       "response": {
@@ -2206,7 +2206,7 @@
     },
     {
       "request": {
-        "url": "/breach-notice-api/breach-notice/12345678-7777-5555-500000000005/crlinks",
+        "url": "/breach-notice-api/crlinks/bybreachnoticeid/12345678-7777-5555-500000000005",
         "method": "GET"
       },
       "response": {
@@ -2220,7 +2220,7 @@
     },
     {
       "request": {
-        "url": "/breach-notice-api/breach-notice/12345678-7777-5555-500000000005/crlinks/00000000-0000-0000-0000-000000000005",
+        "url": "/breach-notice-api/crlinks/bybreachnoticeidandcontactid/12345678-7777-5555-500000000005/00000000-0000-0000-0000-000000000005",
         "method": "GET"
       },
       "response": {
@@ -2325,7 +2325,7 @@
     },
     {
       "request": {
-        "url": "/breach-notice-api/breach-notice/56565656-5656-5656-5656-560000000156/crlinks",
+        "url": "/breach-notice-api/crlinks/bybreachnoticeid/56565656-5656-5656-5656-560000000156",
         "method": "GET"
       },
       "response": {
@@ -2415,7 +2415,7 @@
 
     {
       "request": {
-        "url": "/breach-notice-api/breach-notice/00000000-0000-0000-0000-100000000101/crlinks",
+        "url": "/breach-notice-api/crlinks/bybreachnoticeid/00000000-0000-0000-0000-100000000101",
         "method": "GET"
       },
       "response": {
@@ -2432,7 +2432,7 @@
 
     {
       "request": {
-        "url": "/breach-notice-api/breach-notice/00000000-0000-0000-0000-100000000102/crlinks",
+        "url": "/breach-notice-api/crlinks/bybreachnoticeid/00000000-0000-0000-0000-100000000102",
         "method": "GET"
       },
       "response": {
@@ -3133,7 +3133,7 @@
     },
     {
       "request": {
-        "url": "/breach-notice-api/breach-notice/f0be99cd-7939-44fa-adde-43c22d800cd9/crlinks",
+        "url": "/breach-notice-api/crlinks/bybreachnoticeid/f0be99cd-7939-44fa-adde-43c22d800cd9",
         "method": "GET"
       },
       "response": {
@@ -3162,7 +3162,7 @@
     },
     {
       "request": {
-        "url": "/breach-notice-api/breach-notice/9c9cb998-6782-4c23-8cb1-ff2e169c7209/crlinks",
+        "url": "/breach-notice-api/crlinks/bybreachnoticeid/9c9cb998-6782-4c23-8cb1-ff2e169c7209",
         "method": "GET"
       },
       "response": {
@@ -3301,7 +3301,7 @@
     },
     {
       "request": {
-        "url": "/breach-notice-api/breach-notice/225244a2-74fc-4548-b55f-18526dec8046/crlinks",
+        "url": "/breach-notice-api/crlinks/bybreachnoticeid/225244a2-74fc-4548-b55f-18526dec8046",
         "method": "GET"
       },
       "response": {
@@ -3348,8 +3348,8 @@
     },
     {
       "request": {
-        "url": "/breach-notice-api/breach-notice/225244a2-74fc-4548-b55f-18526dec8046/contact",
-        "method": "PUT"
+        "url": "/breach-notice-api/contact/bybreachnoticeid/225244a2-74fc-4548-b55f-18526dec8046",
+        "method": "GET"
       },
       "response": {
         "status": 200
@@ -3357,7 +3357,7 @@
     },
     {
       "request": {
-        "url": "/breach-notice-api/breach-notice/225244a2-74fc-4548-b55f-18526dec8046/contact/0",
+        "url": "/breach-notice-api/contact/bybreachnoticeidanddeliusid/225244a2-74fc-4548-b55f-18526dec8046/0",
         "method": "GET"
       },
       "response": {
@@ -3423,7 +3423,7 @@
     },
     {
       "request": {
-        "url": "/breach-notice-api/breach-notice/7a2e74a0-20f2-4a01-bbdd-7c22aeed555a/crlinks",
+        "url": "/breach-notice-api/crlinks/bybreachnoticeid/7a2e74a0-20f2-4a01-bbdd-7c22aeed555a",
         "method": "GET"
       },
       "response": {
@@ -3446,8 +3446,8 @@
     },
     {
       "request": {
-        "url": "/breach-notice-api/breach-notice/7a2e74a0-20f2-4a01-bbdd-7c22aeed555a/contact",
-        "method": "PUT"
+        "url": "/breach-notice-api/contact/bybreachnoticeid/7a2e74a0-20f2-4a01-bbdd-7c22aeed555a",
+        "method": "GET"
       },
       "response": {
         "status": 200
@@ -3455,7 +3455,7 @@
     },
     {
       "request": {
-        "url": "/breach-notice-api/breach-notice/7a2e74a0-20f2-4a01-bbdd-7c22aeed555a/contact/0",
+        "url": "/breach-notice-api/contact/bybreachnoticeidanddeliusid/7a2e74a0-20f2-4a01-bbdd-7c22aeed555a/0",
         "method": "GET"
       },
       "response": {
@@ -3521,7 +3521,7 @@
     },
     {
       "request": {
-        "url": "/breach-notice-api/breach-notice/d2439e5f-355b-4284-a8ee-bda1a327338c/crlinks",
+        "url": "/breach-notice-api/crlinks/bybreachnoticeid/d2439e5f-355b-4284-a8ee-bda1a327338c",
         "method": "GET"
       },
       "response": {
@@ -3580,7 +3580,7 @@
     },
     {
       "request": {
-        "url": "/breach-notice-api/breach-notice/66dbdd78-8975-462b-aecc-8d8813317b19/crlinks/00000000-0000-0000-0000-000000000001",
+        "url": "/breach-notice-api/crlinks/bybreachnoticeidandcontactid/66dbdd78-8975-462b-aecc-8d8813317b19/00000000-0000-0000-0000-000000000001",
         "method": "GET"
       },
       "response": {
@@ -3639,7 +3639,7 @@
     },
     {
       "request": {
-        "url": "/breach-notice-api/breach-notice/4c3dbcf0-f95d-4b67-b925-a0a5da1c1cd4/crlinks/00000000-0000-0000-0000-000000000002",
+        "url": "/breach-notice-api/crlinks/bybreachnoticeidandcontactid/4c3dbcf0-f95d-4b67-b925-a0a5da1c1cd4/00000000-0000-0000-0000-000000000002",
         "method": "GET"
       },
       "response": {
@@ -3698,7 +3698,7 @@
     },
     {
       "request": {
-        "url": "/breach-notice-api/breach-notice/de209be2-f992-4305-8ffe-5546b44c4776/crlinks/00000000-0000-0000-0000-000000000003",
+        "url": "/breach-notice-api/crlinks/bybreachnoticeidandcontactid/de209be2-f992-4305-8ffe-5546b44c4776/00000000-0000-0000-0000-000000000003",
         "method": "GET"
       },
       "response": {
@@ -3757,7 +3757,7 @@
     },
     {
       "request": {
-        "url": "/breach-notice-api/breach-notice/6d7f0e28-c2ed-4c98-826b-43a0c80ac63f/crlinks/00000000-0000-0000-0000-000000000006",
+        "url": "/breach-notice-api/crlinks/bybreachnoticeidandcontactid/6d7f0e28-c2ed-4c98-826b-43a0c80ac63f/00000000-0000-0000-0000-000000000006",
         "method": "GET"
       },
       "response": {
@@ -3836,7 +3836,7 @@
     },
     {
       "request": {
-        "url": "/breach-notice-api/breach-notice/09cedd1b-203f-482f-9c4f-eac7d2bf8897/crlinks/00000000-0000-0000-0000-000000000007",
+        "url": "/breach-notice-api/crlinks/bybreachnoticeidandcontactid/09cedd1b-203f-482f-9c4f-eac7d2bf8897/00000000-0000-0000-0000-000000000007",
         "method": "GET"
       },
       "response": {
@@ -3919,7 +3919,7 @@
     },
     {
       "request": {
-        "url": "/breach-notice-api/breach-notice/922a6990-ed9d-4687-86a4-30c62b1f2edf/crlinks/00000000-0000-0000-0000-000000000008",
+        "url": "/breach-notice-api/crlinks/bybreachnoticeidandcontactid/922a6990-ed9d-4687-86a4-30c62b1f2edf/00000000-0000-0000-0000-000000000008",
         "method": "GET"
       },
       "response": {
@@ -3933,7 +3933,7 @@
     },
     {
       "request": {
-        "url": "/breach-notice-api/breach-notice/922a6990-ed9d-4687-86a4-30c62b1f2edf/crlinks",
+        "url": "/breach-notice-api/crlinks/bybreachnoticeid/922a6990-ed9d-4687-86a4-30c62b1f2edf",
         "method": "GET"
       },
       "response": {
@@ -3956,7 +3956,43 @@
     },
     {
       "request": {
-        "url": "/breach-notice-api/breach-notice/922a6990-ed9d-4687-86a4-30c62b1f2edf/crlinks/00000000-0000-0000-0000-000000000008",
+        "url": "/breach-notice-api/crlinks/bybreachnoticeidandcontactid/922a6990-ed9d-4687-86a4-30c62b1f2edf/00000000-0000-0000-0000-000000000008",
+        "method": "PUT"
+      },
+      "response": {
+        "status": 200
+      }
+    },
+    {
+      "request": {
+        "url": "/breach-notice-api/contact",
+        "method": "POST"
+      },
+      "response": {
+        "status": 200
+      }
+    },
+    {
+      "request": {
+        "url": "/breach-notice-api/requirement",
+        "method": "POST"
+      },
+      "response": {
+        "status": 200
+      }
+    },
+    {
+      "request": {
+        "url": "/breach-notice-api/crlinks",
+        "method": "POST"
+      },
+      "response": {
+        "status": 200
+      }
+    },
+    {
+      "request": {
+        "url": "/breach-notice-api/requirement/recalculateFromToDate/922a6990-ed9d-4687-86a4-30c62b1f2edf",
         "method": "PUT"
       },
       "response": {

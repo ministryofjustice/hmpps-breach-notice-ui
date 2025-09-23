@@ -85,6 +85,7 @@ context('Warning Details page', () => {
   it('should load when enforceable contacts have no notes specified', () => {
     cy.visit('/warning-details/d3333333-12e3-45ba-ba67-1b34bf7b3333')
     cy.url().should('include', '/warning-details/d3333333-12e3-45ba-ba67-1b34bf7b3333')
+    cy.get('.govuk-heading-l').should('exist').should('contain.text', 'Warning Details')
   })
 
   it('should escape the text and show new lines correctly', () => {
