@@ -177,9 +177,9 @@ export default function warningDetailsRoutes(
             contactsToPush.push(enforceableContactToContact(breachNotice, selectedContact))
           }
         }
-        breachNotice.breachNoticeContactList = await breachNoticeApiClient.updateBreachNoticeContact(
+        await breachNoticeApiClient.batchUpdateContacts(breachNotice.id, contactsToPush)
+        breachNotice.breachNoticeContactList = await breachNoticeApiClient.getBreachNoticeContactsForBreachNotice(
           breachNotice.id,
-          contactsToPush,
         )
       }
       if (req.body.action === 'refreshFromNdelius') {
@@ -195,8 +195,8 @@ export default function warningDetailsRoutes(
       } else {
         const contactsToDelete = breachNotice.breachNoticeContactList
           .filter(bnContact => !selectedContactList.includes(bnContact.contactId.toString()))
-          .map(c => c.contactId)
-        breachNoticeApiClient.batchDeleteContacts(breachNotice.id, contactsToDelete)
+          .map(c => c.id)
+        await breachNoticeApiClient.batchDeleteContacts(breachNotice.id, contactsToDelete)
 
         if (req.body.action === 'saveProgressAndClose') {
           res.send(`<script nonce="${res.locals.cspNonce}">window.close()</script>`)
@@ -258,7 +258,10 @@ export default function warningDetailsRoutes(
     enforceableContact: EnforceableContact,
   ): BreachNoticeContact {
     return {
-      id: null,
+      id: breachNotice.breachNoticeContactList
+        .filter(c => c.contactId === enforceableContact.id)
+        .map(c => c.id)
+        .at(0),
       contactId: enforceableContact.id,
       breachNoticeId: breachNotice.id,
       contactDate: enforceableContact.datetime.toString(),

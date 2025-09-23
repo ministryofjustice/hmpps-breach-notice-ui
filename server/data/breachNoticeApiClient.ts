@@ -40,25 +40,35 @@ export default class BreachNoticeApiClient extends RestClient {
     })
   }
 
-  async updateBreachNoticeContact(
-    id: string,
-    breachNoticeContacts: Array<BreachNoticeContact>,
-  ): Promise<Array<BreachNoticeContact>> {
+  async updateBreachNoticeContact(breachNoticeContact: BreachNoticeContact) {
     return this.put({
-      path: `/breach-notice/${id}/contact`,
-      data: breachNoticeContacts as unknown as Record<string, unknown>,
+      path: `/contact/${breachNoticeContact.id}`,
+      data: breachNoticeContact as unknown as Record<string, unknown>,
+    })
+  }
+
+  async createBreachNoticeContact(breachNoticeContact: BreachNoticeContact): Promise<string> {
+    return this.post({
+      path: `/contact`,
+      data: breachNoticeContact as unknown as Record<string, unknown>,
     })
   }
 
   async getBreachNoticeContact(id: string, deliusContactId: number): Promise<BreachNoticeContact> {
     return this.get({
-      path: `/breach-notice/${id}/contact/${deliusContactId}`,
+      path: `/contact/bybreachnoticeidanddeliusid/${id}/${deliusContactId}`,
     })
   }
 
-  async deleteBreachNoticeContact(id: string, deliusContactId: number) {
+  async getBreachNoticeContactsForBreachNotice(id: string): Promise<Array<BreachNoticeContact>> {
+    return this.get({
+      path: `/contact/bybreachnoticeid/${id}`,
+    })
+  }
+
+  async deleteBreachNoticeContact(breachContactId: string) {
     return this.delete({
-      path: `/breach-notice/${id}/contact/${deliusContactId}`,
+      path: `/contact/${breachContactId}`,
     })
   }
 
@@ -67,34 +77,91 @@ export default class BreachNoticeApiClient extends RestClient {
     breachNoticeRequirement: BreachNoticeRequirement,
   ): Promise<BreachNoticeRequirement> {
     return this.put({
-      path: `/breach-notice/${id}/requirement`,
+      path: `/requirement/${id}`,
+      data: breachNoticeRequirement as unknown as Record<string, unknown>,
+    })
+  }
+
+  async createBreachNoticeRequirement(breachNoticeRequirement: BreachNoticeRequirement): Promise<string> {
+    return this.post({
+      path: `/requirement`,
       data: breachNoticeRequirement as unknown as Record<string, unknown>,
     })
   }
 
   async getContactRequirementLinks(id: string): Promise<Array<ContactRequirement>> {
     return this.get({
-      path: `/breach-notice/${id}/crlinks`,
+      path: `/crlinks/bybreachnoticeid/${id}`,
     })
   }
 
   async getContactRequirementLinksWithContact(id: string, contactId: string): Promise<Array<ContactRequirement>> {
     return this.get({
-      path: `/breach-notice/${id}/crlinks/${contactId}`,
+      path: `/crlinks/bybreachnoticeidandcontactid/${id}/${contactId}`,
     })
   }
 
-  async updateContactRequirementLinks(id: string, contactId: string, crlinks: Array<ContactRequirement>) {
+  async addContactRequirementLink(crlink: ContactRequirement) {
+    return this.post({
+      path: `/crlinks`,
+      data: crlink as unknown as Record<string, unknown>,
+    })
+  }
+
+  async deleteContactRequirementLink(id: string) {
+    return this.delete({
+      path: `/crlinks/${id}`,
+    })
+  }
+
+  async deleteUnlinkedRequirements(id: string) {
+    return this.delete({
+      path: `/requirement/unlinkedrequirements/${id}`,
+    })
+  }
+
+  async recalculateRequirementFromToDate(breachNoticeId: string) {
     return this.put({
-      path: `/breach-notice/${id}/crlinks/${contactId}`,
-      data: crlinks as unknown as Record<string, unknown>,
+      path: `/requirement/recalculateFromToDate/${breachNoticeId}`,
     })
   }
 
-  batchDeleteContacts(id: string, contactIds: Array<number>): void {
+  async batchDeleteContacts(id: string, contactIds: Array<string>): Promise<void> {
+    const promises = []
     for (const contactId of contactIds) {
-      this.deleteBreachNoticeContact(id, contactId)
+      promises.push(this.deleteBreachNoticeContact(contactId))
     }
+    await Promise.all(promises)
+    await this.deleteUnlinkedRequirements(id)
+    await this.recalculateRequirementFromToDate(id)
+  }
+
+  async batchUpdateContacts(breachNoticeId: string, contacts: Array<BreachNoticeContact>): Promise<void> {
+    const promises = []
+    for (const contact of contacts) {
+      if (contact.id) {
+        promises.push(this.updateBreachNoticeContact(contact))
+      } else {
+        promises.push(this.createBreachNoticeContact(contact))
+      }
+    }
+    await Promise.all(promises)
+  }
+
+  async batchCreateContactRequirements(crlinks: Array<ContactRequirement>): Promise<void> {
+    const promises = []
+    for (const crlink of crlinks) {
+      promises.push(this.addContactRequirementLink(crlink))
+    }
+    await Promise.all(promises)
+  }
+
+  async batchDeleteContactRequirements(crlinks: Array<ContactRequirement>): Promise<void> {
+    const promises = []
+    for (const crlink of crlinks) {
+      promises.push(this.deleteContactRequirementLink(crlink.id))
+    }
+    await Promise.all(promises)
   }
 }
 
@@ -184,6 +251,7 @@ export interface RequirementSelectItem {
 }
 
 export interface ContactRequirement {
+  id?: string
   breachNoticeId: string
   contactId: string
   contact: BreachNoticeContact

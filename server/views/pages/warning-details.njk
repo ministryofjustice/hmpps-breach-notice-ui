@@ -39,7 +39,7 @@
         <h1
           class="govuk-heading-l">{{ "Warning Details" + " - " + breachNotice.breachNoticeTypeDescription }}</h1>
         <h2 class="govuk-heading-m">
-          Failure against requirement and/or condition criteria
+          Condition being enforced
         </h2>
         <p id="condition-being-enforced"> {{ breachNotice.conditionBeingEnforced }}</p>
 
@@ -78,13 +78,11 @@
                           {% if cr.contact.contactId == failure.id %}
                             {% set matchFound = true %}
                             {% set buttonText = 'Update Requirement' %}
-                            {% set requirement = cr.requirement %}
+                            <p class="govuk-body govuk-!-margin-bottom-1">{{ cr.requirement.requirementTypeMainCategoryDescription }}
+                            , {{ cr.requirement.rejectionReason }} </p>
                           {% endif %}
                         {% endfor %}
-                        {% if matchFound %}
-                          <p>{{ requirement.requirementTypeMainCategoryDescription }}
-                            , {{ requirement.rejectionReason }} </p>
-                        {% else %}
+                        {% if not matchFound %}
                           <p>No requirements have been selected, in order to complete this form please use the below
                             to add requirement</p>
                         {% endif %}
