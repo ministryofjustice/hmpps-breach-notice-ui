@@ -44,7 +44,7 @@
         <p id="condition-being-enforced"> {{ breachNotice.conditionBeingEnforced }}</p>
 
         <h2 class="govuk-heading-m">
-          Select the Failures recorded on this order
+          Select the failures required on this order
         </h2>
           {% if warningDetails.enforceableContacts | length > 0 %}
             <div class="govuk-form-group">
@@ -71,13 +71,13 @@
                           Requirements
                         </label>
                         {% set matchFound = false %}
-                        {% set buttonText = 'Add Requirement' %}
+                        {% set buttonText = 'Save Changes and Add Requirement' %}
                         {% set requirement = null %}
 
                         {% for cr in contactRequirementList %}
                           {% if cr.contact.contactId == failure.id %}
                             {% set matchFound = true %}
-                            {% set buttonText = 'Update Requirement' %}
+                            {% set buttonText = 'Save Changes and Update Requirement' %}
                             <p class="govuk-body govuk-!-margin-bottom-1">{{ cr.requirement.requirementTypeMainCategoryDescription }}
                             , {{ cr.requirement.rejectionReason }} </p>
                           {% endif %}
