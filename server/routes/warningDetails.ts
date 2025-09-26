@@ -186,9 +186,11 @@ export default function warningDetailsRoutes(
         // redirect to warning details to force a reload
         res.redirect(`/warning-details/${id}`)
       } else {
-        const contactsToDelete = breachNotice.breachNoticeContactList
-          .filter(bnContact => !selectedContactList.includes(bnContact.contactId.toString()))
-          .map(c => c.id)
+        const contactsToDelete = Array.isArray(breachNotice.breachNoticeContactList)
+          ? breachNotice.breachNoticeContactList
+              .filter(bnContact => !selectedContactList.includes(bnContact.contactId.toString()))
+              .map(c => c.id)
+          : []
         await breachNoticeApiClient.batchDeleteContacts(breachNotice.id, contactsToDelete)
 
         if (callingScreen && callingScreen === 'check-your-report') {
@@ -261,7 +263,7 @@ export default function warningDetailsRoutes(
     enforceableContact: EnforceableContact,
   ): BreachNoticeContact {
     return {
-      id: breachNotice.breachNoticeContactList
+      id: (breachNotice.breachNoticeContactList ?? [])
         .filter(c => c.contactId === enforceableContact.id)
         .map(c => c.id)
         .at(0),
