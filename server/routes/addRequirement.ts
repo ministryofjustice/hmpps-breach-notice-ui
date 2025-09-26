@@ -231,11 +231,11 @@ export default function addRequirementRoutes(
         for (const requirement of requirementsList) {
           if (selectedIds.includes(requirement.value)) {
             requirement.checked = true
-            const rejectionReasonCode = req.body[`breachreason${requirement.value}`]
-            requirement.conditional.html = requirement.conditional.html
-              .replace('value="-1" selected', 'value="-1"')
-              .replace(`value="${rejectionReasonCode}"`, `value="${rejectionReasonCode}" selected`)
           }
+          const rejectionReasonCode = req.body[`breachreason${requirement.value}`]
+          requirement.conditional.html = requirement.conditional.html
+            .replace('selected', '')
+            .replace(`value="${rejectionReasonCode}"`, `value="${rejectionReasonCode}" selected`)
         }
 
         res.render('pages/add-requirement', {

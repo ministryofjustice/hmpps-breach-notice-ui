@@ -288,6 +288,24 @@
     },
     {
       "request": {
+        "url": "/breach-notice-api/requirement/unlinkedrequirements/00000000-1111-2222-3333-000000000001",
+        "method": "DELETE"
+      },
+      "response": {
+        "status": 200
+      }
+    },
+    {
+      "request": {
+        "url": "/breach-notice-api/requirement/recalculateFromToDate/00000000-1111-2222-3333-000000000001",
+        "method": "PUT"
+      },
+      "response": {
+        "status": 200
+      }
+    },
+    {
+      "request": {
         "url": "/breach-notice-api/breach-notice/f9999999-12e3-45ba-ba67-1b34bf7b9999",
         "method": "GET"
       },
@@ -3378,6 +3396,24 @@
     },
     {
       "request": {
+        "url": "/breach-notice-api/requirement/unlinkedrequirements/225244a2-74fc-4548-b55f-18526dec8046",
+        "method": "DELETE"
+      },
+      "response": {
+        "status": 200
+      }
+    },
+    {
+      "request": {
+        "url": "/breach-notice-api/requirement/recalculateFromToDate/225244a2-74fc-4548-b55f-18526dec8046",
+        "method": "PUT"
+      },
+      "response": {
+        "status": 200
+      }
+    },
+    {
+      "request": {
         "url": "/breach-notice-api/breach-notice/7a2e74a0-20f2-4a01-bbdd-7c22aeed555a",
         "method": "GET"
       },
@@ -3472,6 +3508,24 @@
           "Content-Type": "application/json;charset=UTF-8"
         },
         "transformers": ["response-template"]
+      }
+    },
+    {
+      "request": {
+        "url": "/breach-notice-api/requirement/unlinkedrequirements/7a2e74a0-20f2-4a01-bbdd-7c22aeed555a",
+        "method": "DELETE"
+      },
+      "response": {
+        "status": 200
+      }
+    },
+    {
+      "request": {
+        "url": "/breach-notice-api/requirement/recalculateFromToDate/7a2e74a0-20f2-4a01-bbdd-7c22aeed555a",
+        "method": "PUT"
+      },
+      "response": {
+        "status": 200
       }
     },
     {

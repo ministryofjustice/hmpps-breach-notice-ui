@@ -185,20 +185,25 @@ export default function warningDetailsRoutes(
       if (req.body.action === 'refreshFromNdelius') {
         // redirect to warning details to force a reload
         res.redirect(`/warning-details/${id}`)
-      } else if (callingScreen && callingScreen === 'check-your-report') {
-        res.redirect(`/check-your-report/${id}`)
-      } else if (req.body.action && req.body.action.substring(0, 18) === 'enforceablecontact') {
-        const contactId = req.body.action.substring(19, req.body.action.length) // <- Delius contact id
-        const selectedContact = warningDetails.enforceableContacts?.find(c => c.id.toString() === contactId)
-        const returnedContact = await breachNoticeApiClient.getBreachNoticeContact(breachNotice.id, selectedContact.id)
-        res.redirect(`/add-requirement/${id}?contactId=${returnedContact.id}`)
       } else {
-        const contactsToDelete = breachNotice.breachNoticeContactList
-          .filter(bnContact => !selectedContactList.includes(bnContact.contactId.toString()))
-          .map(c => c.id)
+        const contactsToDelete = Array.isArray(breachNotice.breachNoticeContactList)
+          ? breachNotice.breachNoticeContactList
+              .filter(bnContact => !selectedContactList.includes(bnContact.contactId.toString()))
+              .map(c => c.id)
+          : []
         await breachNoticeApiClient.batchDeleteContacts(breachNotice.id, contactsToDelete)
 
-        if (req.body.action === 'saveProgressAndClose') {
+        if (callingScreen && callingScreen === 'check-your-report') {
+          res.redirect(`/check-your-report/${id}`)
+        } else if (req.body.action && req.body.action.substring(0, 18) === 'enforceablecontact') {
+          const contactId = req.body.action.substring(19, req.body.action.length) // <- Delius contact id
+          const selectedContact = warningDetails.enforceableContacts?.find(c => c.id.toString() === contactId)
+          const returnedContact = await breachNoticeApiClient.getBreachNoticeContact(
+            breachNotice.id,
+            selectedContact.id,
+          )
+          res.redirect(`/add-requirement/${id}?contactId=${returnedContact.id}`)
+        } else if (req.body.action === 'saveProgressAndClose') {
           res.send(`<script nonce="${res.locals.cspNonce}">window.close()</script>`)
         } else {
           res.redirect(`/next-appointment/${id}`)
@@ -258,7 +263,7 @@ export default function warningDetailsRoutes(
     enforceableContact: EnforceableContact,
   ): BreachNoticeContact {
     return {
-      id: breachNotice.breachNoticeContactList
+      id: (breachNotice.breachNoticeContactList ?? [])
         .filter(c => c.contactId === enforceableContact.id)
         .map(c => c.id)
         .at(0),
