@@ -117,7 +117,7 @@ export interface BreachNoticeRequirement {
 
 export interface EnforceableContact {
   id: number
-  datetime: LocalDateTime
+  datetime: string
   description: string
   type: ReferenceData
   outcome: ReferenceData
