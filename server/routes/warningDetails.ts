@@ -83,7 +83,7 @@ export default function warningDetailsRoutes(
       if (!enforceableContactListIds || !enforceableContactListIds.includes(bnContact.contactId)) {
         warningDetails.enforceableContacts.push({
           id: bnContact.contactId,
-          datetime: null,
+          datetime: bnContact.contactDate,
           description: null,
           type: { code: '-1', description: bnContact.contactType },
           outcome: { code: '-1', description: bnContact.contactOutcome },
@@ -157,6 +157,23 @@ export default function warningDetailsRoutes(
     // set the further reason details
     breachNotice.furtherReasonDetails = req.body.furtherReasonDetails
 
+    const warningDetailsResponseRequiredDate: string = toUserDate(breachNotice.responseRequiredDate)
+
+    const enforceableContactListIds = warningDetails.enforceableContacts?.map(c => c.id)
+    // Add any breach notice contacts not returned in API
+    for (const bnContact of breachNotice.breachNoticeContactList) {
+      if (!enforceableContactListIds || !enforceableContactListIds.includes(bnContact.contactId)) {
+        warningDetails.enforceableContacts.push({
+          id: bnContact.contactId,
+          datetime: bnContact.contactDate,
+          description: null,
+          type: { code: '-1', description: bnContact.contactType },
+          outcome: { code: '-1', description: bnContact.contactOutcome },
+          notes: null,
+        })
+      }
+    }
+
     const errorMessages: ErrorMessages = validateWarningDetails(breachNotice, req.body.responseRequiredByDate)
     const hasErrors: boolean = Object.keys(errorMessages).length > 0
     const existingContacts = breachNotice.breachNoticeContactList.map(c => c.contactId)
@@ -221,6 +238,7 @@ export default function warningDetailsRoutes(
         contactListDeeplink,
         furtherReasonDetails,
         contactRequirementList,
+        warningDetailsResponseRequiredDate,
       })
     }
   })

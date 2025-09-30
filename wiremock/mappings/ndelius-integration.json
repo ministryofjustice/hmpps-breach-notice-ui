@@ -1808,6 +1808,21 @@
           "Content-Type": "application/json;charset=UTF-8"
         }
       }
+    },
+    {
+      "request": {
+        "urlPattern": "/warning-details/X000119/(.*?)",
+        "method": "GET"
+      },
+      "response": {
+        "status": 200,
+        "jsonBody": {
+          "enforceableContacts": []
+        },
+        "headers": {
+          "Content-Type": "application/json;charset=UTF-8"
+        }
+      }
     }
   ]
 }
