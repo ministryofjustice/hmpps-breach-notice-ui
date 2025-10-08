@@ -14,7 +14,7 @@
   {% from "govuk/components/input/macro.njk" import govukInput %}
   {% from "govuk/components/checkboxes/macro.njk" import govukCheckboxes %}
   {% from "govuk/components/details/macro.njk" import govukDetails %}
-  {% from "govuk/components/textarea/macro.njk" import govukTextarea %}
+  {% from "govuk/components/character-count/macro.njk" import govukCharacterCount %}
 
   <form method="post">
     {% set errorList =[
@@ -78,8 +78,7 @@
                           {% if cr.contact.contactId == failure.id %}
                             {% set matchFound = true %}
                             {% set buttonText = 'Save Changes and Update Requirement' %}
-                            <p class="govuk-body govuk-!-margin-bottom-1">{{ cr.requirement.requirementTypeMainCategoryDescription }}
-                            , {{ cr.requirement.rejectionReason }} </p>
+                            <p class="govuk-body govuk-!-margin-bottom-1">{{ cr.requirement.requirementTypeMainCategoryDescription }}, {{ cr.requirement.rejectionReason }} </p>
                           {% endif %}
                         {% endfor %}
                         {% if not matchFound %}
@@ -113,7 +112,7 @@
           </p>
         {% endif %}
 
-        {{ govukTextarea({
+        {{ govukCharacterCount({
           label: {
             text: "Further reason details",
             classes: "govuk-label--m",
@@ -123,6 +122,7 @@
           value: furtherReasonDetails,
           classes: "govuk-input--width-30",
           name: "furtherReasonDetails",
+          maxlength: 4000,
           errorMessage: {
             text: errorMessages.furtherReasonDetails.text
           } if errorMessages.furtherReasonDetails.text
