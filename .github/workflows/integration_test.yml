@@ -44,6 +44,8 @@ jobs:
             build/
             dist/
             assets/stylesheets/
+      - name: Install dependencies via allowlist
+        run: npm run setup
       - name: Prepare and run integration tests
         id: integration-tests
         shell: bash
