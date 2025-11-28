@@ -36,6 +36,77 @@
           "nextAppointmentSaved": null,
           "useDefaultAddress": null,
           "useDefaultReplyAddress": null,
+          "breachNoticeContactList": [],
+          "breachNoticeRequirementList": []
+        },
+        "headers": {
+          "Content-Type": "application/json;charset=UTF-8"
+        },
+        "transformers": ["response-template"]
+      }
+    },
+    {
+      "request": {
+        "url": "/breach-notice-api/crlinks/bybreachnoticeid/00000000-0000-0000-0000-000000000001",
+        "method": "GET"
+      },
+      "response": {
+        "status": 200,
+        "jsonBody": {
+          "contactRequirementList": []
+        },
+        "headers": {
+          "Content-Type": "application/json;charset=UTF-8"
+        },
+        "transformers": ["response-template"]
+      }
+    },
+    {
+      "request": {
+        "url": "/breach-notice-api/breach-notice/987987987-000f-0000-bbd1-989898989898",
+        "method": "GET"
+      },
+      "response": {
+        "status": 200,
+        "jsonBody": {
+          "id": "987987987-000f-0000-bbd1-989898989898",
+          "crn": "R658957",
+          "titleAndFullName": null,
+          "dateOfLetter": null,
+          "referenceNumber": null,
+          "responseRequiredDate": null,
+          "breachNoticeTypeCode": null,
+          "breachNoticeTypeDescription": null,
+          "breachConditionTypeCode": null,
+          "breachConditionTypeDescription": null,
+          "breachSentenceTypeCode": null,
+          "breachSentenceTypeDescription": null,
+          "responsibleOfficer": null,
+          "contactNumber": null,
+          "nextAppointmentType": null,
+          "nextAppointmentDate": null,
+          "nextAppointmentLocation": null,
+          "nextAppointmentOfficer": null,
+          "nextAppointmentContact": null,
+          "completedDate": null,
+          "offenderAddress": null,
+          "replyAddress": {
+            "addressId": -1,
+            "status": "Reply",
+            "buildingName": null,
+            "buildingNumber": "21",
+            "streetName": "Reply Street",
+            "district": "Reply District",
+            "townCity": "Reply City",
+            "county": "Reply County",
+            "postcode": "NE22 3AA"
+          },
+          "basicDetailsSaved": null,
+          "warningTypeSaved": null,
+          "warningDetailsSaved": null,
+          "nextAppointmentSaved": null,
+          "useDefaultAddress": null,
+          "useDefaultReplyAddress": null,
           "breachNoticeContactList": null,
           "breachNoticeRequirementList": null
         },
@@ -138,9 +209,23 @@
           "nextAppointmentSaved": true,
           "useDefaultAddress": null,
           "useDefaultReplyAddress": null,
-          "breachNoticeContactList": null,
-          "breachNoticeRequirementList": null
+          "breachNoticeContactList": [],
+          "breachNoticeRequirementList": []
         },
+        "headers": {
+          "Content-Type": "application/json;charset=UTF-8"
+        },
+        "transformers": ["response-template"]
+      }
+    },
+    {
+      "request": {
+        "url": "/breach-notice-api/crlinks/bybreachnoticeid/00000000-1111-2222-3333-000000000001",
+        "method": "GET"
+      },
+      "response": {
+        "status": 200,
+        "jsonBody": [],
         "headers": {
           "Content-Type": "application/json;charset=UTF-8"
         },
@@ -195,6 +280,24 @@
     {
       "request": {
         "url": "/breach-notice-api/breach-notice/00000000-1111-2222-3333-000000000001",
+        "method": "PUT"
+      },
+      "response": {
+        "status": 200
+      }
+    },
+    {
+      "request": {
+        "url": "/breach-notice-api/requirement/unlinkedrequirements/00000000-1111-2222-3333-000000000001",
+        "method": "DELETE"
+      },
+      "response": {
+        "status": 200
+      }
+    },
+    {
+      "request": {
+        "url": "/breach-notice-api/requirement/recalculateFromToDate/00000000-1111-2222-3333-000000000001",
         "method": "PUT"
       },
       "response": {
@@ -282,18 +385,67 @@
           "nextAppointmentSaved": null,
           "useDefaultAddress": null,
           "useDefaultReplyAddress": null,
-          "breachNoticeContactList": null,
+          "breachNoticeContactList": [
+            {
+              "id": "00000000-0000-0000-0000-000000000001",
+              "breachNoticeId": "c8888888-12e3-45ba-ba67-1b34bf7b8888",
+              "contactDate": "01/01/1970",
+              "contactType": "Contact0Type",
+              "contactOutcome": "Contact0SubType",
+              "contactId": 0
+            }
+          ],
           "breachNoticeRequirementList": [
             {
-              "requirementId": 0,
-              "rejectionReason": "Another Reason"
-            },
-            {
+              "id": "00000000-0000-0000-0000-000000000001",
+              "breachNoticeId": "c8888888-12e3-45ba-ba67-1b34bf7b8888",
               "requirementId": 1,
-              "rejectionReason": "Attended Late"
+              "requirementTypeMainCategoryDescription": "Requirement0Type",
+              "requirementTypeSubCategoryDescription": "Requirement0SubType",
+              "rejectionReason": "Requirement0RejectionReason",
+              "fromDate": null,
+              "toDate": null
             }
           ]
         },
+        "headers": {
+          "Content-Type": "application/json;charset=UTF-8"
+        },
+        "transformers": ["response-template"]
+      }
+    },
+    {
+      "request": {
+        "url": "/breach-notice-api/crlinks/bybreachnoticeid/c8888888-12e3-45ba-ba67-1b34bf7b8888",
+        "method": "GET"
+      },
+      "response": {
+        "status": 200,
+        "jsonBody": [
+          {
+            "breachNoticeId": "c8888888-12e3-45ba-ba67-1b34bf7b8888",
+            "contactId": "00000000-0000-0000-0000-000000000001",
+            "contact": {
+              "id": "00000000-0000-0000-0000-000000000001",
+              "breachNoticeId": "c8888888-12e3-45ba-ba67-1b34bf7b8888",
+              "contactDate": "01/01/1970",
+              "contactType": "Contact0Type",
+              "contactOutcome": "Contact0SubType",
+              "contactId": 0
+            },
+            "requirementId": "00000000-0000-0000-0000-000000000001",
+            "requirement": {
+              "id": "00000000-0000-0000-0000-000000000001",
+              "breachNoticeId": "c8888888-12e3-45ba-ba67-1b34bf7b8888",
+              "requirementId": 1,
+              "requirementTypeMainCategoryDescription": "Requirement0Type",
+              "requirementTypeSubCategoryDescription": "Requirement0SubType",
+              "rejectionReason": "Requirement0RejectionReason",
+              "fromDate": null,
+              "toDate": null
+            }
+          }
+        ],
         "headers": {
           "Content-Type": "application/json;charset=UTF-8"
         },
@@ -336,9 +488,23 @@
           "nextAppointmentSaved": null,
           "useDefaultAddress": null,
           "useDefaultReplyAddress": null,
-          "breachNoticeContactList": null,
-          "breachNoticeRequirementList": null
+          "breachNoticeContactList": [],
+          "breachNoticeRequirementList": []
         },
+        "headers": {
+          "Content-Type": "application/json;charset=UTF-8"
+        },
+        "transformers": ["response-template"]
+      }
+    },
+    {
+      "request": {
+        "url": "/breach-notice-api/crlinks/bybreachnoticeid/d3333333-12e3-45ba-ba67-1b34bf7b3333",
+        "method": "GET"
+      },
+      "response": {
+        "status": 200,
+        "jsonBody": [],
         "headers": {
           "Content-Type": "application/json;charset=UTF-8"
         },
@@ -471,8 +637,8 @@
           "nextAppointmentSaved": null,
           "useDefaultAddress": null,
           "useDefaultReplyAddress": null,
-          "breachNoticeContactList": null,
-          "breachNoticeRequirementList": null
+          "breachNoticeContactList": [],
+          "breachNoticeRequirementList": []
         },
         "headers": {
           "Content-Type": "application/json;charset=UTF-8"
@@ -480,7 +646,20 @@
         "transformers": ["response-template"]
       }
     },
-
+    {
+      "request": {
+        "url": "/breach-notice-api/crlinks/bybreachnoticeid/f1234567-12e3-45ba-ba67-1b34bf7b009d",
+        "method": "GET"
+      },
+      "response": {
+        "status": 200,
+        "jsonBody": [],
+        "headers": {
+          "Content-Type": "application/json;charset=UTF-8"
+        },
+        "transformers": ["response-template"]
+      }
+    },
     {
       "request": {
         "url": "/breach-notice-api/breach-notice/f1234567-12e3-45ba-ba67-1b34bf7b0099",
@@ -638,6 +817,268 @@
         "transformers": ["response-template"]
       }
     },
+
+    {
+      "request": {
+        "url": "/breach-notice-api/breach-notice/29292929-29e3-45ba-2929-1b34bf7b2929",
+        "method": "GET"
+      },
+      "response": {
+        "status": 200,
+        "jsonBody": {
+          "id": "29292929-29e3-45ba-2929-1b34bf7b2929",
+          "crn": "X727272",
+          "titleAndFullName": null,
+          "dateOfLetter": null,
+          "referenceNumber": null,
+          "responseRequiredDate": null,
+          "breachNoticeTypeCode": null,
+          "breachNoticeTypeDescription": null,
+          "breachConditionTypeCode": null,
+          "breachConditionTypeDescription": null,
+          "breachSentenceTypeCode": null,
+          "breachSentenceTypeDescription": null,
+          "responsibleOfficer": null,
+          "contactNumber": null,
+          "nextAppointmentType": null,
+          "nextAppointmentDate": null,
+          "nextAppointmentLocation": null,
+          "nextAppointmentOfficer": null,
+          "nextAppointmentContact": null,
+          "completedDate": null,
+          "offenderAddress": null,
+          "replyAddress": {
+            "addressId": -1,
+            "status": "Reply",
+            "buildingName": null,
+            "buildingNumber": "21",
+            "streetName": "Reply Street",
+            "district": "Reply District",
+            "townCity": "Reply City",
+            "county": "Reply County",
+            "postcode": "NE22 3AA"
+          },
+          "basicDetailsSaved": null,
+          "warningTypeSaved": null,
+          "warningDetailsSaved": null,
+          "nextAppointmentSaved": null,
+          "useDefaultAddress": null,
+          "useDefaultReplyAddress": null,
+          "breachNoticeContactList": null,
+          "breachNoticeRequirementList": null
+        },
+        "headers": {
+          "Content-Type": "application/json;charset=UTF-8"
+        },
+        "transformers": ["response-template"]
+      }
+    },
+
+    {
+      "request": {
+        "url": "/breach-notice-api/breach-notice/12312312-29b1-45c1-2929-123123123123",
+        "method": "GET"
+      },
+      "response": {
+        "status": 200,
+        "jsonBody": {
+          "id": "12312312-29b1-45c1-2929-123123123123",
+          "crn": "X032703",
+          "titleAndFullName": "Dame breachNObreachcontactsFIRST second third breachNObreachcontactsFAM",
+          "dateOfLetter": null,
+          "referenceNumber": "",
+          "responseRequiredDate": null,
+          "breachNoticeTypeCode": "FO",
+          "breachNoticeTypeDescription": "Formal Warning",
+          "breachConditionTypeCode": null,
+          "breachConditionTypeDescription": null,
+          "breachSentenceTypeCode": "CO",
+          "breachSentenceTypeDescription": "Community Order(s)",
+          "responsibleOfficer": null,
+          "contactNumber": null,
+          "nextAppointmentType": null,
+          "nextAppointmentDate": null,
+          "nextAppointmentLocation": null,
+          "nextAppointmentOfficer": null,
+          "nextAppointmentId": null,
+          "completedDate": null,
+          "offenderAddress": {
+            "addressId": 2500196546,
+            "status": "Postal",
+            "officeDescription": null,
+            "buildingName": null,
+            "buildingNumber": "3",
+            "streetName": "POSATAAALL",
+            "district": null,
+            "townCity": null,
+            "county": null,
+            "postcode": null
+          },
+          "replyAddress": {
+            "addressId": -1,
+            "status": "Default",
+            "officeDescription": "",
+            "buildingName": "",
+            "buildingNumber": "34",
+            "streetName": "CAMBORNE RD",
+            "district": "buttonwood",
+            "townCity": "Warrington",
+            "county": "Cheshire",
+            "postcode": "WA5 4LY"
+          },
+          "basicDetailsSaved": true,
+          "warningTypeSaved": true,
+          "warningDetailsSaved": null,
+          "nextAppointmentSaved": null,
+          "useDefaultAddress": true,
+          "useDefaultReplyAddress": true,
+          "breachNoticeContactList": [],
+          "breachNoticeRequirementList": [],
+          "optionalNumberChecked": null,
+          "optionalNumber": null,
+          "reviewRequiredDate": null,
+          "reviewEvent": null,
+          "conditionBeingEnforced": "2 occasions in a 12 month period",
+          "selectNextAppointment": null,
+          "furtherReasonDetails": null
+        },
+        "headers": {
+          "Content-Type": "application/json;charset=UTF-8"
+        },
+        "transformers": ["response-template"]
+      }
+    },
+
+    {
+      "request": {
+        "url": "/breach-notice-api/breach-notice/29292929-29e3-45ba-2929-1b34bf7b2929",
+        "method": "GET"
+      },
+      "response": {
+        "status": 200,
+        "jsonBody": {
+          "id": "29292929-29e3-45ba-2929-1b34bf7b2929",
+          "crn": "X727272",
+          "titleAndFullName": null,
+          "dateOfLetter": null,
+          "referenceNumber": null,
+          "responseRequiredDate": null,
+          "breachNoticeTypeCode": null,
+          "breachNoticeTypeDescription": null,
+          "breachConditionTypeCode": null,
+          "breachConditionTypeDescription": null,
+          "breachSentenceTypeCode": null,
+          "breachSentenceTypeDescription": null,
+          "responsibleOfficer": null,
+          "contactNumber": null,
+          "nextAppointmentType": null,
+          "nextAppointmentDate": null,
+          "nextAppointmentLocation": null,
+          "nextAppointmentOfficer": null,
+          "nextAppointmentContact": null,
+          "completedDate": null,
+          "offenderAddress": null,
+          "replyAddress": {
+            "addressId": -1,
+            "status": "Reply",
+            "buildingName": null,
+            "buildingNumber": "21",
+            "streetName": "Reply Street",
+            "district": "Reply District",
+            "townCity": "Reply City",
+            "county": "Reply County",
+            "postcode": "NE22 3AA"
+          },
+          "basicDetailsSaved": null,
+          "warningTypeSaved": null,
+          "warningDetailsSaved": null,
+          "nextAppointmentSaved": null,
+          "useDefaultAddress": null,
+          "useDefaultReplyAddress": null,
+          "breachNoticeContactList": null,
+          "breachNoticeRequirementList": null
+        },
+        "headers": {
+          "Content-Type": "application/json;charset=UTF-8"
+        },
+        "transformers": ["response-template"]
+      }
+    },
+    {
+      "request": {
+        "url": "/breach-notice-api/breach-notice/12312312-29b1-45c1-2929-123123123123",
+        "method": "GET"
+      },
+      "response": {
+        "status": 200,
+        "jsonBody": {
+          "id": "12312312-29b1-45c1-2929-123123123123",
+          "crn": "X032703",
+          "titleAndFullName": "Dame breachNObreachcontactsFIRST second third breachNObreachcontactsFAM",
+          "dateOfLetter": null,
+          "referenceNumber": "",
+          "responseRequiredDate": null,
+          "breachNoticeTypeCode": "FO",
+          "breachNoticeTypeDescription": "Formal Warning",
+          "breachConditionTypeCode": null,
+          "breachConditionTypeDescription": null,
+          "breachSentenceTypeCode": "CO",
+          "breachSentenceTypeDescription": "Community Order(s)",
+          "responsibleOfficer": null,
+          "contactNumber": null,
+          "nextAppointmentType": null,
+          "nextAppointmentDate": null,
+          "nextAppointmentLocation": null,
+          "nextAppointmentOfficer": null,
+          "nextAppointmentId": null,
+          "completedDate": null,
+          "offenderAddress": {
+            "addressId": 2500196546,
+            "status": "Postal",
+            "officeDescription": null,
+            "buildingName": null,
+            "buildingNumber": "3",
+            "streetName": "POSATAAALL",
+            "district": null,
+            "townCity": null,
+            "county": null,
+            "postcode": null
+          },
+          "replyAddress": {
+            "addressId": -1,
+            "status": "Default",
+            "officeDescription": "",
+            "buildingName": "",
+            "buildingNumber": "34",
+            "streetName": "CAMBORNE RD",
+            "district": "buttonwood",
+            "townCity": "Warrington",
+            "county": "Cheshire",
+            "postcode": "WA5 4LY"
+          },
+          "basicDetailsSaved": true,
+          "warningTypeSaved": true,
+          "warningDetailsSaved": null,
+          "nextAppointmentSaved": null,
+          "useDefaultAddress": true,
+          "useDefaultReplyAddress": true,
+          "breachNoticeContactList": [],
+          "breachNoticeRequirementList": [],
+          "optionalNumberChecked": null,
+          "optionalNumber": null,
+          "reviewRequiredDate": null,
+          "reviewEvent": null,
+          "conditionBeingEnforced": "2 occasions in a 12 month period",
+          "selectNextAppointment": null,
+          "furtherReasonDetails": null
+        },
+        "headers": {
+          "Content-Type": "application/json;charset=UTF-8"
+        },
+        "transformers": ["response-template"]
+      }
+    },
+
     {
       "request": {
         "url": "/breach-notice-api/breach-notice/f1234567-12e3-45ba-9999-1b34bf7b9999",
@@ -783,9 +1224,23 @@
               "contactId": 1
             }
           ],
-          "breachNoticeRequirementList": null,
+          "breachNoticeRequirementList": [],
           "conditionBeingEnforced": "a condition being enforced"
         },
+        "headers": {
+          "Content-Type": "application/json;charset=UTF-8"
+        },
+        "transformers": ["response-template"]
+      }
+    },
+    {
+      "request": {
+        "url": "/breach-notice-api/crlinks/bybreachnoticeid/00000000-0000-0000-0000-000000000022",
+        "method": "GET"
+      },
+      "response": {
+        "status": 200,
+        "jsonBody": [],
         "headers": {
           "Content-Type": "application/json;charset=UTF-8"
         },
@@ -799,28 +1254,6 @@
       },
       "response": {
         "status": 200
-      }
-    },
-    {
-      "request": {
-        "url": "/breach-notice-api/next-appointment/00000000-0000-0000-0000-000000000001",
-        "method": "GET"
-      },
-      "response": {
-        "status": 200,
-        "jsonBody": {
-          "id": "00000000-0000-0000-0000-000000000001",
-          "crn": "X017052",
-          "responsibleOfficer": {
-            "name": {
-              "forename": "ROForename",
-              "middleName": "ROMiddleName",
-              "surname": "ROSurname"
-            },
-            "telephoneNumber": "01234567891"
-          },
-          "futureAppointments": []
-        }
       }
     },
     {
@@ -1526,6 +1959,52 @@
 
     {
       "request": {
+        "url": "/breach-notice-api/breach-notice/90000000-0000-0900-0900-00000000009",
+        "method": "GET"
+      },
+      "response": {
+        "status": 200,
+        "jsonBody": {
+          "id": "90000000-0000-0900-0900-00000000009",
+          "crn": "H123456",
+          "titleAndFullName": null,
+          "dateOfLetter": null,
+          "referenceNumber": null,
+          "responseRequiredDate": null,
+          "breachNoticeTypeCode": null,
+          "breachNoticeTypeDescription": null,
+          "breachConditionTypeCode": null,
+          "breachConditionTypeDescription": null,
+          "breachSentenceTypeCode": null,
+          "breachSentenceTypeDescription": null,
+          "responsibleOfficer": null,
+          "contactNumber": null,
+          "nextAppointmentType": null,
+          "nextAppointmentDate": null,
+          "nextAppointmentLocation": null,
+          "nextAppointmentOfficer": null,
+          "nextAppointmentContact": null,
+          "completedDate": null,
+          "offenderAddress": null,
+          "replyAddress": null,
+          "basicDetailsSaved": null,
+          "warningTypeSaved": null,
+          "warningDetailsSaved": null,
+          "nextAppointmentSaved": null,
+          "useDefaultAddress": null,
+          "useDefaultReplyAddress": null,
+          "breachNoticeContactList": null,
+          "breachNoticeRequirementList": null
+        },
+        "headers": {
+          "Content-Type": "application/json;charset=UTF-8"
+        },
+        "transformers": ["response-template"]
+      }
+    },
+
+    {
+      "request": {
         "url": "/breach-notice-api/breach-notice/56780000-0000-5678-500000005678",
         "method": "GET"
       },
@@ -1734,9 +2213,37 @@
           "nextAppointmentSaved": null,
           "useDefaultAddress": null,
           "useDefaultReplyAddress": null,
-          "breachNoticeContactList": null,
-          "breachNoticeRequirementList": null
+          "breachNoticeContactList": [],
+          "breachNoticeRequirementList": []
         },
+        "headers": {
+          "Content-Type": "application/json;charset=UTF-8"
+        },
+        "transformers": ["response-template"]
+      }
+    },
+    {
+      "request": {
+        "url": "/breach-notice-api/crlinks/bybreachnoticeid/12345678-7777-5555-500000000005",
+        "method": "GET"
+      },
+      "response": {
+        "status": 200,
+        "jsonBody": [],
+        "headers": {
+          "Content-Type": "application/json;charset=UTF-8"
+        },
+        "transformers": ["response-template"]
+      }
+    },
+    {
+      "request": {
+        "url": "/breach-notice-api/crlinks/bybreachnoticeidandcontactid/12345678-7777-5555-500000000005/00000000-0000-0000-0000-000000000005",
+        "method": "GET"
+      },
+      "response": {
+        "status": 200,
+        "jsonBody": [],
         "headers": {
           "Content-Type": "application/json;charset=UTF-8"
         },
@@ -1825,8 +2332,8 @@
           "nextAppointmentSaved": null,
           "useDefaultAddress": null,
           "useDefaultReplyAddress": null,
-          "breachNoticeContactList": null,
-          "breachNoticeRequirementList": null
+          "breachNoticeContactList": [],
+          "breachNoticeRequirementList": []
         },
         "headers": {
           "Content-Type": "application/json;charset=UTF-8"
@@ -1834,7 +2341,20 @@
         "transformers": ["response-template"]
       }
     },
-
+    {
+      "request": {
+        "url": "/breach-notice-api/crlinks/bybreachnoticeid/56565656-5656-5656-5656-560000000156",
+        "method": "GET"
+      },
+      "response": {
+        "status": 200,
+        "jsonBody": [],
+        "headers": {
+          "Content-Type": "application/json;charset=UTF-8"
+        },
+        "transformers": ["response-template"]
+      }
+    },
     {
       "request": {
         "url": "/breach-notice-api/breach-notice/00000000-0000-0000-0000-100000000101",
@@ -1903,6 +2423,40 @@
               "requirementId": 1
             }
           ]
+        },
+        "headers": {
+          "Content-Type": "application/json;charset=UTF-8"
+        },
+        "transformers": ["response-template"]
+      }
+    },
+
+    {
+      "request": {
+        "url": "/breach-notice-api/crlinks/bybreachnoticeid/00000000-0000-0000-0000-100000000101",
+        "method": "GET"
+      },
+      "response": {
+        "status": 200,
+        "jsonBody": {
+          "contactRequirementList": []
+        },
+        "headers": {
+          "Content-Type": "application/json;charset=UTF-8"
+        },
+        "transformers": ["response-template"]
+      }
+    },
+
+    {
+      "request": {
+        "url": "/breach-notice-api/crlinks/bybreachnoticeid/00000000-0000-0000-0000-100000000102",
+        "method": "GET"
+      },
+      "response": {
+        "status": 200,
+        "jsonBody": {
+          "contactRequirementList": []
         },
         "headers": {
           "Content-Type": "application/json;charset=UTF-8"
@@ -2540,8 +3094,8 @@
           "nextAppointmentSaved": null,
           "useDefaultAddress": null,
           "useDefaultReplyAddress": null,
-          "breachNoticeContactList": null,
-          "breachNoticeRequirementList": null,
+          "breachNoticeContactList": [],
+          "breachNoticeRequirementList": [],
           "furtherReasonDetails": "Here are some further reason details"
         },
         "headers": {
@@ -2586,9 +3140,67 @@
           "nextAppointmentSaved": null,
           "useDefaultAddress": null,
           "useDefaultReplyAddress": null,
-          "breachNoticeContactList": null,
-          "breachNoticeRequirementList": null
+          "breachNoticeContactList": [],
+          "breachNoticeRequirementList": []
         },
+        "headers": {
+          "Content-Type": "application/json;charset=UTF-8"
+        },
+        "transformers": ["response-template"]
+      }
+    },
+    {
+      "request": {
+        "url": "/breach-notice-api/crlinks/bybreachnoticeid/f0be99cd-7939-44fa-adde-43c22d800cd9",
+        "method": "GET"
+      },
+      "response": {
+        "status": 200,
+        "jsonBody": [
+          {
+            "breachNoticeId": "f0be99cd-7939-44fa-adde-43c22d800cd9",
+            "contactId": "00000000-0000-0000-0000-000000000001",
+            "contact": null,
+            "requirementId": "00000000-0000-0000-0000-000000000001",
+            "requirement": null
+          },
+          {
+            "breachNoticeId": "f0be99cd-7939-44fa-adde-43c22d800cd9",
+            "contactId": "00000000-0000-0000-0000-000000000002",
+            "contact": null,
+            "requirementId": "00000000-0000-0000-0000-000000000002",
+            "requirement": null
+          }
+        ],
+        "headers": {
+          "Content-Type": "application/json;charset=UTF-8"
+        },
+        "transformers": ["response-template"]
+      }
+    },
+    {
+      "request": {
+        "url": "/breach-notice-api/crlinks/bybreachnoticeid/9c9cb998-6782-4c23-8cb1-ff2e169c7209",
+        "method": "GET"
+      },
+      "response": {
+        "status": 200,
+        "jsonBody": [
+          {
+            "breachNoticeId": "9c9cb998-6782-4c23-8cb1-ff2e169c7209",
+            "contactId": "00000000-0000-0000-0000-000000000001",
+            "contact": null,
+            "requirementId": "00000000-0000-0000-0000-000000000001",
+            "requirement": null
+          },
+          {
+            "breachNoticeId": "9c9cb998-6782-4c23-8cb1-ff2e169c7209",
+            "contactId": "00000000-0000-0000-0000-000000000002",
+            "contact": null,
+            "requirementId": "00000000-0000-0000-0000-000000000002",
+            "requirement": null
+          }
+        ],
         "headers": {
           "Content-Type": "application/json;charset=UTF-8"
         },
@@ -2633,6 +3245,934 @@
           "useDefaultReplyAddress": null,
           "breachNoticeContactList": null,
           "breachNoticeRequirementList": null
+        },
+        "headers": {
+          "Content-Type": "application/json;charset=UTF-8"
+        },
+        "transformers": ["response-template"]
+      }
+    },
+    {
+      "request": {
+        "url": "/breach-notice-api/breach-notice/225244a2-74fc-4548-b55f-18526dec8046",
+        "method": "GET"
+      },
+      "response": {
+        "status": 200,
+        "jsonBody": {
+          "id": "225244a2-74fc-4548-b55f-18526dec8046",
+          "crn": "X100404",
+          "titleAndFullName": null,
+          "dateOfLetter": null,
+          "referenceNumber": null,
+          "responseRequiredDate": null,
+          "breachNoticeTypeCode": null,
+          "breachNoticeTypeDescription": null,
+          "breachConditionTypeCode": null,
+          "breachConditionTypeDescription": null,
+          "breachSentenceTypeCode": null,
+          "breachSentenceTypeDescription": null,
+          "responsibleOfficer": null,
+          "contactNumber": null,
+          "nextAppointmentType": null,
+          "nextAppointmentDate": null,
+          "nextAppointmentLocation": null,
+          "nextAppointmentOfficer": null,
+          "nextAppointmentContact": null,
+          "completedDate": null,
+          "offenderAddress": null,
+          "replyAddress": null,
+          "basicDetailsSaved": null,
+          "warningTypeSaved": null,
+          "warningDetailsSaved": null,
+          "nextAppointmentSaved": null,
+          "useDefaultAddress": null,
+          "useDefaultReplyAddress": null,
+          "breachNoticeContactList": [
+            {
+              "id": "00000000-0000-0000-0000-000000000001",
+              "breachNoticeId": "225244a2-74fc-4548-b55f-18526dec8046",
+              "contactDate": "01/01/1970",
+              "contactType": "string",
+              "contactOutcome": "string",
+              "contactId": 0
+            }
+          ],
+          "breachNoticeRequirementList": [
+            {
+              "id": "00000000-0000-0000-0000-000000000001",
+              "breachNoticeId": "225244a2-74fc-4548-b55f-18526dec8046",
+              "requirementId": 1,
+              "requirementTypeMainCategoryDescription": "string",
+              "requirementTypeSubCategoryDescription": "string",
+              "rejectionReason": "string",
+              "fromDate": null,
+              "toDate": null
+            }
+          ]
+        },
+        "headers": {
+          "Content-Type": "application/json;charset=UTF-8"
+        },
+        "transformers": ["response-template"]
+      }
+    },
+    {
+      "request": {
+        "url": "/breach-notice-api/crlinks/bybreachnoticeid/225244a2-74fc-4548-b55f-18526dec8046",
+        "method": "GET"
+      },
+      "response": {
+        "status": 200,
+        "jsonBody": [
+          {
+            "breachNoticeId": "225244a2-74fc-4548-b55f-18526dec8046",
+            "contactId": "00000000-0000-0000-0000-000000000001",
+            "contact": {
+              "id": "00000000-0000-0000-0000-000000000001",
+              "breachNoticeId": "225244a2-74fc-4548-b55f-18526dec8046",
+              "contactDate": "01/01/1970",
+              "contactType": "Contact0Type",
+              "contactOutcome": "Contact0SubType",
+              "contactId": 0
+            },
+            "requirementId": "00000000-0000-0000-0000-000000000001",
+            "requirement": {
+              "id": "00000000-0000-0000-0000-000000000001",
+              "breachNoticeId": "225244a2-74fc-4548-b55f-18526dec8046",
+              "requirementId": 1,
+              "requirementTypeMainCategoryDescription": "Requirement0Type",
+              "requirementTypeSubCategoryDescription": "Requirement0SubType",
+              "rejectionReason": "Requirement0RejectionReason",
+              "fromDate": null,
+              "toDate": null
+            }
+          }
+        ],
+        "headers": {
+          "Content-Type": "application/json;charset=UTF-8"
+        },
+        "transformers": ["response-template"]
+      }
+    },
+    {
+      "request": {
+        "url": "/breach-notice-api/breach-notice/225244a2-74fc-4548-b55f-18526dec8046",
+        "method": "PUT"
+      },
+      "response": {
+        "status": 200
+      }
+    },
+    {
+      "request": {
+        "url": "/breach-notice-api/contact/bybreachnoticeid/225244a2-74fc-4548-b55f-18526dec8046",
+        "method": "GET"
+      },
+      "response": {
+        "status": 200
+      }
+    },
+    {
+      "request": {
+        "url": "/breach-notice-api/contact/bybreachnoticeidanddeliusid/225244a2-74fc-4548-b55f-18526dec8046/0",
+        "method": "GET"
+      },
+      "response": {
+        "status": 200,
+        "jsonBody": {
+          "id": "00000000-0000-0000-0000-000000000001",
+          "breachNoticeId": "225244a2-74fc-4548-b55f-18526dec8046",
+          "contactDate": "01/01/1970",
+          "contactType": "string",
+          "contactOutcome": "string",
+          "contactId": 0
+        },
+        "headers": {
+          "Content-Type": "application/json;charset=UTF-8"
+        },
+        "transformers": ["response-template"]
+      }
+    },
+    {
+      "request": {
+        "url": "/breach-notice-api/requirement/unlinkedrequirements/225244a2-74fc-4548-b55f-18526dec8046",
+        "method": "DELETE"
+      },
+      "response": {
+        "status": 200
+      }
+    },
+    {
+      "request": {
+        "url": "/breach-notice-api/requirement/recalculateFromToDate/225244a2-74fc-4548-b55f-18526dec8046",
+        "method": "PUT"
+      },
+      "response": {
+        "status": 200
+      }
+    },
+    {
+      "request": {
+        "url": "/breach-notice-api/breach-notice/7a2e74a0-20f2-4a01-bbdd-7c22aeed555a",
+        "method": "GET"
+      },
+      "response": {
+        "status": 200,
+        "jsonBody": {
+          "id": "7a2e74a0-20f2-4a01-bbdd-7c22aeed555a",
+          "crn": "X100404",
+          "titleAndFullName": null,
+          "dateOfLetter": null,
+          "referenceNumber": null,
+          "responseRequiredDate": null,
+          "breachNoticeTypeCode": null,
+          "breachNoticeTypeDescription": null,
+          "breachConditionTypeCode": null,
+          "breachConditionTypeDescription": null,
+          "breachSentenceTypeCode": null,
+          "breachSentenceTypeDescription": null,
+          "responsibleOfficer": null,
+          "contactNumber": null,
+          "nextAppointmentType": null,
+          "nextAppointmentDate": null,
+          "nextAppointmentLocation": null,
+          "nextAppointmentOfficer": null,
+          "nextAppointmentContact": null,
+          "completedDate": null,
+          "offenderAddress": null,
+          "replyAddress": null,
+          "basicDetailsSaved": null,
+          "warningTypeSaved": null,
+          "warningDetailsSaved": null,
+          "nextAppointmentSaved": null,
+          "useDefaultAddress": null,
+          "useDefaultReplyAddress": null,
+          "breachNoticeContactList": [],
+          "breachNoticeRequirementList": []
+        },
+        "headers": {
+          "Content-Type": "application/json;charset=UTF-8"
+        },
+        "transformers": ["response-template"]
+      }
+    },
+    {
+      "request": {
+        "url": "/breach-notice-api/crlinks/bybreachnoticeid/7a2e74a0-20f2-4a01-bbdd-7c22aeed555a",
+        "method": "GET"
+      },
+      "response": {
+        "status": 200,
+        "jsonBody": [],
+        "headers": {
+          "Content-Type": "application/json;charset=UTF-8"
+        },
+        "transformers": ["response-template"]
+      }
+    },
+    {
+      "request": {
+        "url": "/breach-notice-api/breach-notice/7a2e74a0-20f2-4a01-bbdd-7c22aeed555a",
+        "method": "PUT"
+      },
+      "response": {
+        "status": 200
+      }
+    },
+    {
+      "request": {
+        "url": "/breach-notice-api/contact/bybreachnoticeid/7a2e74a0-20f2-4a01-bbdd-7c22aeed555a",
+        "method": "GET"
+      },
+      "response": {
+        "status": 200
+      }
+    },
+    {
+      "request": {
+        "url": "/breach-notice-api/contact/bybreachnoticeidanddeliusid/7a2e74a0-20f2-4a01-bbdd-7c22aeed555a/0",
+        "method": "GET"
+      },
+      "response": {
+        "status": 200,
+        "jsonBody": {
+          "id": "00000000-0000-0000-0000-000000000001",
+          "breachNoticeId": "7a2e74a0-20f2-4a01-bbdd-7c22aeed555a",
+          "contactDate": "01/01/1970",
+          "contactType": "string",
+          "contactOutcome": "string",
+          "contactId": 0
+        },
+        "headers": {
+          "Content-Type": "application/json;charset=UTF-8"
+        },
+        "transformers": ["response-template"]
+      }
+    },
+    {
+      "request": {
+        "url": "/breach-notice-api/requirement/unlinkedrequirements/7a2e74a0-20f2-4a01-bbdd-7c22aeed555a",
+        "method": "DELETE"
+      },
+      "response": {
+        "status": 200
+      }
+    },
+    {
+      "request": {
+        "url": "/breach-notice-api/requirement/recalculateFromToDate/7a2e74a0-20f2-4a01-bbdd-7c22aeed555a",
+        "method": "PUT"
+      },
+      "response": {
+        "status": 200
+      }
+    },
+    {
+      "request": {
+        "url": "/breach-notice-api/breach-notice/d2439e5f-355b-4284-a8ee-bda1a327338c",
+        "method": "GET"
+      },
+      "response": {
+        "status": 200,
+        "jsonBody": {
+          "id": "d2439e5f-355b-4284-a8ee-bda1a327338c",
+          "crn": "X100404",
+          "titleAndFullName": null,
+          "dateOfLetter": null,
+          "referenceNumber": null,
+          "responseRequiredDate": null,
+          "breachNoticeTypeCode": null,
+          "breachNoticeTypeDescription": null,
+          "breachConditionTypeCode": null,
+          "breachConditionTypeDescription": null,
+          "breachSentenceTypeCode": null,
+          "breachSentenceTypeDescription": null,
+          "responsibleOfficer": null,
+          "contactNumber": null,
+          "nextAppointmentType": null,
+          "nextAppointmentDate": null,
+          "nextAppointmentLocation": null,
+          "nextAppointmentOfficer": null,
+          "nextAppointmentContact": null,
+          "completedDate": null,
+          "offenderAddress": null,
+          "replyAddress": null,
+          "basicDetailsSaved": null,
+          "warningTypeSaved": null,
+          "warningDetailsSaved": null,
+          "nextAppointmentSaved": null,
+          "useDefaultAddress": null,
+          "useDefaultReplyAddress": null,
+          "breachNoticeContactList": [],
+          "breachNoticeRequirementList": []
+        },
+        "headers": {
+          "Content-Type": "application/json;charset=UTF-8"
+        },
+        "transformers": ["response-template"]
+      }
+    },
+    {
+      "request": {
+        "url": "/breach-notice-api/crlinks/bybreachnoticeid/d2439e5f-355b-4284-a8ee-bda1a327338c",
+        "method": "GET"
+      },
+      "response": {
+        "status": 200,
+        "jsonBody": [],
+        "headers": {
+          "Content-Type": "application/json;charset=UTF-8"
+        },
+        "transformers": ["response-template"]
+      }
+    },
+    {
+      "request": {
+        "url": "/breach-notice-api/breach-notice/66dbdd78-8975-462b-aecc-8d8813317b19",
+        "method": "GET"
+      },
+      "response": {
+        "status": 200,
+        "jsonBody": {
+          "id": "66dbdd78-8975-462b-aecc-8d8813317b19",
+          "crn": "X100404",
+          "titleAndFullName": null,
+          "dateOfLetter": null,
+          "referenceNumber": null,
+          "responseRequiredDate": null,
+          "breachNoticeTypeCode": null,
+          "breachNoticeTypeDescription": null,
+          "breachConditionTypeCode": null,
+          "breachConditionTypeDescription": null,
+          "breachSentenceTypeCode": null,
+          "breachSentenceTypeDescription": null,
+          "responsibleOfficer": null,
+          "contactNumber": null,
+          "nextAppointmentType": null,
+          "nextAppointmentDate": null,
+          "nextAppointmentLocation": null,
+          "nextAppointmentOfficer": null,
+          "nextAppointmentContact": null,
+          "completedDate": null,
+          "offenderAddress": null,
+          "replyAddress": null,
+          "basicDetailsSaved": null,
+          "warningTypeSaved": null,
+          "warningDetailsSaved": null,
+          "nextAppointmentSaved": null,
+          "useDefaultAddress": null,
+          "useDefaultReplyAddress": null,
+          "breachNoticeContactList": [],
+          "breachNoticeRequirementList": []
+        },
+        "headers": {
+          "Content-Type": "application/json;charset=UTF-8"
+        },
+        "transformers": ["response-template"]
+      }
+    },
+    {
+      "request": {
+        "url": "/breach-notice-api/crlinks/bybreachnoticeidandcontactid/66dbdd78-8975-462b-aecc-8d8813317b19/00000000-0000-0000-0000-000000000001",
+        "method": "GET"
+      },
+      "response": {
+        "status": 200,
+        "jsonBody": [],
+        "headers": {
+          "Content-Type": "application/json;charset=UTF-8"
+        },
+        "transformers": ["response-template"]
+      }
+    },
+    {
+      "request": {
+        "url": "/breach-notice-api/breach-notice/4c3dbcf0-f95d-4b67-b925-a0a5da1c1cd4",
+        "method": "GET"
+      },
+      "response": {
+        "status": 200,
+        "jsonBody": {
+          "id": "4c3dbcf0-f95d-4b67-b925-a0a5da1c1cd4",
+          "crn": "X100404",
+          "titleAndFullName": null,
+          "dateOfLetter": null,
+          "referenceNumber": null,
+          "responseRequiredDate": null,
+          "breachNoticeTypeCode": null,
+          "breachNoticeTypeDescription": null,
+          "breachConditionTypeCode": null,
+          "breachConditionTypeDescription": null,
+          "breachSentenceTypeCode": null,
+          "breachSentenceTypeDescription": null,
+          "responsibleOfficer": null,
+          "contactNumber": null,
+          "nextAppointmentType": null,
+          "nextAppointmentDate": null,
+          "nextAppointmentLocation": null,
+          "nextAppointmentOfficer": null,
+          "nextAppointmentContact": null,
+          "completedDate": null,
+          "offenderAddress": null,
+          "replyAddress": null,
+          "basicDetailsSaved": null,
+          "warningTypeSaved": null,
+          "warningDetailsSaved": null,
+          "nextAppointmentSaved": null,
+          "useDefaultAddress": null,
+          "useDefaultReplyAddress": null,
+          "breachNoticeContactList": [],
+          "breachNoticeRequirementList": []
+        },
+        "headers": {
+          "Content-Type": "application/json;charset=UTF-8"
+        },
+        "transformers": ["response-template"]
+      }
+    },
+    {
+      "request": {
+        "url": "/breach-notice-api/crlinks/bybreachnoticeidandcontactid/4c3dbcf0-f95d-4b67-b925-a0a5da1c1cd4/00000000-0000-0000-0000-000000000002",
+        "method": "GET"
+      },
+      "response": {
+        "status": 200,
+        "jsonBody": [],
+        "headers": {
+          "Content-Type": "application/json;charset=UTF-8"
+        },
+        "transformers": ["response-template"]
+      }
+    },
+    {
+      "request": {
+        "url": "/breach-notice-api/breach-notice/de209be2-f992-4305-8ffe-5546b44c4776",
+        "method": "GET"
+      },
+      "response": {
+        "status": 200,
+        "jsonBody": {
+          "id": "de209be2-f992-4305-8ffe-5546b44c4776",
+          "crn": "X100404",
+          "titleAndFullName": null,
+          "dateOfLetter": null,
+          "referenceNumber": null,
+          "responseRequiredDate": null,
+          "breachNoticeTypeCode": null,
+          "breachNoticeTypeDescription": null,
+          "breachConditionTypeCode": null,
+          "breachConditionTypeDescription": null,
+          "breachSentenceTypeCode": null,
+          "breachSentenceTypeDescription": null,
+          "responsibleOfficer": null,
+          "contactNumber": null,
+          "nextAppointmentType": null,
+          "nextAppointmentDate": null,
+          "nextAppointmentLocation": null,
+          "nextAppointmentOfficer": null,
+          "nextAppointmentContact": null,
+          "completedDate": null,
+          "offenderAddress": null,
+          "replyAddress": null,
+          "basicDetailsSaved": null,
+          "warningTypeSaved": null,
+          "warningDetailsSaved": null,
+          "nextAppointmentSaved": null,
+          "useDefaultAddress": null,
+          "useDefaultReplyAddress": null,
+          "breachNoticeContactList": [],
+          "breachNoticeRequirementList": []
+        },
+        "headers": {
+          "Content-Type": "application/json;charset=UTF-8"
+        },
+        "transformers": ["response-template"]
+      }
+    },
+    {
+      "request": {
+        "url": "/breach-notice-api/crlinks/bybreachnoticeidandcontactid/de209be2-f992-4305-8ffe-5546b44c4776/00000000-0000-0000-0000-000000000003",
+        "method": "GET"
+      },
+      "response": {
+        "status": 200,
+        "jsonBody": [],
+        "headers": {
+          "Content-Type": "application/json;charset=UTF-8"
+        },
+        "transformers": ["response-template"]
+      }
+    },
+    {
+      "request": {
+        "url": "/breach-notice-api/breach-notice/6d7f0e28-c2ed-4c98-826b-43a0c80ac63f",
+        "method": "GET"
+      },
+      "response": {
+        "status": 200,
+        "jsonBody": {
+          "id": "6d7f0e28-c2ed-4c98-826b-43a0c80ac63f",
+          "crn": "X100404",
+          "titleAndFullName": null,
+          "dateOfLetter": null,
+          "referenceNumber": null,
+          "responseRequiredDate": null,
+          "breachNoticeTypeCode": null,
+          "breachNoticeTypeDescription": null,
+          "breachConditionTypeCode": null,
+          "breachConditionTypeDescription": null,
+          "breachSentenceTypeCode": null,
+          "breachSentenceTypeDescription": null,
+          "responsibleOfficer": null,
+          "contactNumber": null,
+          "nextAppointmentType": null,
+          "nextAppointmentDate": null,
+          "nextAppointmentLocation": null,
+          "nextAppointmentOfficer": null,
+          "nextAppointmentContact": null,
+          "completedDate": null,
+          "offenderAddress": null,
+          "replyAddress": null,
+          "basicDetailsSaved": null,
+          "warningTypeSaved": null,
+          "warningDetailsSaved": null,
+          "nextAppointmentSaved": null,
+          "useDefaultAddress": null,
+          "useDefaultReplyAddress": null,
+          "breachNoticeContactList": [],
+          "breachNoticeRequirementList": []
+        },
+        "headers": {
+          "Content-Type": "application/json;charset=UTF-8"
+        },
+        "transformers": ["response-template"]
+      }
+    },
+    {
+      "request": {
+        "url": "/breach-notice-api/crlinks/bybreachnoticeidandcontactid/6d7f0e28-c2ed-4c98-826b-43a0c80ac63f/00000000-0000-0000-0000-000000000006",
+        "method": "GET"
+      },
+      "response": {
+        "status": 200,
+        "jsonBody": [],
+        "headers": {
+          "Content-Type": "application/json;charset=UTF-8"
+        },
+        "transformers": ["response-template"]
+      }
+    },
+    {
+      "request": {
+        "url": "/breach-notice-api/breach-notice/09cedd1b-203f-482f-9c4f-eac7d2bf8897",
+        "method": "GET"
+      },
+      "response": {
+        "status": 200,
+        "jsonBody": {
+          "id": "09cedd1b-203f-482f-9c4f-eac7d2bf8897",
+          "crn": "X100404",
+          "titleAndFullName": null,
+          "dateOfLetter": null,
+          "referenceNumber": null,
+          "responseRequiredDate": null,
+          "breachNoticeTypeCode": null,
+          "breachNoticeTypeDescription": null,
+          "breachConditionTypeCode": null,
+          "breachConditionTypeDescription": null,
+          "breachSentenceTypeCode": null,
+          "breachSentenceTypeDescription": null,
+          "responsibleOfficer": null,
+          "contactNumber": null,
+          "nextAppointmentType": null,
+          "nextAppointmentDate": null,
+          "nextAppointmentLocation": null,
+          "nextAppointmentOfficer": null,
+          "nextAppointmentContact": null,
+          "completedDate": null,
+          "offenderAddress": null,
+          "replyAddress": null,
+          "basicDetailsSaved": null,
+          "warningTypeSaved": null,
+          "warningDetailsSaved": null,
+          "nextAppointmentSaved": null,
+          "useDefaultAddress": null,
+          "useDefaultReplyAddress": null,
+          "breachNoticeContactList": [
+            {
+              "id": "00000000-0000-0000-0000-000000000007",
+              "breachNoticeId": "09cedd1b-203f-482f-9c4f-eac7d2bf8897",
+              "contactDate": "01/01/1970",
+              "contactType": "Contact0Type",
+              "contactOutcome": "Contact0SubType",
+              "contactId": 0
+            }
+          ],
+          "breachNoticeRequirementList": [
+            {
+              "id": "00000000-0000-0000-0000-000000000001",
+              "breachNoticeId": "09cedd1b-203f-482f-9c4f-eac7d2bf8897",
+              "requirementId": 167,
+              "requirementTypeMainCategoryDescription": "string",
+              "requirementTypeSubCategoryDescription": "string",
+              "rejectionReason": "Failed to comply",
+              "fromDate": null,
+              "toDate": null
+            }
+          ]
+        },
+        "headers": {
+          "Content-Type": "application/json;charset=UTF-8"
+        },
+        "transformers": ["response-template"]
+      }
+    },
+    {
+      "request": {
+        "url": "/breach-notice-api/crlinks/bybreachnoticeidandcontactid/09cedd1b-203f-482f-9c4f-eac7d2bf8897/00000000-0000-0000-0000-000000000007",
+        "method": "GET"
+      },
+      "response": {
+        "status": 200,
+        "jsonBody": [
+          {
+            "breachNoticeId": "09cedd1b-203f-482f-9c4f-eac7d2bf8897",
+            "contactId": "00000000-0000-0000-0000-000000000007",
+            "contact": {
+              "id": "00000000-0000-0000-0000-000000000007",
+              "breachNoticeId": "09cedd1b-203f-482f-9c4f-eac7d2bf8897",
+              "contactDate": "01/01/1970",
+              "contactType": "Contact0Type",
+              "contactOutcome": "Contact0SubType",
+              "contactId": 0
+            },
+            "requirementId": "00000000-0000-0000-0000-000000000001",
+            "requirement": {
+              "id": "00000000-0000-0000-0000-000000000001",
+              "breachNoticeId": "09cedd1b-203f-482f-9c4f-eac7d2bf8897",
+              "requirementId": 167,
+              "requirementTypeMainCategoryDescription": "string",
+              "requirementTypeSubCategoryDescription": "string",
+              "rejectionReason": "Failed to comply",
+              "fromDate": null,
+              "toDate": null
+            }
+          }
+        ],
+        "headers": {
+          "Content-Type": "application/json;charset=UTF-8"
+        },
+        "transformers": ["response-template"]
+      }
+    },
+    {
+      "request": {
+        "url": "/breach-notice-api/breach-notice/922a6990-ed9d-4687-86a4-30c62b1f2edf",
+        "method": "GET"
+      },
+      "response": {
+        "status": 200,
+        "jsonBody": {
+          "id": "922a6990-ed9d-4687-86a4-30c62b1f2edf",
+          "crn": "X100404",
+          "titleAndFullName": null,
+          "dateOfLetter": null,
+          "referenceNumber": null,
+          "responseRequiredDate": null,
+          "breachNoticeTypeCode": null,
+          "breachNoticeTypeDescription": null,
+          "breachConditionTypeCode": null,
+          "breachConditionTypeDescription": null,
+          "breachSentenceTypeCode": null,
+          "breachSentenceTypeDescription": null,
+          "responsibleOfficer": null,
+          "contactNumber": null,
+          "nextAppointmentType": null,
+          "nextAppointmentDate": null,
+          "nextAppointmentLocation": null,
+          "nextAppointmentOfficer": null,
+          "nextAppointmentContact": null,
+          "completedDate": null,
+          "offenderAddress": null,
+          "replyAddress": null,
+          "basicDetailsSaved": null,
+          "warningTypeSaved": null,
+          "warningDetailsSaved": null,
+          "nextAppointmentSaved": null,
+          "useDefaultAddress": null,
+          "useDefaultReplyAddress": null,
+          "breachNoticeContactList": [],
+          "breachNoticeRequirementList": []
+        },
+        "headers": {
+          "Content-Type": "application/json;charset=UTF-8"
+        },
+        "transformers": ["response-template"]
+      }
+    },
+    {
+      "request": {
+        "url": "/breach-notice-api/crlinks/bybreachnoticeidandcontactid/922a6990-ed9d-4687-86a4-30c62b1f2edf/00000000-0000-0000-0000-000000000008",
+        "method": "GET"
+      },
+      "response": {
+        "status": 200,
+        "jsonBody": [],
+        "headers": {
+          "Content-Type": "application/json;charset=UTF-8"
+        },
+        "transformers": ["response-template"]
+      }
+    },
+    {
+      "request": {
+        "url": "/breach-notice-api/crlinks/bybreachnoticeid/922a6990-ed9d-4687-86a4-30c62b1f2edf",
+        "method": "GET"
+      },
+      "response": {
+        "status": 200,
+        "jsonBody": [],
+        "headers": {
+          "Content-Type": "application/json;charset=UTF-8"
+        },
+        "transformers": ["response-template"]
+      }
+    },
+    {
+      "request": {
+        "url": "/breach-notice-api/breach-notice/922a6990-ed9d-4687-86a4-30c62b1f2edf/requirement",
+        "method": "PUT"
+      },
+      "response": {
+        "status": 200
+      }
+    },
+    {
+      "request": {
+        "url": "/breach-notice-api/crlinks/bybreachnoticeidandcontactid/922a6990-ed9d-4687-86a4-30c62b1f2edf/00000000-0000-0000-0000-000000000008",
+        "method": "PUT"
+      },
+      "response": {
+        "status": 200
+      }
+    },
+    {
+      "request": {
+        "url": "/breach-notice-api/contact",
+        "method": "POST"
+      },
+      "response": {
+        "status": 200
+      }
+    },
+    {
+      "request": {
+        "url": "/breach-notice-api/requirement",
+        "method": "POST"
+      },
+      "response": {
+        "status": 200
+      }
+    },
+    {
+      "request": {
+        "url": "/breach-notice-api/crlinks",
+        "method": "POST"
+      },
+      "response": {
+        "status": 200
+      }
+    },
+    {
+      "request": {
+        "url": "/breach-notice-api/requirement/recalculateFromToDate/922a6990-ed9d-4687-86a4-30c62b1f2edf",
+        "method": "PUT"
+      },
+      "response": {
+        "status": 200
+      }
+    },
+    {
+      "request": {
+        "url": "/breach-notice-api/breach-notice/0adf652a-45eb-4203-8104-7bb4e62be6ce",
+        "method": "GET"
+      },
+      "response": {
+        "status": 200,
+        "jsonBody": {
+          "id": "0adf652a-45eb-4203-8104-7bb4e62be6ce",
+          "crn": "X000119",
+          "titleAndFullName": null,
+          "dateOfLetter": null,
+          "referenceNumber": null,
+          "responseRequiredDate": null,
+          "breachNoticeTypeCode": null,
+          "breachNoticeTypeDescription": null,
+          "breachConditionTypeCode": null,
+          "breachConditionTypeDescription": null,
+          "breachSentenceTypeCode": null,
+          "breachSentenceTypeDescription": null,
+          "responsibleOfficer": null,
+          "contactNumber": null,
+          "nextAppointmentType": null,
+          "nextAppointmentDate": null,
+          "nextAppointmentLocation": null,
+          "nextAppointmentOfficer": null,
+          "nextAppointmentContact": null,
+          "completedDate": null,
+          "offenderAddress": null,
+          "replyAddress": null,
+          "basicDetailsSaved": null,
+          "warningTypeSaved": null,
+          "warningDetailsSaved": null,
+          "nextAppointmentSaved": null,
+          "useDefaultAddress": null,
+          "useDefaultReplyAddress": null,
+          "breachNoticeContactList": [
+            {
+              "id": "00000000-0000-0000-0000-000000000017",
+              "breachNoticeId": "0adf652a-45eb-4203-8104-7bb4e62be6ce",
+              "contactDate": "2025-01-02T12:00:00.00",
+              "contactType": "Contact0Type",
+              "contactOutcome": "Contact0SubType",
+              "contactId": 0
+            }
+          ],
+          "breachNoticeRequirementList": []
+        },
+        "headers": {
+          "Content-Type": "application/json;charset=UTF-8"
+        },
+        "transformers": ["response-template"]
+      }
+    },
+    {
+      "request": {
+        "url": "/breach-notice-api/crlinks/bybreachnoticeid/0adf652a-45eb-4203-8104-7bb4e62be6ce",
+        "method": "GET"
+      },
+      "response": {
+        "status": 200,
+        "jsonBody": {
+          "contactRequirementList": []
+        },
+        "headers": {
+          "Content-Type": "application/json;charset=UTF-8"
+        },
+        "transformers": ["response-template"]
+      }
+    },
+    {
+      "request": {
+        "url": "/breach-notice-api/breach-notice/0adf652a-45eb-4203-8104-7bb4e62be6ce",
+        "method": "PUT"
+      },
+      "response": {
+        "status": 200
+      }
+    },
+    {
+      "request": {
+        "url": "/breach-notice-api/contact/bybreachnoticeid/0adf652a-45eb-4203-8104-7bb4e62be6ce",
+        "method": "GET"
+      },
+      "response": {
+        "status": 200
+      }
+    },
+    {
+      "request": {
+        "url": "/breach-notice-api/requirement/unlinkedrequirements/0adf652a-45eb-4203-8104-7bb4e62be6ce",
+        "method": "DELETE"
+      },
+      "response": {
+        "status": 200
+      }
+    },
+    {
+      "request": {
+        "url": "/breach-notice-api/requirement/recalculateFromToDate/0adf652a-45eb-4203-8104-7bb4e62be6ce",
+        "method": "PUT"
+      },
+      "response": {
+        "status": 200
+      }
+    },
+    {
+      "request": {
+        "url": "/breach-notice-api/contact/bybreachnoticeidanddeliusid/0adf652a-45eb-4203-8104-7bb4e62be6ce/0",
+        "method": "GET"
+      },
+      "response": {
+        "status": 200,
+        "jsonBody": {
+          "id": "00000000-0000-0000-0000-000000000001",
+          "breachNoticeId": "0adf652a-45eb-4203-8104-7bb4e62be6ce",
+          "contactDate": "01/01/1970",
+          "contactType": "string",
+          "contactOutcome": "string",
+          "contactId": 0
         },
         "headers": {
           "Content-Type": "application/json;charset=UTF-8"

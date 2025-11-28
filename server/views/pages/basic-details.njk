@@ -56,16 +56,12 @@
                 {% endset -%}
 
      {% include "pages/side-nav.njk" %}
-
             </div>
-
             <div class="govuk-grid-column-two-thirds">
 
               {% if not showEmbeddedError %}
 
-
                 {% include "partials/review-required.njk" %}
-
                 <h1 class="govuk-heading-l">Breach Notice - Basic Details</h1>
 
                 <h2 class="govuk-heading-m">Title and Full Name</h2>
@@ -76,7 +72,7 @@
 
                 <h2 class="govuk-heading-m">Postal Address</h2>
 
-                {% if defaultOffenderAddress or (basicDetails.addresses and basicDetails.addresses|length > 0) %}
+                {% if defaultOffenderAddress %}
                   <p id="postal-address">
                     {% if defaultOffenderAddress.buildingName %} {{ defaultOffenderAddress.buildingName }}
                       <br/>{% endif %}
@@ -87,7 +83,12 @@
                     {% if defaultOffenderAddress.county %} {{ defaultOffenderAddress.county }}<br/>{% endif %}
                     {% if defaultOffenderAddress.postcode %} {{ defaultOffenderAddress.postcode }}<br/>{% endif %}
                   </p>
+                {% endif %}
 
+
+
+{#                do we have alternate options to choose from?#}
+                {% if showAlternateOffenderAddressSection %}
                   {{ govukRadios({
                     name: "offenderAddressSelectOne",
                     fieldset: {
@@ -116,13 +117,14 @@
                       }
                     ]
                   }) }}
-                {% else %}
+                {% endif %}
+                {% if showOffenderAddressDeepLinkSection%}
                   <p id="no-address-message">No Postal Address found in National Delius</p>
                   <p id="no-address-supplementary-message">In order to complete a Breach Notice you must add an address to Delius.</p>
                   <p id="no-address-supplementary-message-2">Please use the below link to add an address.</p>
                   <p id="address-deeplink-message">
                     <a href="{{ addAddressDeeplink }}" target="_blank" id="addAddressDeeplink">
-                      click this hyperlink to open Delius in a new tab and check
+                      click this hyperlink to open a new tab to add an address to Delius
                     </a>
                   </p>
                   <p id="no-address-suffix">Once this is completed, click the Refresh from Delius button.</p>
@@ -141,8 +143,9 @@
                   {% if defaultReplyAddress.county %} {{ defaultReplyAddress.county }}<br/>{% endif %}
                   {% if defaultReplyAddress.postcode %} {{ defaultReplyAddress.postcode }}<br/>{% endif %}
                 </p>
+              {% endif %}
 
-                {% if not showReplyAddressAddButton and not showReplyAddressUpdateButton %}
+              {% if showAlternateReplyAddressSelectOptions %}
                 {{ govukRadios({
                   name: "replyAddressSelectOne",
                   fieldset: {
@@ -171,108 +174,113 @@
                     }
                   ]
                 }) }}
-                {% else %}
-
-                  {{ govukButton({
-                    text: "Update Address",
-                    type: "submit",
-                    name: "action",
-                    value: "addAddress",
-                    attributes: {
-                      id: "update-address-button"
-                    }
-                  }) }}
-                {% endif %}
-              {% else %}
-
-                {% if not showReplyAddressAddButton and not showReplyAddressUpdateButton %}
-                  {{ govukSelect({
-                    id: "alternate-reply-address",
-                    name: "alternateReplyAddress",
-                    label: {
-                      text: "Please specify the reply address that the Person on Probation should contact.",
-                      classes: "govuk-fieldset__legend--m"
-                    },
-                    items: replyAddressOptions
-                  }) }}
-                {% else %}
-                  <p id="AddAddressMessage">No reply address can be found for this responsible officer. Please add an
-                    address by selecting the button below</p>
-                  {{ govukButton({
-                    text: "Add Address",
-                    type: "submit",
-                    name: "action",
-                    value: "addAddress",
-                    attributes: {
-                      id: "add-address-button"
-                    }
-                  }) }}
-                {% endif %}
               {% endif %}
 
-                {{ mojDatePicker({
-                    id: "date-of-letter",
-                    name: "dateOfLetter",
-                    value: basicDetailsDateOfLetter,
-                    label: {
-                        text: "Date of letter",
-                        classes: "govuk-fieldset__legend--m"
-                    },
-                    hint: {
-                        text: "For example, 17/5/2024."
-                    },
-                    errorMessage: {
-                        text: errorMessages.dateOfLetter.text
-                    } if errorMessages.dateOfLetter.text
+
+              {% if showStandaloneReplyAddressSection %}
+                {{ govukSelect({
+                  id: "alternate-reply-address",
+                  name: "alternateReplyAddress",
+                  label: {
+                    text: "Please specify the reply address that the Person on Probation should contact.",
+                    classes: "govuk-fieldset__legend--m"
+                  },
+                  items: replyAddressOptions
+                }) }}
+              {% endif %}
+
+              {% if  showReplyAddressAddButton %}
+                <p id="AddAddressMessage">No reply address can be found for this responsible officer. Please add an
+                  address by selecting the button below</p>
+                {{ govukButton({
+                  text: "Add Address",
+                  type: "submit",
+                  name: "action",
+                  value: "addAddress",
+                  attributes: {
+                    id: "add-address-button"
+                  }
+                }) }}
+              {% endif %}
+
+              {% if showReplyAddressUpdateButton %}
+                {{ govukButton({
+                  text: "Update Address",
+                  type: "submit",
+                  name: "action",
+                  value: "addAddress",
+                  attributes: {
+                    id: "update-address-button"
+                  }
+                }) }}
+              {% endif %}
+
+
+
+
+              {{ mojDatePicker({
+                  id: "date-of-letter",
+                  name: "dateOfLetter",
+                  value: basicDetailsDateOfLetter,
+                  label: {
+                      text: "Date of letter",
+                      classes: "govuk-fieldset__legend--m"
+                  },
+                  hint: {
+                      text: "For example, 17/5/2024."
+                  },
+                  errorMessage: {
+                      text: errorMessages.dateOfLetter.text
+                  } if errorMessages.dateOfLetter.text
+              }) }}
+
+              {{ govukInput({
+                  label: {
+                      text: "Office Reference (if any)",
+                      classes: "govuk-label--m",
+                      isPageHeading: false
+                  },
+                  id: "office-reference",
+                  value: breachNotice.referenceNumber,
+                  classes: "govuk-input--width-30",
+                  name: "officeReference",
+                  errorMessage: {
+                      text: errorMessages.officeReferenceNumber.text
+                  } if errorMessages.officeReferenceNumber.text
+              }) }}
+
+              <div class="moj-button-group">
+                {{ govukButton({
+                  text: "Continue",
+                  preventDoubleClick: "true",
+                  type: "submit",
+                  attributes: {
+                    id: "continue-button"
+                  }
+                }) }}
+                {{ govukButton({
+                  text: "Save Progress and Close",
+                  type: "submit",
+                  name: "action",
+                  value: "saveProgressAndClose",
+                  classes: "govuk-button--secondary",
+                  attributes: {
+                    id: "close-button"
+                  }
                 }) }}
 
-                {{ govukInput({
-                    label: {
-                        text: "Office Reference (if any)",
-                        classes: "govuk-label--m",
-                        isPageHeading: false
-                    },
-                    id: "office-reference",
-                    value: breachNotice.referenceNumber,
-                    classes: "govuk-input--width-30",
-                    name: "officeReference",
-                    errorMessage: {
-                        text: errorMessages.officeReferenceNumber.text
-                    } if errorMessages.officeReferenceNumber.text
+                {{ govukButton({
+                  text: "Refresh from Delius",
+                  preventDoubleClick: "true",
+                  type: "submit",
+                  name: "action",
+                  value: "refreshFromNdelius",
+                  classes: "govuk-button--secondary",
+                  attributes: {
+                    id: "refresh-from-ndelius--button"
+                  }
                 }) }}
-
-                <div class="moj-button-group">
-                  {{ govukButton({
-                    text: "Continue",
-                    preventDoubleClick: "true",
-                    type: "submit",
-                    attributes: {
-                      id: "continue-button"
-                    }
-                  }) }}
-                  {{ govukButton({
-                    text: "Save Progress and Close",
-                    type: "submit",
-                    name: "action",
-                    value: "saveProgressAndClose",
-                    classes: "govuk-button--secondary",
-                    attributes: {
-                      id: "close-button"
-                    }
-                  }) }}
-
-                  {{ govukButton({
-                    text: "Refresh from Delius",
-                    preventDoubleClick: "true",
-                    type: "submit",
-                    name: "action",
-                    value: "refreshFromNdelius",
-                    classes: "govuk-button--secondary",
-                    attributes: {
-                      id: "refresh-from-ndelius--button"
-                    }
-                  }) }}
-                </div>
+              </div>
               {% endif %}
             </div>
 

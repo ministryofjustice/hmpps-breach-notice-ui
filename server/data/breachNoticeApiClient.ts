@@ -39,6 +39,130 @@ export default class BreachNoticeApiClient extends RestClient {
       path: `/breach-notice/${id}`,
     })
   }
+
+  async updateBreachNoticeContact(breachNoticeContact: BreachNoticeContact) {
+    return this.put({
+      path: `/contact/${breachNoticeContact.id}`,
+      data: breachNoticeContact as unknown as Record<string, unknown>,
+    })
+  }
+
+  async createBreachNoticeContact(breachNoticeContact: BreachNoticeContact): Promise<string> {
+    return this.post({
+      path: `/contact`,
+      data: breachNoticeContact as unknown as Record<string, unknown>,
+    })
+  }
+
+  async getBreachNoticeContact(id: string, deliusContactId: number): Promise<BreachNoticeContact> {
+    return this.get({
+      path: `/contact/bybreachnoticeidanddeliusid/${id}/${deliusContactId}`,
+    })
+  }
+
+  async getBreachNoticeContactsForBreachNotice(id: string): Promise<Array<BreachNoticeContact>> {
+    return this.get({
+      path: `/contact/bybreachnoticeid/${id}`,
+    })
+  }
+
+  async deleteBreachNoticeContact(breachContactId: string) {
+    return this.delete({
+      path: `/contact/${breachContactId}`,
+    })
+  }
+
+  async updateBreachNoticeRequirement(
+    id: string,
+    breachNoticeRequirement: BreachNoticeRequirement,
+  ): Promise<BreachNoticeRequirement> {
+    return this.put({
+      path: `/requirement/${id}`,
+      data: breachNoticeRequirement as unknown as Record<string, unknown>,
+    })
+  }
+
+  async createBreachNoticeRequirement(breachNoticeRequirement: BreachNoticeRequirement): Promise<string> {
+    return this.post({
+      path: `/requirement`,
+      data: breachNoticeRequirement as unknown as Record<string, unknown>,
+    })
+  }
+
+  async getContactRequirementLinks(id: string): Promise<Array<ContactRequirement>> {
+    return this.get({
+      path: `/crlinks/bybreachnoticeid/${id}`,
+    })
+  }
+
+  async getContactRequirementLinksWithContact(id: string, contactId: string): Promise<Array<ContactRequirement>> {
+    return this.get({
+      path: `/crlinks/bybreachnoticeidandcontactid/${id}/${contactId}`,
+    })
+  }
+
+  async addContactRequirementLink(crlink: ContactRequirement) {
+    return this.post({
+      path: `/crlinks`,
+      data: crlink as unknown as Record<string, unknown>,
+    })
+  }
+
+  async deleteContactRequirementLink(id: string) {
+    return this.delete({
+      path: `/crlinks/${id}`,
+    })
+  }
+
+  async deleteUnlinkedRequirements(id: string) {
+    return this.delete({
+      path: `/requirement/unlinkedrequirements/${id}`,
+    })
+  }
+
+  async recalculateRequirementFromToDate(breachNoticeId: string) {
+    return this.put({
+      path: `/requirement/recalculateFromToDate/${breachNoticeId}`,
+    })
+  }
+
+  async batchDeleteContacts(id: string, contactIds: Array<string>): Promise<void> {
+    const promises = []
+    for (const contactId of contactIds) {
+      promises.push(this.deleteBreachNoticeContact(contactId))
+    }
+    await Promise.all(promises)
+    await this.deleteUnlinkedRequirements(id)
+    await this.recalculateRequirementFromToDate(id)
+  }
+
+  async batchUpdateContacts(breachNoticeId: string, contacts: Array<BreachNoticeContact>): Promise<void> {
+    const promises = []
+    for (const contact of contacts) {
+      if (contact.id) {
+        promises.push(this.updateBreachNoticeContact(contact))
+      } else {
+        promises.push(this.createBreachNoticeContact(contact))
+      }
+    }
+    await Promise.all(promises)
+  }
+
+  async batchCreateContactRequirements(crlinks: Array<ContactRequirement>): Promise<void> {
+    const promises = []
+    for (const crlink of crlinks) {
+      promises.push(this.addContactRequirementLink(crlink))
+    }
+    await Promise.all(promises)
+  }
+
+  async batchDeleteContactRequirements(crlinks: Array<ContactRequirement>): Promise<void> {
+    const promises = []
+    for (const crlink of crlinks) {
+      promises.push(this.deleteContactRequirementLink(crlink.id))
+    }
+    await Promise.all(promises)
+  }
 }
 
 export interface BreachNotice {
@@ -117,11 +241,20 @@ export interface BreachNoticeAddress {
   postcode: string
 }
 
-export interface WarningDetailsRequirementSelectItem {
+export interface RequirementSelectItem {
   value: string
   text: string
   checked: boolean
   conditional: {
     html: string
   }
+}
+
+export interface ContactRequirement {
+  id?: string
+  breachNoticeId: string
+  contactId: string
+  contact: BreachNoticeContact
+  requirementId: string
+  requirement: BreachNoticeRequirement
 }

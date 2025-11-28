@@ -151,7 +151,51 @@
         }
       }
     },
-
+    {
+      "request": {
+        "urlPattern": "/basic-details/X032703/(.*)",
+        "method": "GET"
+      },
+      "response": {
+        "status": 200,
+        "jsonBody": {
+          "title": "Mr",
+          "name": {
+            "forename": "Terry",
+            "middleName": "The",
+            "surname": "Kid"
+          },
+          "addresses": [
+            {
+              "id": 1,
+              "status": "Brought",
+              "buildingName": null,
+              "buildingNumber": "281",
+              "streetName": "Postal rought Street",
+              "townCity": "Postinton",
+              "district": "Postrict",
+              "county": "County Post",
+              "postcode": "NE30 3ZZ"
+            },
+            {
+              "id": 3,
+              "status": "Default",
+              "buildingName": null,
+              "buildingNumber": "1a",
+              "streetName": "SET AS DEFAULT",
+              "townCity": "The One A",
+              "district": "The One A",
+              "county": "The One A",
+              "postcode": "MA30 31A"
+            }
+          ],
+          "replyAddresses": []
+        },
+        "headers": {
+          "Content-Type": "application/json;charset=UTF-8"
+        }
+      }
+    },
     {
       "request": {
         "urlPattern": "/basic-details/R111111/(.*)",
@@ -331,7 +375,207 @@
 
     {
       "request": {
+        "urlPattern": "/basic-details/X123123/(.*)",
+        "method": "GET"
+      },
+      "response": {
+        "status": 200,
+        "jsonBody": {
+          "title": "Dame",
+          "name": {
+            "forename": "breachNObreachcontactsFIRST",
+            "middleName": "second third",
+            "surname": "breachNObreachcontactsFAM"
+          },
+          "addresses": [
+            {
+              "id": 2500194547,
+              "status": "Main",
+              "buildingNumber": "36",
+              "streetName": "brdford street",
+              "postcode": "SG12 7UU"
+            },
+            {
+              "id": 2500196546,
+              "status": "Postal",
+              "buildingNumber": "3",
+              "streetName": "POSATAAALL"
+            },
+            {
+              "id": 2500196545,
+              "status": "Postal",
+              "buildingNumber": "2",
+              "streetName": "postal"
+            }
+          ],
+          "replyAddresses": []
+        },
+        "headers": {
+          "Content-Type": "application/json;charset=UTF-8"
+        }
+      }
+    },
+
+    {
+      "request": {
+        "urlPattern": "/basic-details/R658957/(.*)",
+        "method": "GET"
+      },
+      "response": {
+        "status": 200,
+        "jsonBody": {
+          "title": "Dame",
+          "name": {
+            "forename": "manually",
+            "middleName": "added",
+            "surname": "breplyaddress"
+          },
+          "addresses": [
+            {
+              "id": 2500194547,
+              "status": "Main",
+              "buildingNumber": "36",
+              "streetName": "brdford street",
+              "postcode": "SG12 7UU"
+            },
+            {
+              "id": 2500196546,
+              "status": "Postal",
+              "buildingNumber": "3",
+              "streetName": "POSATAAALL"
+            },
+            {
+              "id": 2500196545,
+              "status": "Postal",
+              "buildingNumber": "2",
+              "streetName": "postal"
+            }
+          ],
+          "replyAddresses": []
+        },
+        "headers": {
+          "Content-Type": "application/json;charset=UTF-8"
+        }
+      }
+    },
+
+    {
+      "request": {
         "urlPattern": "/basic-details/X012496/(.*)",
+        "method": "GET"
+      },
+      "response": {
+        "status": 200,
+        "jsonBody": {
+          "title": "Mr",
+          "name": {
+            "forename": "Billy",
+            "middleName": "The",
+            "surname": "Kid"
+          },
+          "addresses": [
+            {
+              "id": 1,
+              "status": "Postal",
+              "buildingName": null,
+              "buildingNumber": "281",
+              "streetName": "Postal Default Street",
+              "townCity": "Postinton",
+              "district": "Postrict",
+              "county": "County Post",
+              "postcode": "NE30 3ZZ"
+            },
+            {
+              "id": 2,
+              "status": "Main",
+              "buildingName": null,
+              "buildingNumber": "2789",
+              "streetName": "Main Street",
+              "townCity": "Maintown",
+              "district": "MainDistrict",
+              "county": "Maincounty",
+              "postcode": "MA30 3IN"
+            },
+            {
+              "id": 3,
+              "status": "Other",
+              "buildingName": null,
+              "buildingNumber": "1a",
+              "streetName": "The One A",
+              "townCity": "The One A",
+              "district": "The One A",
+              "county": "The One A",
+              "postcode": "MA30 31A"
+            }
+          ],
+          "replyAddresses": null
+        },
+        "headers": {
+          "Content-Type": "application/json;charset=UTF-8"
+        }
+      }
+    },
+
+    {
+      "request": {
+        "urlPattern": "/basic-details/X727272/(.*)",
+        "method": "GET"
+      },
+      "response": {
+        "status": 200,
+        "jsonBody": {
+          "title": "Mr",
+          "name": {
+            "forename": "Billy",
+            "middleName": "The",
+            "surname": "Kid"
+          },
+          "addresses": [
+            {
+              "id": 1,
+              "status": "Postal",
+              "buildingName": null,
+              "buildingNumber": "281",
+              "streetName": "Postal Default Street",
+              "townCity": "Postinton",
+              "district": "Postrict",
+              "county": "County Post",
+              "postcode": "NE30 3ZZ"
+            },
+            {
+              "id": 2,
+              "status": "Main",
+              "buildingName": null,
+              "buildingNumber": "2789",
+              "streetName": "Main Street",
+              "townCity": "Maintown",
+              "district": "MainDistrict",
+              "county": "Maincounty",
+              "postcode": "MA30 3IN"
+            },
+            {
+              "id": 3,
+              "status": "Other",
+              "buildingName": null,
+              "buildingNumber": "1a",
+              "streetName": "The One A",
+              "townCity": "The One A",
+              "district": "The One A",
+              "county": "The One A",
+              "postcode": "MA30 31A"
+            }
+          ],
+          "replyAddresses": null
+        },
+        "headers": {
+          "Content-Type": "application/json;charset=UTF-8"
+        }
+      }
+    },
+
+    {
+      "request": {
+        "urlPattern": "/basic-details/X727272/(.*)",
         "method": "GET"
       },
       "response": {
@@ -485,6 +729,65 @@
       "response": {
         "status": 200,
         "jsonBody": {
+          "enforceableContacts": [
+            {
+              "id": 0,
+              "datetime": "2025-01-01T12:34:56",
+              "description": "string",
+              "type": {
+                "code": "string",
+                "description": "string"
+              },
+              "outcome": {
+                "code": "string",
+                "description": "string"
+              },
+              "notes": "Tier Change Date: 09/09/2014\nTier: 1\nTier Change Reason: Initial Assessment"
+            },
+            {
+              "id": 1,
+              "datetime": "2025-02-02T12:00:00",
+              "description": "string",
+              "type": {
+                "code": "string",
+                "description": "string"
+              },
+              "outcome": {
+                "code": "string",
+                "description": "string"
+              },
+              "notes": "string"
+            },
+            {
+              "id": 2,
+              "datetime": "2025-01-01T12:34:56",
+              "description": "TEST",
+              "type": {
+                "code": "TEST",
+                "description": "TST"
+              },
+              "outcome": {
+                "code": "HMMMM",
+                "description": "HMMM"
+              },
+              "notes": "Hmmm yes, the floor here is made out of floor"
+            }
+          ]
+        },
+        "headers": {
+          "Content-Type": "application/json;charset=UTF-8"
+        }
+      }
+    },
+
+    {
+      "request": {
+        "urlPattern": "/warning-details/H123456/(.*?)",
+        "method": "GET"
+      },
+      "response": {
+        "status": 200,
+        "jsonBody": {
           "breachReasons": [
             {
               "code": "BR03",
@@ -544,12 +847,9 @@
               "id": 0,
               "type": {
                 "code": "string",
-                "description": "string"
+                "description": "one with null sub type"
               },
-              "subType": {
-                "code": "string",
-                "description": "string"
-              }
+              "subType": null
             },
             {
               "id": 2,
@@ -569,6 +869,7 @@
         }
       }
     },
+
     {
       "request": {
         "urlPattern": "/warning-details/GGG0001/(.*?)",
@@ -592,12 +893,6 @@
       "response": {
         "status": 200,
         "jsonBody": {
-          "breachReasons": [
-            {
-              "code": "BR03",
-              "description": "Attended late"
-            }
-          ],
           "enforceableContacts": null
         },
         "headers": {
@@ -614,12 +909,6 @@
       "response": {
         "status": 200,
         "jsonBody": {
-          "breachReasons": [
-            {
-              "code": "BR03",
-              "description": "Attended late"
-            }
-          ],
           "enforceableContacts": null
         },
         "headers": {
@@ -636,12 +925,6 @@
       "response": {
         "status": 200,
         "jsonBody": {
-          "breachReasons": [
-            {
-              "code": "BR03",
-              "description": "Attended late"
-            }
-          ],
           "enforceableContacts": [
             {
               "id": 0,
@@ -684,30 +967,6 @@
                 "description": "string"
               },
               "notes": "string"
-            }
-          ],
-          "requirements": [
-            {
-              "id": 0,
-              "type": {
-                "code": "string",
-                "description": "string"
-              },
-              "subType": {
-                "code": "string",
-                "description": "string"
-              }
-            },
-            {
-              "id": 1,
-              "type": {
-                "code": "string",
-                "description": "string"
-              },
-              "subType": {
-                "code": "string",
-                "description": "string"
-              }
             }
           ]
         },
@@ -724,16 +983,6 @@
       "response": {
         "status": 200,
         "jsonBody": {
-          "breachReasons": [
-            {
-              "code": "BR03",
-              "description": "Attended late"
-            },
-            {
-              "code": "BR04",
-              "description": "Another Reason"
-            }
-          ],
           "enforceableContacts": [
             {
               "id": 0,
@@ -777,30 +1026,6 @@
               },
               "notes": "string"
             }
-          ],
-          "requirements": [
-            {
-              "id": 0,
-              "type": {
-                "code": "REQ01",
-                "description": "Requirement Zero"
-              },
-              "subType": {
-                "code": "string",
-                "description": "string"
-              }
-            },
-            {
-              "id": 1,
-              "type": {
-                "code": "string",
-                "description": "string"
-              },
-              "subType": {
-                "code": "string",
-                "description": "string"
-              }
-            }
           ]
         },
         "headers": {
@@ -816,16 +1041,6 @@
       "response": {
         "status": 200,
         "jsonBody": {
-          "breachReasons": [
-            {
-              "code": "BR03",
-              "description": "Attended late"
-            },
-            {
-              "code": "BR04",
-              "description": "Another Reason"
-            }
-          ],
           "enforceableContacts": [
             {
               "id": 0,
@@ -868,30 +1083,6 @@
                 "description": "string"
               },
               "notes": "<script> new\nline"
-            }
-          ],
-          "requirements": [
-            {
-              "id": 0,
-              "type": {
-                "code": "REQ01",
-                "description": "Requirement Zero"
-              },
-              "subType": {
-                "code": "string",
-                "description": "string"
-              }
-            },
-            {
-              "id": 1,
-              "type": {
-                "code": "string",
-                "description": "string"
-              },
-              "subType": {
-                "code": "string",
-                "description": "string"
-              }
             }
           ]
         },
@@ -1522,6 +1713,111 @@
           },
           "addresses": [],
           "replyAddresses": []
+        },
+        "headers": {
+          "Content-Type": "application/json;charset=UTF-8"
+        }
+      }
+    },
+    {
+      "request": {
+        "urlPattern": "/requirements/(.*?)",
+        "method": "GET"
+      },
+      "response": {
+        "status": 200,
+        "jsonBody": {
+          "requirements": [
+            {
+              "id": 0,
+              "type": {
+                "code": "REQ01",
+                "description": "Requirement Zero"
+              }
+            },
+            {
+              "id": 167,
+              "type": {
+                "code": "string",
+                "description": "string"
+              },
+              "subType": {
+                "code": "string",
+                "description": "string"
+              }
+            },
+            {
+              "id": 2,
+              "type": {
+                "code": "STR",
+                "description": "A STRING"
+              },
+              "subType": {
+                "code": "SSTR",
+                "description": "A SUBSTRING"
+              }
+            }
+          ],
+          "breachReasons": [
+            {
+              "code": "BR03",
+              "description": "Attended late"
+            },
+            {
+              "code": "BR06",
+              "description": "Failed to comply"
+            },
+            {
+              "code": "BR04",
+              "description": "Did Not Comply"
+            }
+          ]
+        },
+        "headers": {
+          "Content-Type": "application/json;charset=UTF-8"
+        }
+      }
+    },
+    {
+      "request": {
+        "urlPattern": "/requirements/4c3dbcf0-f95d-4b67-b925-a0a5da1c1cd4",
+        "method": "GET"
+      },
+      "response": {
+        "status": 200,
+        "jsonBody": {
+          "requirements": [],
+          "breachReasons": []
+        },
+        "headers": {
+          "Content-Type": "application/json;charset=UTF-8"
+        }
+      }
+    },
+    {
+      "request": {
+        "urlPattern": "/requirements/12345678-7777-5555-500000000005",
+        "method": "GET"
+      },
+      "response": {
+        "status": 500,
+        "jsonBody": {
+          "message": "Some server side error occurred"
+        },
+        "headers": {
+          "Content-Type": "application/json;charset=UTF-8"
+        }
+      }
+    },
+    {
+      "request": {
+        "urlPattern": "/warning-details/X000119/(.*?)",
+        "method": "GET"
+      },
+      "response": {
+        "status": 200,
+        "jsonBody": {
+          "enforceableContacts": []
         },
         "headers": {
           "Content-Type": "application/json;charset=UTF-8"

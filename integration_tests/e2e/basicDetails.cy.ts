@@ -103,7 +103,7 @@ context('Basic Details page', () => {
     cy.url().should('include', '/check-your-report/')
   })
 
-  it('should show alternate field set if default address not present', () => {
+  it('should show alternate Reply Address choices if no default but alternates to choose from', () => {
     cy.visit('/basic-details/92eb37f7-e315-47ea-870a-7fb6eb6e5b0f')
     cy.url().should('include', '/basic-details')
     cy.contains('Please specify the reply address that the Person on Probation should contact.').should('exist')
@@ -141,6 +141,20 @@ context('Basic Details page', () => {
     cy.url().should('include', '/add-address')
   })
 
+  it('when address has been added manually and null returned for reply addresses from integration dont show alternate address section', () => {
+    cy.visit('/basic-details/29292929-29e3-45ba-2929-1b34bf7b2929')
+    cy.url().should('include', '/basic-details')
+    cy.get('#alternate-reply-address').should('not.exist')
+    cy.get('#update-address-button').should('exist').should('be.visible')
+  })
+
+  it('when address has been added manually and an empty list is returned for reply addresses from integration dont show alternate address section', () => {
+    cy.visit('/basic-details/12312312-29b1-45c1-2929-123123123123')
+    cy.url().should('include', '/basic-details')
+    cy.get('#alternate-reply-address').should('not.exist')
+    cy.get('#update-address-button').should('exist').should('be.visible')
+  })
+
   it('update address button should display when no default present or reply addresses and stored address id is -1', () => {
     cy.visit('/basic-details/12121212-12e3-45ba-9999-121212121212')
     cy.url().should('include', '/basic-details')
@@ -170,22 +184,37 @@ context('Basic Details page', () => {
     cy.contains(
       'Reply Address: The previously selected address is no longer available. Please select an alternative.',
     ).should('exist')
-    cy.get('#update-address-button').should('exist')
+    cy.get('#add-address-button').should('exist')
   })
 
   it('add address deeplink should appear when only no address available', () => {
     cy.visit('/basic-details/00000000-ff00-0000-0000-000000000001')
     cy.url().should('include', '/basic-details')
-    cy.get('#no-address-message').should('be.visible')
-    cy.get('#no-address-supplementary-message').should('be.visible')
-    cy.get('#no-address-supplementary-message-2').should('be.visible')
+    cy.get('#no-address-message')
+      .should('be.visible')
+      .should('contain.text', 'No Postal Address found in National Delius')
+    cy.get('#no-address-supplementary-message')
+      .should('be.visible')
+      .should('contain.text', 'In order to complete a Breach Notice you must add an address to Delius.')
+    cy.get('#no-address-supplementary-message-2')
+      .should('be.visible')
+      .should('contain.text', 'Please use the below link to add an address.')
     cy.get('#address-deeplink-message').should('be.visible')
     cy.get('#no-address-suffix').should('be.visible')
     cy.get('#postal-address').should('not.exist')
-    cy.get('#addAddressDeeplink').should(
-      'have.attr',
-      'href',
-      'http://localhost:7001/NDelius-war/delius/JSP/deeplink.xhtml?component=AddressandAccommodation&CRN=X100500',
-    )
+    cy.get('#addAddressDeeplink')
+      .should(
+        'have.attr',
+        'href',
+        'http://localhost:7001/NDelius-war/delius/JSP/deeplink.xhtml?component=AddressandAccommodation&CRN=X100500',
+      )
+      .should('contain.text', 'click this hyperlink to open a new tab to add an address to Delius')
+  })
+
+  it('should not clear a manually added address on save', () => {
+    cy.visit('/basic-details/987987987-000f-0000-bbd1-989898989898')
+    cy.url().should('include', '/basic-details')
+    cy.get('#reply-address').should('exist')
+    cy.get('#reply-address').should('be.visible')
   })
 })

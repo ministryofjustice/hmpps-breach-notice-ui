@@ -1,18 +1,61 @@
 context('Warning Details page', () => {
-  it('page will load with no enforceable contacts', () => {
+  it('page should load normally', () => {
     cy.visit('/warning-details/00000000-0000-0000-0000-000000000001')
     cy.url().should('include', '/warning-details/00000000-0000-0000-0000-000000000001')
+    cy.get('.govuk-heading-l').should('exist').should('contain.text', 'Warning Details')
   })
 
-  it('can show readonly value of condition being enforced', () => {
-    cy.visit('/warning-details/00000000-0000-0000-0000-000000000022')
-    cy.get('#condition-being-enforced').should('contain.text', 'a condition being enforced')
+  it('when existing contact checkbox is checked; notes, requirement details and update button shown', () => {
+    cy.visit('/warning-details/225244a2-74fc-4548-b55f-18526dec8046')
+    cy.url().should('include', '/warning-details/225244a2-74fc-4548-b55f-18526dec8046')
+    cy.get('#contact-0').should('exist')
+    cy.get('#contact-0').should('be.checked')
+    cy.get('#conditional-0').should('exist').should('be.visible')
+    cy.get('#conditional-0').should('contain.text', 'Requirements')
+    cy.get('#conditional-0')
+      .should('contain.text', 'Requirement0Type')
+      .should('contain.text', 'Requirement0RejectionReason')
+    cy.get('#updatereq-button').should('exist').should('be.visible')
+    cy.get('#updatereq-button')
+      .should('contain.text', 'Save Changes and Update Requirement')
+      .should('have.value', 'enforceablecontact_0')
+    cy.get('#updatereq-button').click()
+    cy.url().should('include', '/add-requirement')
   })
 
-  it('when a Requirement checkbox is checked, breach reasons dropdown appears', () => {
-    cy.visit('/warning-details/00000000-0000-0000-0000-000000000022')
-    cy.get('#failuresBeingEnforcedRequirements').check()
-    cy.get('#breachreason0').should('exist')
+  it('when new contact checkbox is checked; notes, message and add button shown', () => {
+    cy.visit('/warning-details/7a2e74a0-20f2-4a01-bbdd-7c22aeed555a')
+    cy.url().should('include', '/warning-details/7a2e74a0-20f2-4a01-bbdd-7c22aeed555a')
+    cy.get('#contact-0').should('exist')
+    cy.get('#contact-0').should('not.be.checked')
+    cy.get('#conditional-0').should('exist').should('not.be.visible')
+    cy.get('#contact-0').click()
+    cy.get('#conditional-0').should('exist').should('be.visible')
+    cy.get('#conditional-0').should('contain.text', 'Requirements')
+    cy.get('#conditional-0 p')
+      .should('contain.text', 'No requirements have been selected, in order to complete this form please use the below')
+      .should('contain.text', 'to add requirement')
+    cy.get('#updatereq-button').should('exist').should('be.visible')
+    cy.get('#updatereq-button')
+      .should('contain.text', 'Save Changes and Add Requirement')
+      .should('have.value', 'enforceablecontact_0')
+    cy.get('#updatereq-button').click()
+    cy.url().should('include', '/add-requirement')
+  })
+
+  it('failure notes twistie displayed and can be expanded', () => {
+    cy.visit('/warning-details/d2439e5f-355b-4284-a8ee-bda1a327338c')
+    cy.url().should('include', '/warning-details/d2439e5f-355b-4284-a8ee-bda1a327338c')
+    cy.get('#contact-0').should('exist')
+    cy.get('#contact-0').should('not.be.checked')
+    cy.get('#conditional-0').should('exist').should('not.be.visible')
+    cy.get('#contact-0').click()
+    cy.get('#conditional-0').should('exist').should('be.visible')
+    cy.get('.govuk-details__summary-text').should('exist').should('be.visible')
+    cy.get('.govuk-details__summary-text').should('contain.text', 'View failure notes')
+    cy.get('.govuk-details__summary-text').first().click()
+    cy.get('.govuk-details__text').should('exist').should('be.visible')
+    cy.get('.govuk-details__text').should('contain.text', 'Tier Change Reason: Initial Assessment')
   })
 
   it('entering a date in an invalid format causes a validation error', () => {
@@ -29,26 +72,22 @@ context('Warning Details page', () => {
     cy.visit('/warning-details/f1234567-12e3-45ba-ba67-1b34bf7b009d')
     cy.url().should('include', '/warning-details/f1234567-12e3-45ba-ba67-1b34bf7b009d')
     cy.get('#no-enforceable-contacts-message').should('contain.text', 'No failures to display')
-    cy.get('#no-requirements-message').should('contain.text', 'No failures being enforced to display')
   })
 
-  it('should only show unique requirements when multiple contacts point at the same requirement', () => {
-    cy.visit('/warning-details/f1234567-12e3-45ba-ba67-1b34bf799999')
-    cy.url().should('include', '/warning-details/f1234567-12e3-45ba-ba67-1b34bf799999')
-    cy.get('input[type="checkbox"]').as('checkboxes')
-    cy.get('@checkboxes').should('have.length', 2)
-  })
-
-  it('should remember the saved failure reason for the requirement', () => {
+  it('should remember the saved contacts via contact entries', () => {
     cy.visit('/warning-details/c8888888-12e3-45ba-ba67-1b34bf7b8888')
     cy.url().should('include', '/warning-details/c8888888-12e3-45ba-ba67-1b34bf7b8888')
-    cy.get('#breachreason0').should('exist')
-    cy.get('#breachreason0').find('option:selected').should('have.text', 'Another Reason')
+    cy.get('#contact-0').should('exist')
+    cy.get('#contact-0').should('be.checked')
+    cy.get('#conditional-0').should('exist').should('be.visible')
+    cy.get('#contact-1').should('exist').should('not.be.checked')
+    cy.get('#conditional-1').should('exist').should('not.be.visible')
   })
 
   it('should load when enforceable contacts have no notes specified', () => {
     cy.visit('/warning-details/d3333333-12e3-45ba-ba67-1b34bf7b3333')
     cy.url().should('include', '/warning-details/d3333333-12e3-45ba-ba67-1b34bf7b3333')
+    cy.get('.govuk-heading-l').should('exist').should('contain.text', 'Warning Details')
   })
 
   it('should escape the text and show new lines correctly', () => {
@@ -113,5 +152,23 @@ context('Warning Details page', () => {
     cy.get('#furtherReasonDetails-error')
       .should('exist')
       .should('contain.text', 'Further reason details: Please use 4000 characters or less for this field.')
+  })
+
+  it('should retain contact information when contact is no longer returned by api', () => {
+    cy.visit('/warning-details/0adf652a-45eb-4203-8104-7bb4e62be6ce')
+    cy.url().should('include', '/warning-details')
+    cy.get('.govuk-heading-l').should('exist').should('contain.text', 'Warning Details')
+    cy.get('#contact-0').should('exist')
+    cy.get('#contact-0').should('be.checked')
+    cy.get('label[for="contact-0"]')
+      .should('contain.text', '2/1/2025')
+      .should('contain.text', 'Contact0Type')
+      .should('contain.text', 'Contact0SubType')
+    cy.get('#updatereq-button').should('exist').should('be.visible')
+    cy.get('#updatereq-button')
+      .should('contain.text', 'Save Changes and Add Requirement')
+      .should('have.value', 'enforceablecontact_0')
+    cy.get('#updatereq-button').click()
+    cy.url().should('include', '/add-requirement')
   })
 })
