@@ -22,7 +22,6 @@
       { text: errorMessages.furtherReasonDetails.text, href: "#furtherReasonDetails" } if errorMessages.furtherReasonDetails else None,
       { text: errorMessages.genericErrorMessage.text, href: "#" } if errorMessages.genericErrorMessage else None
     ] | reject("undefined") %}
-
     {% if errorMessages | length > 0 %}
       {% from "govuk/components/error-summary/macro.njk" import govukErrorSummary %}
       {{ govukErrorSummary({ titleText: "There is a problem", errorList: errorList }) }}
@@ -31,6 +30,18 @@
 
     <div class="govuk-grid-row">
       <div class="govuk-grid-column-one-third">
+        {% set alternateAddressHtml %}
+          HELLO HELLO
+{#          {{ govukSelect({#}
+{#            id: "alternate-address",#}
+{#            name: "alternateAddress",#}
+{#            label: {#}
+{#              text: "Please pick an alternative postal address",#}
+{#              classes: "govuk-fieldset__legend--m"#}
+{#            },#}
+{#            items: alternateAddressOptions#}
+{#          }) }}#}
+        {% endset -%}
         {% include "pages/side-nav.njk" %}
       </div>
       <div class="govuk-grid-column-two-thirds">
@@ -46,22 +57,100 @@
         <h2 class="govuk-heading-m">
           Select the failures required on this order
         </h2>
+
+          HERE2 - works if here
+
+
+
+
+
           {% if warningDetails.enforceableContacts | length > 0 %}
             <div class="govuk-form-group">
               <fieldset class="govuk-fieldset">
+                <p>Works here too</p>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
                 <div class="govuk-checkboxes" data-module="govuk-checkboxes">
                   {% for failure in warningDetails.enforceableContacts %}
                     <div class="govuk-checkboxes__item">
-                      <input class="govuk-checkboxes__input" id="contact-{{ failure.id }}" name="contact" {% if failure.id in existingContacts %}checked="checked"{% endif %}
-                             type="checkbox" value="{{ failure.id }}" data-aria-controls="conditional-{{ failure.id }}">
+
+                      <input class="govuk-checkboxes__input"
+                             id="contact-{{ failure.id }}"
+                             name="contact" {% if failure.id in existingContacts %}checked="checked"{% endif %}
+                             type="checkbox"
+                             value="{{ failure.id }}" data-aria-controls="conditional-{{ failure.id }}">
                       <label class="govuk-label govuk-checkboxes__label" for="contact-{{ failure.id }}">
                         {% set failureHtml = failure.notes | escape | nl2br | safe %}
                         {{ failure.datetime | toUserDate }}, {{ failure.type.description }}, {{ failure.outcome.description }}
                       </label>
+
+
+
                     </div>
+
+
+
+
+
                     <div class="govuk-checkboxes__conditional govuk-checkboxes__conditional--hidden"
                          id="conditional-{{ failure.id }}">
+
+
+
+
+
+
+
+
+
                       <div class="govuk-form-group">
+
+                        {{ govukRadios({
+                          name: "wholeSentence-"+failure.id,
+                          fieldset: {
+                            legend: {
+                              text: "Does this apply to the whole sentence?",
+                              isPageHeading: false,
+                              classes: "govuk-fieldset__legend--m"
+                            }
+                          },
+                          hint: {
+                            text: "Select one option"
+                          },
+                          items: [
+                            {
+                              value: "Yes",
+                              text: "Yes",
+                              checked: breachNotice.useDefaultAddress
+                            },
+                            {
+                              value: "No",
+                              text: "No, I would like to use a different posy ",
+                              checked: breachNotice.useDefaultAddress === false,
+                              conditional: {
+                              html: alternateAddressHtml
+                            }
+                            }
+                          ]
+                        }) }}
+
+
+
+
+
                         {{ govukDetails({
                           summaryText: "View failure notes",
                           html: failureHtml
