@@ -137,11 +137,18 @@ export default class BreachNoticeApiClient extends RestClient {
   }
 
   async batchUpdateContacts(breachNoticeId: string, contacts: Array<BreachNoticeContact>): Promise<void> {
+    const hasContacts: boolean = Object.keys(contacts).length > 0
+
+    if(!hasContacts){
+      console.log("trying to push contacts when we have none")
+    }
     const promises = []
     for (const contact of contacts) {
       if (contact.id) {
+        console.log("SENDING A CONTACT TO BE UPDATED")
         promises.push(this.updateBreachNoticeContact(contact))
       } else {
+        console.log("SENDING A CONTACT TO BE CREATED")
         promises.push(this.createBreachNoticeContact(contact))
       }
     }
@@ -203,6 +210,7 @@ export interface BreachNotice {
   conditionBeingEnforced: string
   selectNextAppointment: boolean
   furtherReasonDetails: string
+
 }
 
 export interface BreachNoticeContact {
@@ -214,6 +222,8 @@ export interface BreachNoticeContact {
   contactType: string
   contactOutcome: string
   contactId: number
+  wholeSentence?: boolean
+  rejectionReason?: string
 }
 
 export interface BreachNoticeRequirement {
@@ -248,6 +258,11 @@ export interface RequirementSelectItem {
   conditional: {
     html: string
   }
+}
+
+export interface WholeSentenceContactRequirementReason {
+  contactId: string
+  rejectionReason: string
 }
 
 export interface ContactRequirement {
