@@ -61,36 +61,12 @@
         <h2 class="govuk-heading-m">
           Select the failures required on this order
         </h2>
-
-          HERE2 - works if here
-
-
-
-
-
           {% if warningDetails.enforceableContacts | length > 0 %}
             <div class="govuk-form-group">
               <fieldset class="govuk-fieldset">
-                <p>Works here too</p>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
                 <div class="govuk-checkboxes" data-module="govuk-checkboxes">
                   {% for failure in warningDetails.enforceableContacts %}
                     <div class="govuk-checkboxes__item">
-
                       <input class="govuk-checkboxes__input"
                              id="contact-{{ failure.id }}"
                              name="contact" {% if failure.id in existingContacts %}checked="checked"{% endif %}
@@ -100,26 +76,9 @@
                         {% set failureHtml = failure.notes | escape | nl2br | safe %}
                         {{ failure.datetime | toUserDate }}, {{ failure.type.description }}, {{ failure.outcome.description }}
                       </label>
-
-
-
                     </div>
-
-
-
-
-
                     <div class="govuk-checkboxes__conditional govuk-checkboxes__conditional--hidden"
                          id="conditional-{{ failure.id }}">
-
-
-
-
-
-
-
-
-
                       <div class="govuk-form-group">
 
                         {% set optionalRegistrationsHtml %}
@@ -168,25 +127,7 @@
                             label: {
                               text: "Please select a failure reason"
                             },
-                            items: [
-                              {
-                                value: "published",
-                                text: "Recently published"
-                              },
-                              {
-                                value: "updated",
-                                text: "Recently updated",
-                                selected: true
-                              },
-                              {
-                                value: "views",
-                                text: "Most views"
-                              },
-                              {
-                                value: "comments",
-                                text: "Most comments"
-                              }
-                            ]
+                            items: failure.rejectionReasons
                           }) }}
                         {% endset -%}
 
@@ -208,7 +149,7 @@
                             {
                               value: "Yes",
                               text: "Yes",
-                              checked: failure.wholeSentence,
+                              checked: failure.wholeSentence == true,
                               conditional: {
                               html: wholeTermSelect
                             }
@@ -216,21 +157,13 @@
                             {
                               value: "No",
                               text: "No",
-                              checked: failure.wholeSentence === false,
+                              checked: failure.wholeSentence == false,
                               conditional: {
                               html: optionalRegistrationsHtml
                             }
                             }
                           ]
                         }) }}
-
-
-
-
-
-
-
-
                       </div>
                     </div>
                   {% endfor %}
