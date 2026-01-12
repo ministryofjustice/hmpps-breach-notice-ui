@@ -196,20 +196,12 @@ export default function warningDetailsRoutes(
 
 
   router.post('/warning-details/:id', async (req, res, next) => {
-
     // Get a list of enforceable contacts that have been ticked / selected
     const selectedContactList = asArray(req.body.contact)
     const processedItems: string[] = []
     // final list to push
     const contactsToPush: BreachNoticeContact[] = []
-    console.log("############ SELECTED CONTACTS COMING UP")
-    console.log(selectedContactList)
 
-    // What we want the outcome to be
-    // 1) If whole sentence is set to Yes or No we want to transmit it
-    // all whole sentence values from all enforceable contacts will always be passed through
-    // we must only act upon ones which accompany a ticked enforceable contact
-    // if they are not ticked and were previously ticked the contacts will be deleted
     let rawEnforceableContactWholeSentenceBooleanValues = Object.entries(req.body)
       .filter(([key]) => key.startsWith("wholeSentence-"))
 
@@ -218,59 +210,6 @@ export default function warningDetailsRoutes(
 
     let filteredContactWholeSentenceRejectionReasonList:Array<WholeSentenceContactRequirementReason> = filterSelectedWholeSentenceValuesAndAddWholeSentenceRejectionInformation(selectedContactList, rawEnforceableContactWholeSentenceBooleanValues, wholeSentenceContactsAndReasons)
     const hasWholeSentenceSelectedContacts: boolean = filteredContactWholeSentenceRejectionReasonList && Object.keys(filteredContactWholeSentenceRejectionReasonList).length > 0
-
-    //In order to use the above we need a list of selected enforceable contacts. WE NEED THE CONTACT ARRAY
-
-    // let wholeSentenceContactRequirementReasonList: Array<WholeSentenceContactRequirementReason> = []
-    // let wholeSentenceYesSelectedContactIds: string[] = []
-    // let wholeSentenceNoSelectedContactIds: string[] = []
-
-
-    // if(hasWholeSentenceSelectedContacts) {
-    //   for(let key in rawEnforceableContactWholeSentenceBooleanValues) {
-    //     //this is an array with 2 items, they key and the value
-    //     const wholeSentenceSelectedContact = rawEnforceableContactWholeSentenceBooleanValues[key]
-    //     const contactId: string = wholeSentenceSelectedContact[0].split("-")[1]
-    //     const wholeSentenceSelectionValue: string = wholeSentenceSelectedContact[1] as unknown as string
-    //
-    //     if(wholeSentenceSelectionValue == "Yes") {
-    //       console.log("Pushing a Yes contact ID")
-    //       wholeSentenceYesSelectedContactIds.push(contactId)
-    //     }
-    //     else {
-    //       console.log("Pushing a No contact ID")
-    //       wholeSentenceNoSelectedContactIds.push(contactId)
-    //     }
-    //   }
-    //
-    //   for(let key in wholeSentenceContactsAndReasons) {
-    //     const wholeSentenceSelectedContact = wholeSentenceContactsAndReasons[key]
-    //     const contactId: string = wholeSentenceSelectedContact[0].split("_")[1]
-    //     const rejectionReason: string = wholeSentenceSelectedContact[1] as unknown as string
-    //
-    //
-    //     if(wholeSentenceYesSelectedContactIds.includes(contactId) ) {
-    //       //we have all we need here to update the contact
-    //       wholeSentenceContactRequirementReasonList.push({
-    //         contactId: contactId,
-    //         rejectionReason: rejectionReason,
-    //         wholeSentenceSelected: true,
-    //       })
-    //     }
-    //
-    //     if(wholeSentenceNoSelectedContactIds.includes(contactId) ) {
-    //       //we have all we need here to update the contact
-    //       wholeSentenceContactRequirementReasonList.push({
-    //         contactId: contactId,
-    //         rejectionReason: rejectionReason,
-    //         wholeSentenceSelected: false,
-    //       })
-    //     }
-    //
-    //   }
-    // }
-
-
     const { id } = req.params
     const token = await hmppsAuthClient.getSystemClientToken(res.locals.user.username)
     const breachNoticeApiClient = new BreachNoticeApiClient(token)
@@ -356,33 +295,21 @@ export default function warningDetailsRoutes(
       // we will use these to detect contact information to push
       const breachNoticeContactIds = breachNotice.breachNoticeContactList.map(c => c.contactId.toString())
 
-
-
       // Deal with WHole Sentence Contacts first
       if(hasWholeSentenceSelectedContacts) {
-        console.log("About to output the filtered list")
-        console.log(filteredContactWholeSentenceRejectionReasonList)
-
         //Convert default export to named
         for(const wholeSentenceContactRequirementReason of filteredContactWholeSentenceRejectionReasonList){
           if(breachNoticeContactIds.includes(wholeSentenceContactRequirementReason.contactId)) {
-            //we know its in the existing list,
-            // see if the information has changed and if it, copy updated information to the contact has push to the update queue
-            //just get the real contact
             const existingBreachNoticeContactListMatchingContactId: BreachNoticeContact[] = breachNotice.breachNoticeContactList.filter(brc => JSON.stringify(brc.contactId) == wholeSentenceContactRequirementReason.contactId)
             if(Object.keys(existingBreachNoticeContactListMatchingContactId).length > 0) {
               const currentExistingBreachNoticeContact: BreachNoticeContact = existingBreachNoticeContactListMatchingContactId[0]
-
-              //TODO: JUST PUSH THEM
               currentExistingBreachNoticeContact.wholeSentence = wholeSentenceContactRequirementReason.wholeSentenceSelected
               currentExistingBreachNoticeContact.rejectionReason = wholeSentenceContactRequirementReason.rejectionReason
               contactsToPush.push(currentExistingBreachNoticeContact)
               processedItems.push(JSON.stringify(currentExistingBreachNoticeContact.contactId))
             }
-
           }
 
-          //#########################################################
           // we have dealt with the whole sentence contacts now deal with newly added contacts
           if (breachNoticeContactIds && !breachNoticeContactIds.includes(wholeSentenceContactRequirementReason.contactId)) {
             // we are finding the selected contact in the list of enforceable contacts returned from the integration point
@@ -398,25 +325,10 @@ export default function warningDetailsRoutes(
       }
 
       // deal with edge case where contact selected but nothing selected for whole sentence
-      // loop the main list here
-      // TODO: remove the processed contacts
       if(contactsToPush && Object.keys(contactsToPush).length > 0) {
-
-
-
         if(selectedContactList && Object.keys(selectedContactList).length > 0) {
-
           const remainderList: string[] = []
 
-
-          //we have a list of processsed items
-
-          //we have a list of selected items
-
-          // al we need to do is subtract the processed from selected
-
-          // loop through selected list
-          // only add tgo other list if its not in the found list
           for(const strToCheck of selectedContactList) {
             // include not forking and filter not working
             if(!processedItems.includes(strToCheck)) {
@@ -424,157 +336,25 @@ export default function warningDetailsRoutes(
             }
           }
 
-
-          console.log("Here is the original list")
-          console.log(selectedContactList)
-
-          console.log("here are the processed items")
-          console.log(processedItems)
-
-          console.log("Here is the remainder list")
-          console.log(remainderList)
-
           // process any unprocesed items
           if(remainderList && Object.keys(remainderList).length > 0) {
 
             for(const remaindKey in remainderList) {
               const theRemainingContactIdToSearchFor = remainderList[remaindKey]
-              console.log("looking for the following contact")
-              console.log(remainderList[remaindKey])
-
-
-
               const enforceableContactToConvertAndProcess = warningDetails.enforceableContacts?.find(ef => JSON.stringify(ef.id) === theRemainingContactIdToSearchFor)
 
               if(enforceableContactToConvertAndProcess) {
-                console.log("Should hAVE AN ENMGFORCEABLE CONTACT HERE next")
-                console.log(enforceableContactToConvertAndProcess)
-                console.log("Should hAVE AN CONVERTED ENMGFORCEABLE CONTACT HERE next")
                 const convertedRemainder = enforceableContactToContact(breachNotice, enforceableContactToConvertAndProcess)
                 convertedRemainder.wholeSentence = null
-                console.log(convertedRemainder)
                 contactsToPush.push(convertedRemainder)
               }
-
             }
           }
         }
       }
 
-      console.log("ABOUT TO UPDATE / ADD the follwoing contacts")
-      console.log(contactsToPush)
       await breachNoticeApiClient.batchUpdateContacts(breachNotice.id, contactsToPush)
       breachNotice.breachNoticeContactList = await breachNoticeApiClient.getBreachNoticeContactsForBreachNotice(id)
-
-
-
-
-
-
-      //##################################################################################
-
-      // if (selectedContactList && Object.keys(selectedContactList).length > 0) {
-      //   const contactsToPush: BreachNoticeContact[] = []
-      //   const contactsToUpdateWholeSentenceInformation: BreachNoticeContact[] = []
-      //
-      //
-      //   for (const selectedContactId of selectedContactList) {
-      //     // check if any of the contacts previously saved have had whole sentence applied
-      //     // here we are in the context of a selected contact loop
-      //     if(breachNoticeContactIds && breachNoticeContactIds.includes(selectedContactId)) {
-      //       const selectedIdAsNumber: number = parseInt(selectedContactId)
-      //       //check if the value has changed for whole life
-      //       // find current value for whole life
-      //       if(Object.keys(breachNotice.breachNoticeContactList).length > 0) {
-      //         const existingBreachNoticeContactListMatchingContactId: BreachNoticeContact[] = breachNotice.breachNoticeContactList.filter(brc => brc.contactId === selectedIdAsNumber)
-      //         if(Object.keys(existingBreachNoticeContactListMatchingContactId).length > 0) {
-      //           // we have found an existing breach notice contact that is also selected on screen
-      //           // check to see if any whole sentence information has changed since it was last saved
-      //           const currentBreachNoticeContact: BreachNoticeContact = existingBreachNoticeContactListMatchingContactId[0]
-      //           const contactIdAsString : string = JSON.stringify(currentBreachNoticeContact.contactId)
-      //           // we know that this particular contact now has whole sentence information
-      //           // all contacts will now have whole sentence information
-      //           // TODO: might need next linbe re-enabling
-      //           // if(wholeSentenceYesSelectedContactIds.includes(contactIdAsString)) {
-      //             const selectedWholeSentenceContactReason : WholeSentenceContactRequirementReason = wholeSentenceContactRequirementReasonList.filter(wsc => wsc.contactId === contactIdAsString)[0]
-      //             // we have a current selected reason
-      //             if(selectedWholeSentenceContactReason) {
-      //
-      //               //if anything has changed
-      //               if(!currentBreachNoticeContact.wholeSentence || (currentBreachNoticeContact.rejectionReason !== selectedWholeSentenceContactReason.rejectionReason)) {
-      //                 //we have one to update
-      //                 currentBreachNoticeContact.rejectionReason = selectedWholeSentenceContactReason.rejectionReason
-      //
-      //                 //TODO: we are always setting to true here which is wrong
-      //                 // Need to use yes or no selected here
-      //                 currentBreachNoticeContact.wholeSentence = selectedWholeSentenceContactReason.wholeSentenceSelected
-      //                 contactsToUpdateWholeSentenceInformation.push(currentBreachNoticeContact)
-      //
-      //                 console.log("PUSHING A CONTACT")
-      //                 console.log(currentBreachNoticeContact)
-      //               }
-      //             }
-      //           // }
-      //
-      //
-      //
-      //
-      //
-      //         }
-      //       }
-      //     }
-      //
-      //     // This next section is around storing new contacts, we also need to store the whole sentence information if applicable
-      //     if (breachNoticeContactIds && !breachNoticeContactIds.includes(selectedContactId)) {
-      //       // we are finding the selected contact in the list of enforceable contacts returned from the integration point
-      //       const selectedContact = warningDetails.enforceableContacts.find(c => c.id.toString() === selectedContactId)
-      //       let convertedBreachNoticeContact = enforceableContactToContact(breachNotice, selectedContact)
-      //       const selectedContactIdString = JSON.stringify(convertedBreachNoticeContact.contactId)
-      //
-      //       if(wholeSentenceYesSelectedContactIds.includes(selectedContactIdString)) {
-      //         const selectedWholeSentenceContactReason : WholeSentenceContactRequirementReason = wholeSentenceContactRequirementReasonList.filter(wsc => wsc.contactId === selectedContactIdString)[0]
-      //         convertedBreachNoticeContact.wholeSentence = true
-      //         convertedBreachNoticeContact.rejectionReason = selectedWholeSentenceContactReason.rejectionReason
-      //       }
-      //       contactsToPush.push(convertedBreachNoticeContact)
-      //     }
-      //   }
-      //
-      //   // add the whole sentence contact update to the push queue
-      //   if(contactsToUpdateWholeSentenceInformation && Object.keys(contactsToUpdateWholeSentenceInformation).length > 0) {
-      //     for (const wholeSentenceContact of contactsToUpdateWholeSentenceInformation) {
-      //       contactsToPush.push(wholeSentenceContact)
-      //     }
-      //   }
-      //
-      //   await breachNoticeApiClient.batchUpdateContacts(breachNotice.id, contactsToPush)
-      //   breachNotice.breachNoticeContactList = await breachNoticeApiClient.getBreachNoticeContactsForBreachNotice(id)
-      // }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
       if (req.body.action === 'refreshFromNdelius') {
         // redirect to warning details to force a reload
