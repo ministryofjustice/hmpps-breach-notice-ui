@@ -280,7 +280,7 @@ export default function warningDetailsRoutes(
       }
     }
 
-    const errorMessages: ErrorMessages = validateWarningDetails(breachNotice, req.body.responseRequiredByDate)
+    const errorMessages: ErrorMessages = validateWarningDetails(breachNotice, req.body.responseRequiredByDate, filteredContactWholeSentenceRejectionReasonList)
     const hasErrors: boolean = Object.keys(errorMessages).length > 0
 
     //get list of existing contact ids which have already been saved
@@ -386,6 +386,43 @@ export default function warningDetailsRoutes(
     } else {
       const contactListDeeplink = `${config.ndeliusDeeplink.url}?component=ContactList&CRN=${breachNotice.crn}`
       const { furtherReasonDetails } = breachNotice
+
+      //we need to re-apply selections
+      // wholeSentenceContactRequirementReasonList
+      // This part is for screen selected contacts it adds to the current selections
+      if(selectedContactList && Object.keys(selectedContactList).length > 0) {
+        for(const selectedContact of selectedContactList) {
+          if(!existingContacts.includes(parseInt(selectedContact))){
+            existingContacts.push(parseInt(selectedContact))
+          }
+        }
+      }
+
+      //deal with whole sentence
+      if(filteredContactWholeSentenceRejectionReasonList && Object.keys(filteredContactWholeSentenceRejectionReasonList).length > 0){
+        if(warningDetails.enforceableContacts && Object.keys(warningDetails.enforceableContacts).length > 0) {
+
+          //we have enforceable contacts
+          for(const currentEnforceableContact of warningDetails.enforceableContacts) {
+            //see if we have wholeSentenceInformation to recover
+            const wholeSentenceDetail = filteredContactWholeSentenceRejectionReasonList.find(ws => JSON.stringify(currentEnforceableContact.id) === ws.contactId)
+
+            currentEnforceableContact.wholeSentence = wholeSentenceDetail?.wholeSentenceSelected
+
+            currentEnforceableContact.rejectionReasons = [          {
+              text: 'Please Select',
+              value: '-1',
+              selected: false,
+            },
+              ... warningDetails.breachReasons.map(r => ({
+                value: r.description,
+                text: r.description,
+                selected: wholeSentenceDetail?.rejectionReason === r.description
+              }))]
+          }
+        }
+      }
+
       res.render(`pages/warning-details`, {
         breachNotice,
         warningDetails,
@@ -400,7 +437,7 @@ export default function warningDetailsRoutes(
     }
   })
 
-  function validateWarningDetails(breachNotice: BreachNotice, responseRequiredByDate: string): ErrorMessages {
+  function validateWarningDetails(breachNotice: BreachNotice, responseRequiredByDate: string, wholeSentenceContactRequirementReasonList: Array<WholeSentenceContactRequirementReason>): ErrorMessages {
     const errorMessages: ErrorMessages = {}
     const currentDateAtStartOfTheDay: LocalDateTime = LocalDate.now().atStartOfDay()
     try {
@@ -430,6 +467,17 @@ export default function warningDetailsRoutes(
         }
       }
     }
+
+    if (wholeSentenceContactRequirementReasonList && Object.keys(wholeSentenceContactRequirementReasonList).length > 0) {
+      for(const wholeSentence of wholeSentenceContactRequirementReasonList) {
+        if(wholeSentence.rejectionReason === "-1") {
+          errorMessages.wholeSentenceNoFailureReason = {
+            text: 'Please select a valid failure reason for each failure selected'
+          }
+        }
+      }
+    }
+
     return errorMessages
   }
 
