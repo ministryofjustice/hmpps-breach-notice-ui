@@ -144,7 +144,7 @@ export default function warningDetailsRoutes(
   })
 
 
-  function filterSelectedWholeSentenceValues (selectedContactList: string[], wholeSentenceInformationList: [string, unknown][]): Array<WholeSentenceContactRequirementReason> {
+  function filterSelectedWholeSentenceValuesAndAddWholeSentenceRejectionInformation (selectedContactList: string[], wholeSentenceInformationList: [string, unknown][], rejectionReasonWholeSentenceList: [string, unknown][]): Array<WholeSentenceContactRequirementReason> {
     let wholeSentenceContactRequirementReasonList: Array<WholeSentenceContactRequirementReason> = []
 
     // if we have no enforceable contacts selected then return null
@@ -159,20 +159,47 @@ export default function warningDetailsRoutes(
       return null
     }
 
+    /// ###############################
+
+
+
+
+    /// ###############################
+
+    console.log("###IM IN THE METHOD, ABOUT TO OUPUT WHATS NOW IN THE LIST WHICH SHOULD HAVE A REASON!")
+    console.log(rejectionReasonWholeSentenceList)
+
+
+
     // we have a list of selected contact ids and a list of whole sentence information, perform the filter
     for (const selectedContactId of selectedContactList) {
       for(let key in wholeSentenceInformationList) {
+
         //this is an array with 2 items, they key and the value
         const wholeSentenceSelectedContact = wholeSentenceInformationList[key]
+        console.log(wholeSentenceSelectedContact)
         const contactId: string = wholeSentenceSelectedContact[0].split("-")[1]
         const wholeSentenceSelectionValue: string = wholeSentenceSelectedContact[1] as unknown as string
 
         if(selectedContactId === contactId) {
+          console.log("###GETTING ASSOCIATED REJECTION REASON")
+          let transmittedRejectionReason: string = null
+
+          // get the reason selected
+          for(let reasonKey in rejectionReasonWholeSentenceList) {
+            const reasonItem = rejectionReasonWholeSentenceList[reasonKey]
+            const rejectionReasonContactId: string = reasonItem[0].split("_")[1]
+            if(selectedContactId == rejectionReasonContactId) {
+              transmittedRejectionReason = reasonItem[1] as unknown as string
+              break
+            }
+          }
+
           console.log("###IN OUR METHOD WE FOUND ONE THATS SELECTED")
           wholeSentenceContactRequirementReasonList.push({
             contactId:contactId,
             wholeSentenceSelected:wholeSentenceSelectionValue == "Yes",
-            rejectionReason:null
+            rejectionReason:transmittedRejectionReason
             }
           )
         }
@@ -197,27 +224,20 @@ export default function warningDetailsRoutes(
     let rawEnforceableContactWholeSentenceBooleanValues = Object.entries(req.body)
       .filter(([key]) => key.startsWith("wholeSentence-"))
 
-    let filteredContactWholeSentenceRejectionReasonList:Array<WholeSentenceContactRequirementReason> = filterSelectedWholeSentenceValues(selectedContactList, rawEnforceableContactWholeSentenceBooleanValues)
+    let wholeSentenceContactsAndReasons = Object.entries(req.body)
+      .filter(([key]) => key.startsWith("failureReasonWholeTermContact_"))
+
+    let filteredContactWholeSentenceRejectionReasonList:Array<WholeSentenceContactRequirementReason> = filterSelectedWholeSentenceValuesAndAddWholeSentenceRejectionInformation(selectedContactList, rawEnforceableContactWholeSentenceBooleanValues, wholeSentenceContactsAndReasons)
     const hasWholeSentenceSelectedContacts: boolean = Object.keys(filteredContactWholeSentenceRejectionReasonList).length > 0
 
     //In order to use the above we need a list of selected enforceable contacts. WE NEED THE CONTACT ARRAY
-
-
-
-
-    console.log("About to output whole sentence information")
-    console.log(rawEnforceableContactWholeSentenceBooleanValues)
-
-    console.log("About to output the filtered list")
-    console.log(filteredContactWholeSentenceRejectionReasonList)
 
     let wholeSentenceContactRequirementReasonList: Array<WholeSentenceContactRequirementReason> = []
     let wholeSentenceYesSelectedContactIds: string[] = []
     let wholeSentenceNoSelectedContactIds: string[] = []
 
 
-    let wholeSentenceContactsAndReasons = Object.entries(req.body)
-      .filter(([key]) => key.startsWith("failureReasonWholeTermContact_"))
+
 
 
 
