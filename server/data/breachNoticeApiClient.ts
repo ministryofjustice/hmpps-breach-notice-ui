@@ -263,6 +263,7 @@ export interface RequirementSelectItem {
 export interface WholeSentenceContactRequirementReason {
   contactId: string
   rejectionReason: string
+  wholeSentenceSelected: boolean
 }
 
 export interface ContactRequirement {

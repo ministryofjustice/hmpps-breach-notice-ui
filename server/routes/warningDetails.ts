@@ -114,7 +114,6 @@ export default function warningDetailsRoutes(
       let enforceableContact = warningDetails.enforceableContacts.find(c => c.id === bnContact.contactId)
 
       if (enforceableContact) {
-        console.log("######################## about to create the rejection reason list")
         enforceableContact.rejectionReasons = [          {
           text: 'Please Select',
           value: '-1',
@@ -144,24 +143,105 @@ export default function warningDetailsRoutes(
     })
   })
 
+
+  function filterSelectedWholeSentenceValues (selectedContactList: string[], wholeSentenceInformationList: [string, unknown][]): Array<WholeSentenceContactRequirementReason> {
+    let wholeSentenceContactRequirementReasonList: Array<WholeSentenceContactRequirementReason> = []
+
+    // if we have no enforceable contacts selected then return null
+    if(!selectedContactList || !(Object.keys(selectedContactList).length > 0)) {
+      console.log("####### NO CONTACTS HAVE BEEN PASSED IN")
+      return null
+    }
+
+    // if no whole sentence information is passed in
+    if(!wholeSentenceInformationList || !(Object.keys(wholeSentenceInformationList).length > 0)) {
+      console.log("####### NO WHOLE SENTENCE INFORMATION HAS BEEN PASSED IN")
+      return null
+    }
+
+    // we have a list of selected contact ids and a list of whole sentence information, perform the filter
+    for (const selectedContactId of selectedContactList) {
+      for(let key in wholeSentenceInformationList) {
+        //this is an array with 2 items, they key and the value
+        const wholeSentenceSelectedContact = wholeSentenceInformationList[key]
+        const contactId: string = wholeSentenceSelectedContact[0].split("-")[1]
+        const wholeSentenceSelectionValue: string = wholeSentenceSelectedContact[1] as unknown as string
+
+        if(selectedContactId === contactId) {
+          console.log("###IN OUR METHOD WE FOUND ONE THATS SELECTED")
+          wholeSentenceContactRequirementReasonList.push({
+            contactId:contactId,
+            wholeSentenceSelected:wholeSentenceSelectionValue == "Yes",
+            rejectionReason:null
+            }
+          )
+        }
+      }
+
+
+    }
+    return wholeSentenceContactRequirementReasonList
+  }
+
+
   router.post('/warning-details/:id', async (req, res, next) => {
 
-    let wholeSentenceSelectedContacts = Object.entries(req.body)
+    // Get a list of enforceable contacts that have been ticked / selected
+    const selectedContactList = asArray(req.body.contact)
+
+    // What we want the outcome to be
+    // 1) If whole sentence is set to Yes or No we want to transmit it
+    // all whole sentence values from all enforceable contacts will always be passed through
+    // we must only act upon ones which accompany a ticked enforceable contact
+    // if they are not ticked and were previously ticked the contacts will be deleted
+    let rawEnforceableContactWholeSentenceBooleanValues = Object.entries(req.body)
       .filter(([key]) => key.startsWith("wholeSentence-"))
+
+    let filteredContactWholeSentenceRejectionReasonList:Array<WholeSentenceContactRequirementReason> = filterSelectedWholeSentenceValues(selectedContactList, rawEnforceableContactWholeSentenceBooleanValues)
+    const hasWholeSentenceSelectedContacts: boolean = Object.keys(filteredContactWholeSentenceRejectionReasonList).length > 0
+
+    //In order to use the above we need a list of selected enforceable contacts. WE NEED THE CONTACT ARRAY
+
+
+
+
+    console.log("About to output whole sentence information")
+    console.log(rawEnforceableContactWholeSentenceBooleanValues)
+
+    console.log("About to output the filtered list")
+    console.log(filteredContactWholeSentenceRejectionReasonList)
+
     let wholeSentenceContactRequirementReasonList: Array<WholeSentenceContactRequirementReason> = []
-    let wholeSentenceSelectedContactIds: string[] = []
+    let wholeSentenceYesSelectedContactIds: string[] = []
+    let wholeSentenceNoSelectedContactIds: string[] = []
+
+
     let wholeSentenceContactsAndReasons = Object.entries(req.body)
       .filter(([key]) => key.startsWith("failureReasonWholeTermContact_"))
-    const hasWholeSentenceSelectedContacts: boolean = Object.keys(wholeSentenceSelectedContacts).length > 0
+
+
+
+
+
+
+
+
+
 
     if(hasWholeSentenceSelectedContacts) {
-      for(let key in wholeSentenceSelectedContacts) {
+      for(let key in rawEnforceableContactWholeSentenceBooleanValues) {
         //this is an array with 2 items, they key and the value
-        const wholeSentenceSelectedContact = wholeSentenceSelectedContacts[key]
+        const wholeSentenceSelectedContact = rawEnforceableContactWholeSentenceBooleanValues[key]
         const contactId: string = wholeSentenceSelectedContact[0].split("-")[1]
-        const failureReason: string = wholeSentenceSelectedContact[1] as unknown as string
-        if(failureReason == "Yes") {
-          wholeSentenceSelectedContactIds.push(contactId)
+        const wholeSentenceSelectionValue: string = wholeSentenceSelectedContact[1] as unknown as string
+
+        if(wholeSentenceSelectionValue == "Yes") {
+          console.log("Pushing a Yes contact ID")
+          wholeSentenceYesSelectedContactIds.push(contactId)
+        }
+        else {
+          console.log("Pushing a No contact ID")
+          wholeSentenceNoSelectedContactIds.push(contactId)
         }
       }
 
@@ -170,13 +250,25 @@ export default function warningDetailsRoutes(
         const contactId: string = wholeSentenceSelectedContact[0].split("_")[1]
         const rejectionReason: string = wholeSentenceSelectedContact[1] as unknown as string
 
-        if(wholeSentenceSelectedContactIds.includes(contactId) ) {
+
+        if(wholeSentenceYesSelectedContactIds.includes(contactId) ) {
           //we have all we need here to update the contact
           wholeSentenceContactRequirementReasonList.push({
             contactId: contactId,
-            rejectionReason
+            rejectionReason: rejectionReason,
+            wholeSentenceSelected: true,
           })
         }
+
+        if(wholeSentenceNoSelectedContactIds.includes(contactId) ) {
+          //we have all we need here to update the contact
+          wholeSentenceContactRequirementReasonList.push({
+            contactId: contactId,
+            rejectionReason: rejectionReason,
+            wholeSentenceSelected: false,
+          })
+        }
+
       }
     }
 
@@ -259,16 +351,29 @@ export default function warningDetailsRoutes(
 
     // if we dont have validation errors navigate continue
     if (!hasErrors) {
+
       breachNotice.warningDetailsSaved = true
       await breachNoticeApiClient.updateBreachNotice(id, breachNotice)
 
       // Add all selected contacts
-      const selectedContactList = asArray(req.body.contact)
+
+
+
+      // ON MONDAY HERE, its working with Yes but not transmitting NO
+
+
+
+
+
+
+      // Contacts stored in Breach Notice
       const breachNoticeContactIds = breachNotice.breachNoticeContactList.map(c => c.contactId.toString())
 
       if (selectedContactList && Object.keys(selectedContactList).length > 0) {
         const contactsToPush: BreachNoticeContact[] = []
         const contactsToUpdateWholeSentenceInformation: BreachNoticeContact[] = []
+
+
         for (const selectedContactId of selectedContactList) {
           // check if any of the contacts previously saved have had whole sentence applied
           // here we are in the context of a selected contact loop
@@ -284,19 +389,33 @@ export default function warningDetailsRoutes(
                 const currentBreachNoticeContact: BreachNoticeContact = existingBreachNoticeContactListMatchingContactId[0]
                 const contactIdAsString : string = JSON.stringify(currentBreachNoticeContact.contactId)
                 // we know that this particular contact now has whole sentence information
-                if(wholeSentenceSelectedContactIds.includes(contactIdAsString)) {
+                // all contacts will now have whole sentence information
+                // TODO: might need next linbe re-enabling
+                // if(wholeSentenceYesSelectedContactIds.includes(contactIdAsString)) {
                   const selectedWholeSentenceContactReason : WholeSentenceContactRequirementReason = wholeSentenceContactRequirementReasonList.filter(wsc => wsc.contactId === contactIdAsString)[0]
                   // we have a current selected reason
                   if(selectedWholeSentenceContactReason) {
+
                     //if anything has changed
                     if(!currentBreachNoticeContact.wholeSentence || (currentBreachNoticeContact.rejectionReason !== selectedWholeSentenceContactReason.rejectionReason)) {
                       //we have one to update
                       currentBreachNoticeContact.rejectionReason = selectedWholeSentenceContactReason.rejectionReason
-                      currentBreachNoticeContact.wholeSentence = true
+
+                      //TODO: we are always setting to true here which is wrong
+                      // Need to use yes or no selected here
+                      currentBreachNoticeContact.wholeSentence = selectedWholeSentenceContactReason.wholeSentenceSelected
                       contactsToUpdateWholeSentenceInformation.push(currentBreachNoticeContact)
+
+                      console.log("PUSHING A CONTACT")
+                      console.log(currentBreachNoticeContact)
                     }
                   }
-                }
+                // }
+
+
+
+
+
               }
             }
           }
@@ -308,7 +427,7 @@ export default function warningDetailsRoutes(
             let convertedBreachNoticeContact = enforceableContactToContact(breachNotice, selectedContact)
             const selectedContactIdString = JSON.stringify(convertedBreachNoticeContact.contactId)
 
-            if(wholeSentenceSelectedContactIds.includes(selectedContactIdString)) {
+            if(wholeSentenceYesSelectedContactIds.includes(selectedContactIdString)) {
               const selectedWholeSentenceContactReason : WholeSentenceContactRequirementReason = wholeSentenceContactRequirementReasonList.filter(wsc => wsc.contactId === selectedContactIdString)[0]
               convertedBreachNoticeContact.wholeSentence = true
               convertedBreachNoticeContact.rejectionReason = selectedWholeSentenceContactReason.rejectionReason
