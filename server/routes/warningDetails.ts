@@ -1,21 +1,18 @@
-import { Router } from 'express'
-import { LocalDate, LocalDateTime } from '@js-joda/core'
+import {Router} from 'express'
+import {LocalDate, LocalDateTime} from '@js-joda/core'
 import BreachNoticeApiClient, {
   BreachNotice,
   BreachNoticeContact,
-  ContactRequirement, WholeSentenceContactRequirementReason,
+  ContactRequirement,
+  WholeSentenceContactRequirementReason,
 } from '../data/breachNoticeApiClient'
-import AuditService, { Page } from '../services/auditService'
-import {fromUserDate, toUserDate, toUserDateFromDateTime, toUserTimeFromDateTime} from '../utils/dateUtils'
-import { HmppsAuthClient } from '../data'
+import AuditService, {Page} from '../services/auditService'
+import {fromUserDate, toUserDate} from '../utils/dateUtils'
+import {HmppsAuthClient} from '../data'
 import CommonUtils from '../services/commonUtils'
-import asArray, { createBlankBreachNoticeWithId, handleIntegrationErrors } from '../utils/utils'
-import NdeliusIntegrationApiClient, {
-  EnforceableContact,
-  Requirements,
-  WarningDetails
-} from '../data/ndeliusIntegrationApiClient'
-import { ErrorMessages } from '../data/uiModels'
+import asArray, {createBlankBreachNoticeWithId, handleIntegrationErrors} from '../utils/utils'
+import NdeliusIntegrationApiClient, {EnforceableContact, WarningDetails} from '../data/ndeliusIntegrationApiClient'
+import {ErrorMessages} from '../data/uiModels'
 import config from '../config'
 
 export default function warningDetailsRoutes(
@@ -26,7 +23,7 @@ export default function warningDetailsRoutes(
 ): Router {
   const currentPage = 'warning-details'
 
-  router.get(['/warning-details/:id', '/warning-details/:id/:callingscreen'], async (req, res, next) => {
+  router.get(['/warning-details/:id', '/warning-details/:id/:callingscreen'], async (req, res) => {
     await auditService.logPageView(Page.WARNING_DETAILS, { who: res.locals.user.username, correlationId: req.id })
     const breachNoticeApiClient = new BreachNoticeApiClient(
       await hmppsAuthClient.getSystemClientToken(res.locals.user.username),
@@ -195,7 +192,7 @@ export default function warningDetailsRoutes(
   }
 
 
-  router.post('/warning-details/:id', async (req, res, next) => {
+  router.post('/warning-details/:id', async (req, res) => {
     // Get a list of enforceable contacts that have been ticked / selected
     const selectedContactList = asArray(req.body.contact)
     const processedItems: string[] = []
@@ -214,7 +211,7 @@ export default function warningDetailsRoutes(
     const token = await hmppsAuthClient.getSystemClientToken(res.locals.user.username)
     const breachNoticeApiClient = new BreachNoticeApiClient(token)
     const ndeliusIntegrationApiClient = new NdeliusIntegrationApiClient(token)
-    let breachNotice: BreachNotice = null
+    let breachNotice: BreachNotice
     let warningDetails: WarningDetails = null
     let contactRequirementList: Array<ContactRequirement> = null
     const callingScreen: string = req.query.returnTo as string
@@ -470,7 +467,7 @@ export default function warningDetailsRoutes(
 
     if (wholeSentenceContactRequirementReasonList && Object.keys(wholeSentenceContactRequirementReasonList).length > 0) {
       for(const wholeSentence of wholeSentenceContactRequirementReasonList) {
-        if(wholeSentence.rejectionReason === "-1") {
+        if(wholeSentence.rejectionReason === "-1" && wholeSentence.wholeSentenceSelected) {
           errorMessages.wholeSentenceNoFailureReason = {
             text: 'Please select a valid failure reason for each failure selected'
           }
