@@ -772,6 +772,16 @@
               },
               "notes": "Hmmm yes, the floor here is made out of floor"
             }
+          ],
+          "breachReasons": [
+            {
+              "code": "BR03",
+              "description": "Attended late"
+            },
+            {
+              "code": "BR04",
+              "description": "Did Not Comply"
+            }
           ]
         },
         "headers": {
@@ -893,7 +903,17 @@
       "response": {
         "status": 200,
         "jsonBody": {
-          "enforceableContacts": null
+          "enforceableContacts": null,
+          "breachReasons": [
+            {
+              "code": "BR03",
+              "description": "Attended late"
+            },
+            {
+              "code": "BR04",
+              "description": "Did Not Comply"
+            }
+          ]
         },
         "headers": {
           "Content-Type": "application/json;charset=UTF-8"
@@ -909,7 +929,17 @@
       "response": {
         "status": 200,
         "jsonBody": {
-          "enforceableContacts": null
+          "enforceableContacts": null,
+          "breachReasons": [
+            {
+              "code": "BR03",
+              "description": "Attended late"
+            },
+            {
+              "code": "BR04",
+              "description": "Did Not Comply"
+            }
+          ]
         },
         "headers": {
           "Content-Type": "application/json;charset=UTF-8"
@@ -967,6 +997,16 @@
                 "description": "string"
               },
               "notes": "string"
+            }
+          ],
+          "breachReasons": [
+            {
+              "code": "BR03",
+              "description": "Attended late"
+            },
+            {
+              "code": "BR04",
+              "description": "Did Not Comply"
             }
           ]
         },
@@ -1026,6 +1066,16 @@
               },
               "notes": "string"
             }
+          ],
+          "breachReasons": [
+            {
+              "code": "BR03",
+              "description": "Attended late"
+            },
+            {
+              "code": "BR04",
+              "description": "Did Not Comply"
+            }
           ]
         },
         "headers": {
@@ -1083,6 +1133,16 @@
                 "description": "string"
               },
               "notes": "<script> new\nline"
+            }
+          ],
+          "breachReasons": [
+            {
+              "code": "BR03",
+              "description": "Attended late"
+            },
+            {
+              "code": "BR04",
+              "description": "Did Not Comply"
             }
           ]
         },
@@ -1817,7 +1877,42 @@
       "response": {
         "status": 200,
         "jsonBody": {
-          "enforceableContacts": []
+          "enforceableContacts": [],
+          "breachReasons": [
+            {
+              "code": "BR03",
+              "description": "Attended late"
+            },
+            {
+              "code": "BR04",
+              "description": "Did Not Comply"
+            }
+          ]
+        },
+        "headers": {
+          "Content-Type": "application/json;charset=UTF-8"
+        }
+      }
+    },
+    {
+      "request": {
+        "urlPattern": "/warning-details/P340567/(.*?)",
+        "method": "GET"
+      },
+      "response": {
+        "status": 200,
+        "jsonBody": {
+          "enforceableContacts": [],
+          "breachReasons": [
+            {
+              "code": "BR03",
+              "description": "Attended late"
+            },
+            {
+              "code": "BR04",
+              "description": "Did Not Comply"
+            }
+          ]
         },
         "headers": {
           "Content-Type": "application/json;charset=UTF-8"

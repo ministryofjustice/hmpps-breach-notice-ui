@@ -214,6 +214,8 @@ export interface BreachNoticeContact {
   contactType: string
   contactOutcome: string
   contactId: number
+  wholeSentence?: boolean
+  rejectionReason?: string
 }
 
 export interface BreachNoticeRequirement {
@@ -248,6 +250,12 @@ export interface RequirementSelectItem {
   conditional: {
     html: string
   }
+}
+
+export interface WholeSentenceContactRequirementReason {
+  contactId: string
+  rejectionReason: string
+  wholeSentenceSelected: boolean
 }
 
 export interface ContactRequirement {

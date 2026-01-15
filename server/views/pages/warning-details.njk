@@ -20,9 +20,11 @@
     {% set errorList =[
       { text: errorMessages.responseRequiredByDate.text, href: "#responseRequiredByDate" } if errorMessages.responseRequiredByDate else None,
       { text: errorMessages.furtherReasonDetails.text, href: "#furtherReasonDetails" } if errorMessages.furtherReasonDetails else None,
+      { text: errorMessages.wholeSentenceNoFailureReason.text, href: "#" } if errorMessages.wholeSentenceNoFailureReason else None,
+
+
       { text: errorMessages.genericErrorMessage.text, href: "#" } if errorMessages.genericErrorMessage else None
     ] | reject("undefined") %}
-
     {% if errorMessages | length > 0 %}
       {% from "govuk/components/error-summary/macro.njk" import govukErrorSummary %}
       {{ govukErrorSummary({ titleText: "There is a problem", errorList: errorList }) }}
@@ -52,8 +54,11 @@
                 <div class="govuk-checkboxes" data-module="govuk-checkboxes">
                   {% for failure in warningDetails.enforceableContacts %}
                     <div class="govuk-checkboxes__item">
-                      <input class="govuk-checkboxes__input" id="contact-{{ failure.id }}" name="contact" {% if failure.id in existingContacts %}checked="checked"{% endif %}
-                             type="checkbox" value="{{ failure.id }}" data-aria-controls="conditional-{{ failure.id }}">
+                      <input class="govuk-checkboxes__input"
+                             id="contact-{{ failure.id }}"
+                             name="contact" {% if failure.id in existingContacts %}checked="checked"{% endif %}
+                             type="checkbox"
+                             value="{{ failure.id }}" data-aria-controls="conditional-{{ failure.id }}">
                       <label class="govuk-label govuk-checkboxes__label" for="contact-{{ failure.id }}">
                         {% set failureHtml = failure.notes | escape | nl2br | safe %}
                         {{ failure.datetime | toUserDate }}, {{ failure.type.description }}, {{ failure.outcome.description }}
@@ -62,39 +67,89 @@
                     <div class="govuk-checkboxes__conditional govuk-checkboxes__conditional--hidden"
                          id="conditional-{{ failure.id }}">
                       <div class="govuk-form-group">
-                        {{ govukDetails({
-                          summaryText: "View failure notes",
-                          html: failureHtml
-                        }) }}
 
-                        <label class="govuk-heading-m">
-                          Requirements
-                        </label>
+                        {% set optionalRegistrationsHtml %}
+                          {{ govukDetails({
+                            summaryText: "View failure notes 2",
+                            html: failureHtml
+                          }) }}
+
+                          <label class="govuk-heading-m">
+                            Requirements
+                          </label>
                         {% set matchFound = false %}
                         {% set buttonText = 'Save Changes and Add Requirement' %}
                         {% set requirement = null %}
 
-                        {% for cr in contactRequirementList %}
-                          {% if cr.contact.contactId == failure.id %}
-                            {% set matchFound = true %}
-                            {% set buttonText = 'Save Changes and Update Requirement' %}
-                            <p class="govuk-body govuk-!-margin-bottom-1">{{ cr.requirement.requirementTypeMainCategoryDescription }}, {{ cr.requirement.rejectionReason }} </p>
+                          {% for cr in contactRequirementList %}
+                            {% if cr.contact.contactId == failure.id %}
+                              {% set matchFound = true %}
+                              {% set buttonText = 'Save Changes and Update Requirement' %}
+                              <p class="govuk-body govuk-!-margin-bottom-1">{{ cr.requirement.requirementTypeMainCategoryDescription }}, {{ cr.requirement.rejectionReason }} </p>
+                            {% endif %}
+                          {% endfor %}
+                          {% if not matchFound %}
+                            <p>No requirements have been selected, in order to complete this form please use the below
+                              to add requirement</p>
                           {% endif %}
-                        {% endfor %}
-                        {% if not matchFound %}
-                          <p>No requirements have been selected, in order to complete this form please use the below
-                            to add requirement</p>
-                        {% endif %}
-                        {{ govukButton({
-                          text: buttonText ,
-                          preventDoubleClick: "true",
-                          type: "submit",
-                          name: "action",
-                          value: "enforceablecontact_"+ failure.id,
-                          classes: "govuk-button--primary",
-                          attributes: {
-                            id: "updatereq-button"
-                          }
+                          {{ govukButton({
+                            text: buttonText ,
+                            preventDoubleClick: "true",
+                            type: "submit",
+                            name: "action",
+                            value: "enforceablecontact_"+failure.id,
+                            classes: "govuk-button--primary",
+                            attributes: {
+                              id: "updatereq-button"
+                            }
+                          }) }}
+                        {% endset -%}
+
+
+
+                        {% set wholeTermSelect %}
+                          {{ govukSelect({
+                            id: "failureReasonWholeTermContact_"+failure.id,
+                            name: "failureReasonWholeTermContact_"+failure.id,
+                            label: {
+                              text: "Please select a failure reason"
+                            },
+                            items: failure.rejectionReasons
+                          }) }}
+                        {% endset -%}
+
+
+
+                        {{ govukRadios({
+                          name: "wholeSentence-"+failure.id,
+                          fieldset: {
+                            legend: {
+                              text: "Does this apply to the whole sentence?",
+                              isPageHeading: false,
+                              classes: "govuk-fieldset__legend--m"
+                            }
+                          },
+                          hint: {
+                            text: "Select one option"
+                          },
+                          items: [
+                            {
+                              value: "Yes",
+                              text: "Yes",
+                              checked: failure.wholeSentence == true,
+                              conditional: {
+                              html: wholeTermSelect
+                            }
+                            },
+                            {
+                              value: "No",
+                              text: "No",
+                              checked: failure.wholeSentence == false,
+                              conditional: {
+                              html: optionalRegistrationsHtml
+                            }
+                            }
+                          ]
                         }) }}
                       </div>
                     </div>

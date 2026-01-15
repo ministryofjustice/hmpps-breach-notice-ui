@@ -3295,7 +3295,9 @@
               "contactDate": "01/01/1970",
               "contactType": "string",
               "contactOutcome": "string",
-              "contactId": 0
+              "contactId": 0,
+              "wholeSentence": false,
+              "rejectionReason": null
             }
           ],
           "breachNoticeRequirementList": [
@@ -3373,6 +3375,19 @@
         "status": 200
       }
     },
+
+    {
+      "request": {
+        "url": "/breach-notice-api/contact/00000000-0000-0000-0000-000000000001",
+        "method": "PUT"
+      },
+      "response": {
+        "status": 200
+      }
+    },
+
+
+
     {
       "request": {
         "url": "/breach-notice-api/contact/bybreachnoticeidanddeliusid/225244a2-74fc-4548-b55f-18526dec8046/0",
@@ -3489,6 +3504,17 @@
         "status": 200
       }
     },
+
+    {
+      "request": {
+        "url": "/breach-notice-api/contact/bybreachnoticeid/00000000-1111-2222-3333-000000000001",
+        "method": "GET"
+      },
+      "response": {
+        "status": 200
+      }
+    },
+
     {
       "request": {
         "url": "/breach-notice-api/contact/bybreachnoticeidanddeliusid/7a2e74a0-20f2-4a01-bbdd-7c22aeed555a/0",
@@ -3632,6 +3658,7 @@
         "transformers": ["response-template"]
       }
     },
+
     {
       "request": {
         "url": "/breach-notice-api/crlinks/bybreachnoticeidandcontactid/66dbdd78-8975-462b-aecc-8d8813317b19/00000000-0000-0000-0000-000000000001",
@@ -3646,6 +3673,24 @@
         "transformers": ["response-template"]
       }
     },
+
+    {
+      "request": {
+        "url": "/breach-notice-api/crlinks/bybreachnoticeidandcontactid/225244a2-74fc-4548-b55f-18526dec8046/00000000-0000-0000-0000-000000000001",
+        "method": "GET"
+      },
+      "response": {
+        "status": 200,
+        "jsonBody": [],
+        "headers": {
+          "Content-Type": "application/json;charset=UTF-8"
+        },
+        "transformers": ["response-template"]
+      }
+    },
+
+
+
     {
       "request": {
         "url": "/breach-notice-api/breach-notice/4c3dbcf0-f95d-4b67-b925-a0a5da1c1cd4",
@@ -4096,7 +4141,9 @@
               "contactDate": "2025-01-02T12:00:00.00",
               "contactType": "Contact0Type",
               "contactOutcome": "Contact0SubType",
-              "contactId": 0
+              "contactId": 0,
+              "wholeSentence": false,
+              "rejectionReason": null
             }
           ],
           "breachNoticeRequirementList": []
@@ -4107,9 +4154,86 @@
         "transformers": ["response-template"]
       }
     },
+
+
+    {
+      "request": {
+        "url": "/breach-notice-api/breach-notice/1000000a-45eb-4203-8104-7bb98989845u",
+        "method": "GET"
+      },
+      "response": {
+        "status": 200,
+        "jsonBody": {
+          "id": "1000000a-45eb-4203-8104-7bb98989845u",
+          "crn": "P340567",
+          "titleAndFullName": null,
+          "dateOfLetter": null,
+          "referenceNumber": null,
+          "responseRequiredDate": null,
+          "breachNoticeTypeCode": null,
+          "breachNoticeTypeDescription": null,
+          "breachConditionTypeCode": null,
+          "breachConditionTypeDescription": null,
+          "breachSentenceTypeCode": null,
+          "breachSentenceTypeDescription": null,
+          "responsibleOfficer": null,
+          "contactNumber": null,
+          "nextAppointmentType": null,
+          "nextAppointmentDate": null,
+          "nextAppointmentLocation": null,
+          "nextAppointmentOfficer": null,
+          "nextAppointmentContact": null,
+          "completedDate": null,
+          "offenderAddress": null,
+          "replyAddress": null,
+          "basicDetailsSaved": null,
+          "warningTypeSaved": null,
+          "warningDetailsSaved": null,
+          "nextAppointmentSaved": null,
+          "useDefaultAddress": null,
+          "useDefaultReplyAddress": null,
+          "breachNoticeContactList": [
+            {
+              "id": "00000000-0000-0000-0000-000000000017",
+              "breachNoticeId": "0adf652a-45eb-4203-8104-7bb4e62be6ce",
+              "contactDate": "2025-01-02T12:00:00.00",
+              "contactType": "Contact0Type",
+              "contactOutcome": "Contact0SubType",
+              "contactId": 0,
+              "wholeSentence": false,
+              "rejectionReason": null
+            }
+          ],
+          "breachNoticeRequirementList": []
+        },
+        "headers": {
+          "Content-Type": "application/json;charset=UTF-8"
+        },
+        "transformers": ["response-template"]
+      }
+    },
+
+
     {
       "request": {
         "url": "/breach-notice-api/crlinks/bybreachnoticeid/0adf652a-45eb-4203-8104-7bb4e62be6ce",
+        "method": "GET"
+      },
+      "response": {
+        "status": 200,
+        "jsonBody": {
+          "contactRequirementList": []
+        },
+        "headers": {
+          "Content-Type": "application/json;charset=UTF-8"
+        },
+        "transformers": ["response-template"]
+      }
+    },
+
+    {
+      "request": {
+        "url": "/breach-notice-api/crlinks/bybreachnoticeid/1000000a-45eb-4203-8104-7bb98989845u",
         "method": "GET"
       },
       "response": {
@@ -4159,6 +4283,30 @@
         "status": 200
       }
     },
+
+    {
+      "request": {
+        "url": "/breach-notice-api/contact/bybreachnoticeidanddeliusid/225244a2-74fc-4548-b55f-18526dec8046/1",
+        "method": "GET"
+      },
+      "response": {
+        "status": 200,
+        "jsonBody": {
+          "id": "00000000-0000-0000-0000-000000000001",
+          "breachNoticeId": "0adf652a-45eb-4203-8104-7bb4e62be6ce",
+          "contactDate": "01/01/1970",
+          "contactType": "string",
+          "contactOutcome": "string",
+          "contactId": 0
+        },
+        "headers": {
+          "Content-Type": "application/json;charset=UTF-8"
+        },
+        "transformers": ["response-template"]
+      }
+    },
+
+
     {
       "request": {
         "url": "/breach-notice-api/contact/bybreachnoticeidanddeliusid/0adf652a-45eb-4203-8104-7bb4e62be6ce/0",
