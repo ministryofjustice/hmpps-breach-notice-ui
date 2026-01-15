@@ -1,18 +1,18 @@
-import {Router} from 'express'
-import {LocalDate, LocalDateTime} from '@js-joda/core'
+import { Router } from 'express'
+import { LocalDate, LocalDateTime } from '@js-joda/core'
 import BreachNoticeApiClient, {
   BreachNotice,
   BreachNoticeContact,
   ContactRequirement,
   WholeSentenceContactRequirementReason,
 } from '../data/breachNoticeApiClient'
-import AuditService, {Page} from '../services/auditService'
-import {fromUserDate, toUserDate} from '../utils/dateUtils'
-import {HmppsAuthClient} from '../data'
+import AuditService, { Page } from '../services/auditService'
+import { fromUserDate, toUserDate } from '../utils/dateUtils'
+import { HmppsAuthClient } from '../data'
 import CommonUtils from '../services/commonUtils'
-import asArray, {createBlankBreachNoticeWithId, handleIntegrationErrors} from '../utils/utils'
-import NdeliusIntegrationApiClient, {EnforceableContact, WarningDetails} from '../data/ndeliusIntegrationApiClient'
-import {ErrorMessages} from '../data/uiModels'
+import asArray, { createBlankBreachNoticeWithId, handleIntegrationErrors } from '../utils/utils'
+import NdeliusIntegrationApiClient, { EnforceableContact, WarningDetails } from '../data/ndeliusIntegrationApiClient'
+import { ErrorMessages } from '../data/uiModels'
 import config from '../config'
 
 export default function warningDetailsRoutes(
@@ -79,19 +79,20 @@ export default function warningDetailsRoutes(
 
     const enforceableContactListIds = warningDetails.enforceableContacts?.map(c => c.id)
 
-    if(warningDetails.enforceableContacts && Object.keys(warningDetails.enforceableContacts).length > 0) {
-      for (const enfContact of warningDetails.enforceableContacts){
+    if (warningDetails.enforceableContacts && Object.keys(warningDetails.enforceableContacts).length > 0) {
+      for (const enfContact of warningDetails.enforceableContacts) {
         enfContact.rejectionReasons = [
           {
             text: 'Please Select',
             value: '-1',
             selected: true,
           },
-          ... warningDetails.breachReasons.map(r => ({
-          value: r.description,
-          text: r.description,
-          selected: false
-        }))]
+          ...warningDetails.breachReasons.map(r => ({
+            value: r.description,
+            text: r.description,
+            selected: false,
+          })),
+        ]
       }
     }
 
@@ -108,19 +109,21 @@ export default function warningDetailsRoutes(
         })
       }
 
-      let enforceableContact = warningDetails.enforceableContacts.find(c => c.id === bnContact.contactId)
+      const enforceableContact = warningDetails.enforceableContacts.find(c => c.id === bnContact.contactId)
 
       if (enforceableContact) {
-        enforceableContact.rejectionReasons = [          {
-          text: 'Please Select',
-          value: '-1',
-          selected: false,
-        },
-          ... warningDetails.breachReasons.map(r => ({
-          value: r.description,
-          text: r.description,
-          selected: bnContact.rejectionReason === r.description
-        }))]
+        enforceableContact.rejectionReasons = [
+          {
+            text: 'Please Select',
+            value: '-1',
+            selected: false,
+          },
+          ...warningDetails.breachReasons.map(r => ({
+            value: r.description,
+            text: r.description,
+            selected: bnContact.rejectionReason === r.description,
+          })),
+        ]
         enforceableContact.wholeSentence = bnContact.wholeSentence
       }
     }
@@ -140,57 +143,52 @@ export default function warningDetailsRoutes(
     })
   })
 
-
-  function filterSelectedWholeSentenceValuesAndAddWholeSentenceRejectionInformation (selectedContactList: string[], wholeSentenceInformationList: [string, unknown][], rejectionReasonWholeSentenceList: [string, unknown][]): Array<WholeSentenceContactRequirementReason> {
-    let wholeSentenceContactRequirementReasonList: Array<WholeSentenceContactRequirementReason> = []
+  function filterSelectedWholeSentenceValuesAndAddWholeSentenceRejectionInformation(
+    selectedContactList: string[],
+    wholeSentenceInformationList: [string, unknown][],
+    rejectionReasonWholeSentenceList: [string, unknown][],
+  ): Array<WholeSentenceContactRequirementReason> {
+    const wholeSentenceContactRequirementReasonList: Array<WholeSentenceContactRequirementReason> = []
 
     // if we have no enforceable contacts selected then return null
-    if(!selectedContactList || !(Object.keys(selectedContactList).length > 0)) {
+    if (!selectedContactList || !(Object.keys(selectedContactList).length > 0)) {
       return null
     }
 
     // if no whole sentence information is passed in
-    if(!wholeSentenceInformationList || !(Object.keys(wholeSentenceInformationList).length > 0)) {
+    if (!wholeSentenceInformationList || !(Object.keys(wholeSentenceInformationList).length > 0)) {
       return null
     }
 
-
     // we have a list of selected contact ids and a list of whole sentence information, perform the filter
     for (const selectedContactId of selectedContactList) {
-      for(let key in wholeSentenceInformationList) {
-
-        //this is an array with 2 items, they key and the value
-        const wholeSentenceSelectedContact = wholeSentenceInformationList[key]
-        const contactId: string = wholeSentenceSelectedContact[0].split("-")[1]
+      for (const wholeSentenceSelectedContact of wholeSentenceInformationList) {
+        // this is an array with 2 items, they key and the value
+        const contactId: string = wholeSentenceSelectedContact[0].split('-')[1]
         const wholeSentenceSelectionValue: string = wholeSentenceSelectedContact[1] as unknown as string
 
-        if(selectedContactId === contactId) {
+        if (selectedContactId === contactId) {
           let transmittedRejectionReason: string = null
 
           // get the reason selected
-          for(let reasonKey in rejectionReasonWholeSentenceList) {
-            const reasonItem = rejectionReasonWholeSentenceList[reasonKey]
-            const rejectionReasonContactId: string = reasonItem[0].split("_")[1]
-            if(selectedContactId == rejectionReasonContactId) {
+          for (const reasonItem of rejectionReasonWholeSentenceList) {
+            const rejectionReasonContactId: string = reasonItem[0].split('_')[1]
+            if (selectedContactId === rejectionReasonContactId) {
               transmittedRejectionReason = reasonItem[1] as unknown as string
               break
             }
           }
 
           wholeSentenceContactRequirementReasonList.push({
-            contactId:contactId,
-            wholeSentenceSelected:wholeSentenceSelectionValue == "Yes",
-            rejectionReason:transmittedRejectionReason
-            }
-          )
+            contactId,
+            wholeSentenceSelected: wholeSentenceSelectionValue === 'Yes',
+            rejectionReason: transmittedRejectionReason,
+          })
         }
       }
-
-
     }
     return wholeSentenceContactRequirementReasonList
   }
-
 
   router.post('/warning-details/:id', async (req, res) => {
     // Get a list of enforceable contacts that have been ticked / selected
@@ -199,14 +197,23 @@ export default function warningDetailsRoutes(
     // final list to push
     const contactsToPush: BreachNoticeContact[] = []
 
-    let rawEnforceableContactWholeSentenceBooleanValues = Object.entries(req.body)
-      .filter(([key]) => key.startsWith("wholeSentence-"))
+    const rawEnforceableContactWholeSentenceBooleanValues = Object.entries(req.body).filter(([key]) =>
+      key.startsWith('wholeSentence-'),
+    )
 
-    let wholeSentenceContactsAndReasons = Object.entries(req.body)
-      .filter(([key]) => key.startsWith("failureReasonWholeTermContact_"))
+    const wholeSentenceContactsAndReasons = Object.entries(req.body).filter(([key]) =>
+      key.startsWith('failureReasonWholeTermContact_'),
+    )
 
-    let filteredContactWholeSentenceRejectionReasonList:Array<WholeSentenceContactRequirementReason> = filterSelectedWholeSentenceValuesAndAddWholeSentenceRejectionInformation(selectedContactList, rawEnforceableContactWholeSentenceBooleanValues, wholeSentenceContactsAndReasons)
-    const hasWholeSentenceSelectedContacts: boolean = filteredContactWholeSentenceRejectionReasonList && Object.keys(filteredContactWholeSentenceRejectionReasonList).length > 0
+    const filteredContactWholeSentenceRejectionReasonList: Array<WholeSentenceContactRequirementReason> =
+      filterSelectedWholeSentenceValuesAndAddWholeSentenceRejectionInformation(
+        selectedContactList,
+        rawEnforceableContactWholeSentenceBooleanValues,
+        wholeSentenceContactsAndReasons,
+      )
+    const hasWholeSentenceSelectedContacts: boolean =
+      filteredContactWholeSentenceRejectionReasonList &&
+      Object.keys(filteredContactWholeSentenceRejectionReasonList).length > 0
     const { id } = req.params
     const token = await hmppsAuthClient.getSystemClientToken(res.locals.user.username)
     const breachNoticeApiClient = new BreachNoticeApiClient(token)
@@ -220,7 +227,6 @@ export default function warningDetailsRoutes(
       // get the existing breach notice
       breachNotice = await breachNoticeApiClient.getBreachNoticeById(id as string)
       contactRequirementList = await breachNoticeApiClient.getContactRequirementLinks(id as string)
-
     } catch (error) {
       const errorMessages: ErrorMessages = handleIntegrationErrors(error.status, error.data?.message, 'Breach Notice')
       const showEmbeddedError = true
@@ -262,7 +268,6 @@ export default function warningDetailsRoutes(
 
     // Add any breach notice contacts not returned in API
     for (const bnContact of breachNotice.breachNoticeContactList) {
-
       // This is adding local ones to the enforceable contact list for display on page as we alway show the
       // latest information from integrations with state stored in the service
       if (!enforceableContactListIds || !enforceableContactListIds.includes(bnContact.contactId)) {
@@ -277,10 +282,14 @@ export default function warningDetailsRoutes(
       }
     }
 
-    const errorMessages: ErrorMessages = validateWarningDetails(breachNotice, req.body.responseRequiredByDate, filteredContactWholeSentenceRejectionReasonList)
+    const errorMessages: ErrorMessages = validateWarningDetails(
+      breachNotice,
+      req.body.responseRequiredByDate,
+      filteredContactWholeSentenceRejectionReasonList,
+    )
     const hasErrors: boolean = Object.keys(errorMessages).length > 0
 
-    //get list of existing contact ids which have already been saved
+    // get list of existing contact ids which have already been saved
     const existingContacts = breachNotice.breachNoticeContactList.map(c => c.contactId)
 
     // if we dont have validation errors navigate continue
@@ -293,14 +302,19 @@ export default function warningDetailsRoutes(
       const breachNoticeContactIds = breachNotice.breachNoticeContactList.map(c => c.contactId.toString())
 
       // Deal with WHole Sentence Contacts first
-      if(hasWholeSentenceSelectedContacts) {
-        //Convert default export to named
-        for(const wholeSentenceContactRequirementReason of filteredContactWholeSentenceRejectionReasonList){
-          if(breachNoticeContactIds.includes(wholeSentenceContactRequirementReason.contactId)) {
-            const existingBreachNoticeContactListMatchingContactId: BreachNoticeContact[] = breachNotice.breachNoticeContactList.filter(brc => JSON.stringify(brc.contactId) == wholeSentenceContactRequirementReason.contactId)
-            if(Object.keys(existingBreachNoticeContactListMatchingContactId).length > 0) {
-              const currentExistingBreachNoticeContact: BreachNoticeContact = existingBreachNoticeContactListMatchingContactId[0]
-              currentExistingBreachNoticeContact.wholeSentence = wholeSentenceContactRequirementReason.wholeSentenceSelected
+      if (hasWholeSentenceSelectedContacts) {
+        // Convert default export to named
+        for (const wholeSentenceContactRequirementReason of filteredContactWholeSentenceRejectionReasonList) {
+          if (breachNoticeContactIds.includes(wholeSentenceContactRequirementReason.contactId)) {
+            const existingBreachNoticeContactListMatchingContactId: BreachNoticeContact[] =
+              breachNotice.breachNoticeContactList.filter(
+                brc => JSON.stringify(brc.contactId) === wholeSentenceContactRequirementReason.contactId,
+              )
+            if (Object.keys(existingBreachNoticeContactListMatchingContactId).length > 0) {
+              const currentExistingBreachNoticeContact: BreachNoticeContact =
+                existingBreachNoticeContactListMatchingContactId[0]
+              currentExistingBreachNoticeContact.wholeSentence =
+                wholeSentenceContactRequirementReason.wholeSentenceSelected
               currentExistingBreachNoticeContact.rejectionReason = wholeSentenceContactRequirementReason.rejectionReason
               contactsToPush.push(currentExistingBreachNoticeContact)
               processedItems.push(JSON.stringify(currentExistingBreachNoticeContact.contactId))
@@ -308,11 +322,16 @@ export default function warningDetailsRoutes(
           }
 
           // we have dealt with the whole sentence contacts now deal with newly added contacts
-          if (breachNoticeContactIds && !breachNoticeContactIds.includes(wholeSentenceContactRequirementReason.contactId)) {
+          if (
+            breachNoticeContactIds &&
+            !breachNoticeContactIds.includes(wholeSentenceContactRequirementReason.contactId)
+          ) {
             // we are finding the selected contact in the list of enforceable contacts returned from the integration point
-            const selectedContact = warningDetails.enforceableContacts.find(c => c.id.toString() === wholeSentenceContactRequirementReason.contactId)
-            let convertedBreachNoticeContact = enforceableContactToContact(breachNotice, selectedContact)
-            //set the user defined information
+            const selectedContact = warningDetails.enforceableContacts.find(
+              c => c.id.toString() === wholeSentenceContactRequirementReason.contactId,
+            )
+            const convertedBreachNoticeContact = enforceableContactToContact(breachNotice, selectedContact)
+            // set the user defined information
             convertedBreachNoticeContact.wholeSentence = wholeSentenceContactRequirementReason.wholeSentenceSelected
             convertedBreachNoticeContact.rejectionReason = wholeSentenceContactRequirementReason.rejectionReason
             contactsToPush.push(convertedBreachNoticeContact)
@@ -322,26 +341,29 @@ export default function warningDetailsRoutes(
       }
 
       // deal with edge case where contact selected but nothing selected for whole sentence
-      if(contactsToPush && Object.keys(contactsToPush).length > 0) {
-        if(selectedContactList && Object.keys(selectedContactList).length > 0) {
+      if (contactsToPush && Object.keys(contactsToPush).length > 0) {
+        if (selectedContactList && Object.keys(selectedContactList).length > 0) {
           const remainderList: string[] = []
 
-          for(const strToCheck of selectedContactList) {
+          for (const strToCheck of selectedContactList) {
             // include not forking and filter not working
-            if(!processedItems.includes(strToCheck)) {
+            if (!processedItems.includes(strToCheck)) {
               remainderList.push(strToCheck)
             }
           }
 
           // process any unprocesed items
-          if(remainderList && Object.keys(remainderList).length > 0) {
+          if (remainderList && Object.keys(remainderList).length > 0) {
+            for (const theRemainingContactIdToSearchFor of remainderList) {
+              const enforceableContactToConvertAndProcess = warningDetails.enforceableContacts?.find(
+                ef => JSON.stringify(ef.id) === theRemainingContactIdToSearchFor,
+              )
 
-            for(const remaindKey in remainderList) {
-              const theRemainingContactIdToSearchFor = remainderList[remaindKey]
-              const enforceableContactToConvertAndProcess = warningDetails.enforceableContacts?.find(ef => JSON.stringify(ef.id) === theRemainingContactIdToSearchFor)
-
-              if(enforceableContactToConvertAndProcess) {
-                const convertedRemainder = enforceableContactToContact(breachNotice, enforceableContactToConvertAndProcess)
+              if (enforceableContactToConvertAndProcess) {
+                const convertedRemainder = enforceableContactToContact(
+                  breachNotice,
+                  enforceableContactToConvertAndProcess,
+                )
                 convertedRemainder.wholeSentence = null
                 contactsToPush.push(convertedRemainder)
               }
@@ -384,38 +406,44 @@ export default function warningDetailsRoutes(
       const contactListDeeplink = `${config.ndeliusDeeplink.url}?component=ContactList&CRN=${breachNotice.crn}`
       const { furtherReasonDetails } = breachNotice
 
-      //we need to re-apply selections
+      // we need to re-apply selections
       // wholeSentenceContactRequirementReasonList
       // This part is for screen selected contacts it adds to the current selections
-      if(selectedContactList && Object.keys(selectedContactList).length > 0) {
-        for(const selectedContact of selectedContactList) {
-          if(!existingContacts.includes(parseInt(selectedContact))){
-            existingContacts.push(parseInt(selectedContact))
+      if (selectedContactList && Object.keys(selectedContactList).length > 0) {
+        for (const selectedContact of selectedContactList) {
+          if (!existingContacts.includes(parseInt(selectedContact, 10))) {
+            existingContacts.push(parseInt(selectedContact, 10))
           }
         }
       }
 
-      //deal with whole sentence
-      if(filteredContactWholeSentenceRejectionReasonList && Object.keys(filteredContactWholeSentenceRejectionReasonList).length > 0){
-        if(warningDetails.enforceableContacts && Object.keys(warningDetails.enforceableContacts).length > 0) {
-
-          //we have enforceable contacts
-          for(const currentEnforceableContact of warningDetails.enforceableContacts) {
-            //see if we have wholeSentenceInformation to recover
-            const wholeSentenceDetail = filteredContactWholeSentenceRejectionReasonList.find(ws => JSON.stringify(currentEnforceableContact.id) === ws.contactId)
+      // deal with whole sentence
+      if (
+        filteredContactWholeSentenceRejectionReasonList &&
+        Object.keys(filteredContactWholeSentenceRejectionReasonList).length > 0
+      ) {
+        if (warningDetails.enforceableContacts && Object.keys(warningDetails.enforceableContacts).length > 0) {
+          // we have enforceable contacts
+          for (const currentEnforceableContact of warningDetails.enforceableContacts) {
+            // see if we have wholeSentenceInformation to recover
+            const wholeSentenceDetail = filteredContactWholeSentenceRejectionReasonList.find(
+              ws => JSON.stringify(currentEnforceableContact.id) === ws.contactId,
+            )
 
             currentEnforceableContact.wholeSentence = wholeSentenceDetail?.wholeSentenceSelected
 
-            currentEnforceableContact.rejectionReasons = [          {
-              text: 'Please Select',
-              value: '-1',
-              selected: false,
-            },
-              ... warningDetails.breachReasons.map(r => ({
+            currentEnforceableContact.rejectionReasons = [
+              {
+                text: 'Please Select',
+                value: '-1',
+                selected: false,
+              },
+              ...warningDetails.breachReasons.map(r => ({
                 value: r.description,
                 text: r.description,
-                selected: wholeSentenceDetail?.rejectionReason === r.description
-              }))]
+                selected: wholeSentenceDetail?.rejectionReason === r.description,
+              })),
+            ]
           }
         }
       }
@@ -434,7 +462,11 @@ export default function warningDetailsRoutes(
     }
   })
 
-  function validateWarningDetails(breachNotice: BreachNotice, responseRequiredByDate: string, wholeSentenceContactRequirementReasonList: Array<WholeSentenceContactRequirementReason>): ErrorMessages {
+  function validateWarningDetails(
+    breachNotice: BreachNotice,
+    responseRequiredByDate: string,
+    wholeSentenceContactRequirementReasonList: Array<WholeSentenceContactRequirementReason>,
+  ): ErrorMessages {
     const errorMessages: ErrorMessages = {}
     const currentDateAtStartOfTheDay: LocalDateTime = LocalDate.now().atStartOfDay()
     try {
@@ -465,11 +497,14 @@ export default function warningDetailsRoutes(
       }
     }
 
-    if (wholeSentenceContactRequirementReasonList && Object.keys(wholeSentenceContactRequirementReasonList).length > 0) {
-      for(const wholeSentence of wholeSentenceContactRequirementReasonList) {
-        if(wholeSentence.rejectionReason === "-1" && wholeSentence.wholeSentenceSelected) {
+    if (
+      wholeSentenceContactRequirementReasonList &&
+      Object.keys(wholeSentenceContactRequirementReasonList).length > 0
+    ) {
+      for (const wholeSentence of wholeSentenceContactRequirementReasonList) {
+        if (wholeSentence.rejectionReason === '-1' && wholeSentence.wholeSentenceSelected) {
           errorMessages.wholeSentenceNoFailureReason = {
-            text: 'Please select a valid failure reason for each failure selected'
+            text: 'Please select a valid failure reason for each failure selected',
           }
         }
       }
@@ -493,7 +528,7 @@ export default function warningDetailsRoutes(
       contactType: enforceableContact.type.description,
       contactOutcome: enforceableContact.outcome.description,
       wholeSentence: null,
-      rejectionReason: null
+      rejectionReason: null,
     }
   }
 

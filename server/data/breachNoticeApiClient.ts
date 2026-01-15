@@ -203,7 +203,6 @@ export interface BreachNotice {
   conditionBeingEnforced: string
   selectNextAppointment: boolean
   furtherReasonDetails: string
-
 }
 
 export interface BreachNoticeContact {

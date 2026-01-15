@@ -1,7 +1,7 @@
 import { LocalDateTime } from '@js-joda/core'
 import config from '../config'
 import RestClient from './restClient'
-import {SelectItem} from "./uiModels";
+import { SelectItem } from './uiModels'
 
 export default class NdeliusIntegrationApiClient extends RestClient {
   constructor(token: string) {
@@ -85,7 +85,7 @@ export interface WarningTypeWrapper {
 }
 
 export interface WarningDetails {
-  enforceableContacts: (EnforceableContact &{wholeSentence?:boolean, rejectionReasons?:SelectItem[]})[]
+  enforceableContacts: (EnforceableContact & { wholeSentence?: boolean; rejectionReasons?: SelectItem[] })[]
   breachReasons: ReferenceData[]
 }
 
