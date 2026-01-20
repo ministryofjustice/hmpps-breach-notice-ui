@@ -1,13 +1,17 @@
-import { Response, Router } from 'express'
-import { ZonedDateTime, ZoneId } from '@js-joda/core'
+import {Response, Router} from 'express'
+import {ZonedDateTime, ZoneId} from '@js-joda/core'
 import '@js-joda/timezone'
-import AuditService, { Page } from '../services/auditService'
-import BreachNoticeApiClient, { BreachNotice } from '../data/breachNoticeApiClient'
-import { HmppsAuthClient } from '../data'
+import AuditService, {Page} from '../services/auditService'
+import BreachNoticeApiClient, {
+  BreachNotice,
+  BreachNoticeContact,
+  WarningDetailsWholeSentenceAndRequirement
+} from '../data/breachNoticeApiClient'
+import {HmppsAuthClient} from '../data'
 import CommonUtils from '../services/commonUtils'
-import { toUserDate, toUserDateFromDateTime, toUserTimeFromDateTime } from '../utils/dateUtils'
-import { ErrorMessages } from '../data/uiModels'
-import { createBlankBreachNoticeWithId, handleIntegrationErrors } from '../utils/utils'
+import {toUserDate, toUserDateFromDateTime, toUserTimeFromDateTime} from '../utils/dateUtils'
+import {ErrorMessages} from '../data/uiModels'
+import {createBlankBreachNoticeWithId, handleIntegrationErrors} from '../utils/utils'
 
 export default function checkYourReportRoutes(
   router: Router,
@@ -15,16 +19,59 @@ export default function checkYourReportRoutes(
   hmppsAuthClient: HmppsAuthClient,
   commonUtils: CommonUtils,
 ): Router {
-  router.get('/check-your-report/:id', async (req, res, next) => {
+  router.get('/check-your-report/:id', async (req, res) => {
     await auditService.logPageView(Page.CHECK_YOUR_REPORT, { who: res.locals.user.username, correlationId: req.id })
     const breachNoticeApiClient = new BreachNoticeApiClient(
       await hmppsAuthClient.getSystemClientToken(res.locals.user.username),
     )
     const { id } = req.params
-    let breachNotice: BreachNotice = null
+    let breachNotice: BreachNotice
+    let breachNoticeWholeSentenceContacts: BreachNoticeContact[] = []
+    let warningDetailsFailureList: WarningDetailsWholeSentenceAndRequirement[] = []
 
     try {
       breachNotice = await breachNoticeApiClient.getBreachNoticeById(id as string)
+
+      if(breachNotice.breachNoticeContactList && Object.keys(breachNotice.breachNoticeContactList).length > 0) {
+        breachNoticeWholeSentenceContacts = breachNotice.breachNoticeContactList.filter(bnc => bnc.wholeSentence === true)
+      }
+
+      if(breachNoticeWholeSentenceContacts && Object.keys(breachNoticeWholeSentenceContacts).length > 0) {
+        //contact date, contact type, contact outcome - rejection reason (whole sentence)
+        breachNoticeWholeSentenceContacts?.forEach(it => {
+          if(it.rejectionReason) {
+            const desc: string = (toUserDateFromDateTime(it.contactDate))
+              .concat(it.contactType? ", "+it.contactType : "")
+              .concat(it.contactOutcome? ", "+it.contactOutcome : "")
+              .concat(it.rejectionReason? " - "+it.rejectionReason : "")
+              .concat(" (whole sentence)")
+            warningDetailsFailureList.push({
+              description: desc,
+              wholeSentence: it.wholeSentence
+            })
+          }
+        })
+      }
+
+      //add standard requirement failures to the list
+      if(breachNotice.breachNoticeRequirementList && Object.keys(breachNotice.breachNoticeContactList).length > 0) {
+        breachNotice.breachNoticeRequirementList.forEach(it => {
+
+          if(it.rejectionReason) {
+            console.log("REJECTION REASON: "+it.rejectionReason)
+            console.log("Main Descriptiuon: "+it.requirementTypeMainCategoryDescription)
+            console.log("Sub Descriptiuon: "+it.requirementTypeSubCategoryDescription)
+            const recDesc: string = it.requirementTypeMainCategoryDescription
+              . concat(it.requirementTypeSubCategoryDescription? ", "+it.requirementTypeSubCategoryDescription : "")
+              . concat(" - "+it.rejectionReason)
+
+            warningDetailsFailureList.push({
+              description: recDesc,
+              wholeSentence: false
+            })
+          }
+        })
+      }
     } catch (error) {
       const errorMessages: ErrorMessages = handleIntegrationErrors(error.status, error.data?.message, 'Breach Notice')
       const showEmbeddedError = true
@@ -49,6 +96,8 @@ export default function checkYourReportRoutes(
 
     await renderCheckYourReport(
       breachNotice,
+      breachNoticeWholeSentenceContacts,
+      warningDetailsFailureList,
       res,
       {},
       basicDetailsDateOfLetter,
@@ -60,6 +109,8 @@ export default function checkYourReportRoutes(
 
   async function renderCheckYourReport(
     breachNotice: BreachNotice,
+    breachNoticeWholeSentenceContacts: BreachNoticeContact[],
+    warningDetailsFailureList: WarningDetailsWholeSentenceAndRequirement[],
     res: Response,
     errorMessages: ErrorMessages,
     dateOfLetter: string,
@@ -72,6 +123,8 @@ export default function checkYourReportRoutes(
     res.render('pages/check-your-report', {
       errorMessages,
       breachNotice,
+      breachNoticeWholeSentenceContacts,
+      warningDetailsFailureList,
       dateOfLetter,
       responseRequiredByDate,
       nextAppointmentDate,
@@ -81,7 +134,7 @@ export default function checkYourReportRoutes(
     })
   }
 
-  router.post('/check-your-report/:id', async (req, res, next) => {
+  router.post('/check-your-report/:id', async (req, res) => {
     await auditService.logPageView(Page.CHECK_YOUR_REPORT, { who: res.locals.user.username, correlationId: req.id })
     const breachNoticeApiClient = new BreachNoticeApiClient(
       await hmppsAuthClient.getSystemClientToken(res.locals.user.username),

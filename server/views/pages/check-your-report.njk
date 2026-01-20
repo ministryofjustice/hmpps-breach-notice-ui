@@ -279,16 +279,16 @@
                                     Failures being enforced
                                 </dt>
                                 <dd class="govuk-summary-list__value">
-                                    {% if ( breachNotice.breachNoticeRequirementList == null or breachNotice.breachNoticeRequirementList.length == 0 ) and breachNotice.warningTypeSaved %}
+                                    {% if ( warningDetailsFailureList == null or warningDetailsFailureList == 0 ) and breachNotice.warningTypeSaved %}
                                         <a href="/warning-details/{{ breachNotice.id }}?returnTo=check-your-report" class="govuk-link">enter
                                             required information<span class="govuk-visually-hidden"> for Failures being Enforced</span></a>
                                     {% else %}
-                                        {% for req in breachNotice.breachNoticeRequirementList %}
-                                            <p>{{ req.requirementTypeMainCategoryDescription }} {% if req.requirementTypeSubCategoryDescription != null %} {{ req.requirementTypeSubCategoryDescription }} {% endif %} {% if req.rejectionReason != null %}- {{ req.rejectionReason }}{% endif %}</p>
+                                        {% for req in warningDetailsFailureList %}
+                                            <p>{{ req.description }}</p>
                                         {% endfor %}
                                     {% endif %}
                                 </dd>
-                                {% if breachNotice.breachNoticeRequirementList == null or breachNotice.breachNoticeRequirementList.length == 0 %}
+                                {% if warningDetailsFailureList == null or warningDetailsFailureList.length == 0 %}
                                     <dd class="govuk-summary-list__actions">
 
                                         <span class="govuk-tag--light-blue">
