@@ -1,17 +1,17 @@
-import {Response, Router} from 'express'
-import {ZonedDateTime, ZoneId} from '@js-joda/core'
+import { Response, Router } from 'express'
+import { ZonedDateTime, ZoneId } from '@js-joda/core'
 import '@js-joda/timezone'
-import AuditService, {Page} from '../services/auditService'
+import AuditService, { Page } from '../services/auditService'
 import BreachNoticeApiClient, {
   BreachNotice,
   BreachNoticeContact,
-  WarningDetailsWholeSentenceAndRequirement
+  WarningDetailsWholeSentenceAndRequirement,
 } from '../data/breachNoticeApiClient'
-import {HmppsAuthClient} from '../data'
+import { HmppsAuthClient } from '../data'
 import CommonUtils from '../services/commonUtils'
-import {toUserDate, toUserDateFromDateTime, toUserTimeFromDateTime} from '../utils/dateUtils'
-import {ErrorMessages} from '../data/uiModels'
-import {createBlankBreachNoticeWithId, handleIntegrationErrors} from '../utils/utils'
+import { toUserDate, toUserDateFromDateTime, toUserTimeFromDateTime } from '../utils/dateUtils'
+import { ErrorMessages } from '../data/uiModels'
+import { createBlankBreachNoticeWithId, handleIntegrationErrors } from '../utils/utils'
 
 export default function checkYourReportRoutes(
   router: Router,
@@ -27,47 +27,45 @@ export default function checkYourReportRoutes(
     const { id } = req.params
     let breachNotice: BreachNotice
     let breachNoticeWholeSentenceContacts: BreachNoticeContact[] = []
-    let warningDetailsFailureList: WarningDetailsWholeSentenceAndRequirement[] = []
+    const warningDetailsFailureList: WarningDetailsWholeSentenceAndRequirement[] = []
 
     try {
       breachNotice = await breachNoticeApiClient.getBreachNoticeById(id as string)
 
-      if(breachNotice.breachNoticeContactList && Object.keys(breachNotice.breachNoticeContactList).length > 0) {
-        breachNoticeWholeSentenceContacts = breachNotice.breachNoticeContactList.filter(bnc => bnc.wholeSentence === true)
+      if (breachNotice.breachNoticeContactList && Object.keys(breachNotice.breachNoticeContactList).length > 0) {
+        breachNoticeWholeSentenceContacts = breachNotice.breachNoticeContactList.filter(
+          bnc => bnc.wholeSentence === true,
+        )
       }
 
-      if(breachNoticeWholeSentenceContacts && Object.keys(breachNoticeWholeSentenceContacts).length > 0) {
-        //contact date, contact type, contact outcome - rejection reason (whole sentence)
+      if (breachNoticeWholeSentenceContacts && Object.keys(breachNoticeWholeSentenceContacts).length > 0) {
+        // contact date, contact type, contact outcome - rejection reason (whole sentence)
         breachNoticeWholeSentenceContacts?.forEach(it => {
-          if(it.rejectionReason) {
-            const desc: string = (toUserDateFromDateTime(it.contactDate))
-              .concat(it.contactType? ", "+it.contactType : "")
-              .concat(it.contactOutcome? ", "+it.contactOutcome : "")
-              .concat(it.rejectionReason? " - "+it.rejectionReason : "")
-              .concat(" (whole sentence)")
+          if (it.rejectionReason) {
+            const desc: string = toUserDateFromDateTime(it.contactDate)
+              .concat(it.contactType ? `, ${it.contactType}` : '')
+              .concat(it.contactOutcome ? `, ${it.contactOutcome}` : '')
+              .concat(it.rejectionReason ? ` - ${it.rejectionReason}` : '')
+              .concat(' (whole sentence)')
             warningDetailsFailureList.push({
               description: desc,
-              wholeSentence: it.wholeSentence
+              wholeSentence: it.wholeSentence,
             })
           }
         })
       }
 
-      //add standard requirement failures to the list
-      if(breachNotice.breachNoticeRequirementList && Object.keys(breachNotice.breachNoticeContactList).length > 0) {
+      // add standard requirement failures to the list
+      if (breachNotice.breachNoticeRequirementList && Object.keys(breachNotice.breachNoticeContactList).length > 0) {
         breachNotice.breachNoticeRequirementList.forEach(it => {
-
-          if(it.rejectionReason) {
-            console.log("REJECTION REASON: "+it.rejectionReason)
-            console.log("Main Descriptiuon: "+it.requirementTypeMainCategoryDescription)
-            console.log("Sub Descriptiuon: "+it.requirementTypeSubCategoryDescription)
+          if (it.rejectionReason) {
             const recDesc: string = it.requirementTypeMainCategoryDescription
-              . concat(it.requirementTypeSubCategoryDescription? ", "+it.requirementTypeSubCategoryDescription : "")
-              . concat(" - "+it.rejectionReason)
+              .concat(it.requirementTypeSubCategoryDescription ? `, ${it.requirementTypeSubCategoryDescription}` : '')
+              .concat(` - ${it.rejectionReason}`)
 
             warningDetailsFailureList.push({
               description: recDesc,
-              wholeSentence: false
+              wholeSentence: false,
             })
           }
         })
