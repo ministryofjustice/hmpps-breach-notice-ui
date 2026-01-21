@@ -2236,6 +2236,24 @@
         "transformers": ["response-template"]
       }
     },
+
+
+    {
+      "request": {
+        "url": "/breach-notice-api/crlinks/bybreachnoticeid/77777777-4444-3333-9999-123456789112",
+        "method": "GET"
+      },
+      "response": {
+        "status": 200,
+        "jsonBody": [],
+        "headers": {
+          "Content-Type": "application/json;charset=UTF-8"
+        },
+        "transformers": ["response-template"]
+      }
+    },
+
+
     {
       "request": {
         "url": "/breach-notice-api/crlinks/bybreachnoticeidandcontactid/12345678-7777-5555-500000000005/00000000-0000-0000-0000-000000000005",
@@ -2632,6 +2650,96 @@
         "transformers": ["response-template"]
       }
     },
+
+
+
+    {
+      "request": {
+        "url": "/breach-notice-api/breach-notice/77777777-4444-3333-9999-123456789112",
+        "method": "GET"
+      },
+      "response": {
+        "status": 200,
+        "jsonBody": {
+          "id": "77777777-4444-3333-9999-123456789112",
+          "crn": "Q123456",
+          "titleAndFullName": "Mr Billy The Kid",
+          "dateOfLetter": "2025-01-01",
+          "referenceNumber": "REF0001",
+          "responseRequiredDate": "2025-01-01",
+          "breachNoticeTypeCode": "BW",
+          "breachNoticeTypeDescription": "Breach Warning",
+          "breachConditionTypeCode": "BRE",
+          "breachConditionTypeDescription": "Breach",
+          "breachSentenceTypeCode": "CO",
+          "breachSentenceTypeDescription": "Community Order(s)",
+          "responsibleOfficer": "An Officer",
+          "contactNumber": "0892929187",
+          "nextAppointmentType": "App Type",
+          "nextAppointmentDate": "2025-01-01T12:34:56",
+          "nextAppointmentLocation": "Location",
+          "nextAppointmentOfficer": "Officer",
+          "nextAppointmentContact": "0292827177",
+          "completedDate": null,
+          "offenderAddress": {
+            "officeDescription": "Office Desc",
+            "addressId": 12345,
+            "status": "Postal",
+            "buildingName": null,
+            "buildingNumber": "21",
+            "streetName": "Postal Street",
+            "district": "Postal District",
+            "townCity": "PostCity",
+            "county": "Postal County",
+            "postcode": "NE30 3ZZ"
+          },
+          "replyAddress": {
+            "officeDescription": "Office Desc",
+            "addressId": 33333,
+            "status": "Reply",
+            "buildingName": null,
+            "buildingNumber": "21",
+            "streetName": "Reply Street",
+            "district": "Reply District",
+            "townCity": "Reply City",
+            "county": "Reply County",
+            "postcode": "NE22 3AA"
+          },
+          "basicDetailsSaved": true,
+          "warningTypeSaved": true,
+          "warningDetailsSaved": true,
+          "nextAppointmentSaved": true,
+          "useDefaultAddress": true,
+          "useDefaultReplyAddress": true,
+          "breachNoticeContactList": [
+            {
+              "breachNoticeId": "77777777-4444-3333-9999-123456789112",
+              "contactDate": "2025-01-02T12:00:00.00",
+              "contactType": "Test Type",
+              "contactOutcome": "An Outcome",
+              "contactId": 1,
+              "wholeSentence": true,
+              "rejectionReason": "Failed To Attend"
+            }
+          ],
+          "breachNoticeRequirementList": [
+            {
+              "requirementId": 1
+            }
+          ]
+        },
+        "headers": {
+          "Content-Type": "application/json;charset=UTF-8"
+        },
+        "transformers": ["response-template"]
+      }
+    },
+
+
+
+
+
+
     {
       "request": {
         "url": "/breach-notice-api/breach-notice/22222222-3333-4444-900000000010",
@@ -3207,6 +3315,23 @@
         "transformers": ["response-template"]
       }
     },
+
+    {
+      "request": {
+        "url": "/breach-notice-api/crlinks/bybreachnoticeid/00000000-0000-0000-0000-100000000003",
+        "method": "GET"
+      },
+      "response": {
+        "status": 200,
+        "jsonBody": [
+        ],
+        "headers": {
+          "Content-Type": "application/json;charset=UTF-8"
+        },
+        "transformers": ["response-template"]
+      }
+    },
+
     {
       "request": {
         "url": "/breach-notice-api/breach-notice/00000000-ff00-0000-0000-000000000001",
