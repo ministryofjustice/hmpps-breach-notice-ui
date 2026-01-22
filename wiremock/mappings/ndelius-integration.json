@@ -1896,6 +1896,31 @@
     },
     {
       "request": {
+        "urlPattern": "/warning-details/Q123456/(.*?)",
+        "method": "GET"
+      },
+      "response": {
+        "status": 200,
+        "jsonBody": {
+          "enforceableContacts": [],
+          "breachReasons": [
+            {
+              "code": "BR03",
+              "description": "Attended late"
+            },
+            {
+              "code": "BR04",
+              "description": "Did Not Comply"
+            }
+          ]
+        },
+        "headers": {
+          "Content-Type": "application/json;charset=UTF-8"
+        }
+      }
+    },
+    {
+      "request": {
         "urlPattern": "/warning-details/P340567/(.*?)",
         "method": "GET"
       },

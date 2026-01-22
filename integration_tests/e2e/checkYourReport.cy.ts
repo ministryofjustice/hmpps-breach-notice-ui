@@ -32,6 +32,12 @@ context('Check your report page', () => {
     cy.url().should('include', '/warning-details/00000000-0000-0000-0000-100000000003')
   })
 
+  it('warning details should contain whole sentence contacts', () => {
+    cy.visit('/check-your-report/77777777-4444-3333-9999-123456789112')
+    cy.get('#change-warning-details').should('exist')
+    cy.contains('Failed To Attend (whole sentence)').should('be.visible')
+  })
+
   it('displays next appointment link', () => {
     cy.visit('/check-your-report/00000000-0000-0000-0000-100000000004')
     cy.get('#change-basic-details').should('exist')

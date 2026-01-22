@@ -205,6 +205,11 @@ export interface BreachNotice {
   furtherReasonDetails: string
 }
 
+export interface WarningDetailsWholeSentenceAndRequirement {
+  description: string
+  wholeSentence: boolean
+}
+
 export interface BreachNoticeContact {
   id: string
   breachNoticeId: string
