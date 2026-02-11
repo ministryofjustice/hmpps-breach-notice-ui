@@ -31,6 +31,7 @@ export default function addRequirementRoutes(
     await auditService.logPageView(Page.ADD_REQUIREMENT, { who: res.locals.user.username, correlationId: req.id })
     const token = await hmppsAuthClient.getSystemClientToken(res.locals.user.username)
     const contactId: string = req.query.contactId as string
+    const callingScreen: string = req.query.returnTo as string
     const breachNoticeApiClient = new BreachNoticeApiClient(token)
     const ndeliusIntegrationApiClient = new NdeliusIntegrationApiClient(token)
 
@@ -94,18 +95,24 @@ export default function addRequirementRoutes(
       breachNotice,
       breachReasons,
       requirementsList,
+      callingScreen,
     })
   })
 
   router.post('/add-requirement/:id', async (req, res, next) => {
     const token = await hmppsAuthClient.getSystemClientToken(res.locals.user.username)
     const contactId: string = req.query.contactId as string
+    const callingScreen: string = req.query.returnTo as string
     const breachNoticeApiClient = new BreachNoticeApiClient(token)
     const ndeliusIntegrationApiClient = new NdeliusIntegrationApiClient(token)
     const { id } = req.params
 
     if (req.body.action === 'cancel') {
-      res.redirect(`/warning-details/${id}`)
+      if (callingScreen) {
+        res.redirect(`/warning-details/${id}?returnTo=${callingScreen}`)
+      } else {
+        res.redirect(`/warning-details/${id}`)
+      }
     } else {
       let breachNotice: BreachNotice
       let requirements: Requirements = null
@@ -225,7 +232,11 @@ export default function addRequirementRoutes(
         await breachNoticeApiClient.recalculateRequirementFromToDate(breachNotice.id)
         // contactRequirementRepository.saveAll(recordsToAdd)
 
-        res.redirect(`/warning-details/${id}`)
+        if (callingScreen) {
+          res.redirect(`/warning-details/${id}?returnTo=${callingScreen}`)
+        } else {
+          res.redirect(`/warning-details/${id}`)
+        }
       } else {
         const selectedIds = asArray(req.body.failuresBeingEnforcedRequirements)
         for (const requirement of requirementsList) {
@@ -243,6 +254,7 @@ export default function addRequirementRoutes(
           breachNotice,
           breachReasons,
           requirementsList,
+          callingScreen,
         })
       }
     }
