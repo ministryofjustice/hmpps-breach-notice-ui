@@ -154,12 +154,31 @@ export default function checkYourReportRoutes(
       breachNotice.replyAddress != null &&
       breachNotice.breachNoticeTypeDescription != null &&
       breachNotice.breachSentenceTypeDescription &&
-      breachNotice.breachNoticeRequirementList != null &&
-      breachNotice.breachNoticeRequirementList.length > 0 &&
+      checkForRequirementsOrWholeSentenceSelections(breachNotice) &&
       breachNotice.responseRequiredDate != null &&
       breachNotice.responsibleOfficer != null &&
       breachNotice.contactNumber != null
     )
+  }
+
+  function checkForRequirementsOrWholeSentenceSelections(breachNotice: BreachNotice): boolean {
+    const hasRequirements =
+      breachNotice.breachNoticeRequirementList != null && breachNotice.breachNoticeRequirementList.length > 0
+    let hasWholeSentenceContacts = false
+
+    // find any contacts where whole sentence set to true and a valid rejection reason
+    if (breachNotice.breachNoticeContactList && Object.keys(breachNotice.breachNoticeContactList).length > 0) {
+      for (const breachNoticeContact of breachNotice.breachNoticeContactList) {
+        if (breachNoticeContact.wholeSentence) {
+          if (breachNoticeContact.rejectionReason && breachNoticeContact.rejectionReason !== '-1') {
+            hasWholeSentenceContacts = true
+            break
+          }
+        }
+      }
+    }
+
+    return hasRequirements || hasWholeSentenceContacts
   }
 
   return router

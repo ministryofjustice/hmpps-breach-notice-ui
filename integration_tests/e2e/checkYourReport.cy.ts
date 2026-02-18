@@ -62,6 +62,13 @@ context('Check your report page', () => {
     cy.url().should('include', '/report-completed/00000000-0000-0000-0000-100000000004')
   })
 
+  it('Publish button present when only selecting whole sentence and not requirements', () => {
+    cy.visit('/check-your-report/12345678-8888-9999-1111-100000000002')
+    cy.get('#publish').should('exist')
+    cy.get('#publish').click()
+    cy.url().should('include', '/report-completed/12345678-8888-9999-1111-100000000002')
+  })
+
   it('Publish button should not be present when contact number is missing', () => {
     cy.visit('/check-your-report/00000000-0000-0000-0000-100000000094')
     cy.get('#publish').should('not.exist')
