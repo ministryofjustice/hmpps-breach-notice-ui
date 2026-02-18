@@ -1088,6 +1088,18 @@
         "status": 200
       }
     },
+
+    {
+      "request": {
+        "url": "/breach-notice-api/breach-notice/12345678-8888-9999-1111-100000000002",
+        "method": "PUT"
+      },
+      "response": {
+        "status": 200
+      }
+    },
+
+
     {
       "request": {
         "url": "/breach-notice-api/breach-notice/00000000-0000-0000-0000-900000000001",
