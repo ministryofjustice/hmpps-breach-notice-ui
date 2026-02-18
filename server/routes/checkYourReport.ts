@@ -161,13 +161,12 @@ export default function checkYourReportRoutes(
     )
   }
 
-  // we can either have a contact with a
   function checkForRequirementsOrWholeSentenceSelections(breachNotice: BreachNotice): boolean {
     const hasRequirements =
       breachNotice.breachNoticeRequirementList != null && breachNotice.breachNoticeRequirementList.length > 0
     let hasWholeSentenceContacts = false
 
-    // find any contacts where whole sentence set to true
+    // find any contacts where whole sentence set to true and a valid rejection reason
     if (breachNotice.breachNoticeContactList && Object.keys(breachNotice.breachNoticeContactList).length > 0) {
       for (const breachNoticeContact of breachNotice.breachNoticeContactList) {
         if (breachNoticeContact.wholeSentence) {
