@@ -13,7 +13,7 @@ import { toUserDate, toUserDateFromDateTime, toUserTimeFromDateTime } from '../u
 import { ErrorMessages } from '../data/uiModels'
 import { createBlankBreachNoticeWithId, handleIntegrationErrors } from '../utils/utils'
 
-function checkYourReportRoutes(
+export default function checkYourReportRoutes(
   router: Router,
   auditService: AuditService,
   hmppsAuthClient: HmppsAuthClient,
@@ -184,5 +184,3 @@ function checkYourReportRoutes(
 
   return router
 }
-
-export default checkYourReportRoutes
