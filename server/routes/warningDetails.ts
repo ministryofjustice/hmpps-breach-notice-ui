@@ -386,18 +386,22 @@ export default function warningDetailsRoutes(
           : []
         await breachNoticeApiClient.batchDeleteContacts(breachNotice.id, contactsToDelete)
 
-        if (callingScreen && callingScreen === 'check-your-report') {
-          res.redirect(`/check-your-report/${id}`)
-        } else if (req.body.action && req.body.action.substring(0, 18) === 'enforceablecontact') {
+        if (req.body.action && req.body.action.substring(0, 18) === 'enforceablecontact') {
           const contactId = req.body.action.substring(19, req.body.action.length) // <- Delius contact id
           const selectedContact = warningDetails.enforceableContacts?.find(c => c.id.toString() === contactId)
           const returnedContact = await breachNoticeApiClient.getBreachNoticeContact(
             breachNotice.id,
             selectedContact.id,
           )
-          res.redirect(`/add-requirement/${id}?contactId=${returnedContact.id}`)
+          if (callingScreen) {
+            res.redirect(`/add-requirement/${id}?contactId=${returnedContact.id}&returnTo=${callingScreen}`)
+          } else {
+            res.redirect(`/add-requirement/${id}?contactId=${returnedContact.id}`)
+          }
         } else if (req.body.action === 'saveProgressAndClose') {
           res.send(`<script nonce="${res.locals.cspNonce}">window.close()</script>`)
+        } else if (callingScreen && callingScreen === 'check-your-report') {
+          res.redirect(`/check-your-report/${id}`)
         } else {
           res.redirect(`/next-appointment/${id}`)
         }
