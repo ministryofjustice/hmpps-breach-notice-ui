@@ -47,7 +47,7 @@ context('Next Appointment page', () => {
     cy.url().should('include', '/check-your-report/')
   })
 
-  it('appointments should not be shown if NO is selected', () => {
+  it('appointments should not be shown if NO is selected ', () => {
     cy.visit('/next-appointment/00000000-0000-0000-0000-000000000001')
     cy.get('#selectNextAppointment').should('be.checked')
     cy.get('#selectNextAppointment-2').should('not.be.checked')
