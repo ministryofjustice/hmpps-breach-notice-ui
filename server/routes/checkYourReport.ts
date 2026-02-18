@@ -13,18 +13,18 @@ import { toUserDate, toUserDateFromDateTime, toUserTimeFromDateTime } from '../u
 import { ErrorMessages } from '../data/uiModels'
 import { createBlankBreachNoticeWithId, handleIntegrationErrors } from '../utils/utils'
 
-export default function checkYourReportRoutes(
+function checkYourReportRoutes(
   router: Router,
   auditService: AuditService,
   hmppsAuthClient: HmppsAuthClient,
   commonUtils: CommonUtils,
 ): Router {
   router.get('/check-your-report/:id', async (req, res) => {
-    await auditService.logPageView(Page.CHECK_YOUR_REPORT, { who: res.locals.user.username, correlationId: req.id })
+    await auditService.logPageView(Page.CHECK_YOUR_REPORT, {who: res.locals.user.username, correlationId: req.id})
     const breachNoticeApiClient = new BreachNoticeApiClient(
       await hmppsAuthClient.getSystemClientToken(res.locals.user.username),
     )
-    const { id } = req.params
+    const {id} = req.params
     let breachNotice: BreachNotice
     let breachNoticeWholeSentenceContacts: BreachNoticeContact[] = []
     const warningDetailsFailureList: WarningDetailsWholeSentenceAndRequirement[] = []
@@ -75,7 +75,7 @@ export default function checkYourReportRoutes(
       const showEmbeddedError = true
       breachNotice = createBlankBreachNoticeWithId(req.params.id)
       // always stay on page and display the error when there are isssues retrieving the breach notice
-      res.render(`pages/check-your-report`, { errorMessages, showEmbeddedError, breachNotice })
+      res.render(`pages/check-your-report`, {errorMessages, showEmbeddedError, breachNotice})
       return
     }
 
@@ -133,11 +133,11 @@ export default function checkYourReportRoutes(
   }
 
   router.post('/check-your-report/:id', async (req, res) => {
-    await auditService.logPageView(Page.CHECK_YOUR_REPORT, { who: res.locals.user.username, correlationId: req.id })
+    await auditService.logPageView(Page.CHECK_YOUR_REPORT, {who: res.locals.user.username, correlationId: req.id})
     const breachNoticeApiClient = new BreachNoticeApiClient(
       await hmppsAuthClient.getSystemClientToken(res.locals.user.username),
     )
-    const { id } = req.params
+    const {id} = req.params
     const breachNotice = await breachNoticeApiClient.getBreachNoticeById(id as string)
     if (await commonUtils.redirectRequired(breachNotice, res)) return
     breachNotice.completedDate = ZonedDateTime.now(ZoneId.of('Europe/London'))
@@ -154,13 +154,34 @@ export default function checkYourReportRoutes(
       breachNotice.replyAddress != null &&
       breachNotice.breachNoticeTypeDescription != null &&
       breachNotice.breachSentenceTypeDescription &&
-      breachNotice.breachNoticeRequirementList != null &&
-      breachNotice.breachNoticeRequirementList.length > 0 &&
+      checkForRequirementsOrWholeSentenceSelections(breachNotice) &&
       breachNotice.responseRequiredDate != null &&
       breachNotice.responsibleOfficer != null &&
       breachNotice.contactNumber != null
     )
   }
 
+  // we can either have a contact with a
+  function checkForRequirementsOrWholeSentenceSelections(breachNotice: BreachNotice): boolean {
+    const hasRequirements = breachNotice.breachNoticeRequirementList != null && breachNotice.breachNoticeRequirementList.length > 0;
+    let hasWholeSentenceContacts = false;
+
+    // find any contacts where whole sentence set to true
+    if(breachNotice.breachNoticeContactList && Object.keys(breachNotice.breachNoticeContactList).length > 0) {
+      for(const breachNoticeContact of breachNotice.breachNoticeContactList) {
+        if(breachNoticeContact.wholeSentence){
+          if(breachNoticeContact.rejectionReason && breachNoticeContact.rejectionReason !== "-1") {
+            hasWholeSentenceContacts = true
+            break
+          }
+        }
+      }
+    }
+
+    return (hasRequirements || hasWholeSentenceContacts)
+  }
+
   return router
 }
+
+export default checkYourReportRoutes
