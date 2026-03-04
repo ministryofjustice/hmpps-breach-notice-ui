@@ -40,10 +40,10 @@ export default class BreachNoticeApiClient extends RestClient {
     })
   }
 
-  async updateBreachNoticeContact(breachNoticeContact: BreachNoticeContact) {
+  async batchUpdateBreachNoticeContacts(breachNoticeId: string, contacts: Array<BreachNoticeContact>) {
     return this.put({
-      path: `/contact/${breachNoticeContact.id}`,
-      data: breachNoticeContact as unknown as Record<string, unknown>,
+      path: `/contacts/${breachNoticeId}`,
+      data: contacts as unknown as Record<string, unknown>,
     })
   }
 
@@ -138,11 +138,27 @@ export default class BreachNoticeApiClient extends RestClient {
 
   async batchUpdateContacts(breachNoticeId: string, contacts: Array<BreachNoticeContact>): Promise<void> {
     const promises = []
-    for (const contact of contacts) {
-      if (contact.id) {
-        promises.push(this.updateBreachNoticeContact(contact))
-      } else {
-        promises.push(this.createBreachNoticeContact(contact))
+    let contactsToUpdate: Array<BreachNoticeContact> = []
+    let contactsToAdd: Array<BreachNoticeContact> = []
+
+    if(contacts && Object.keys(contacts).length > 0) {
+      for (const contact of contacts) {
+        if (contact.id) {
+          contactsToUpdate.push(contact)
+        } else {
+          contactsToAdd.push(contact)
+        }
+      }
+    }
+
+    if(contactsToUpdate && Object.keys(contactsToUpdate).length > 0) {
+      promises.push(this.batchUpdateBreachNoticeContacts(breachNoticeId, contactsToUpdate))
+    }
+
+    if(contactsToAdd && Object.keys(contactsToAdd).length > 0) {
+      for (const contact of contacts)
+      {
+          promises.push(this.createBreachNoticeContact(contact))
       }
     }
     await Promise.all(promises)
