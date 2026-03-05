@@ -3581,6 +3581,17 @@
         "status": 200
       }
     },
+
+    {
+      "request": {
+        "url": "/breach-notice-api/contacts/225244a2-74fc-4548-b55f-18526dec8046",
+        "method": "PUT"
+      },
+      "response": {
+        "status": 200
+      }
+    },
+
     {
       "request": {
         "url": "/breach-notice-api/contact/bybreachnoticeid/225244a2-74fc-4548-b55f-18526dec8046",
