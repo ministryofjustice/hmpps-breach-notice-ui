@@ -138,10 +138,10 @@ export default class BreachNoticeApiClient extends RestClient {
 
   async batchUpdateContacts(breachNoticeId: string, contacts: Array<BreachNoticeContact>): Promise<void> {
     const promises = []
-    let contactsToUpdate: Array<BreachNoticeContact> = []
-    let contactsToAdd: Array<BreachNoticeContact> = []
+    const contactsToUpdate: Array<BreachNoticeContact> = []
+    const contactsToAdd: Array<BreachNoticeContact> = []
 
-    if(contacts && Object.keys(contacts).length > 0) {
+    if (contacts && Object.keys(contacts).length > 0) {
       for (const contact of contacts) {
         if (contact.id) {
           contactsToUpdate.push(contact)
@@ -151,14 +151,13 @@ export default class BreachNoticeApiClient extends RestClient {
       }
     }
 
-    if(contactsToUpdate && Object.keys(contactsToUpdate).length > 0) {
+    if (contactsToUpdate && Object.keys(contactsToUpdate).length > 0) {
       promises.push(this.batchUpdateBreachNoticeContacts(breachNoticeId, contactsToUpdate))
     }
 
-    if(contactsToAdd && Object.keys(contactsToAdd).length > 0) {
-      for (const contact of contacts)
-      {
-          promises.push(this.createBreachNoticeContact(contact))
+    if (contactsToAdd && Object.keys(contactsToAdd).length > 0) {
+      for (const contact of contacts) {
+        promises.push(this.createBreachNoticeContact(contact))
       }
     }
     await Promise.all(promises)
