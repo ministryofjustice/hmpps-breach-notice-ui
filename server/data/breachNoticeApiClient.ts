@@ -143,7 +143,7 @@ export default class BreachNoticeApiClient extends RestClient {
 
     if (contacts && Object.keys(contacts).length > 0) {
       for (const contact of contacts) {
-        if (contact.id) {
+        if (contact.id && contact.id.length > 0) {
           contactsToUpdate.push(contact)
         } else {
           contactsToAdd.push(contact)
@@ -156,8 +156,8 @@ export default class BreachNoticeApiClient extends RestClient {
     }
 
     if (contactsToAdd && Object.keys(contactsToAdd).length > 0) {
-      for (const contact of contacts) {
-        promises.push(this.createBreachNoticeContact(contact))
+      for (const contactBeingAdded of contactsToAdd) {
+        promises.push(this.createBreachNoticeContact(contactBeingAdded))
       }
     }
     await Promise.all(promises)
