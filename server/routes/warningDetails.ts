@@ -289,9 +289,6 @@ export default function warningDetailsRoutes(
     )
     const hasErrors: boolean = Object.keys(errorMessages).length > 0
 
-    // get list of existing contact ids which have already been saved
-    const existingContacts = breachNotice.breachNoticeContactList.map(c => c.contactId)
-
     // if we dont have validation errors navigate continue
     if (!hasErrors) {
       breachNotice.warningDetailsSaved = true
@@ -409,6 +406,9 @@ export default function warningDetailsRoutes(
     } else {
       const contactListDeeplink = `${config.ndeliusDeeplink.url}?component=ContactList&CRN=${breachNotice.crn}`
       const { furtherReasonDetails } = breachNotice
+
+      // get list of existing contact ids which have already been saved
+      const existingContacts = breachNotice.breachNoticeContactList.map(c => c.contactId)
 
       // we need to re-apply selections
       // wholeSentenceContactRequirementReasonList
