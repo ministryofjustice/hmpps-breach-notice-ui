@@ -150,7 +150,7 @@
                                          {{ "checked" if (appointmentRadioButton.checked and useAboveAddress !== null and useAboveAddress === true) else "" }}
                                          type="radio"
                                          value="Yes">
-                                  <label class="govuk-label govuk-radios__label" for="alt-address-radio_{{ appointmentRadioButton.value }}">
+                                  <label class="govuk-label govuk-radios__label" for="alt-address-radio_yes_{{ appointmentRadioButton.value }}">
                                     Yes
                                   </label>
                                 </div>
@@ -158,19 +158,18 @@
                                   <input class="govuk-radios__input"
                                          id="alt-address-radio-no_{{ appointmentRadioButton.value }}"
                                          name="altAddressRadio_{{ appointmentRadioButton.value }}"
-                                    {{ "checked" if (appointmentRadioButton.checked and useAboveAddress !== null and useAboveAddress === false) else "" }}
+                                         {{ "checked" if (appointmentRadioButton.checked and useAboveAddress !== null and useAboveAddress === false) else "" }}
                                          type="radio"
                                          value="No"
                                          data-aria-controls="conditional-alt-address-section_{{ appointmentRadioButton.value }}">
-                                  <label class="govuk-label govuk-radios__label" for="contact-3">
+                                  <label class="govuk-label govuk-radios__label" for="alt-address-radio_no_{{ appointmentRadioButton.value }}">
                                     No, I would like to use a different address
                                   </label>
                                 </div>
                                 <div class="govuk-radios__conditional govuk-radios__conditional--hidden"
                                      id="conditional-alt-address-section_{{ appointmentRadioButton.value }}">
 
-
-                                  {% if showAddAddress %}
+                                  {% if (showAddAddress and appointmentRadioButton.checked) or not appointmentRadioButton.checked %}
                                     <div class="govuk-form-group">
                                       <label class="govuk-heading-m">
                                         Please use the button below to add a different address
@@ -190,7 +189,7 @@
                                     </div>
                                   {% endif %}
 
-                                  {% if showUpdateAddress %}
+                                  {% if showUpdateAddress and appointmentRadioButton.checked %}
                                     <div class="govuk-form-group">
                                       <p id="postal-address">
                                         {% if breachNotice.alternateNextAppointmentLocation.buildingName %} {{ breachNotice.alternateNextAppointmentLocation.buildingName }}
@@ -225,34 +224,11 @@
                               </div>
                             </fieldset>
                           </div>
-
-
-
-
-
-
-
-
-
-
-
                         </div>
                       {% endfor %}
-
-
-
-
-
                     </div>
-
-
-
                   </fieldset>
                 </div>
-{#                we want radio buttons with the alt sectrion#}
-
-
-
               {% endset -%}
 
               {{ govukRadios({
@@ -282,7 +258,6 @@
                   }
                 ]
               }) }}
-
 
                 <div class="moj-button-group">
                   {{ govukButton({
@@ -318,6 +293,5 @@
               {% endif %}
             </div>
         </div>
-
     </form>
 {% endblock %}
