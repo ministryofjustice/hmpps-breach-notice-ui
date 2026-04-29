@@ -218,6 +218,8 @@ export interface BreachNotice {
   conditionBeingEnforced: string
   selectNextAppointment: boolean
   furtherReasonDetails: string
+  alternateNextAppointmentLocation: BreachNoticeAddress,
+  alternateNextAppointmentLocationSelected: boolean,
 }
 
 export interface WarningDetailsWholeSentenceAndRequirement {
@@ -236,6 +238,8 @@ export interface BreachNoticeContact {
   contactId: number
   wholeSentence?: boolean
   rejectionReason?: string
+  alternateNextAppointmentLocation?: BreachNoticeAddress
+  alternateNextAppointmentLocationSelected?: boolean
 }
 
 export interface BreachNoticeRequirement {

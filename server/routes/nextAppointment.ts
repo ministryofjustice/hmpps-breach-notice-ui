@@ -22,12 +22,12 @@ export default function nextAppointmentRoutes(
 ): Router {
   const currentPage = 'next-appointment'
 
-  router.get('/next-appointment/:id', async (req, res, next) => {
+  router.get('/next-appointment/:id', async (req, res) => {
     await auditService.logPageView(Page.NEXT_APPOINTMENT, { who: res.locals.user.username, correlationId: req.id })
     const token = await hmppsAuthClient.getSystemClientToken(res.locals.user.username)
     const breachNoticeApiClient = new BreachNoticeApiClient(token)
     const ndeliusIntegrationApiClient = new NdeliusIntegrationApiClient(token)
-    let breachNotice: BreachNotice = null
+    let breachNotice: BreachNotice
     let nextAppointmentDetails: NextAppointmentDetails = null
 
     const { id } = req.params
@@ -76,8 +76,45 @@ export default function nextAppointmentRoutes(
     const responsibleOfficerDisplayValue = officerDisplayValue(nextAppointmentDetails.responsibleOfficer.name)
     if (await commonUtils.redirectRequired(breachNotice, res)) return
     const useContactNumber = breachNotice.optionalNumberChecked ? 'No' : 'Yes'
+    const testBoolean: string = null
     const selectNextAppointment =
       breachNotice.selectNextAppointment === null || !breachNotice.selectNextAppointment ? 'No' : 'Yes'
+
+    let useAboveAddress: boolean = null
+    let showAddAddress: boolean = null
+    let showUpdateAddress: boolean = null
+
+    if(breachNotice.alternateNextAppointmentLocationSelected !== null && breachNotice.alternateNextAppointmentLocationSelected === true) {
+      useAboveAddress = false
+      if(breachNotice.alternateNextAppointmentLocation && breachNotice.alternateNextAppointmentLocation.addressId !== null) {
+        showUpdateAddress = true;
+        showAddAddress = false;
+      }
+
+      if(breachNotice.alternateNextAppointmentLocation === null || breachNotice.alternateNextAppointmentLocation.addressId === null) {
+        showUpdateAddress = false;
+        showAddAddress = true;
+      }
+    }
+
+    if(breachNotice.alternateNextAppointmentLocationSelected !== null && breachNotice.alternateNextAppointmentLocationSelected === false) {
+      useAboveAddress = true
+
+      if(breachNotice.alternateNextAppointmentLocation && breachNotice.alternateNextAppointmentLocation.addressId !== null) {
+        showUpdateAddress = true;
+        showAddAddress = false;
+      }
+
+      if(breachNotice.alternateNextAppointmentLocation === null || breachNotice.alternateNextAppointmentLocation.addressId === null) {
+        showUpdateAddress = false;
+        showAddAddress = true;
+      }
+    }
+
+    //need to default to add address if still null after above checks
+    if(showUpdateAddress === null && showAddAddress === null) {
+      showAddAddress = true;
+    }
 
     res.render('pages/next-appointment', {
       breachNotice,
@@ -87,15 +124,54 @@ export default function nextAppointmentRoutes(
       useContactNumber,
       currentPage,
       selectNextAppointment,
+      testBoolean,
+      useAboveAddress,
+      showAddAddress,
+      showUpdateAddress
     })
   })
 
-  router.post('/next-appointment/:id', async (req, res, next) => {
+  router.post('/next-appointment/:id', async (req, res) => {
     await auditService.logPageView(Page.NEXT_APPOINTMENT, { who: res.locals.user.username, correlationId: req.id })
     const token = await hmppsAuthClient.getSystemClientToken(res.locals.user.username)
     const ndeliusIntegrationApiClient = new NdeliusIntegrationApiClient(token)
     const breachNoticeApiClient = new BreachNoticeApiClient(token)
     const callingScreen: string = req.query.returnTo as string
+    const submitAction: string = req.body.action
+    let useRegularAddressValue: string = null
+
+    let originalAlternateLocationValue: boolean = null
+    let originalNextAppointmentId: number = null
+    let originalSelectNextAppointment: boolean = null
+
+    let currentSelectNextAppointment: boolean = null
+    let selectedNextAppointmentId: number = null
+    let currentAlternateLocationValue: boolean = null
+
+    const useRegularAddressSelections = Object.entries(req.body).filter(([key]) =>
+      key.startsWith('altAddressRadio_'),
+    )
+
+    if(useRegularAddressSelections && Object.keys(useRegularAddressSelections).length > 0) {
+      let useRegAddressListItem = null
+
+      for (const regularAddressItem of useRegularAddressSelections) {
+        const appointmentIdOfRadioButton: number = Number(regularAddressItem[0].split('altAddressRadio_',2)[1])
+        if(appointmentIdOfRadioButton === Number(req.body.appointmentSelection)) {
+          useRegAddressListItem = regularAddressItem
+          break
+        }
+      }
+
+      if(useRegAddressListItem) {
+        // need to make sure it belongs to the selected item
+        const appointmentIdOfRadioButton: number = Number(useRegAddressListItem[0].split('altAddressRadio_',2)[1])
+
+        if(appointmentIdOfRadioButton === Number(req.body.appointmentSelection)) {
+          useRegularAddressValue = useRegAddressListItem[1] as unknown as string
+        }
+      }
+    }
 
     const { id } = req.params
     let breachNotice: BreachNotice = null
@@ -103,6 +179,63 @@ export default function nextAppointmentRoutes(
 
     try {
       breachNotice = await breachNoticeApiClient.getBreachNoticeById(id as string)
+      originalAlternateLocationValue = breachNotice.alternateNextAppointmentLocationSelected
+      originalNextAppointmentId = breachNotice.nextAppointmentId
+      originalSelectNextAppointment = breachNotice.selectNextAppointment
+      currentSelectNextAppointment =  req.body.selectNextAppointment === 'Yes'
+      selectedNextAppointmentId =  Number(req.body.appointmentSelection)
+
+      //if the ids have changed we need to delete the previous selections first
+      if(originalNextAppointmentId && selectedNextAppointmentId) {
+        if(originalNextAppointmentId !== selectedNextAppointmentId) {
+          breachNotice.nextAppointmentId = null
+          breachNotice.selectNextAppointment = null
+          breachNotice.alternateNextAppointmentLocation = null
+          breachNotice.alternateNextAppointmentLocationSelected = null
+        }
+
+        if(originalNextAppointmentId === selectedNextAppointmentId) {
+          const useRegularAddressSelections = Object.entries(req.body).filter(([key]) =>
+            key.startsWith('altAddressRadio_'),
+          )
+
+          if(useRegularAddressSelections && Object.keys(useRegularAddressSelections).length > 0) {
+            let useRegAddressListItem = null
+
+            for (const regularAddressItem of useRegularAddressSelections) {
+              const appointmentIdOfRadioButton: number = Number(regularAddressItem[0].split('altAddressRadio_',2)[1])
+              if(appointmentIdOfRadioButton === Number(req.body.appointmentSelection)) {
+                useRegAddressListItem = regularAddressItem
+                break
+              }
+            }
+            const appointmentIdOfRadioButton: number = Number(useRegAddressListItem[0].split('altAddressRadio_',2)[1])
+
+            // check it matrches appointment - find selected appointment
+            if(appointmentIdOfRadioButton === Number(req.body.appointmentSelection)) {
+              const newUseRegularAddressValue = useRegAddressListItem[1] as unknown as string
+              let savedUsedRegularAddressValue: boolean = null
+
+              if(newUseRegularAddressValue === 'Yes') {
+                //to get the old value we need to flip the saved one - only concerned where alternate address was used and now its not
+                if(breachNotice.alternateNextAppointmentLocationSelected !== null && breachNotice.alternateNextAppointmentLocationSelected) {
+                  savedUsedRegularAddressValue = false
+                }
+
+                if(breachNotice.alternateNextAppointmentLocationSelected !== null && !breachNotice.alternateNextAppointmentLocationSelected) {
+                  savedUsedRegularAddressValue = true
+                }
+
+                // we have switched from use alternate address to use above address which requires address deletion
+                if(savedUsedRegularAddressValue === false) {
+                  breachNotice.alternateNextAppointmentLocation = null
+                  breachNotice.alternateNextAppointmentLocationSelected = null
+                }
+              }
+            }
+          }
+        }
+      }
     } catch (error) {
       const errorMessages: ErrorMessages = handleIntegrationErrors(error.status, error.data?.message, 'Breach Notice')
       const showEmbeddedError = true
@@ -168,18 +301,34 @@ export default function nextAppointmentRoutes(
     }
     breachNotice.responsibleOfficer = officerDisplayValue(nextAppointmentDetails.responsibleOfficer.name)
 
-    const errorMessages: ErrorMessages = validateNextAppointment(breachNotice)
+    // we need to invert the boolean value so Yes = No, No = Yes
+    if(useRegularAddressValue) {
+      if(useRegularAddressValue === 'Yes') {
+        breachNotice.alternateNextAppointmentLocationSelected = false
+      }
+
+      if(useRegularAddressValue === 'No') {
+        breachNotice.alternateNextAppointmentLocationSelected = true
+      }
+    }
+
+    const errorMessages: ErrorMessages = performValidation(breachNotice)
     const hasErrors: boolean = Object.keys(errorMessages).length > 0
 
-    if (!hasErrors && req.body.action !== 'refreshData') {
+    if (!hasErrors && submitAction !== 'refreshData') {
       breachNotice.nextAppointmentSaved = true
       await breachNoticeApiClient.updateBreachNotice(id, breachNotice)
 
-      if (req.body.action === 'saveProgressAndClose') {
+      if (submitAction === 'saveProgressAndClose') {
         res.send(
           `<p>You can now safely close this window</p><script nonce="${res.locals.cspNonce}">window.close()</script>`,
         )
-      } else if (callingScreen && callingScreen === 'check-your-report') {
+      }
+      else if (submitAction && submitAction.includes('alternateAddressForAppointment_')) {
+        // const ndeliusContactId: string = submitAction.split('alternateAddressForAppointment_',2)[1]
+        res.redirect(`/add-alternate-appointment-address/${id}`)
+      }
+      else if (callingScreen && callingScreen === 'check-your-report') {
         res.redirect(`/check-your-report/${id}`)
       } else {
         res.redirect(`/check-your-report/${id}`)
@@ -195,6 +344,38 @@ export default function nextAppointmentRoutes(
       const selectNextAppointment =
         breachNotice.selectNextAppointment === null || !breachNotice.selectNextAppointment ? 'No' : 'Yes'
 
+      let useAboveAddress: boolean = null
+      let showAddAddress: boolean = null
+      let showUpdateAddress: boolean = null
+
+      if(breachNotice.alternateNextAppointmentLocationSelected !== null && breachNotice.alternateNextAppointmentLocationSelected === true) {
+        useAboveAddress = false
+        // check if the curretnly selected thing has an address
+        if(breachNotice.alternateNextAppointmentLocation && breachNotice.alternateNextAppointmentLocation.addressId !== null) {
+          showUpdateAddress = true;
+          showAddAddress = false;
+        }
+
+        if(breachNotice.alternateNextAppointmentLocation === null || breachNotice.alternateNextAppointmentLocation.addressId === null) {
+          showUpdateAddress = false;
+          showAddAddress = true;
+        }
+      }
+
+      if(breachNotice.alternateNextAppointmentLocationSelected !== null && breachNotice.alternateNextAppointmentLocationSelected === false) {
+        useAboveAddress = true
+        // do something with location
+        if(breachNotice.alternateNextAppointmentLocation && breachNotice.alternateNextAppointmentLocation.addressId !== null) {
+          showUpdateAddress = true;
+          showAddAddress = false;
+        }
+
+        if(breachNotice.alternateNextAppointmentLocation === null || breachNotice.alternateNextAppointmentLocation.addressId === null) {
+          showUpdateAddress = false;
+          showAddAddress = true;
+        }
+      }
+
       res.render('pages/next-appointment', {
         breachNotice,
         nextAppointmentDetails,
@@ -204,11 +385,14 @@ export default function nextAppointmentRoutes(
         errorMessages,
         currentPage,
         selectNextAppointment,
+        useAboveAddress,
+        showAddAddress,
+        showUpdateAddress
       })
     }
   })
 
-  function validateNextAppointment(breachNotice: BreachNotice): ErrorMessages {
+  function performValidation(breachNotice: BreachNotice): ErrorMessages {
     const errorMessages: ErrorMessages = {}
     if (breachNotice.optionalNumberChecked) {
       // Cannot be blank if set to use custom number
@@ -230,6 +414,18 @@ export default function nextAppointmentRoutes(
         }
       }
     }
+
+    if(breachNotice.selectNextAppointment) {
+      if(breachNotice.nextAppointmentId != null) {
+        // check we have answered yes or no
+        if(breachNotice.alternateNextAppointmentLocationSelected === null) {
+          errorMessages.nextAppointmentNoAddressSelection = {
+            text: 'Please enter a value for Do you want to use the address above?',
+          }
+        }
+      }
+    }
+
     return errorMessages
   }
 
@@ -249,7 +445,6 @@ export default function nextAppointmentRoutes(
         .filter(item => item)
         .join(', '),
       value: `${futureAppointment.id}`,
-      selected: false,
       checked: breachNotice.nextAppointmentId && breachNotice.nextAppointmentId === futureAppointment.id,
     }))
   }
