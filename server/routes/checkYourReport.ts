@@ -4,6 +4,7 @@ import '@js-joda/timezone'
 import AuditService, { Page } from '../services/auditService'
 import BreachNoticeApiClient, {
   BreachNotice,
+  BreachNoticeAddress,
   BreachNoticeContact,
   WarningDetailsWholeSentenceAndRequirement,
 } from '../data/breachNoticeApiClient'
@@ -91,6 +92,11 @@ export default function checkYourReportRoutes(
     const responseRequiredByDate: string = toUserDate(breachNotice.responseRequiredDate)
     const nextAppointmentDate: string = toUserDateFromDateTime(breachNotice.nextAppointmentDate)
     const nextAppointmentTime: string = toUserTimeFromDateTime(breachNotice.nextAppointmentDate)
+    let alternateAppointmentAddress: string
+
+    if(breachNotice.alternateNextAppointmentLocationSelected === true) {
+      alternateAppointmentAddress = locationDisplayValue(breachNotice.alternateNextAppointmentLocation)
+    }
 
     await renderCheckYourReport(
       breachNotice,
@@ -102,6 +108,7 @@ export default function checkYourReportRoutes(
       responseRequiredByDate,
       nextAppointmentDate,
       nextAppointmentTime,
+      alternateAppointmentAddress,
     )
   })
 
@@ -115,6 +122,7 @@ export default function checkYourReportRoutes(
     responseRequiredByDate: string,
     nextAppointmentDate: string,
     nextAppointmentTime: string,
+    alternateAppointmentAddress: string
   ) {
     const reportValidated = validateCheckYourReport(breachNotice)
     const currentPage = 'check-your-report'
@@ -129,6 +137,7 @@ export default function checkYourReportRoutes(
       nextAppointmentTime,
       reportValidated,
       currentPage,
+      alternateAppointmentAddress,
     })
   }
 
@@ -179,6 +188,10 @@ export default function checkYourReportRoutes(
     }
 
     return hasRequirements || hasWholeSentenceContacts
+  }
+
+  function locationDisplayValue(address?: BreachNoticeAddress): string {
+    return [address?.buildingNumber, address?.streetName].filter(item => item).join(' ')
   }
 
   return router
