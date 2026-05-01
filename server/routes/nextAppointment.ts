@@ -84,36 +84,54 @@ export default function nextAppointmentRoutes(
     let showAddAddress: boolean = null
     let showUpdateAddress: boolean = null
 
-    if(breachNotice.alternateNextAppointmentLocationSelected !== null && breachNotice.alternateNextAppointmentLocationSelected === true) {
+    if (
+      breachNotice.alternateNextAppointmentLocationSelected !== null &&
+      breachNotice.alternateNextAppointmentLocationSelected === true
+    ) {
       useAboveAddress = false
-      if(breachNotice.alternateNextAppointmentLocation && breachNotice.alternateNextAppointmentLocation.addressId !== null) {
-        showUpdateAddress = true;
-        showAddAddress = false;
+      if (
+        breachNotice.alternateNextAppointmentLocation &&
+        breachNotice.alternateNextAppointmentLocation.addressId !== null
+      ) {
+        showUpdateAddress = true
+        showAddAddress = false
       }
 
-      if(breachNotice.alternateNextAppointmentLocation === null || breachNotice.alternateNextAppointmentLocation.addressId === null) {
-        showUpdateAddress = false;
-        showAddAddress = true;
+      if (
+        breachNotice.alternateNextAppointmentLocation === null ||
+        breachNotice.alternateNextAppointmentLocation.addressId === null
+      ) {
+        showUpdateAddress = false
+        showAddAddress = true
       }
     }
 
-    if(breachNotice.alternateNextAppointmentLocationSelected !== null && breachNotice.alternateNextAppointmentLocationSelected === false) {
+    if (
+      breachNotice.alternateNextAppointmentLocationSelected !== null &&
+      breachNotice.alternateNextAppointmentLocationSelected === false
+    ) {
       useAboveAddress = true
 
-      if(breachNotice.alternateNextAppointmentLocation && breachNotice.alternateNextAppointmentLocation.addressId !== null) {
-        showUpdateAddress = true;
-        showAddAddress = false;
+      if (
+        breachNotice.alternateNextAppointmentLocation &&
+        breachNotice.alternateNextAppointmentLocation.addressId !== null
+      ) {
+        showUpdateAddress = true
+        showAddAddress = false
       }
 
-      if(breachNotice.alternateNextAppointmentLocation === null || breachNotice.alternateNextAppointmentLocation.addressId === null) {
-        showUpdateAddress = false;
-        showAddAddress = true;
+      if (
+        breachNotice.alternateNextAppointmentLocation === null ||
+        breachNotice.alternateNextAppointmentLocation.addressId === null
+      ) {
+        showUpdateAddress = false
+        showAddAddress = true
       }
     }
 
-    //need to default to add address if still null after above checks
-    if(showUpdateAddress === null && showAddAddress === null) {
-      showAddAddress = true;
+    // need to default to add address if still null after above checks
+    if (showUpdateAddress === null && showAddAddress === null) {
+      showAddAddress = true
     }
 
     res.render('pages/next-appointment', {
@@ -127,7 +145,7 @@ export default function nextAppointmentRoutes(
       testBoolean,
       useAboveAddress,
       showAddAddress,
-      showUpdateAddress
+      showUpdateAddress,
     })
   })
 
@@ -139,35 +157,27 @@ export default function nextAppointmentRoutes(
     const callingScreen: string = req.query.returnTo as string
     const submitAction: string = req.body.action
     let useRegularAddressValue: string = null
-
-    let originalAlternateLocationValue: boolean = null
     let originalNextAppointmentId: number = null
-    let originalSelectNextAppointment: boolean = null
-
-    let currentSelectNextAppointment: boolean = null
     let selectedNextAppointmentId: number = null
-    let currentAlternateLocationValue: boolean = null
 
-    const useRegularAddressSelections = Object.entries(req.body).filter(([key]) =>
-      key.startsWith('altAddressRadio_'),
-    )
+    const useRegularAddressSelections = Object.entries(req.body).filter(([key]) => key.startsWith('altAddressRadio_'))
 
-    if(useRegularAddressSelections && Object.keys(useRegularAddressSelections).length > 0) {
+    if (useRegularAddressSelections && Object.keys(useRegularAddressSelections).length > 0) {
       let useRegAddressListItem = null
 
       for (const regularAddressItem of useRegularAddressSelections) {
-        const appointmentIdOfRadioButton: number = Number(regularAddressItem[0].split('altAddressRadio_',2)[1])
-        if(appointmentIdOfRadioButton === Number(req.body.appointmentSelection)) {
+        const appointmentIdOfRadioButton: number = Number(regularAddressItem[0].split('altAddressRadio_', 2)[1])
+        if (appointmentIdOfRadioButton === Number(req.body.appointmentSelection)) {
           useRegAddressListItem = regularAddressItem
           break
         }
       }
 
-      if(useRegAddressListItem) {
+      if (useRegAddressListItem) {
         // need to make sure it belongs to the selected item
-        const appointmentIdOfRadioButton: number = Number(useRegAddressListItem[0].split('altAddressRadio_',2)[1])
+        const appointmentIdOfRadioButton: number = Number(useRegAddressListItem[0].split('altAddressRadio_', 2)[1])
 
-        if(appointmentIdOfRadioButton === Number(req.body.appointmentSelection)) {
+        if (appointmentIdOfRadioButton === Number(req.body.appointmentSelection)) {
           useRegularAddressValue = useRegAddressListItem[1] as unknown as string
         }
       }
@@ -179,55 +189,56 @@ export default function nextAppointmentRoutes(
 
     try {
       breachNotice = await breachNoticeApiClient.getBreachNoticeById(id as string)
-      originalAlternateLocationValue = breachNotice.alternateNextAppointmentLocationSelected
       originalNextAppointmentId = breachNotice.nextAppointmentId
-      originalSelectNextAppointment = breachNotice.selectNextAppointment
-      currentSelectNextAppointment =  req.body.selectNextAppointment === 'Yes'
-      selectedNextAppointmentId =  Number(req.body.appointmentSelection)
+      selectedNextAppointmentId = Number(req.body.appointmentSelection)
 
-      //if the ids have changed we need to delete the previous selections first
-      if(originalNextAppointmentId && selectedNextAppointmentId) {
-        if(originalNextAppointmentId !== selectedNextAppointmentId) {
+      // if the ids have changed we need to delete the previous selections first
+      if (originalNextAppointmentId && selectedNextAppointmentId) {
+        if (originalNextAppointmentId !== selectedNextAppointmentId) {
           breachNotice.nextAppointmentId = null
           breachNotice.selectNextAppointment = null
           breachNotice.alternateNextAppointmentLocation = null
           breachNotice.alternateNextAppointmentLocationSelected = null
         }
 
-        if(originalNextAppointmentId === selectedNextAppointmentId) {
-          const useRegularAddressSelections = Object.entries(req.body).filter(([key]) =>
-            key.startsWith('altAddressRadio_'),
-          )
+        if (originalNextAppointmentId === selectedNextAppointmentId) {
+          const useRegAddressSelections = Object.entries(req.body).filter(([key]) => key.startsWith('altAddressRadio_'))
 
-          if(useRegularAddressSelections && Object.keys(useRegularAddressSelections).length > 0) {
+          if (useRegAddressSelections && Object.keys(useRegAddressSelections).length > 0) {
             let useRegAddressListItem = null
 
-            for (const regularAddressItem of useRegularAddressSelections) {
-              const appointmentIdOfRadioButton: number = Number(regularAddressItem[0].split('altAddressRadio_',2)[1])
-              if(appointmentIdOfRadioButton === Number(req.body.appointmentSelection)) {
+            for (const regularAddressItem of useRegAddressSelections) {
+              const appointmentIdOfRadioButton: number = Number(regularAddressItem[0].split('altAddressRadio_', 2)[1])
+              if (appointmentIdOfRadioButton === Number(req.body.appointmentSelection)) {
                 useRegAddressListItem = regularAddressItem
                 break
               }
             }
-            const appointmentIdOfRadioButton: number = Number(useRegAddressListItem[0].split('altAddressRadio_',2)[1])
+            const appointmentIdOfRadioButton: number = Number(useRegAddressListItem[0].split('altAddressRadio_', 2)[1])
 
             // check it matrches appointment - find selected appointment
-            if(appointmentIdOfRadioButton === Number(req.body.appointmentSelection)) {
+            if (appointmentIdOfRadioButton === Number(req.body.appointmentSelection)) {
               const newUseRegularAddressValue = useRegAddressListItem[1] as unknown as string
               let savedUsedRegularAddressValue: boolean = null
 
-              if(newUseRegularAddressValue === 'Yes') {
-                //to get the old value we need to flip the saved one - only concerned where alternate address was used and now its not
-                if(breachNotice.alternateNextAppointmentLocationSelected !== null && breachNotice.alternateNextAppointmentLocationSelected) {
+              if (newUseRegularAddressValue === 'Yes') {
+                // to get the old value we need to flip the saved one - only concerned where alternate address was used and now its not
+                if (
+                  breachNotice.alternateNextAppointmentLocationSelected !== null &&
+                  breachNotice.alternateNextAppointmentLocationSelected
+                ) {
                   savedUsedRegularAddressValue = false
                 }
 
-                if(breachNotice.alternateNextAppointmentLocationSelected !== null && !breachNotice.alternateNextAppointmentLocationSelected) {
+                if (
+                  breachNotice.alternateNextAppointmentLocationSelected !== null &&
+                  !breachNotice.alternateNextAppointmentLocationSelected
+                ) {
                   savedUsedRegularAddressValue = true
                 }
 
                 // we have switched from use alternate address to use above address which requires address deletion
-                if(savedUsedRegularAddressValue === false) {
+                if (savedUsedRegularAddressValue === false) {
                   breachNotice.alternateNextAppointmentLocation = null
                   breachNotice.alternateNextAppointmentLocationSelected = null
                 }
@@ -302,12 +313,12 @@ export default function nextAppointmentRoutes(
     breachNotice.responsibleOfficer = officerDisplayValue(nextAppointmentDetails.responsibleOfficer.name)
 
     // we need to invert the boolean value so Yes = No, No = Yes
-    if(useRegularAddressValue) {
-      if(useRegularAddressValue === 'Yes') {
+    if (useRegularAddressValue) {
+      if (useRegularAddressValue === 'Yes') {
         breachNotice.alternateNextAppointmentLocationSelected = false
       }
 
-      if(useRegularAddressValue === 'No') {
+      if (useRegularAddressValue === 'No') {
         breachNotice.alternateNextAppointmentLocationSelected = true
       }
     }
@@ -323,12 +334,10 @@ export default function nextAppointmentRoutes(
         res.send(
           `<p>You can now safely close this window</p><script nonce="${res.locals.cspNonce}">window.close()</script>`,
         )
-      }
-      else if (submitAction && submitAction.includes('alternateAddressForAppointment_')) {
+      } else if (submitAction && submitAction.includes('alternateAddressForAppointment_')) {
         // const ndeliusContactId: string = submitAction.split('alternateAddressForAppointment_',2)[1]
         res.redirect(`/add-alternate-appointment-address/${id}`)
-      }
-      else if (callingScreen && callingScreen === 'check-your-report') {
+      } else if (callingScreen && callingScreen === 'check-your-report') {
         res.redirect(`/check-your-report/${id}`)
       } else {
         res.redirect(`/check-your-report/${id}`)
@@ -348,31 +357,49 @@ export default function nextAppointmentRoutes(
       let showAddAddress: boolean = null
       let showUpdateAddress: boolean = null
 
-      if(breachNotice.alternateNextAppointmentLocationSelected !== null && breachNotice.alternateNextAppointmentLocationSelected === true) {
+      if (
+        breachNotice.alternateNextAppointmentLocationSelected !== null &&
+        breachNotice.alternateNextAppointmentLocationSelected === true
+      ) {
         useAboveAddress = false
         // check if the curretnly selected thing has an address
-        if(breachNotice.alternateNextAppointmentLocation && breachNotice.alternateNextAppointmentLocation.addressId !== null) {
-          showUpdateAddress = true;
-          showAddAddress = false;
+        if (
+          breachNotice.alternateNextAppointmentLocation &&
+          breachNotice.alternateNextAppointmentLocation.addressId !== null
+        ) {
+          showUpdateAddress = true
+          showAddAddress = false
         }
 
-        if(breachNotice.alternateNextAppointmentLocation === null || breachNotice.alternateNextAppointmentLocation.addressId === null) {
-          showUpdateAddress = false;
-          showAddAddress = true;
+        if (
+          breachNotice.alternateNextAppointmentLocation === null ||
+          breachNotice.alternateNextAppointmentLocation.addressId === null
+        ) {
+          showUpdateAddress = false
+          showAddAddress = true
         }
       }
 
-      if(breachNotice.alternateNextAppointmentLocationSelected !== null && breachNotice.alternateNextAppointmentLocationSelected === false) {
+      if (
+        breachNotice.alternateNextAppointmentLocationSelected !== null &&
+        breachNotice.alternateNextAppointmentLocationSelected === false
+      ) {
         useAboveAddress = true
         // do something with location
-        if(breachNotice.alternateNextAppointmentLocation && breachNotice.alternateNextAppointmentLocation.addressId !== null) {
-          showUpdateAddress = true;
-          showAddAddress = false;
+        if (
+          breachNotice.alternateNextAppointmentLocation &&
+          breachNotice.alternateNextAppointmentLocation.addressId !== null
+        ) {
+          showUpdateAddress = true
+          showAddAddress = false
         }
 
-        if(breachNotice.alternateNextAppointmentLocation === null || breachNotice.alternateNextAppointmentLocation.addressId === null) {
-          showUpdateAddress = false;
-          showAddAddress = true;
+        if (
+          breachNotice.alternateNextAppointmentLocation === null ||
+          breachNotice.alternateNextAppointmentLocation.addressId === null
+        ) {
+          showUpdateAddress = false
+          showAddAddress = true
         }
       }
 
@@ -387,7 +414,7 @@ export default function nextAppointmentRoutes(
         selectNextAppointment,
         useAboveAddress,
         showAddAddress,
-        showUpdateAddress
+        showUpdateAddress,
       })
     }
   })
@@ -415,10 +442,10 @@ export default function nextAppointmentRoutes(
       }
     }
 
-    if(breachNotice.selectNextAppointment) {
-      if(breachNotice.nextAppointmentId != null) {
+    if (breachNotice.selectNextAppointment) {
+      if (breachNotice.nextAppointmentId != null) {
         // check we have answered yes or no
-        if(breachNotice.alternateNextAppointmentLocationSelected === null) {
+        if (breachNotice.alternateNextAppointmentLocationSelected === null) {
           errorMessages.nextAppointmentNoAddressSelection = {
             text: 'Please enter a value for Do you want to use the address above?',
           }

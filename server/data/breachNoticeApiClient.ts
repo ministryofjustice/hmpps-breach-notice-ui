@@ -218,8 +218,8 @@ export interface BreachNotice {
   conditionBeingEnforced: string
   selectNextAppointment: boolean
   furtherReasonDetails: string
-  alternateNextAppointmentLocation: BreachNoticeAddress,
-  alternateNextAppointmentLocationSelected: boolean,
+  alternateNextAppointmentLocation: BreachNoticeAddress
+  alternateNextAppointmentLocationSelected: boolean
 }
 
 export interface WarningDetailsWholeSentenceAndRequirement {

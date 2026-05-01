@@ -12,7 +12,7 @@ import nextAppointmentRoutes from './nextAppointment'
 import addAddressRoutes from './addAddress'
 import confirmDeleteRoutes from './confirmDelete'
 import addRequirementRoutes from './addRequirement'
-import addAlternateAppointmentAddressRoutes from "./addAlternateAppointmentAddress";
+import addAlternateAppointmentAddressRoutes from './addAlternateAppointmentAddress'
 
 export default function routes({ auditService, hmppsAuthClient, commonUtils }: Services): Router {
   const router = Router()

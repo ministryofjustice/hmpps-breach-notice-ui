@@ -94,7 +94,7 @@ export default function checkYourReportRoutes(
     const nextAppointmentTime: string = toUserTimeFromDateTime(breachNotice.nextAppointmentDate)
     let alternateAppointmentAddress: string
 
-    if(breachNotice.alternateNextAppointmentLocationSelected === true) {
+    if (breachNotice.alternateNextAppointmentLocationSelected === true) {
       alternateAppointmentAddress = locationDisplayValue(breachNotice.alternateNextAppointmentLocation)
     }
 
@@ -122,7 +122,7 @@ export default function checkYourReportRoutes(
     responseRequiredByDate: string,
     nextAppointmentDate: string,
     nextAppointmentTime: string,
-    alternateAppointmentAddress: string
+    alternateAppointmentAddress: string,
   ) {
     const reportValidated = validateCheckYourReport(breachNotice)
     const currentPage = 'check-your-report'

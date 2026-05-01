@@ -89,5 +89,4 @@ context('Next Appointment page', () => {
     cy.visit('/next-appointment/12345677-7777-7777-700000000033')
     cy.get('#add-alternate-address-button').should('exist')
   })
-
 })

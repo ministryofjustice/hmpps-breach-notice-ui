@@ -1,9 +1,9 @@
-import {Router} from 'express'
-import AuditService, {Page} from '../services/auditService'
-import BreachNoticeApiClient, {BreachNotice, BreachNoticeAddress} from '../data/breachNoticeApiClient'
-import {HmppsAuthClient} from '../data'
-import {ErrorMessages} from '../data/uiModels'
-import {handleIntegrationErrors} from '../utils/utils'
+import { Router } from 'express'
+import AuditService, { Page } from '../services/auditService'
+import BreachNoticeApiClient, { BreachNotice, BreachNoticeAddress } from '../data/breachNoticeApiClient'
+import { HmppsAuthClient } from '../data'
+import { ErrorMessages } from '../data/uiModels'
+import { handleIntegrationErrors } from '../utils/utils'
 
 export default function addAlternateAppointmentAddressRoutes(
   router: Router,
@@ -63,7 +63,7 @@ export default function addAlternateAppointmentAddressRoutes(
         try {
           breachNotice = await breachNoticeApiClient.getBreachNoticeById(breachNoticeId)
 
-          if(breachNotice.alternateNextAppointmentLocation) {
+          if (breachNotice.alternateNextAppointmentLocation) {
             address.id = breachNotice.alternateNextAppointmentLocation.id
           }
 
@@ -75,7 +75,11 @@ export default function addAlternateAppointmentAddressRoutes(
           const integrationErrorMessages = handleIntegrationErrors(error.status, error.data?.message, 'Breach Notice')
           const showEmbeddedError = true
           // always stay on page and display the error when there are isssues retrieving the breach notice
-          res.render(`pages/add-alternate-appointment-address`, { errorMessages, showEmbeddedError, integrationErrorMessages })
+          res.render(`pages/add-alternate-appointment-address`, {
+            errorMessages,
+            showEmbeddedError,
+            integrationErrorMessages,
+          })
         }
       } else {
         res.render('pages/add-alternate-appointment-address', { errorMessages, address })
