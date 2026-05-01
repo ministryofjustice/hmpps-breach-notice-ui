@@ -15,7 +15,8 @@
 
         {% set errorList =[
             { text: errorMessages.contactByPhone.text, href: "#contact-by-phone" } if errorMessages.contactByPhone else None,
-            { text: errorMessages.genericErrorMessage.text, href: "#" } if errorMessages.genericErrorMessage else None
+            { text: errorMessages.genericErrorMessage.text, href: "#" } if errorMessages.genericErrorMessage else None,
+            { text: errorMessages.nextAppointmentNoAddressSelection.text, href: "#" } if errorMessages.nextAppointmentNoAddressSelection else None
         ] | reject("undefined") %}
 
         {% if errorMessages | length > 0 %}
@@ -97,13 +98,153 @@
                 }) }}
 
               {% set appointmentSelection %}
-                {{ govukRadios({
-                  name: "appointmentSelection",
-                  items: appointmentRadioButtons,
-                  errorMessage: {
-                    text: "No future appointments are available to select at this time. Please add an appointment in NDelius and refresh this screen if one is required"
-                  } if appointmentRadioButtons.length <= 0
-                }) }}
+                {% if appointmentRadioButtons and appointmentRadioButtons | length > 0 %}
+                  <div class="govuk-form-group">
+                    <fieldset class="govuk-fieldset"
+                              aria-describedby="appt-hint">
+                      <legend class="govuk-fieldset__legend govuk-fieldset__legend--m">
+                        <h1 class="govuk-fieldset__heading">
+                          Please Select an Appointment
+                        </h1>
+                      </legend>
+
+                      <div id=appt-hint" class="govuk-hint">
+                        Select one option
+                      </div>
+
+                      <div class="govuk-radios"
+                           data-module="govuk-radios">
+
+
+
+                        {% for appointmentRadioButton in appointmentRadioButtons %}
+                          <div class="govuk-radios__item">
+                            <input class="govuk-radios__input"
+                                   id="appointment_{{ appointmentRadioButton.value }}"
+                                   name="appointmentSelection"
+                              {{ "checked" if appointmentRadioButton.checked else "" }}
+                                   type="radio"
+                                   value="{{ appointmentRadioButton.value }}"
+                                   data-aria-controls="conditional-address-{{ appointmentRadioButton.value }}">
+                            <label class="govuk-label govuk-radios__label" for="appointment_{{ appointmentRadioButton.value }}">
+                              {{ appointmentRadioButton.text }}
+                            </label>
+                          </div>
+                          <div class="govuk-radios__conditional govuk-radios__conditional--hidden"
+                               id="conditional-address-{{ appointmentRadioButton.value }}">
+
+
+
+                            <div class="govuk-form-group">
+                              <fieldset class="govuk-fieldset"
+                                        aria-describedby="use-address-hint">
+                                <legend class="govuk-fieldset__legend govuk-fieldset__legend--m">
+                                  <h1 class="govuk-fieldset__heading">
+                                    Do you want to use the address above?
+                                  </h1>
+                                </legend>
+                                <div id="use-address-hint" class="govuk-hint">
+                                  Select one option
+                                </div>
+                                <div class="govuk-radios" data-module="govuk-radios">
+                                  <div class="govuk-radios__item">
+                                    <input class="govuk-radios__input"
+                                           id="alt-address-radio-yes_{{ appointmentRadioButton.value }}"
+                                           name="altAddressRadio_{{ appointmentRadioButton.value }}"
+                                      {{ "checked" if (appointmentRadioButton.checked and useAboveAddress !== null and useAboveAddress === true) else "" }}
+                                           type="radio"
+                                           value="Yes">
+                                    <label class="govuk-label govuk-radios__label" for="alt-address-radio_yes_{{ appointmentRadioButton.value }}">
+                                      Yes
+                                    </label>
+                                  </div>
+                                  <div class="govuk-radios__item">
+                                    <input class="govuk-radios__input"
+                                           id="alt-address-radio-no_{{ appointmentRadioButton.value }}"
+                                           name="altAddressRadio_{{ appointmentRadioButton.value }}"
+                                      {{ "checked" if (appointmentRadioButton.checked and useAboveAddress !== null and useAboveAddress === false) else "" }}
+                                           type="radio"
+                                           value="No"
+                                           data-aria-controls="conditional-alt-address-section_{{ appointmentRadioButton.value }}">
+                                    <label class="govuk-label govuk-radios__label" for="alt-address-radio_no_{{ appointmentRadioButton.value }}">
+                                      No, I would like to use a different address
+                                    </label>
+                                  </div>
+                                  <div class="govuk-radios__conditional govuk-radios__conditional--hidden"
+                                       id="conditional-alt-address-section_{{ appointmentRadioButton.value }}">
+
+                                    {% if (showAddAddress and appointmentRadioButton.checked) or not appointmentRadioButton.checked %}
+                                      <div class="govuk-form-group">
+                                        <label class="govuk-heading-m">
+                                          Please use the button below to add a different address
+                                        </label>
+
+                                        {{ govukButton({
+                                          text: "Save progress and Add Address" ,
+                                          preventDoubleClick: "true",
+                                          type: "submit",
+                                          name: "action",
+                                          value: "alternateAddressForAppointment_"+appointmentRadioButton.value,
+                                          classes: "govuk-button--primary",
+                                          attributes: {
+                                            id: "add-alternate-address-button"
+                                          }
+                                        }) }}
+                                      </div>
+                                    {% endif %}
+
+                                    {% if showUpdateAddress and appointmentRadioButton.checked %}
+                                      <div class="govuk-form-group">
+                                        <p id="postal-address">
+                                          {% if breachNotice.alternateNextAppointmentLocation.buildingName %} {{ breachNotice.alternateNextAppointmentLocation.buildingName }}
+                                            <br/>{% endif %}
+                                          {% if breachNotice.alternateNextAppointmentLocation.buildingName or breachNotice.alternateNextAppointmentLocation.streetName %} {{ breachNotice.alternateNextAppointmentLocation.buildingNumber }} {{ breachNotice.alternateNextAppointmentLocation.streetName }}
+                                            <br/>{% endif %}
+                                          {% if breachNotice.alternateNextAppointmentLocation.district %} {{ breachNotice.alternateNextAppointmentLocation.district }}<br/>{% endif %}
+                                          {% if breachNotice.alternateNextAppointmentLocation.townCity %} {{ breachNotice.alternateNextAppointmentLocation.townCity }}<br/>{% endif %}
+                                          {% if breachNotice.alternateNextAppointmentLocation.county %} {{ breachNotice.alternateNextAppointmentLocation.county }}<br/>{% endif %}
+                                          {% if breachNotice.alternateNextAppointmentLocation.postcode %} {{ breachNotice.alternateNextAppointmentLocation.postcode }}<br/>{% endif %}
+                                        </p>
+
+                                        <label class="govuk-heading-m">
+                                          Please use the button below to update the address
+                                        </label>
+
+                                        {{ govukButton({
+                                          text: "Save progress and Update Address" ,
+                                          preventDoubleClick: "true",
+                                          type: "submit",
+                                          name: "action",
+                                          value: "alternateAddressForAppointment_"+appointmentRadioButton.value,
+                                          classes: "govuk-button--primary",
+                                          attributes: {
+                                            id: "update-alternate-address-button"
+                                          }
+                                        }) }}
+                                      </div>
+
+                                    {% endif %}
+                                  </div>
+                                </div>
+                              </fieldset>
+                            </div>
+                          </div>
+                        {% endfor %}
+                      </div>
+                    </fieldset>
+                  </div>
+                  {% else %}
+                    <p id="no-appointment-error" class="govuk-error-message">
+                      <span>No future appointments are available to select at this time. Please add an appointment in NDelius and refresh this screen if one is required.</span>
+                    </p>
+                {% endif %}
+
+
+
+
+
+
+
               {% endset -%}
 
               {{ govukRadios({
@@ -133,7 +274,6 @@
                   }
                 ]
               }) }}
-
 
                 <div class="moj-button-group">
                   {{ govukButton({
@@ -169,6 +309,5 @@
               {% endif %}
             </div>
         </div>
-
     </form>
 {% endblock %}

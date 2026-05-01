@@ -161,6 +161,8 @@ export function createBlankBreachNoticeWithId(id: string): BreachNotice {
     useDefaultReplyAddress: false,
     warningDetailsSaved: false,
     warningTypeSaved: false,
+    alternateNextAppointmentLocationSelected: undefined,
+    alternateNextAppointmentLocation: undefined,
     id,
   }
 }

@@ -12,19 +12,20 @@ import nextAppointmentRoutes from './nextAppointment'
 import addAddressRoutes from './addAddress'
 import confirmDeleteRoutes from './confirmDelete'
 import addRequirementRoutes from './addRequirement'
+import addAlternateAppointmentAddressRoutes from './addAlternateAppointmentAddress'
 
 export default function routes({ auditService, hmppsAuthClient, commonUtils }: Services): Router {
   const router = Router()
 
-  router.get('/', async (req, res, next) => {
+  router.get('/', async (req, res) => {
     res.render('pages/index')
   })
 
-  router.get('/breach-notice/:id', async (req, res, next) => {
+  router.get('/breach-notice/:id', async (req, res) => {
     res.redirect(`/basic-details/${req.params.id}`)
   })
 
-  router.get('/close', async (req, res, next) => {
+  router.get('/close', async (req, res) => {
     res.send(
       `<p>You can now safely close this window</p><script nonce="${res.locals.cspNonce}">window.close()</script>`,
     )
@@ -41,5 +42,6 @@ export default function routes({ auditService, hmppsAuthClient, commonUtils }: S
   addAddressRoutes(router, auditService, hmppsAuthClient)
   confirmDeleteRoutes(router, auditService, hmppsAuthClient)
   addRequirementRoutes(router, auditService, hmppsAuthClient, commonUtils)
+  addAlternateAppointmentAddressRoutes(router, auditService, hmppsAuthClient)
   return router
 }

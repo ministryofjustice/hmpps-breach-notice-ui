@@ -415,7 +415,11 @@
                                     Next Appointment Location
                                 </dt>
                                 <dd class="govuk-summary-list__value">
-                                  {{ breachNotice.nextAppointmentLocation }}
+                                  {% if breachNotice.alternateNextAppointmentLocationSelected %}
+                                    {{ alternateAppointmentAddress }}
+                                  {% else %}
+                                    {{ breachNotice.nextAppointmentLocation }}
+                                  {% endif %}
                                 </dd>
                                 <dd class="govuk-summary-list__actions">
                                 </dd>

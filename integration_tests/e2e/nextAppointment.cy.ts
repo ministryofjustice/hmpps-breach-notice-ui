@@ -51,12 +51,7 @@ context('Next Appointment page', () => {
     cy.visit('/next-appointment/00000000-0000-0000-0000-100000000002')
     cy.get('#selectNextAppointment-2').should('exist').click()
     cy.get('#conditional-selectNextAppointment-2').should('exist')
-    cy.get('#appointmentSelection-error')
-      .should('exist')
-      .should(
-        'contain.text',
-        'No future appointments are available to select at this time. Please add an appointment in NDelius and refresh this screen if one is required',
-      )
+    cy.get('#no-appointment-error').should('exist')
   })
 
   it('message should appear when officer has no number in LDAP', () => {
@@ -82,5 +77,16 @@ context('Next Appointment page', () => {
     cy.get('.govuk-error-summary__title').should('exist').should('contain.text', 'There is a problem')
     cy.contains('There has been a problem fetching information from NDelius. Please try again later.').should('exist')
     cy.get('#close-button').should('not.exist')
+  })
+
+  it('should show update address button if no has been selected for use above address and an address exists', () => {
+    cy.visit('/next-appointment/12345677-7777-7777-700000000055')
+    cy.get('#update-alternate-address-button').should('exist')
+    cy.get('#postal-address').should('exist')
+  })
+
+  it('should show add address button if no has been selected for use above address and an address DOES NOT exists', () => {
+    cy.visit('/next-appointment/12345677-7777-7777-700000000033')
+    cy.get('#add-alternate-address-button').should('exist')
   })
 })
