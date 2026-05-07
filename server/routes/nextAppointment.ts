@@ -449,12 +449,15 @@ export default function nextAppointmentRoutes(
             text: 'Please enter a value for Do you want to use the address above?',
           }
         }
-        const addAddressSubmitAction: Boolean = (submitAction && submitAction.includes('alternateAddressForAppointment_'))
+        const addAddressSubmitAction: boolean = submitAction && submitAction.includes('alternateAddressForAppointment_')
         // perform the alternate address validation only if the submit action is not add address
-        if(!addAddressSubmitAction) {
-          if(breachNotice.alternateNextAppointmentLocationSelected === true) {
+        if (!addAddressSubmitAction) {
+          if (breachNotice.alternateNextAppointmentLocationSelected === true) {
             // check if we have an alternate address stored
-            if(breachNotice.alternateNextAppointmentLocation === null || breachNotice.alternateNextAppointmentLocation.id === null) {
+            if (
+              breachNotice.alternateNextAppointmentLocation === null ||
+              breachNotice.alternateNextAppointmentLocation.id === null
+            ) {
               errorMessages.alternateAppoinmentNoAlternateAddress = {
                 text: 'Please enter an alternate address using the Save Progress and Add Address button',
               }
