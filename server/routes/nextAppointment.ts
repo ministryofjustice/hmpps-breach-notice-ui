@@ -323,7 +323,7 @@ export default function nextAppointmentRoutes(
       }
     }
 
-    const errorMessages: ErrorMessages = performValidation(breachNotice)
+    const errorMessages: ErrorMessages = performValidation(breachNotice, submitAction)
     const hasErrors: boolean = Object.keys(errorMessages).length > 0
 
     if (!hasErrors && submitAction !== 'refreshData') {
@@ -335,7 +335,6 @@ export default function nextAppointmentRoutes(
           `<p>You can now safely close this window</p><script nonce="${res.locals.cspNonce}">window.close()</script>`,
         )
       } else if (submitAction && submitAction.includes('alternateAddressForAppointment_')) {
-        // const ndeliusContactId: string = submitAction.split('alternateAddressForAppointment_',2)[1]
         res.redirect(`/add-alternate-appointment-address/${id}`)
       } else if (callingScreen && callingScreen === 'check-your-report') {
         res.redirect(`/check-your-report/${id}`)
@@ -419,7 +418,7 @@ export default function nextAppointmentRoutes(
     }
   })
 
-  function performValidation(breachNotice: BreachNotice): ErrorMessages {
+  function performValidation(breachNotice: BreachNotice, submitAction: string): ErrorMessages {
     const errorMessages: ErrorMessages = {}
     if (breachNotice.optionalNumberChecked) {
       // Cannot be blank if set to use custom number
@@ -448,6 +447,18 @@ export default function nextAppointmentRoutes(
         if (breachNotice.alternateNextAppointmentLocationSelected === null) {
           errorMessages.nextAppointmentNoAddressSelection = {
             text: 'Please enter a value for Do you want to use the address above?',
+          }
+        }
+        const addAddressSubmitAction: Boolean = (submitAction && submitAction.includes('alternateAddressForAppointment_'))
+        // perform the alternate address validation only if the submit action is not add address
+        if(!addAddressSubmitAction) {
+          if(breachNotice.alternateNextAppointmentLocationSelected === true) {
+            // check if we have an alternate address stored
+            if(breachNotice.alternateNextAppointmentLocation === null || breachNotice.alternateNextAppointmentLocation.id === null) {
+              errorMessages.alternateAppoinmentNoAlternateAddress = {
+                text: 'Please enter an alternate address using the Save Progress and Add Address button',
+              }
+            }
           }
         }
       }

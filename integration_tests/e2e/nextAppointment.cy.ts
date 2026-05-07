@@ -89,4 +89,13 @@ context('Next Appointment page', () => {
     cy.visit('/next-appointment/12345677-7777-7777-700000000033')
     cy.get('#add-alternate-address-button').should('exist')
   })
+
+  it('should show validation warning if NO has been selected for use above address and an address DOES NOT exists and continue pressed', () => {
+    cy.visit('/next-appointment/12345677-7777-7777-700000000033')
+    cy.get('#add-alternate-address-button').should('exist')
+    cy.get('#postal-address').should('not.exist')
+    cy.get('#continue-button').should('exist').click()
+    cy.get('.govuk-error-summary__title').should('exist').should('contain.text', 'There is a problem')
+    cy.contains('Please enter an alternate address using the Save Progress and Add Address button').should('exist')
+  })
 })

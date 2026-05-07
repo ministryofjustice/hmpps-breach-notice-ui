@@ -16,6 +16,7 @@
         {% set errorList =[
             { text: errorMessages.contactByPhone.text, href: "#contact-by-phone" } if errorMessages.contactByPhone else None,
             { text: errorMessages.genericErrorMessage.text, href: "#" } if errorMessages.genericErrorMessage else None,
+            { text: errorMessages.alternateAppoinmentNoAlternateAddress.text, href: "#" } if errorMessages.alternateAppoinmentNoAlternateAddress else None,
             { text: errorMessages.nextAppointmentNoAddressSelection.text, href: "#" } if errorMessages.nextAppointmentNoAddressSelection else None
         ] | reject("undefined") %}
 
@@ -180,7 +181,7 @@
                                         </label>
 
                                         {{ govukButton({
-                                          text: "Save progress and Add Address" ,
+                                          text: "Save Progress and Add Address" ,
                                           preventDoubleClick: "true",
                                           type: "submit",
                                           name: "action",
@@ -211,7 +212,7 @@
                                         </label>
 
                                         {{ govukButton({
-                                          text: "Save progress and Update Address" ,
+                                          text: "Save Progress and Update Address" ,
                                           preventDoubleClick: "true",
                                           type: "submit",
                                           name: "action",
