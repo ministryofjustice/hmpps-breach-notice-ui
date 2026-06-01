@@ -91,43 +91,43 @@ export default function addAlternateAppointmentAddressRoutes(
     const errorMessages: ErrorMessages = {}
 
     // Over length
-    if(address.buildingName && address.buildingName.length > 35) {
+    if (address.buildingName && address.buildingName.length > 35) {
       errorMessages.buildingName = {
         text: 'Building Name: The information entered is over the character limit specified for this field (35). Please edit and try again.',
       }
     }
 
-    if(address.buildingNumber && address.buildingNumber.length > 35) {
+    if (address.buildingNumber && address.buildingNumber.length > 35) {
       errorMessages.buildingNumber = {
         text: 'House Number: The information entered is over the character limit specified for this field (35). Please edit and try again.',
       }
     }
 
-    if(address.streetName && address.streetName.length > 35) {
+    if (address.streetName && address.streetName.length > 35) {
       errorMessages.streetName = {
         text: 'Street Name: The information entered is over the character limit specified for this field (35). Please edit and try again.',
       }
     }
 
-    if(address.district && address.district.length > 35) {
+    if (address.district && address.district.length > 35) {
       errorMessages.district = {
         text: 'District: The information entered is over the character limit specified for this field (35). Please edit and try again.',
       }
     }
 
-    if(address.townCity && address.townCity.length > 35) {
+    if (address.townCity && address.townCity.length > 35) {
       errorMessages.townCity = {
         text: 'Town/City: The information entered is over the character limit specified for this field (35). Please edit and try again.',
       }
     }
 
-    if(address.county && address.county.length > 35) {
+    if (address.county && address.county.length > 35) {
       errorMessages.county = {
         text: 'County: The information entered is over the character limit specified for this field (35). Please edit and try again.',
       }
     }
 
-    if(address.postcode && address.postcode.length > 8) {
+    if (address.postcode && address.postcode.length > 8) {
       errorMessages.postcode = {
         text: 'Postcode: The information entered is over the character limit specified for this field (8). Please edit and try again.',
       }

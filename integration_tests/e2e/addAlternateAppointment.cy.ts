@@ -93,24 +93,45 @@ context('Add Alternate Address page', () => {
     cy.get('.govuk-error-summary__title').should('exist').should('contain.text', 'There is a problem')
     cy.get('#buildingName-error')
       .should('exist')
-      .should('contain.text', 'Building Name: The information entered is over the character limit specified for this field (35). Please edit and try again.')
+      .should(
+        'contain.text',
+        'Building Name: The information entered is over the character limit specified for this field (35). Please edit and try again.',
+      )
     cy.get('#houseNumber-error')
       .should('exist')
-      .should('contain.text', 'House Number: The information entered is over the character limit specified for this field (35). Please edit and try again.')
+      .should(
+        'contain.text',
+        'House Number: The information entered is over the character limit specified for this field (35). Please edit and try again.',
+      )
     cy.get('#streetName-error')
       .should('exist')
-      .should('contain.text', 'Street Name: The information entered is over the character limit specified for this field (35). Please edit and try again.')
+      .should(
+        'contain.text',
+        'Street Name: The information entered is over the character limit specified for this field (35). Please edit and try again.',
+      )
     cy.get('#district-error')
       .should('exist')
-      .should('contain.text', 'District: The information entered is over the character limit specified for this field (35). Please edit and try again.')
+      .should(
+        'contain.text',
+        'District: The information entered is over the character limit specified for this field (35). Please edit and try again.',
+      )
     cy.get('#townCity-error')
       .should('exist')
-      .should('contain.text', 'Town/City: The information entered is over the character limit specified for this field (35). Please edit and try again.')
+      .should(
+        'contain.text',
+        'Town/City: The information entered is over the character limit specified for this field (35). Please edit and try again.',
+      )
     cy.get('#county-error')
       .should('exist')
-      .should('contain.text', 'County: The information entered is over the character limit specified for this field (35). Please edit and try again.')
+      .should(
+        'contain.text',
+        'County: The information entered is over the character limit specified for this field (35). Please edit and try again.',
+      )
     cy.get('#postcode-error')
       .should('exist')
-      .should('contain.text', 'Postcode: The information entered is over the character limit specified for this field (8). Please edit and try again.')
+      .should(
+        'contain.text',
+        'Postcode: The information entered is over the character limit specified for this field (8). Please edit and try again.',
+      )
   })
 })
