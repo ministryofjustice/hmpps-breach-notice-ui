@@ -3005,6 +3005,55 @@
         "transformers": ["response-template"]
       }
     },
+
+    {
+      "request": {
+        "url": "/breach-notice-api/breach-notice/97979797-5555-1111-123456789112",
+        "method": "GET"
+      },
+      "response": {
+        "status": 200,
+        "jsonBody": {
+          "id": "97979797-5555-1111-123456789112",
+          "crn": "Q979797",
+          "titleAndFullName": null,
+          "dateOfLetter": null,
+          "referenceNumber": null,
+          "responseRequiredDate": null,
+          "breachNoticeTypeCode": null,
+          "breachNoticeTypeDescription": null,
+          "breachConditionTypeCode": null,
+          "breachConditionTypeDescription": null,
+          "breachSentenceTypeCode": null,
+          "breachSentenceTypeDescription": null,
+          "responsibleOfficer": null,
+          "contactNumber": null,
+          "nextAppointmentType": null,
+          "nextAppointmentDate": null,
+          "nextAppointmentLocation": "some place",
+          "nextAppointmentOfficer": null,
+          "nextAppointmentContact": null,
+          "completedDate": null,
+          "offenderAddress": null,
+          "replyAddress": null,
+          "basicDetailsSaved": null,
+          "warningTypeSaved": null,
+          "warningDetailsSaved": null,
+          "nextAppointmentSaved": null,
+          "useDefaultAddress": null,
+          "useDefaultReplyAddress": null,
+          "breachNoticeContactList": null,
+          "breachNoticeRequirementList": null,
+          "alternateNextAppointmentLocation": null,
+          "alternateNextAppointmentLocationSelected": true
+        },
+        "headers": {
+          "Content-Type": "application/json;charset=UTF-8"
+        },
+        "transformers": ["response-template"]
+      }
+    },
+
     {
       "request": {
         "url": "/breach-notice-api/breach-notice/00000000-5555-1111-500000000001",
@@ -4422,6 +4471,15 @@
       "request": {
         "url": "/breach-notice-api/crlinks",
         "method": "POST"
+      },
+      "response": {
+        "status": 200
+      }
+    },
+    {
+      "request": {
+        "url": "/breach-notice-api/breach-notice/12345677-7777-7777-700000000033",
+        "method": "PUT"
       },
       "response": {
         "status": 200

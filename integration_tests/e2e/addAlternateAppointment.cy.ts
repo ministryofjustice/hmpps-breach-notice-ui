@@ -1,0 +1,137 @@
+context('Add Alternate Address page', () => {
+  it('page will load and show all required fields', () => {
+    cy.visit('/add-alternate-appointment-address/12345677-7777-7777-700000000033')
+    cy.url().should('include', '/add-alternate-appointment-address')
+    cy.get('#description').should('exist').should('be.visible')
+    cy.get('#buildingName').should('exist').should('be.visible')
+    cy.get('#houseNumber').should('exist').should('be.visible')
+    cy.get('#streetName').should('exist').should('be.visible')
+    cy.get('#district').should('exist').should('be.visible')
+    cy.get('#townCity').should('exist').should('be.visible')
+    cy.get('#county').should('exist').should('be.visible')
+    cy.get('#postcode').should('exist').should('be.visible')
+  })
+
+  it('will save all fields and redirect properly when Save is clicked', () => {
+    cy.visit('/add-alternate-appointment-address/12345677-7777-7777-700000000033')
+    cy.url().should('include', '/add-alternate-appointment-address')
+    cy.get('#description').type('A Description')
+    cy.get('#buildingName').type('B Building Name')
+    cy.get('#houseNumber').type('C House Number')
+    cy.get('#streetName').type('D Street Name')
+    cy.get('#district').type('E District')
+    cy.get('#townCity').type('F Town City')
+    cy.get('#county').type('G County')
+    cy.get('#postcode').type('NE25 9AB')
+    cy.get('#save-button').should('exist').should('be.visible').click()
+    cy.url().should('include', '/next-appointment/12345677-7777-7777-700000000033')
+  })
+
+  it('will return to next appoinment screen when cancel is clicked', () => {
+    cy.visit('/add-alternate-appointment-address/12345677-7777-7777-700000000033')
+    cy.url().should('include', '/add-alternate-appointment-address')
+    cy.get('#cancel-button').should('exist').should('be.visible').click()
+    cy.url().should('include', '/next-appointment/12345677-7777-7777-700000000033')
+  })
+
+  it('validation will trigger when none of description, number or name is present', () => {
+    cy.visit('/add-alternate-appointment-address/12345677-7777-7777-700000000033')
+    cy.url().should('include', '/add-alternate-appointment-address')
+    cy.get('#streetName').type('D Street Name')
+    cy.get('#district').type('E District')
+    cy.get('#townCity').type('F Town City')
+    cy.get('#county').type('G County')
+    cy.get('#postcode').type('H Postcode')
+    cy.get('#save-button').should('exist').should('be.visible').click()
+    cy.get('.govuk-error-summary__title').should('exist').should('contain.text', 'There is a problem')
+    cy.get('#description-error')
+      .should('exist')
+      .should('contain.text', 'At least 1 out of [Description, Building Name, House Number] must be present')
+    cy.get('#buildingName-error')
+      .should('exist')
+      .should('contain.text', 'At least 1 out of [Description, Building Name, House Number] must be present')
+    cy.get('#houseNumber-error')
+      .should('exist')
+      .should('contain.text', 'At least 1 out of [Description, Building Name, House Number] must be present')
+  })
+
+  it('validation will trigger when street, town, county or postcode is left blank', () => {
+    cy.visit('/add-alternate-appointment-address/12345677-7777-7777-700000000033')
+    cy.url().should('include', '/add-alternate-appointment-address')
+    cy.get('#description').type('A Description')
+    cy.get('#buildingName').type('B Building Name')
+    cy.get('#houseNumber').type('C House Number')
+    cy.get('#district').type('E District')
+    cy.get('#save-button').should('exist').should('be.visible').click()
+    cy.get('.govuk-error-summary__title').should('exist').should('contain.text', 'There is a problem')
+    cy.get('#streetName-error')
+      .should('exist')
+      .should('contain.text', 'Street Name : This is a required value, please enter a value')
+    cy.get('#townCity-error')
+      .should('exist')
+      .should('contain.text', 'Town/City : This is a required value, please enter a value')
+    cy.get('#county-error')
+      .should('exist')
+      .should('contain.text', 'County : This is a required value, please enter a value')
+    cy.get('#postcode-error')
+      .should('exist')
+      .should('contain.text', 'Postcode : This is a required value, please enter a value')
+  })
+
+  it('validation will trigger when fields go over their character limit', () => {
+    cy.visit('/add-alternate-appointment-address/12345677-7777-7777-700000000033')
+    cy.url().should('include', '/add-alternate-appointment-address')
+    cy.get('#description').type('Description123456789012345678901234567890')
+    cy.get('#buildingName').type('BuildingName123456789012345678901234567890')
+    cy.get('#houseNumber').type('HouseNumber123456789012345678901234567890')
+    cy.get('#streetName').type('StreetName123456789012345678901234567890')
+    cy.get('#district').type('District123456789012345678901234567890')
+    cy.get('#townCity').type('TownCity123456789012345678901234567890')
+    cy.get('#county').type('County123456789012345678901234567890')
+    cy.get('#postcode').type('County123456789012345678901234567890')
+    cy.get('#save-button').should('exist').should('be.visible').click()
+    cy.get('.govuk-error-summary__title').should('exist').should('contain.text', 'There is a problem')
+    cy.get('#buildingName-error')
+      .should('exist')
+      .should(
+        'contain.text',
+        'Building Name: The information entered is over the character limit specified for this field (35). Please edit and try again.',
+      )
+    cy.get('#houseNumber-error')
+      .should('exist')
+      .should(
+        'contain.text',
+        'House Number: The information entered is over the character limit specified for this field (35). Please edit and try again.',
+      )
+    cy.get('#streetName-error')
+      .should('exist')
+      .should(
+        'contain.text',
+        'Street Name: The information entered is over the character limit specified for this field (35). Please edit and try again.',
+      )
+    cy.get('#district-error')
+      .should('exist')
+      .should(
+        'contain.text',
+        'District: The information entered is over the character limit specified for this field (35). Please edit and try again.',
+      )
+    cy.get('#townCity-error')
+      .should('exist')
+      .should(
+        'contain.text',
+        'Town/City: The information entered is over the character limit specified for this field (35). Please edit and try again.',
+      )
+    cy.get('#county-error')
+      .should('exist')
+      .should(
+        'contain.text',
+        'County: The information entered is over the character limit specified for this field (35). Please edit and try again.',
+      )
+    cy.get('#postcode-error')
+      .should('exist')
+      .should(
+        'contain.text',
+        'Postcode: The information entered is over the character limit specified for this field (8). Please edit and try again.',
+      )
+  })
+})
