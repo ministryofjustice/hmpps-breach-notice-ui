@@ -10,7 +10,7 @@ export default function addAddressRoutes(
   auditService: AuditService,
   hmppsAuthClient: HmppsAuthClient,
 ): Router {
-  router.get('/add-address/:id', async (req, res, next) => {
+  router.get('/add-address/:id', async (req, res) => {
     await auditService.logPageView(Page.ADD_ADDRESS, { who: res.locals.user.username, correlationId: req.id })
     const { id } = req.params
     const token = await hmppsAuthClient.getSystemClientToken(res.locals.user.username)
@@ -32,7 +32,7 @@ export default function addAddressRoutes(
     res.render('pages/add-address', { address })
   })
 
-  router.post('/add-address/:id', async (req, res, next) => {
+  router.post('/add-address/:id', async (req, res) => {
     const token = await hmppsAuthClient.getSystemClientToken(res.locals.user.username)
     const breachNoticeApiClient = new BreachNoticeApiClient(token)
     const { id } = req.params
@@ -80,6 +80,49 @@ export default function addAddressRoutes(
 
   function validateAddress(address: BreachNoticeAddress): ErrorMessages {
     const errorMessages: ErrorMessages = {}
+
+    // Over length
+    if (address.buildingName && address.buildingName.length > 35) {
+      errorMessages.buildingName = {
+        text: 'Building Name: The information entered is over the character limit specified for this field (35). Please edit and try again.',
+      }
+    }
+
+    if (address.buildingNumber && address.buildingNumber.length > 35) {
+      errorMessages.buildingNumber = {
+        text: 'House Number: The information entered is over the character limit specified for this field (35). Please edit and try again.',
+      }
+    }
+
+    if (address.streetName && address.streetName.length > 35) {
+      errorMessages.streetName = {
+        text: 'Street Name: The information entered is over the character limit specified for this field (35). Please edit and try again.',
+      }
+    }
+
+    if (address.district && address.district.length > 35) {
+      errorMessages.district = {
+        text: 'District: The information entered is over the character limit specified for this field (35). Please edit and try again.',
+      }
+    }
+
+    if (address.townCity && address.townCity.length > 35) {
+      errorMessages.townCity = {
+        text: 'Town/City: The information entered is over the character limit specified for this field (35). Please edit and try again.',
+      }
+    }
+
+    if (address.county && address.county.length > 35) {
+      errorMessages.county = {
+        text: 'County: The information entered is over the character limit specified for this field (35). Please edit and try again.',
+      }
+    }
+
+    if (address.postcode && address.postcode.length > 8) {
+      errorMessages.postcode = {
+        text: 'Postcode: The information entered is over the character limit specified for this field (8). Please edit and try again.',
+      }
+    }
 
     if (
       (!address.officeDescription || address.officeDescription.trim() === '') &&

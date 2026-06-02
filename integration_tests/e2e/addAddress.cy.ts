@@ -22,7 +22,7 @@ context('Add Address page', () => {
     cy.get('#district').type('E District')
     cy.get('#townCity').type('F Town City')
     cy.get('#county').type('G County')
-    cy.get('#postcode').type('H Postcode')
+    cy.get('#postcode').type('NE25 9AB')
     cy.get('#save-button').should('exist').should('be.visible').click()
     cy.url().should('include', '/basic-details')
   })
@@ -85,5 +85,62 @@ context('Add Address page', () => {
     cy.contains(
       'There has been a problem fetching information from the Breach Notice Service. Please try again later.',
     ).should('exist')
+  })
+
+  it('validation will trigger when fields go over their character limit', () => {
+    cy.visit('/add-address/00000000-5555-1111-500000000001')
+    cy.url().should('include', '/add-address')
+    cy.get('#description').type('Description123456789012345678901234567890')
+    cy.get('#buildingName').type('BuildingName123456789012345678901234567890')
+    cy.get('#houseNumber').type('HouseNumber123456789012345678901234567890')
+    cy.get('#streetName').type('StreetName123456789012345678901234567890')
+    cy.get('#district').type('District123456789012345678901234567890')
+    cy.get('#townCity').type('TownCity123456789012345678901234567890')
+    cy.get('#county').type('County123456789012345678901234567890')
+    cy.get('#postcode').type('County123456789012345678901234567890')
+    cy.get('#save-button').should('exist').should('be.visible').click()
+    cy.get('.govuk-error-summary__title').should('exist').should('contain.text', 'There is a problem')
+    cy.get('#buildingName-error')
+      .should('exist')
+      .should(
+        'contain.text',
+        'Building Name: The information entered is over the character limit specified for this field (35). Please edit and try again.',
+      )
+    cy.get('#houseNumber-error')
+      .should('exist')
+      .should(
+        'contain.text',
+        'House Number: The information entered is over the character limit specified for this field (35). Please edit and try again.',
+      )
+    cy.get('#streetName-error')
+      .should('exist')
+      .should(
+        'contain.text',
+        'Street Name: The information entered is over the character limit specified for this field (35). Please edit and try again.',
+      )
+    cy.get('#district-error')
+      .should('exist')
+      .should(
+        'contain.text',
+        'District: The information entered is over the character limit specified for this field (35). Please edit and try again.',
+      )
+    cy.get('#townCity-error')
+      .should('exist')
+      .should(
+        'contain.text',
+        'Town/City: The information entered is over the character limit specified for this field (35). Please edit and try again.',
+      )
+    cy.get('#county-error')
+      .should('exist')
+      .should(
+        'contain.text',
+        'County: The information entered is over the character limit specified for this field (35). Please edit and try again.',
+      )
+    cy.get('#postcode-error')
+      .should('exist')
+      .should(
+        'contain.text',
+        'Postcode: The information entered is over the character limit specified for this field (8). Please edit and try again.',
+      )
   })
 })
