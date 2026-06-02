@@ -12,6 +12,9 @@
   <form method="post">
 
     {% set errorList =[
+      { text: errorMessages.buildingName.text, href: "#buildingName" } if errorMessages.buildingName else None,
+      { text: errorMessages.buildingNumber.text, href: "#buildingNumber" } if errorMessages.buildingNumber else None,
+      { text: errorMessages.district.text, href: "#district" } if errorMessages.district else None,
       { text: errorMessages.identifier.text, href: "#description" } if errorMessages.identifier else None,
       { text: errorMessages.streetName.text, href: "#streetName" } if errorMessages.streetName else None,
       { text: errorMessages.townCity.text, href: "#townCity" } if errorMessages.townCity else None,
@@ -48,8 +51,8 @@
             classes: "govuk-input--width-30",
             name: "officeDescription",
             errorMessage: {
-              text: errorMessages.identifier.text
-            } if errorMessages.identifier.text
+              text: errorMessages.identifier.text if errorMessages.identifier else errorMessages.officeDescription.text
+            } if errorMessages.identifier.text or errorMessages.officeDescription.text
           }) }}
 
           {{ govukInput({
@@ -63,8 +66,8 @@
             classes: "govuk-input--width-30",
             name: "buildingName",
             errorMessage: {
-              text: errorMessages.identifier.text
-            } if errorMessages.identifier.text
+              text: errorMessages.identifier.text if errorMessages.identifier else errorMessages.buildingName.text
+            } if errorMessages.identifier.text or errorMessages.buildingName.text
           }) }}
 
           {{ govukInput({
@@ -78,8 +81,8 @@
             classes: "govuk-input--width-30",
             name: "buildingNumber",
             errorMessage: {
-              text: errorMessages.identifier.text
-            } if errorMessages.identifier.text
+              text: errorMessages.identifier.text if errorMessages.identifier else errorMessages.buildingNumber.text
+            } if errorMessages.identifier.text or errorMessages.buildingNumber.text
           }) }}
 
           {{ govukInput({
@@ -106,7 +109,10 @@
             id: "district",
             value: address.district,
             classes: "govuk-input--width-30",
-            name: "district"
+            name: "district",
+            errorMessage: {
+              text: errorMessages.district.text
+            } if errorMessages.district.text
           }) }}
 
           {{ govukInput({
