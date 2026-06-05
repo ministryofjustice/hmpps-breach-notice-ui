@@ -91,6 +91,12 @@ export default function addAlternateAppointmentAddressRoutes(
     const errorMessages: ErrorMessages = {}
 
     // Over length
+    if (address.officeDescription && address.officeDescription.length > 50) {
+      errorMessages.description = {
+        text: 'Description: The information entered is over the character limit specified for this field (50). Please edit and try again.',
+      }
+    }
+
     if (address.buildingName && address.buildingName.length > 35) {
       errorMessages.buildingName = {
         text: 'Building Name: The information entered is over the character limit specified for this field (35). Please edit and try again.',

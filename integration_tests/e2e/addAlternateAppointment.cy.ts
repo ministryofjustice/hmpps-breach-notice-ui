@@ -81,7 +81,9 @@ context('Add Alternate Address page', () => {
   it('validation will trigger when fields go over their character limit', () => {
     cy.visit('/add-alternate-appointment-address/12345677-7777-7777-700000000033')
     cy.url().should('include', '/add-alternate-appointment-address')
-    cy.get('#description').type('Description123456789012345678901234567890')
+    cy.get('#description').type(
+      'Description1111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111',
+    )
     cy.get('#buildingName').type('BuildingName123456789012345678901234567890')
     cy.get('#houseNumber').type('HouseNumber123456789012345678901234567890')
     cy.get('#streetName').type('StreetName123456789012345678901234567890')
@@ -132,6 +134,12 @@ context('Add Alternate Address page', () => {
       .should(
         'contain.text',
         'Postcode: The information entered is over the character limit specified for this field (8). Please edit and try again.',
+      )
+    cy.get('#description-error')
+      .should('exist')
+      .should(
+        'contain.text',
+        'Description: The information entered is over the character limit specified for this field (50). Please edit and try again.',
       )
   })
 })
