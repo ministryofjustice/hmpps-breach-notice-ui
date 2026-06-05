@@ -12,11 +12,11 @@
   <form method="post">
 
     {% set errorList =[
+      { text: errorMessages.identifier.text, href: "#description" } if errorMessages.identifier else None,
+      { text: errorMessages.description.text, href: "#description" } if errorMessages.description else None,
       { text: errorMessages.buildingName.text, href: "#buildingName" } if errorMessages.buildingName else None,
       { text: errorMessages.buildingNumber.text, href: "#buildingNumber" } if errorMessages.buildingNumber else None,
       { text: errorMessages.district.text, href: "#district" } if errorMessages.district else None,
-      { text: errorMessages.identifier.text, href: "#description" } if errorMessages.identifier else None,
-      { text: errorMessages.identifier.text, href: "#description" } if errorMessages.description else None,
       { text: errorMessages.streetName.text, href: "#streetName" } if errorMessages.streetName else None,
       { text: errorMessages.townCity.text, href: "#townCity" } if errorMessages.townCity else None,
       { text: errorMessages.county.text, href: "#county" } if errorMessages.county else None,
