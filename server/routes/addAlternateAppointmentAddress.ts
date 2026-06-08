@@ -152,25 +152,25 @@ export default function addAlternateAppointmentAddressRoutes(
 
     if (!address.streetName || address.streetName.trim() === '') {
       errorMessages.streetName = {
-        text: 'Street Name : This is a required value, please enter a value',
+        text: 'Street Name : This is a required field, please enter a value',
       }
     }
 
     if (!address.townCity || address.townCity.trim() === '') {
       errorMessages.townCity = {
-        text: 'Town/City : This is a required value, please enter a value',
+        text: 'Town/City : This is a required field, please enter a value',
       }
     }
 
     if (!address.county || address.county.trim() === '') {
       errorMessages.county = {
-        text: 'County : This is a required value, please enter a value',
+        text: 'County : This is a required field, please enter a value',
       }
     }
 
     if (!address.postcode || address.postcode.trim() === '') {
       errorMessages.postcode = {
-        text: 'Postcode : This is a required value, please enter a value',
+        text: 'Postcode : This is a required field, please enter a value',
       }
     }
 
