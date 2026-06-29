@@ -45,6 +45,59 @@
         "transformers": ["response-template"]
       }
     },
+
+    {
+      "request": {
+        "url": "/breach-notice-api/breach-notice/00012345-4444-5555-0000-000000000007",
+        "method": "GET"
+      },
+      "response": {
+        "status": 200,
+        "jsonBody": {
+          "id": "00012345-4444-5555-0000-000000000007",
+          "crn": "Q123456",
+          "titleAndFullName": null,
+          "dateOfLetter": null,
+          "referenceNumber": null,
+          "responseRequiredDate": null,
+          "breachNoticeTypeCode": null,
+          "breachNoticeTypeDescription": null,
+          "breachConditionTypeCode": null,
+          "breachConditionTypeDescription": null,
+          "breachSentenceTypeCode": null,
+          "breachSentenceTypeDescription": null,
+          "responsibleOfficer": null,
+          "contactNumber": null,
+          "nextAppointmentId": 1,
+          "nextAppointmentType": null,
+          "nextAppointmentDate": null,
+          "nextAppointmentLocation": null,
+          "nextAppointmentOfficer": null,
+          "nextAppointmentContact": null,
+          "selectNextAppointment": true,
+          "completedDate": null,
+          "offenderAddress": null,
+          "replyAddress": null,
+          "basicDetailsSaved": true,
+          "warningTypeSaved": true,
+          "warningDetailsSaved": true,
+          "nextAppointmentSaved": null,
+          "useDefaultAddress": null,
+          "useDefaultReplyAddress": null,
+          "breachNoticeContactList": [],
+          "breachNoticeRequirementList": []
+        },
+        "headers": {
+          "Content-Type": "application/json;charset=UTF-8"
+        },
+        "transformers": ["response-template"]
+      }
+    },
+
+
+
+
+
     {
       "request": {
         "url": "/breach-notice-api/crlinks/bybreachnoticeid/00000000-0000-0000-0000-000000000001",

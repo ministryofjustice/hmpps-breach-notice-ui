@@ -480,7 +480,7 @@ export default function nextAppointmentRoutes(
         futureAppointment.type.description,
         toUserDate(futureAppointment.datetime.substring(0, 10)),
         toUserTime(futureAppointment.datetime),
-        locationDisplayValue(futureAppointment.location),
+        futureAppointment.location?.officeDescription,
         officerDisplayValue(futureAppointment.officer.name),
       ]
         .filter(item => item)

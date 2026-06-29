@@ -62,6 +62,11 @@ context('Next Appointment page', () => {
       .should('contain.text', 'No Contact Number found for this Responsible Officer')
   })
 
+  it('should contain officeDescription in next appointment field', () => {
+    cy.visit('/next-appointment/00012345-4444-5555-0000-000000000007')
+    cy.contains('Moorland Centre').should('exist')
+  })
+
   // first test needs to fail at the breach notice integration
   it('should stay on page and show Breach Notice Service error message if 500 thrown from Nat Breach Service', () => {
     cy.visit('/next-appointment/44444444-1122-8338-800000000008')
