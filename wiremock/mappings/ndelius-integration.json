@@ -1668,6 +1668,63 @@
         }
       }
     },
+
+    {
+      "request": {
+        "urlPattern": "/next-appointment-details/Q123456",
+        "method": "GET"
+      },
+      "response": {
+        "status": 200,
+        "jsonBody": {
+          "responsibleOfficer": {
+            "name": {
+              "forename": "ROForename",
+              "middleName": "ROMiddleName",
+              "surname": "ROSurname"
+            },
+            "telephoneNumber": "01234567891"
+          },
+          "futureAppointments": [
+            {
+              "id": 1,
+              "datetime": "2030-01-01T12:34:56",
+              "description": "First Appointment Description",
+              "type": {
+                "code": "FTYPE",
+                "description": "First Appointment Type"
+              },
+              "location": {
+                "id": 1,
+                "officeDescription": "Moorland Centre",
+                "type": "Postal",
+                "buildingName": null,
+                "buildingNumber": "281",
+                "streetName": "Postal Street",
+                "townCity": "Postinton",
+                "district": "Postrict",
+                "county": "County Post",
+                "postcode": "NE30 3ZZ"
+              },
+              "officer": {
+                "code": "N01A001",
+                "name": {
+                  "forename": "Where",
+                  "middleName": "is",
+                  "surname": "Wally"
+                }
+              }
+            }
+          ]
+        },
+        "headers": {
+          "Content-Type": "application/json;charset=UTF-8"
+        }
+      }
+    },
+
+
+
     {
       "request": {
         "urlPattern": "/next-appointment-details/X017053",
