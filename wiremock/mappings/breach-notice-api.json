@@ -2281,6 +2281,7 @@
           "alternateNextAppointmentLocation": {
             "addressId": 33333,
             "status": "Reply",
+            "officeDescription": "An Office Description",
             "buildingName": null,
             "buildingNumber": "21",
             "streetName": "Reply Street",

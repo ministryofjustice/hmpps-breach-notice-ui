@@ -197,6 +197,8 @@
                                     {% if showUpdateAddress and appointmentRadioButton.checked %}
                                       <div class="govuk-form-group">
                                         <p id="postal-address">
+                                          {% if breachNotice.alternateNextAppointmentLocation.officeDescription %} {{ breachNotice.alternateNextAppointmentLocation.officeDescription }}
+                                            <br/>{% endif %}
                                           {% if breachNotice.alternateNextAppointmentLocation.buildingName %} {{ breachNotice.alternateNextAppointmentLocation.buildingName }}
                                             <br/>{% endif %}
                                           {% if breachNotice.alternateNextAppointmentLocation.buildingName or breachNotice.alternateNextAppointmentLocation.streetName %} {{ breachNotice.alternateNextAppointmentLocation.buildingNumber }} {{ breachNotice.alternateNextAppointmentLocation.streetName }}

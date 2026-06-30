@@ -90,6 +90,11 @@ context('Next Appointment page', () => {
     cy.get('#postal-address').should('exist')
   })
 
+  it('should show officeDescription', () => {
+    cy.visit('/next-appointment/12345677-7777-7777-700000000055')
+    cy.contains('An Office Description').should('exist')
+  })
+
   it('should show add address button if no has been selected for use above address and an address DOES NOT exists', () => {
     cy.visit('/next-appointment/12345677-7777-7777-700000000033')
     cy.get('#add-alternate-address-button').should('exist')
