@@ -1,27 +1,30 @@
 import { Router } from 'express'
+import { AuthenticationClient } from '@ministryofjustice/hmpps-auth-clients'
 import AuditService, { Page } from '../services/auditService'
 import BreachNoticeApiClient, { BreachNotice, BreachNoticeAddress } from '../data/breachNoticeApiClient'
-import { HmppsAuthClient } from '../data'
 import { ErrorMessages } from '../data/uiModels'
 import { handleIntegrationErrors } from '../utils/utils'
 
 export default function addAddressRoutes(
   router: Router,
   auditService: AuditService,
-  hmppsAuthClient: HmppsAuthClient,
+  authenticationClient: AuthenticationClient,
 ): Router {
   router.get('/add-address/:id', async (req, res) => {
     await auditService.logPageView(Page.ADD_ADDRESS, { who: res.locals.user.username, correlationId: req.id })
     const { id } = req.params
-    const token = await hmppsAuthClient.getSystemClientToken(res.locals.user.username)
-    const breachNoticeApiClient = new BreachNoticeApiClient(token)
+    const breachNoticeApiClient = new BreachNoticeApiClient(authenticationClient)
     let breachNotice: BreachNotice = null
 
     try {
       // get the existing breach notice
-      breachNotice = await breachNoticeApiClient.getBreachNoticeById(id as string)
+      breachNotice = await breachNoticeApiClient.getBreachNoticeById(id as string, res.locals.user.username)
     } catch (error) {
-      const errorMessages: ErrorMessages = handleIntegrationErrors(error.status, error.data?.message, 'Breach Notice')
+      const errorMessages: ErrorMessages = handleIntegrationErrors(
+        error.responseStatus,
+        error.data?.message,
+        'Breach Notice',
+      )
       const showEmbeddedError = true
       // always stay on page and display the error when there are isssues retrieving the breach notice
       res.render(`pages/add-address`, { errorMessages, showEmbeddedError })
@@ -33,8 +36,7 @@ export default function addAddressRoutes(
   })
 
   router.post('/add-address/:id', async (req, res) => {
-    const token = await hmppsAuthClient.getSystemClientToken(res.locals.user.username)
-    const breachNoticeApiClient = new BreachNoticeApiClient(token)
+    const breachNoticeApiClient = new BreachNoticeApiClient(authenticationClient)
     const { id } = req.params
 
     // if cancel selected skip right back
@@ -59,15 +61,22 @@ export default function addAddressRoutes(
 
       if (!hasErrors) {
         try {
-          const breachNotice: BreachNotice = await breachNoticeApiClient.getBreachNoticeById(id as string)
+          const breachNotice: BreachNotice = await breachNoticeApiClient.getBreachNoticeById(
+            id as string,
+            res.locals.user.username,
+          )
           if (breachNotice.replyAddress) {
             address.id = breachNotice.replyAddress.id
           }
           breachNotice.replyAddress = address
-          await breachNoticeApiClient.updateBreachNotice(id, breachNotice)
+          await breachNoticeApiClient.updateBreachNotice(id, breachNotice, res.locals.user.username)
           res.redirect(`/basic-details/${id}`)
         } catch (error) {
-          const integrationErrorMessages = handleIntegrationErrors(error.status, error.data?.message, 'Breach Notice')
+          const integrationErrorMessages = handleIntegrationErrors(
+            error.responseStatus,
+            error.data?.message,
+            'Breach Notice',
+          )
           const showEmbeddedError = true
           // always stay on page and display the error when there are isssues retrieving the breach notice
           res.render(`pages/add-address`, { errorMessages, showEmbeddedError, integrationErrorMessages })

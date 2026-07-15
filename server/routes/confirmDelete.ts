@@ -1,29 +1,28 @@
 import { Router } from 'express'
+import { AuthenticationClient } from '@ministryofjustice/hmpps-auth-clients'
 import AuditService, { Page } from '../services/auditService'
 import BreachNoticeApiClient from '../data/breachNoticeApiClient'
-import { HmppsAuthClient } from '../data'
 import { ErrorMessages } from '../data/uiModels'
 import { handleIntegrationErrors } from '../utils/utils'
 
 export default function confirmDeleteRoutes(
   router: Router,
   auditService: AuditService,
-  hmppsAuthClient: HmppsAuthClient,
+  authenticationClient: AuthenticationClient,
 ): Router {
-  router.get('/confirm-delete/:id', async (req, res, next) => {
+  router.get('/confirm-delete/:id', async (req, res) => {
     await auditService.logPageView(Page.CONFIRM_DELETE, { who: res.locals.user.username, correlationId: req.id })
     const { id } = req.params
     res.render('pages/confirm-delete', { id })
   })
 
-  router.post('/confirm-delete/:id', async (req, res, next) => {
-    const token = await hmppsAuthClient.getSystemClientToken(res.locals.user.username)
-    const breachNoticeApiClient = new BreachNoticeApiClient(token)
+  router.post('/confirm-delete/:id', async (req, res) => {
+    const breachNoticeApiClient = new BreachNoticeApiClient(authenticationClient)
     const { id } = req.params
 
     if (req.body.action === 'confirm') {
       try {
-        const breachNotice = await breachNoticeApiClient.getBreachNoticeById(id as string)
+        const breachNotice = await breachNoticeApiClient.getBreachNoticeById(id as string, res.locals.user.username)
         if (Object.keys(breachNotice).length === 0) {
           const errorMessages: ErrorMessages = {}
           errorMessages.genericErrorMessage = {
@@ -32,9 +31,13 @@ export default function confirmDeleteRoutes(
           res.render(`pages/detailed-error`, { errorMessages })
           return
         }
-        await breachNoticeApiClient.deleteBreachNotice(id as string)
+        await breachNoticeApiClient.deleteBreachNotice(id as string, res.locals.user.username)
       } catch (error) {
-        const errorMessages: ErrorMessages = handleIntegrationErrors(error.status, error.data?.message, 'Breach Notice')
+        const errorMessages: ErrorMessages = handleIntegrationErrors(
+          error.responseStatus,
+          error.data?.message,
+          'Breach Notice',
+        )
         const showEmbeddedError = true
         // always stay on page and display the error when there are isssues retrieving the breach notice
         res.render(`pages/detailed-error`, { errorMessages, showEmbeddedError })

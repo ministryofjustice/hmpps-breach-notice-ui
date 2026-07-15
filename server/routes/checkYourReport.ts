@@ -1,6 +1,7 @@
 import { Response, Router } from 'express'
 import { ZonedDateTime, ZoneId } from '@js-joda/core'
 import '@js-joda/timezone'
+import { AuthenticationClient } from '@ministryofjustice/hmpps-auth-clients'
 import AuditService, { Page } from '../services/auditService'
 import BreachNoticeApiClient, {
   BreachNotice,
@@ -8,7 +9,6 @@ import BreachNoticeApiClient, {
   BreachNoticeContact,
   WarningDetailsWholeSentenceAndRequirement,
 } from '../data/breachNoticeApiClient'
-import { HmppsAuthClient } from '../data'
 import CommonUtils from '../services/commonUtils'
 import { toUserDate, toUserDateFromDateTime, toUserTimeFromDateTime } from '../utils/dateUtils'
 import { ErrorMessages } from '../data/uiModels'
@@ -17,21 +17,19 @@ import { createBlankBreachNoticeWithId, handleIntegrationErrors } from '../utils
 export default function checkYourReportRoutes(
   router: Router,
   auditService: AuditService,
-  hmppsAuthClient: HmppsAuthClient,
+  authenticationClient: AuthenticationClient,
   commonUtils: CommonUtils,
 ): Router {
   router.get('/check-your-report/:id', async (req, res) => {
     await auditService.logPageView(Page.CHECK_YOUR_REPORT, { who: res.locals.user.username, correlationId: req.id })
-    const breachNoticeApiClient = new BreachNoticeApiClient(
-      await hmppsAuthClient.getSystemClientToken(res.locals.user.username),
-    )
+    const breachNoticeApiClient = new BreachNoticeApiClient(authenticationClient)
     const { id } = req.params
     let breachNotice: BreachNotice
     let breachNoticeWholeSentenceContacts: BreachNoticeContact[] = []
     const warningDetailsFailureList: WarningDetailsWholeSentenceAndRequirement[] = []
 
     try {
-      breachNotice = await breachNoticeApiClient.getBreachNoticeById(id as string)
+      breachNotice = await breachNoticeApiClient.getBreachNoticeById(id as string, res.locals.user.username)
 
       if (breachNotice.breachNoticeContactList && Object.keys(breachNotice.breachNoticeContactList).length > 0) {
         breachNoticeWholeSentenceContacts = breachNotice.breachNoticeContactList.filter(
@@ -72,7 +70,11 @@ export default function checkYourReportRoutes(
         })
       }
     } catch (error) {
-      const errorMessages: ErrorMessages = handleIntegrationErrors(error.status, error.data?.message, 'Breach Notice')
+      const errorMessages: ErrorMessages = handleIntegrationErrors(
+        error.responseStatus,
+        error.data?.message,
+        'Breach Notice',
+      )
       const showEmbeddedError = true
       breachNotice = createBlankBreachNoticeWithId(req.params.id)
       // always stay on page and display the error when there are isssues retrieving the breach notice
@@ -143,14 +145,12 @@ export default function checkYourReportRoutes(
 
   router.post('/check-your-report/:id', async (req, res) => {
     await auditService.logPageView(Page.CHECK_YOUR_REPORT, { who: res.locals.user.username, correlationId: req.id })
-    const breachNoticeApiClient = new BreachNoticeApiClient(
-      await hmppsAuthClient.getSystemClientToken(res.locals.user.username),
-    )
+    const breachNoticeApiClient = new BreachNoticeApiClient(authenticationClient)
     const { id } = req.params
-    const breachNotice = await breachNoticeApiClient.getBreachNoticeById(id as string)
+    const breachNotice = await breachNoticeApiClient.getBreachNoticeById(id as string, res.locals.user.username)
     if (await commonUtils.redirectRequired(breachNotice, res)) return
     breachNotice.completedDate = ZonedDateTime.now(ZoneId.of('Europe/London'))
-    await breachNoticeApiClient.updateBreachNotice(id, breachNotice)
+    await breachNoticeApiClient.updateBreachNotice(id, breachNotice, res.locals.user.username)
     res.redirect(`/report-completed/${req.params.id}`)
   })
 

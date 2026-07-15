@@ -1,47 +1,67 @@
 import { LocalDateTime } from '@js-joda/core'
+import { asSystem, RestClient } from '@ministryofjustice/hmpps-rest-client'
+import { AuthenticationClient } from '@ministryofjustice/hmpps-auth-clients'
 import config from '../config'
-import RestClient from './restClient'
 import { SelectItem } from './uiModels'
+import logger from '../../logger'
 
 export default class NdeliusIntegrationApiClient extends RestClient {
-  constructor(token: string) {
-    super('NDelius Integration API', config.apis.ndeliusIntegration, token)
+  constructor(authenticationClient: AuthenticationClient) {
+    super('NDelius Integration API', config.apis.ndeliusIntegration, logger, authenticationClient)
   }
 
   async getBasicDetails(crn: string, username: string): Promise<BasicDetails> {
-    return this.get({
-      path: `/basic-details/${crn}/${username}`,
-    })
+    return this.get(
+      {
+        path: `/basic-details/${crn}/${username}`,
+      },
+      asSystem(username),
+    )
   }
 
-  async getWarningTypes(crn: string, breachNoticeId: string): Promise<WarningTypeWrapper> {
-    return this.get({
-      path: `/warning-types/${crn}/${breachNoticeId}`,
-    })
+  async getWarningTypes(crn: string, breachNoticeId: string, username: string): Promise<WarningTypeWrapper> {
+    return this.get(
+      {
+        path: `/warning-types/${crn}/${breachNoticeId}`,
+      },
+      asSystem(username),
+    )
   }
 
-  async getWarningDetails(crn: string, breachNoticeId: string): Promise<WarningDetails> {
-    return this.get({
-      path: `/warning-details/${crn}/${breachNoticeId}`,
-    })
+  async getWarningDetails(crn: string, breachNoticeId: string, username: string): Promise<WarningDetails> {
+    return this.get(
+      {
+        path: `/warning-details/${crn}/${breachNoticeId}`,
+      },
+      asSystem(username),
+    )
   }
 
-  async getRequirements(breachNoticeId: string): Promise<Requirements> {
-    return this.get({
-      path: `/requirements/${breachNoticeId}`,
-    })
+  async getRequirements(breachNoticeId: string, username: string): Promise<Requirements> {
+    return this.get(
+      {
+        path: `/requirements/${breachNoticeId}`,
+      },
+      asSystem(username),
+    )
   }
 
-  async getNextAppointmentDetails(crn: string): Promise<NextAppointmentDetails> {
-    return this.get({
-      path: `/next-appointment-details/${crn}`,
-    })
+  async getNextAppointmentDetails(crn: string, username: string): Promise<NextAppointmentDetails> {
+    return this.get(
+      {
+        path: `/next-appointment-details/${crn}`,
+      },
+      asSystem(username),
+    )
   }
 
   async getLimitedAccessCheck(crn: string, username: string): Promise<LimitedAccessCheck> {
-    return this.get({
-      path: `/users/${username}/access/${crn}`,
-    })
+    return this.get(
+      {
+        path: `/users/${username}/access/${crn}`,
+      },
+      asSystem(username),
+    )
   }
 }
 

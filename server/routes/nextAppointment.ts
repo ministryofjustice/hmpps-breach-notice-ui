@@ -1,8 +1,8 @@
 import { Router } from 'express'
 import { LocalDate, LocalDateTime } from '@js-joda/core'
+import { AuthenticationClient } from '@ministryofjustice/hmpps-auth-clients'
 import AuditService, { Page } from '../services/auditService'
 import BreachNoticeApiClient, { BreachNotice } from '../data/breachNoticeApiClient'
-import { HmppsAuthClient } from '../data'
 import CommonUtils from '../services/commonUtils'
 import { createBlankBreachNoticeWithId, handleIntegrationErrors } from '../utils/utils'
 import { toUserDate, toUserTime } from '../utils/dateUtils'
@@ -17,16 +17,15 @@ import { ErrorMessages, RadioButton } from '../data/uiModels'
 export default function nextAppointmentRoutes(
   router: Router,
   auditService: AuditService,
-  hmppsAuthClient: HmppsAuthClient,
+  authenticationClient: AuthenticationClient,
   commonUtils: CommonUtils,
 ): Router {
   const currentPage = 'next-appointment'
 
   router.get('/next-appointment/:id', async (req, res) => {
     await auditService.logPageView(Page.NEXT_APPOINTMENT, { who: res.locals.user.username, correlationId: req.id })
-    const token = await hmppsAuthClient.getSystemClientToken(res.locals.user.username)
-    const breachNoticeApiClient = new BreachNoticeApiClient(token)
-    const ndeliusIntegrationApiClient = new NdeliusIntegrationApiClient(token)
+    const breachNoticeApiClient = new BreachNoticeApiClient(authenticationClient)
+    const ndeliusIntegrationApiClient = new NdeliusIntegrationApiClient(authenticationClient)
     let breachNotice: BreachNotice
     let nextAppointmentDetails: NextAppointmentDetails = null
 
@@ -34,9 +33,13 @@ export default function nextAppointmentRoutes(
 
     try {
       // get the existing breach notice
-      breachNotice = await breachNoticeApiClient.getBreachNoticeById(id as string)
+      breachNotice = await breachNoticeApiClient.getBreachNoticeById(id as string, res.locals.user.username)
     } catch (error) {
-      const errorMessages: ErrorMessages = handleIntegrationErrors(error.status, error.data?.message, 'Breach Notice')
+      const errorMessages: ErrorMessages = handleIntegrationErrors(
+        error.responseStatus,
+        error.data?.message,
+        'Breach Notice',
+      )
       const showEmbeddedError = true
       breachNotice = createBlankBreachNoticeWithId(req.params.id)
       // always stay on page and display the error when there are isssues retrieving the breach notice
@@ -45,20 +48,23 @@ export default function nextAppointmentRoutes(
     }
 
     try {
-      nextAppointmentDetails = await ndeliusIntegrationApiClient.getNextAppointmentDetails(breachNotice.crn)
+      nextAppointmentDetails = await ndeliusIntegrationApiClient.getNextAppointmentDetails(
+        breachNotice.crn,
+        res.locals.user.username,
+      )
     } catch (error) {
       const errorMessages: ErrorMessages = handleIntegrationErrors(
-        error.status,
+        error.responseStatus,
         error.data?.message,
         'NDelius Integration',
       )
       // take the user to detailed error page for 400 type errors
-      if (error.status === 400) {
+      if (error.responseStatus === 400) {
         res.render('pages/detailed-error', { errorMessages })
         return
       }
       // stay on the current page for 500 errors
-      if (error.status === 500) {
+      if (error.responseStatus === 500) {
         const showEmbeddedError = true
         breachNotice = createBlankBreachNoticeWithId(req.params.id)
         res.render('pages/next-appointment', { errorMessages, showEmbeddedError, breachNotice })
@@ -151,9 +157,8 @@ export default function nextAppointmentRoutes(
 
   router.post('/next-appointment/:id', async (req, res) => {
     await auditService.logPageView(Page.NEXT_APPOINTMENT, { who: res.locals.user.username, correlationId: req.id })
-    const token = await hmppsAuthClient.getSystemClientToken(res.locals.user.username)
-    const ndeliusIntegrationApiClient = new NdeliusIntegrationApiClient(token)
-    const breachNoticeApiClient = new BreachNoticeApiClient(token)
+    const ndeliusIntegrationApiClient = new NdeliusIntegrationApiClient(authenticationClient)
+    const breachNoticeApiClient = new BreachNoticeApiClient(authenticationClient)
     const callingScreen: string = req.query.returnTo as string
     const submitAction: string = req.body.action
     let useRegularAddressValue: string = null
@@ -188,7 +193,7 @@ export default function nextAppointmentRoutes(
     let nextAppointmentDetails: NextAppointmentDetails = null
 
     try {
-      breachNotice = await breachNoticeApiClient.getBreachNoticeById(id as string)
+      breachNotice = await breachNoticeApiClient.getBreachNoticeById(id as string, res.locals.user.username)
       originalNextAppointmentId = breachNotice.nextAppointmentId
       selectedNextAppointmentId = Number(req.body.appointmentSelection)
 
@@ -248,7 +253,11 @@ export default function nextAppointmentRoutes(
         }
       }
     } catch (error) {
-      const errorMessages: ErrorMessages = handleIntegrationErrors(error.status, error.data?.message, 'Breach Notice')
+      const errorMessages: ErrorMessages = handleIntegrationErrors(
+        error.responseStatus,
+        error.data?.message,
+        'Breach Notice',
+      )
       const showEmbeddedError = true
       breachNotice = createBlankBreachNoticeWithId(req.params.id)
       // always stay on page and display the error when there are isssues retrieving the breach notice
@@ -257,20 +266,23 @@ export default function nextAppointmentRoutes(
     }
 
     try {
-      nextAppointmentDetails = await ndeliusIntegrationApiClient.getNextAppointmentDetails(breachNotice.crn)
+      nextAppointmentDetails = await ndeliusIntegrationApiClient.getNextAppointmentDetails(
+        breachNotice.crn,
+        res.locals.user.username,
+      )
     } catch (error) {
       const errorMessages: ErrorMessages = handleIntegrationErrors(
-        error.status,
+        error.responseStatus,
         error.data?.message,
         'NDelius Integration',
       )
       // take the user to detailed error page for 400 type errors
-      if (error.status === 400) {
+      if (error.responseStatus === 400) {
         res.render('pages/detailed-error', { errorMessages })
         return
       }
       // stay on the current page for 500 errors
-      if (error.status === 500) {
+      if (error.responseStatus === 500) {
         const showEmbeddedError = true
         breachNotice = createBlankBreachNoticeWithId(req.params.id)
         res.render('pages/next-appointment', { errorMessages, showEmbeddedError, breachNotice })
@@ -328,7 +340,7 @@ export default function nextAppointmentRoutes(
 
     if (!hasErrors && submitAction !== 'refreshData') {
       breachNotice.nextAppointmentSaved = true
-      await breachNoticeApiClient.updateBreachNotice(id, breachNotice)
+      await breachNoticeApiClient.updateBreachNotice(id, breachNotice, res.locals.user.username)
 
       if (submitAction === 'saveProgressAndClose') {
         res.send(
