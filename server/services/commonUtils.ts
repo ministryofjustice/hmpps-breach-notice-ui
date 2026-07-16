@@ -1,14 +1,13 @@
 import { type Response } from 'express'
+import { AuthenticationClient } from '@ministryofjustice/hmpps-auth-clients'
 import { BreachNotice } from '../data/breachNoticeApiClient'
 import NdeliusIntegrationApiClient, { LimitedAccessCheck } from '../data/ndeliusIntegrationApiClient'
-import { HmppsAuthClient } from '../data'
 
 export default class CommonUtils {
-  constructor(private readonly hmppsAuthClient: HmppsAuthClient) {}
+  constructor(private readonly authenticationClient: AuthenticationClient) {}
 
   async redirectRequired(breachNotice: BreachNotice, res: Response): Promise<boolean> {
-    const token = await this.hmppsAuthClient.getSystemClientToken(res.locals.user.username)
-    const ndeliusIntegrationApiClient = new NdeliusIntegrationApiClient(token)
+    const ndeliusIntegrationApiClient = new NdeliusIntegrationApiClient(this.authenticationClient)
 
     const laoCheck: LimitedAccessCheck = await ndeliusIntegrationApiClient.getLimitedAccessCheck(
       breachNotice.crn,
@@ -29,8 +28,7 @@ export default class CommonUtils {
   }
 
   async redirectRequiredForLao(breachNotice: BreachNotice, res: Response): Promise<boolean> {
-    const token = await this.hmppsAuthClient.getSystemClientToken(res.locals.user.username)
-    const ndeliusIntegrationApiClient = new NdeliusIntegrationApiClient(token)
+    const ndeliusIntegrationApiClient = new NdeliusIntegrationApiClient(this.authenticationClient)
 
     const laoCheck: LimitedAccessCheck = await ndeliusIntegrationApiClient.getLimitedAccessCheck(
       breachNotice.crn,

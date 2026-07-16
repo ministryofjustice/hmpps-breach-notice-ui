@@ -1,142 +1,214 @@
 import { ZonedDateTime } from '@js-joda/core'
+import { AuthenticationClient } from '@ministryofjustice/hmpps-auth-clients'
+import { asSystem, RestClient } from '@ministryofjustice/hmpps-rest-client'
 import config from '../config'
-import RestClient from './restClient'
+import logger from '../../logger'
 
 export default class BreachNoticeApiClient extends RestClient {
-  constructor(token: string) {
-    super('Breach Notice API', config.apis.breachNotice, token)
+  constructor(authenticationClient: AuthenticationClient) {
+    super('Breach Notice API', config.apis.breachNotice, logger, authenticationClient)
   }
 
-  async getBreachNoticeById(uuid: string): Promise<BreachNotice> {
-    return this.get({
-      path: `/breach-notice/${uuid}`,
-    })
+  async getBreachNoticeById(uuid: string, username: string): Promise<BreachNotice> {
+    return this.get(
+      {
+        path: `/breach-notice/${uuid}`,
+      },
+      asSystem(username),
+    )
   }
 
-  async updateBreachNotice(id: string, breachNotice: BreachNotice) {
-    await this.put({
-      path: `/breach-notice/${id}`,
-      data: breachNotice as unknown as Record<string, unknown>,
-    })
+  async updateBreachNotice(id: string, breachNotice: BreachNotice, username: string) {
+    await this.put(
+      {
+        path: `/breach-notice/${id}`,
+        data: breachNotice as unknown as Record<string, unknown>,
+      },
+      asSystem(username),
+    )
   }
 
-  async getPdfById(uuid: string): Promise<ArrayBuffer> {
-    return this.get({
-      path: `/breach-notice/${uuid}/pdf`,
-      responseType: 'arraybuffer',
-    })
+  async getPdfById(uuid: string, username: string): Promise<ArrayBuffer> {
+    return this.get(
+      {
+        path: `/breach-notice/${uuid}/pdf`,
+        responseType: 'arraybuffer',
+      },
+      asSystem(username),
+    )
   }
 
-  async getDraftPdfById(uuid: string): Promise<ArrayBuffer> {
-    return this.get({
-      path: `/breach-notice/${uuid}/pdf`,
-      responseType: 'arraybuffer',
-    })
+  async getDraftPdfById(uuid: string, username: string): Promise<ArrayBuffer> {
+    return this.get(
+      {
+        path: `/breach-notice/${uuid}/pdf`,
+        responseType: 'arraybuffer',
+      },
+      asSystem(username),
+    )
   }
 
-  async deleteBreachNotice(id: string) {
-    await this.delete({
-      path: `/breach-notice/${id}`,
-    })
+  async deleteBreachNotice(id: string, username: string) {
+    await this.delete(
+      {
+        path: `/breach-notice/${id}`,
+      },
+      asSystem(username),
+    )
   }
 
-  async batchUpdateBreachNoticeContacts(breachNoticeId: string, contacts: Array<BreachNoticeContact>) {
-    return this.put({
-      path: `/contacts/${breachNoticeId}`,
-      data: contacts as unknown as Record<string, unknown>,
-    })
+  async batchUpdateBreachNoticeContacts(
+    breachNoticeId: string,
+    contacts: Array<BreachNoticeContact>,
+    username: string,
+  ) {
+    return this.put(
+      {
+        path: `/contacts/${breachNoticeId}`,
+        data: contacts as unknown as Record<string, unknown>,
+      },
+      asSystem(username),
+    )
   }
 
-  async createBreachNoticeContact(breachNoticeContact: BreachNoticeContact): Promise<string> {
-    return this.post({
-      path: `/contact`,
-      data: breachNoticeContact as unknown as Record<string, unknown>,
-    })
+  async createBreachNoticeContact(breachNoticeContact: BreachNoticeContact, username: string): Promise<string> {
+    return this.post(
+      {
+        path: `/contact`,
+        data: breachNoticeContact as unknown as Record<string, unknown>,
+      },
+      asSystem(username),
+    )
   }
 
-  async getBreachNoticeContact(id: string, deliusContactId: number): Promise<BreachNoticeContact> {
-    return this.get({
-      path: `/contact/bybreachnoticeidanddeliusid/${id}/${deliusContactId}`,
-    })
+  async getBreachNoticeContact(id: string, deliusContactId: number, username: string): Promise<BreachNoticeContact> {
+    return this.get(
+      {
+        path: `/contact/bybreachnoticeidanddeliusid/${id}/${deliusContactId}`,
+      },
+      asSystem(username),
+    )
   }
 
-  async getBreachNoticeContactsForBreachNotice(id: string): Promise<Array<BreachNoticeContact>> {
-    return this.get({
-      path: `/contact/bybreachnoticeid/${id}`,
-    })
+  async getBreachNoticeContactsForBreachNotice(id: string, username: string): Promise<Array<BreachNoticeContact>> {
+    return this.get(
+      {
+        path: `/contact/bybreachnoticeid/${id}`,
+      },
+      asSystem(username),
+    )
   }
 
-  async deleteBreachNoticeContact(breachContactId: string) {
-    return this.delete({
-      path: `/contact/${breachContactId}`,
-    })
+  async deleteBreachNoticeContact(breachContactId: string, username: string) {
+    return this.delete(
+      {
+        path: `/contact/${breachContactId}`,
+      },
+      asSystem(username),
+    )
   }
 
   async updateBreachNoticeRequirement(
     id: string,
     breachNoticeRequirement: BreachNoticeRequirement,
+    username: string,
   ): Promise<BreachNoticeRequirement> {
-    return this.put({
-      path: `/requirement/${id}`,
-      data: breachNoticeRequirement as unknown as Record<string, unknown>,
-    })
+    return this.put(
+      {
+        path: `/requirement/${id}`,
+        data: breachNoticeRequirement as unknown as Record<string, unknown>,
+      },
+      asSystem(username),
+    )
   }
 
-  async createBreachNoticeRequirement(breachNoticeRequirement: BreachNoticeRequirement): Promise<string> {
-    return this.post({
-      path: `/requirement`,
-      data: breachNoticeRequirement as unknown as Record<string, unknown>,
-    })
+  async createBreachNoticeRequirement(
+    breachNoticeRequirement: BreachNoticeRequirement,
+    username: string,
+  ): Promise<string> {
+    return this.post(
+      {
+        path: `/requirement`,
+        data: breachNoticeRequirement as unknown as Record<string, unknown>,
+      },
+      asSystem(username),
+    )
   }
 
-  async getContactRequirementLinks(id: string): Promise<Array<ContactRequirement>> {
-    return this.get({
-      path: `/crlinks/bybreachnoticeid/${id}`,
-    })
+  async getContactRequirementLinks(id: string, username: string): Promise<Array<ContactRequirement>> {
+    return this.get(
+      {
+        path: `/crlinks/bybreachnoticeid/${id}`,
+      },
+      asSystem(username),
+    )
   }
 
-  async getContactRequirementLinksWithContact(id: string, contactId: string): Promise<Array<ContactRequirement>> {
-    return this.get({
-      path: `/crlinks/bybreachnoticeidandcontactid/${id}/${contactId}`,
-    })
+  async getContactRequirementLinksWithContact(
+    id: string,
+    contactId: string,
+    username: string,
+  ): Promise<Array<ContactRequirement>> {
+    return this.get(
+      {
+        path: `/crlinks/bybreachnoticeidandcontactid/${id}/${contactId}`,
+      },
+      asSystem(username),
+    )
   }
 
-  async addContactRequirementLink(crlink: ContactRequirement) {
-    return this.post({
-      path: `/crlinks`,
-      data: crlink as unknown as Record<string, unknown>,
-    })
+  async addContactRequirementLink(crlink: ContactRequirement, username: string) {
+    return this.post(
+      {
+        path: `/crlinks`,
+        data: crlink as unknown as Record<string, unknown>,
+      },
+      asSystem(username),
+    )
   }
 
-  async deleteContactRequirementLink(id: string) {
-    return this.delete({
-      path: `/crlinks/${id}`,
-    })
+  async deleteContactRequirementLink(id: string, username: string) {
+    return this.delete(
+      {
+        path: `/crlinks/${id}`,
+      },
+      asSystem(username),
+    )
   }
 
-  async deleteUnlinkedRequirements(id: string) {
-    return this.delete({
-      path: `/requirement/unlinkedrequirements/${id}`,
-    })
+  async deleteUnlinkedRequirements(id: string, username: string) {
+    return this.delete(
+      {
+        path: `/requirement/unlinkedrequirements/${id}`,
+      },
+      asSystem(username),
+    )
   }
 
-  async recalculateRequirementFromToDate(breachNoticeId: string) {
-    return this.put({
-      path: `/requirement/recalculateFromToDate/${breachNoticeId}`,
-    })
+  async recalculateRequirementFromToDate(breachNoticeId: string, username: string) {
+    return this.put(
+      {
+        path: `/requirement/recalculateFromToDate/${breachNoticeId}`,
+      },
+      asSystem(username),
+    )
   }
 
-  async batchDeleteContacts(id: string, contactIds: Array<string>): Promise<void> {
+  async batchDeleteContacts(id: string, contactIds: Array<string>, username: string): Promise<void> {
     const promises = []
     for (const contactId of contactIds) {
-      promises.push(this.deleteBreachNoticeContact(contactId))
+      promises.push(this.deleteBreachNoticeContact(contactId, username))
     }
     await Promise.all(promises)
-    await this.deleteUnlinkedRequirements(id)
-    await this.recalculateRequirementFromToDate(id)
+    await this.deleteUnlinkedRequirements(id, username)
+    await this.recalculateRequirementFromToDate(id, username)
   }
 
-  async batchUpdateContacts(breachNoticeId: string, contacts: Array<BreachNoticeContact>): Promise<void> {
+  async batchUpdateContacts(
+    breachNoticeId: string,
+    contacts: Array<BreachNoticeContact>,
+    username: string,
+  ): Promise<void> {
     const promises = []
     const contactsToUpdate: Array<BreachNoticeContact> = []
     const contactsToAdd: Array<BreachNoticeContact> = []
@@ -152,29 +224,29 @@ export default class BreachNoticeApiClient extends RestClient {
     }
 
     if (contactsToUpdate && Object.keys(contactsToUpdate).length > 0) {
-      promises.push(this.batchUpdateBreachNoticeContacts(breachNoticeId, contactsToUpdate))
+      promises.push(this.batchUpdateBreachNoticeContacts(breachNoticeId, contactsToUpdate, username))
     }
 
     if (contactsToAdd && Object.keys(contactsToAdd).length > 0) {
       for (const contactBeingAdded of contactsToAdd) {
-        promises.push(this.createBreachNoticeContact(contactBeingAdded))
+        promises.push(this.createBreachNoticeContact(contactBeingAdded, username))
       }
     }
     await Promise.all(promises)
   }
 
-  async batchCreateContactRequirements(crlinks: Array<ContactRequirement>): Promise<void> {
+  async batchCreateContactRequirements(crlinks: Array<ContactRequirement>, username: string): Promise<void> {
     const promises = []
     for (const crlink of crlinks) {
-      promises.push(this.addContactRequirementLink(crlink))
+      promises.push(this.addContactRequirementLink(crlink, username))
     }
     await Promise.all(promises)
   }
 
-  async batchDeleteContactRequirements(crlinks: Array<ContactRequirement>): Promise<void> {
+  async batchDeleteContactRequirements(crlinks: Array<ContactRequirement>, username: string): Promise<void> {
     const promises = []
     for (const crlink of crlinks) {
-      promises.push(this.deleteContactRequirementLink(crlink.id))
+      promises.push(this.deleteContactRequirementLink(crlink.id, username))
     }
     await Promise.all(promises)
   }

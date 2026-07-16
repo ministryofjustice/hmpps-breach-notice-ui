@@ -1,4 +1,5 @@
 import { Router } from 'express'
+import { AuthenticationClient } from '@ministryofjustice/hmpps-auth-clients'
 import AuditService, { Page } from '../services/auditService'
 import BreachNoticeApiClient, {
   BreachNotice,
@@ -6,7 +7,6 @@ import BreachNoticeApiClient, {
   ContactRequirement,
   RequirementSelectItem,
 } from '../data/breachNoticeApiClient'
-import { HmppsAuthClient } from '../data'
 import { ErrorMessages, SelectItem } from '../data/uiModels'
 import asArray, {
   arrangeSelectItemListAlphabetically,
@@ -24,16 +24,15 @@ import CommonUtils from '../services/commonUtils'
 export default function addRequirementRoutes(
   router: Router,
   auditService: AuditService,
-  hmppsAuthClient: HmppsAuthClient,
+  authenticationClient: AuthenticationClient,
   commonUtils: CommonUtils,
 ): Router {
-  router.get('/add-requirement/:id', async (req, res, next) => {
+  router.get('/add-requirement/:id', async (req, res) => {
     await auditService.logPageView(Page.ADD_REQUIREMENT, { who: res.locals.user.username, correlationId: req.id })
-    const token = await hmppsAuthClient.getSystemClientToken(res.locals.user.username)
     const contactId: string = req.query.contactId as string
     const callingScreen: string = req.query.returnTo as string
-    const breachNoticeApiClient = new BreachNoticeApiClient(token)
-    const ndeliusIntegrationApiClient = new NdeliusIntegrationApiClient(token)
+    const breachNoticeApiClient = new BreachNoticeApiClient(authenticationClient)
+    const ndeliusIntegrationApiClient = new NdeliusIntegrationApiClient(authenticationClient)
 
     let breachNotice: BreachNotice
     let requirements: Requirements = null
@@ -41,13 +40,18 @@ export default function addRequirementRoutes(
 
     try {
       // get the existing breach notice
-      breachNotice = await breachNoticeApiClient.getBreachNoticeById(req.params.id as string)
+      breachNotice = await breachNoticeApiClient.getBreachNoticeById(req.params.id as string, res.locals.user.username)
       contactRequirementList = await breachNoticeApiClient.getContactRequirementLinksWithContact(
         req.params.id as string,
         contactId,
+        res.locals.user.username,
       )
     } catch (error) {
-      const errorMessages: ErrorMessages = handleIntegrationErrors(error.status, error.data?.message, 'Breach Notice')
+      const errorMessages: ErrorMessages = handleIntegrationErrors(
+        error.responseStatus,
+        error.data?.message,
+        'Breach Notice',
+      )
       const showEmbeddedError = true
       breachNotice = createBlankBreachNoticeWithId(req.params.id)
       // always stay on page and display the error when there are isssues retrieving the breach notice
@@ -59,20 +63,20 @@ export default function addRequirementRoutes(
 
     try {
       // get details from the integration service
-      requirements = await ndeliusIntegrationApiClient.getRequirements(breachNotice.id)
+      requirements = await ndeliusIntegrationApiClient.getRequirements(breachNotice.id, res.locals.user.username)
     } catch (error) {
       const errorMessages: ErrorMessages = handleIntegrationErrors(
-        error.status,
+        error.responseStatus,
         error.data?.message,
         'NDelius Integration',
       )
       // take the user to detailed error page for 400 type errors
-      if (error.status === 400) {
+      if (error.responseStatus === 400) {
         res.render(`pages/detailed-error`, { errorMessages })
         return
       }
       // stay on the current page for 500 errors
-      if (error.status === 500) {
+      if (error.responseStatus === 500) {
         const showEmbeddedError = true
         breachNotice = createBlankBreachNoticeWithId(req.params.id)
         res.render(`pages/add-requirement`, { errorMessages, showEmbeddedError, breachNotice })
@@ -99,12 +103,11 @@ export default function addRequirementRoutes(
     })
   })
 
-  router.post('/add-requirement/:id', async (req, res, next) => {
-    const token = await hmppsAuthClient.getSystemClientToken(res.locals.user.username)
+  router.post('/add-requirement/:id', async (req, res) => {
     const contactId: string = req.query.contactId as string
     const callingScreen: string = req.query.returnTo as string
-    const breachNoticeApiClient = new BreachNoticeApiClient(token)
-    const ndeliusIntegrationApiClient = new NdeliusIntegrationApiClient(token)
+    const breachNoticeApiClient = new BreachNoticeApiClient(authenticationClient)
+    const ndeliusIntegrationApiClient = new NdeliusIntegrationApiClient(authenticationClient)
     const { id } = req.params
 
     if (req.body.action === 'cancel') {
@@ -120,13 +123,21 @@ export default function addRequirementRoutes(
 
       try {
         // get the existing breach notice
-        breachNotice = await breachNoticeApiClient.getBreachNoticeById(req.params.id as string)
+        breachNotice = await breachNoticeApiClient.getBreachNoticeById(
+          req.params.id as string,
+          res.locals.user.username,
+        )
         contactRequirementList = await breachNoticeApiClient.getContactRequirementLinksWithContact(
           req.params.id as string,
           contactId,
+          res.locals.user.username,
         )
       } catch (error) {
-        const errorMessages: ErrorMessages = handleIntegrationErrors(error.status, error.data?.message, 'Breach Notice')
+        const errorMessages: ErrorMessages = handleIntegrationErrors(
+          error.responseStatus,
+          error.data?.message,
+          'Breach Notice',
+        )
         const showEmbeddedError = true
         breachNotice = createBlankBreachNoticeWithId(req.params.id)
         // always stay on page and display the error when there are isssues retrieving the breach notice
@@ -136,20 +147,20 @@ export default function addRequirementRoutes(
 
       try {
         // get details from the integration service
-        requirements = await ndeliusIntegrationApiClient.getRequirements(breachNotice.id)
+        requirements = await ndeliusIntegrationApiClient.getRequirements(breachNotice.id, res.locals.user.username)
       } catch (error) {
         const errorMessages: ErrorMessages = handleIntegrationErrors(
-          error.status,
+          error.responseStatus,
           error.data?.message,
           'NDelius Integration',
         )
         // take the user to detailed error page for 400 type errors
-        if (error.status === 400) {
+        if (error.responseStatus === 400) {
           res.render(`pages/detailed-error`, { errorMessages })
           return
         }
         // stay on the current page for 500 errors
-        if (error.status === 500) {
+        if (error.responseStatus === 500) {
           const showEmbeddedError = true
           breachNotice = createBlankBreachNoticeWithId(req.params.id)
           res.render(`pages/add-requirement`, { errorMessages, showEmbeddedError, breachNotice })
@@ -200,13 +211,20 @@ export default function addRequirementRoutes(
                 toDate: null,
               }
               // eslint-disable-next-line no-await-in-loop
-              const newId = await breachNoticeApiClient.createBreachNoticeRequirement(breachNoticeRequirement)
+              const newId = await breachNoticeApiClient.createBreachNoticeRequirement(
+                breachNoticeRequirement,
+                res.locals.user.username,
+              )
               storedRequirement = breachNoticeRequirement
               storedRequirement.id = newId
             } else if (storedRequirement.rejectionReason !== rejectionReasonDescription) {
               storedRequirement.rejectionReason = rejectionReasonDescription
               // eslint-disable-next-line no-await-in-loop
-              await breachNoticeApiClient.updateBreachNoticeRequirement(storedRequirement.id, storedRequirement)
+              await breachNoticeApiClient.updateBreachNoticeRequirement(
+                storedRequirement.id,
+                storedRequirement,
+                res.locals.user.username,
+              )
             }
             const newContactRequirement: ContactRequirement = {
               breachNoticeId: breachNotice.id,
@@ -227,9 +245,9 @@ export default function addRequirementRoutes(
         const recordsToAdd = newContactRequirementList.filter(
           cr => !existingRequirementLinks.includes(cr.requirementId),
         )
-        await breachNoticeApiClient.batchDeleteContactRequirements(recordsToRemove)
-        await breachNoticeApiClient.batchCreateContactRequirements(recordsToAdd)
-        await breachNoticeApiClient.recalculateRequirementFromToDate(breachNotice.id)
+        await breachNoticeApiClient.batchDeleteContactRequirements(recordsToRemove, res.locals.user.username)
+        await breachNoticeApiClient.batchCreateContactRequirements(recordsToAdd, res.locals.user.username)
+        await breachNoticeApiClient.recalculateRequirementFromToDate(breachNotice.id, res.locals.user.username)
         // contactRequirementRepository.saveAll(recordsToAdd)
 
         if (callingScreen) {

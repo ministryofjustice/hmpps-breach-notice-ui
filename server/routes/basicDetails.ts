@@ -1,8 +1,9 @@
 import { Router } from 'express'
+import { AuthenticationClient } from '@ministryofjustice/hmpps-auth-clients'
 import { LocalDate, LocalDateTime } from '@js-joda/core'
 import AuditService, { Page } from '../services/auditService'
 import { fromUserDate, toUserDate } from '../utils/dateUtils'
-import { HmppsAuthClient } from '../data'
+
 import CommonUtils from '../services/commonUtils'
 import {
   arrangeSelectItemListAlphabetically,
@@ -21,23 +22,22 @@ import config from '../config'
 export default function basicDetailsRoutes(
   router: Router,
   auditService: AuditService,
-  hmppsAuthClient: HmppsAuthClient,
+  authenticationClient: AuthenticationClient,
   commonUtils: CommonUtils,
 ): Router {
   const currentPage = 'basic-details'
 
-  router.get('/basic-details/:id', async (req, res, next) => {
+  router.get('/basic-details/:id', async (req, res) => {
     await auditService.logPageView(Page.BASIC_DETAILS, { who: res.locals.user.username, correlationId: req.id })
-    const token = await hmppsAuthClient.getSystemClientToken(res.locals.user.username)
-    const breachNoticeApiClient = new BreachNoticeApiClient(token)
-    const ndeliusIntegrationApiClient = new NdeliusIntegrationApiClient(token)
+    const breachNoticeApiClient = new BreachNoticeApiClient(authenticationClient)
+    const ndeliusIntegrationApiClient = new NdeliusIntegrationApiClient(authenticationClient)
 
     let basicDetails: BasicDetails = null
     let breachNotice: BreachNotice = null
 
     try {
       // get the existing breach notice
-      breachNotice = await breachNoticeApiClient.getBreachNoticeById(req.params.id as string)
+      breachNotice = await breachNoticeApiClient.getBreachNoticeById(req.params.id as string, res.locals.user.username)
       if (Object.keys(breachNotice).length === 0) {
         const errorMessages: ErrorMessages = {}
         errorMessages.genericErrorMessage = {
@@ -47,7 +47,11 @@ export default function basicDetailsRoutes(
         return
       }
     } catch (error) {
-      const errorMessages: ErrorMessages = handleIntegrationErrors(error.status, error.data?.message, 'Breach Notice')
+      const errorMessages: ErrorMessages = handleIntegrationErrors(
+        error.responseStatus,
+        error.data?.message,
+        'Breach Notice',
+      )
       const showEmbeddedError = true
       breachNotice = createBlankBreachNoticeWithId(req.params.id)
       // always stay on page and display the error when there are isssues retrieving the breach notice
@@ -57,20 +61,20 @@ export default function basicDetailsRoutes(
 
     try {
       // get details from the integration service
-      basicDetails = await ndeliusIntegrationApiClient.getBasicDetails(breachNotice.crn, req.user.username)
+      basicDetails = await ndeliusIntegrationApiClient.getBasicDetails(breachNotice.crn, res.locals.user.username)
     } catch (error) {
       const errorMessages: ErrorMessages = handleIntegrationErrors(
-        error.status,
+        error.responseStatus,
         error.data?.message,
         'NDelius Integration',
       )
       // take the user to detailed error page for 400 type errors
-      if (error.status === 400) {
+      if (error.responseStatus === 400) {
         res.render(`pages/detailed-error`, { errorMessages })
         return
       }
       // stay on the current page for 500 errors
-      if (error.status === 500) {
+      if (error.responseStatus === 500) {
         const showEmbeddedError = true
         breachNotice = createBlankBreachNoticeWithId(req.params.id)
         res.render(`pages/basic-details`, { errorMessages, showEmbeddedError, breachNotice })
@@ -190,19 +194,25 @@ export default function basicDetailsRoutes(
     return errorMessages
   }
 
-  router.post('/basic-details/:id', async (req, res, next) => {
-    const token = await hmppsAuthClient.getSystemClientToken(res.locals.user.username)
-    const breachNoticeApiClient = new BreachNoticeApiClient(token)
-    const ndeliusIntegrationApiClient = new NdeliusIntegrationApiClient(token)
+  router.post('/basic-details/:id', async (req, res) => {
+    const breachNoticeApiClient = new BreachNoticeApiClient(authenticationClient)
+    const ndeliusIntegrationApiClient = new NdeliusIntegrationApiClient(authenticationClient)
     const callingScreen: string = req.query.returnTo as string
     const { id } = req.params
     let basicDetails: BasicDetails = null
     let currentBreachNotice: BreachNotice = null
 
     try {
-      currentBreachNotice = await breachNoticeApiClient.getBreachNoticeById(req.params.id as string)
+      currentBreachNotice = await breachNoticeApiClient.getBreachNoticeById(
+        req.params.id as string,
+        res.locals.user.username,
+      )
     } catch (error) {
-      const errorMessages: ErrorMessages = handleIntegrationErrors(error.status, error.data?.message, 'Breach Notice')
+      const errorMessages: ErrorMessages = handleIntegrationErrors(
+        error.responseStatus,
+        error.data?.message,
+        'Breach Notice',
+      )
       const showEmbeddedError = true
       const breachNotice: BreachNotice = createBlankBreachNoticeWithId(req.params.id)
       // always stay on page and display the error when there are isssues retrieving the breach notice
@@ -211,20 +221,23 @@ export default function basicDetailsRoutes(
     }
 
     try {
-      basicDetails = await ndeliusIntegrationApiClient.getBasicDetails(currentBreachNotice.crn, req.user.username)
+      basicDetails = await ndeliusIntegrationApiClient.getBasicDetails(
+        currentBreachNotice.crn,
+        res.locals.user.username,
+      )
     } catch (error) {
       const errorMessages: ErrorMessages = handleIntegrationErrors(
-        error.status,
+        error.responseStatus,
         error.data?.message,
         'NDelius Integration',
       )
       // take the user to detailed error page for 400 type errors
-      if (error.status === 400) {
+      if (error.responseStatus === 400) {
         res.render(`pages/detailed-error`, { errorMessages })
         return
       }
       // stay on the current page for 500 errors
-      if (error.status === 500) {
+      if (error.responseStatus === 500) {
         const showEmbeddedError = true
         const breachNotice: BreachNotice = createBlankBreachNoticeWithId(req.params.id)
         res.render(`pages/basic-details`, { errorMessages, showEmbeddedError, breachNotice })
@@ -307,7 +320,7 @@ export default function basicDetailsRoutes(
       // mark that a USER has saved the document at least once
       updatedBreachNotice.basicDetailsSaved = true
       // if it doesnt have errors, update
-      await breachNoticeApiClient.updateBreachNotice(id, updatedBreachNotice)
+      await breachNoticeApiClient.updateBreachNotice(id, updatedBreachNotice, res.locals.user.username)
 
       // if the user selected saveProgressAndClose then send a close back to the client
       if (req.body.action === 'saveProgressAndClose') {

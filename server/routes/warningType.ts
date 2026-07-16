@@ -1,4 +1,5 @@
 import { Router } from 'express'
+import { AuthenticationClient } from '@ministryofjustice/hmpps-auth-clients'
 import AuditService, { Page } from '../services/auditService'
 import BreachNoticeApiClient, { BreachNotice } from '../data/breachNoticeApiClient'
 import NdeliusIntegrationApiClient, {
@@ -6,7 +7,6 @@ import NdeliusIntegrationApiClient, {
   WarningType,
   WarningTypeWrapper,
 } from '../data/ndeliusIntegrationApiClient'
-import { HmppsAuthClient } from '../data'
 import CommonUtils from '../services/commonUtils'
 import { ErrorMessages, RadioButton, SelectItem } from '../data/uiModels'
 import { createBlankBreachNoticeWithId, handleIntegrationErrors } from '../utils/utils'
@@ -14,16 +14,15 @@ import { createBlankBreachNoticeWithId, handleIntegrationErrors } from '../utils
 export default function warningTypeRoutes(
   router: Router,
   auditService: AuditService,
-  hmppsAuthClient: HmppsAuthClient,
+  authenticationClient: AuthenticationClient,
   commonUtils: CommonUtils,
 ): Router {
   const currentPage = 'warning-type'
 
-  router.get('/warning-type/:id', async (req, res, next) => {
+  router.get('/warning-type/:id', async (req, res) => {
     await auditService.logPageView(Page.WARNING_TYPE, { who: res.locals.user.username, correlationId: req.id })
-    const token = await hmppsAuthClient.getSystemClientToken(res.locals.user.username)
-    const breachNoticeApiClient = new BreachNoticeApiClient(token)
-    const ndeliusIntegrationApiClient = new NdeliusIntegrationApiClient(token)
+    const breachNoticeApiClient = new BreachNoticeApiClient(authenticationClient)
+    const ndeliusIntegrationApiClient = new NdeliusIntegrationApiClient(authenticationClient)
     const { id } = req.params
 
     let breachNotice: BreachNotice = null
@@ -33,9 +32,13 @@ export default function warningTypeRoutes(
 
     try {
       // get the existing breach notice
-      breachNotice = await breachNoticeApiClient.getBreachNoticeById(req.params.id as string)
+      breachNotice = await breachNoticeApiClient.getBreachNoticeById(req.params.id as string, res.locals.user.username)
     } catch (error) {
-      const errorMessages: ErrorMessages = handleIntegrationErrors(error.status, error.data?.message, 'Breach Notice')
+      const errorMessages: ErrorMessages = handleIntegrationErrors(
+        error.responseStatus,
+        error.data?.message,
+        'Breach Notice',
+      )
       const showEmbeddedError = true
       breachNotice = createBlankBreachNoticeWithId(req.params.id)
       // always stay on page and display the error when there are isssues retrieving the breach notice
@@ -49,6 +52,7 @@ export default function warningTypeRoutes(
       const warningTypeWrapper: WarningTypeWrapper = await ndeliusIntegrationApiClient.getWarningTypes(
         breachNotice.crn,
         id,
+        res.locals.user.username,
       )
       if (warningTypeWrapper) {
         warningTypes = warningTypeWrapper.warningTypes
@@ -57,17 +61,17 @@ export default function warningTypeRoutes(
       }
     } catch (error) {
       const errorMessages: ErrorMessages = handleIntegrationErrors(
-        error.status,
+        error.responseStatus,
         error.data?.message,
         'NDelius Integration',
       )
       // take the user to detailed error page for 400 type errors
-      if (error.status === 400) {
+      if (error.responseStatus === 400) {
         res.render(`pages/detailed-error`, { errorMessages })
         return
       }
       // stay on the current page for 500 errors
-      if (error.status === 500) {
+      if (error.responseStatus === 500) {
         const showEmbeddedError = true
         breachNotice = createBlankBreachNoticeWithId(req.params.id)
         res.render(`pages/warning-type`, { errorMessages, showEmbeddedError, breachNotice })
@@ -96,10 +100,9 @@ export default function warningTypeRoutes(
     })
   })
 
-  router.post('/warning-type/:id', async (req, res, next) => {
-    const token = await hmppsAuthClient.getSystemClientToken(res.locals.user.username)
-    const breachNoticeApiClient = new BreachNoticeApiClient(token)
-    const ndeliusIntegrationApiClient = new NdeliusIntegrationApiClient(token)
+  router.post('/warning-type/:id', async (req, res) => {
+    const breachNoticeApiClient = new BreachNoticeApiClient(authenticationClient)
+    const ndeliusIntegrationApiClient = new NdeliusIntegrationApiClient(authenticationClient)
     const { id } = req.params
     let breachNotice: BreachNotice = null
     let warningTypes: WarningType[] = []
@@ -107,9 +110,13 @@ export default function warningTypeRoutes(
     let defaultSentenceTypeCode: string = null
 
     try {
-      breachNotice = await breachNoticeApiClient.getBreachNoticeById(id as string)
+      breachNotice = await breachNoticeApiClient.getBreachNoticeById(id as string, res.locals.user.username)
     } catch (error) {
-      const errorMessages: ErrorMessages = handleIntegrationErrors(error.status, error.data?.message, 'Breach Notice')
+      const errorMessages: ErrorMessages = handleIntegrationErrors(
+        error.responseStatus,
+        error.data?.message,
+        'Breach Notice',
+      )
       const showEmbeddedError = true
       breachNotice = createBlankBreachNoticeWithId(req.params.id)
       // always stay on page and display the error when there are isssues retrieving the breach notice
@@ -123,6 +130,7 @@ export default function warningTypeRoutes(
       const warningTypeWrapper: WarningTypeWrapper = await ndeliusIntegrationApiClient.getWarningTypes(
         breachNotice.crn,
         id,
+        res.locals.user.username,
       )
       if (warningTypeWrapper) {
         warningTypes = warningTypeWrapper.warningTypes
@@ -131,17 +139,17 @@ export default function warningTypeRoutes(
       }
     } catch (error) {
       const errorMessages: ErrorMessages = handleIntegrationErrors(
-        error.status,
+        error.responseStatus,
         error.data?.message,
         'NDelius Integration',
       )
       // take the user to detailed error page for 400 type errors
-      if (error.status === 400) {
+      if (error.responseStatus === 400) {
         res.render(`pages/detailed-error`, { errorMessages })
         return
       }
       // stay on the current page for 500 errors
-      if (error.status === 500) {
+      if (error.responseStatus === 500) {
         const showEmbeddedError = true
         breachNotice = createBlankBreachNoticeWithId(req.params.id)
         res.render(`pages/warning-type`, { errorMessages, showEmbeddedError, breachNotice })
@@ -191,7 +199,7 @@ export default function warningTypeRoutes(
 
     if (!hasErrors) {
       breachNotice.warningTypeSaved = true
-      await breachNoticeApiClient.updateBreachNotice(id, breachNotice)
+      await breachNoticeApiClient.updateBreachNotice(id, breachNotice, res.locals.user.username)
       if (req.body.action === 'saveProgressAndClose') {
         res.send(
           `<p>You can now safely close this window</p><script nonce="${res.locals.cspNonce}">window.close()</script>`,
