@@ -56,7 +56,12 @@ export default function setupAuthentication() {
   )
 
   const authUrl = config.apis.hmppsAuth.externalUrl
-  const authParameters = `client_id=${config.apis.hmppsAuth.authClientId}&redirect_uri=${config.ingressUrl}`
+  const authParameters = `client_id=${config.apis.hmppsAuth.authClientId}`
+
+  router.get('*allpages', (req, res, next) => {
+    res.locals.currentUrl = `${req.protocol}://${req.get('host')}${req.originalUrl}`
+    next()
+  })
 
   router.use('/sign-out', (req, res, next) => {
     const authSignOutUrl = `${authUrl}/sign-out?${authParameters}`
@@ -69,7 +74,9 @@ export default function setupAuthentication() {
   })
 
   router.use('/account-details', (req, res) => {
-    res.redirect(`${authUrl}/account-details?${authParameters}`)
+    const params = new URLSearchParams(authParameters)
+    params.set('redirect_uri', req.query.redirect_uri.toString())
+    res.redirect(`${authUrl}/account-details?${params}`)
   })
 
   router.use(async (req, res, next) => {
