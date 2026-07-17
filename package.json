@@ -83,7 +83,7 @@
     "@js-joda/core": "^6.0.1",
     "@js-joda/timezone": "^2.22.0",
     "@ministryofjustice/frontend": "^5.1.5",
-    "@ministryofjustice/hmpps-auth-clients": "^1.0.0",
+    "@ministryofjustice/hmpps-auth-clients": "^3.0.0",
     "@ministryofjustice/hmpps-monitoring": "^2.1.0",
     "@ministryofjustice/hmpps-npm-script-allowlist": "0.0.3",
     "@ministryofjustice/hmpps-rest-client": "^2.1.0",
@@ -107,7 +107,7 @@
     "nunjucks": "^3.2.4",
     "passport": "^0.7.0",
     "passport-oauth2": "^1.8.0",
-    "redis": "^5.9.0",
+    "redis": "6.0.0",
     "superagent": "^10.2.3"
   },
   "devDependencies": {
