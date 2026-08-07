@@ -292,6 +292,8 @@ export interface BreachNotice {
   furtherReasonDetails: string
   alternateNextAppointmentLocation: BreachNoticeAddress
   alternateNextAppointmentLocationSelected: boolean
+  terminated: boolean
+  terminatedUnterminatedDate: Date
 }
 
 export interface WarningDetailsWholeSentenceAndRequirement {

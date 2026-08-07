@@ -12,6 +12,7 @@ export enum Page {
   ADD_ADDRESS = 'ADD_ADDRESS',
   CONFIRM_DELETE = 'CONFIRM_DELETE',
   ADD_REQUIREMENT = 'ADD_REQUIREMENT',
+  EVENT_TERMINATED = 'EVENT_TERMINATED',
 }
 
 export interface PageViewEventDetails {
