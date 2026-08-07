@@ -24,6 +24,11 @@ export default class CommonUtils {
       res.redirect(`/report-completed/${breachNotice.id}`)
       return true
     }
+
+    if (breachNotice.terminated === true) {
+      res.redirect(`/event-terminated/${breachNotice.id}`)
+      return true
+    }
     return false
   }
 

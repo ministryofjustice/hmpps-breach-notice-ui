@@ -164,5 +164,7 @@ export function createBlankBreachNoticeWithId(id: string): BreachNotice {
     alternateNextAppointmentLocationSelected: undefined,
     alternateNextAppointmentLocation: undefined,
     id,
+    terminated: false,
+    terminatedUnterminatedDate: undefined,
   }
 }

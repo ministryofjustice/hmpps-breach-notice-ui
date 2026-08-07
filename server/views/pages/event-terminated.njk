@@ -1,0 +1,84 @@
+{% extends "../partials/layout.njk" %}
+
+{% set pageTitle = applicationName + " - Home" %}
+{% set mainClasses = "app-container govuk-body" %}
+
+{% block content %}
+  {% from "govuk/components/panel/macro.njk" import govukPanel %}
+  {% from "govuk/components/button/macro.njk" import govukButton %}
+  {% from "govuk/components/error-summary/macro.njk" import govukErrorSummary %}
+  {% from "govuk/components/warning-text/macro.njk" import govukWarningText %}
+
+<form method="post">
+
+  <input type="hidden" name="_csrf" value="{{ csrfToken }}">
+
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-two-thirds">
+      {% set mainClasses = "govuk-main-wrapper--l" %}
+
+      {% if confirmScreen %}
+
+      {{ govukWarningText({
+        text: "Are you sure you wish to delete this?",
+        iconFallbackText: "Warning"
+      }) }}
+
+      <div class="moj-button-group">
+        {{ govukButton({
+          text: "Confirm",
+          type: "submit",
+          name: "action",
+          value: "confirm",
+          classes: "govuk-button",
+          attributes: {
+            id: "confirm-button"
+          }
+        }) }}
+        {{ govukButton({
+          text: "Cancel",
+          type: "submit",
+          name: "action",
+          value: "cancel",
+          classes: "govuk-button",
+          attributes: {
+            id: "cancel-button"
+          }
+        }) }}
+      </div>
+
+      {% else %}
+
+      {{ govukErrorSummary({ titleText: "This Document is attached to an Event that has been terminated. Please unterminate the Event to regain full access to this form. Alternatively you may delete the form using the delete button below" }) }}
+
+      <div class="moj-button-group">
+        {{ govukButton({
+          text: "Delete",
+          type: "submit",
+          name: "action",
+          value: "delete",
+          classes: "govuk-button",
+          attributes: {
+            id: "delete-button"
+          }
+        }) }}
+
+        {{ govukButton({
+          text: "Close",
+          preventDoubleClick: "true",
+          type: "submit",
+          name: "action",
+          value: "close",
+          classes: "govuk-button",
+          attributes: {
+            id: "close-button"
+          }
+        }) }}
+        {% endif %}
+      </div>
+
+    </div>
+  </div>
+</form>
+
+{% endblock %}
