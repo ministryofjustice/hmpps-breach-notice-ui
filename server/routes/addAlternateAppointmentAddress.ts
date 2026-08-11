@@ -102,9 +102,9 @@ export default function addAlternateAppointmentAddressRoutes(
       }
     }
 
-    if (address.buildingName && address.buildingName.length > 35) {
+    if (address.buildingName && address.buildingName.length > 80) {
       errorMessages.buildingName = {
-        text: 'Building Name: The information entered is over the character limit specified for this field (35). Please edit and try again.',
+        text: 'Building Name: The information entered is over the character limit specified for this field (80). Please edit and try again.',
       }
     }
 
@@ -114,15 +114,15 @@ export default function addAlternateAppointmentAddressRoutes(
       }
     }
 
-    if (address.streetName && address.streetName.length > 35) {
+    if (address.streetName && address.streetName.length > 80) {
       errorMessages.streetName = {
-        text: 'Street Name: The information entered is over the character limit specified for this field (35). Please edit and try again.',
+        text: 'Street Name: The information entered is over the character limit specified for this field (80). Please edit and try again.',
       }
     }
 
-    if (address.district && address.district.length > 35) {
+    if (address.district && address.district.length > 80) {
       errorMessages.district = {
-        text: 'District: The information entered is over the character limit specified for this field (35). Please edit and try again.',
+        text: 'District: The information entered is over the character limit specified for this field (80). Please edit and try again.',
       }
     }
 
