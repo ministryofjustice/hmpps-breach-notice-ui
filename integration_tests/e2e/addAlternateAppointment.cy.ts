@@ -84,10 +84,14 @@ context('Add Alternate Address page', () => {
     cy.get('#description').type(
       'Description1111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111',
     )
-    cy.get('#buildingName').type('BuildingName123456789012345678901234567890')
+    cy.get('#buildingName').type(
+      'BuildingName12345678901234567890123456789012345678901234567890123456789012345678901234567890',
+    )
     cy.get('#houseNumber').type('HouseNumber123456789012345678901234567890')
-    cy.get('#streetName').type('StreetName123456789012345678901234567890')
-    cy.get('#district').type('District123456789012345678901234567890')
+    cy.get('#streetName').type(
+      'StreetName12345678901234567890123456789012345678901234567890123456789012345678901234567890',
+    )
+    cy.get('#district').type('District12345678901234567890123456789012345678901234567890123456789012345678901234567890')
     cy.get('#townCity').type('TownCity123456789012345678901234567890')
     cy.get('#county').type('County123456789012345678901234567890')
     cy.get('#postcode').type('County123456789012345678901234567890')
@@ -97,7 +101,7 @@ context('Add Alternate Address page', () => {
       .should('exist')
       .should(
         'contain.text',
-        'Building Name: The information entered is over the character limit specified for this field (35). Please edit and try again.',
+        'Building Name: The information entered is over the character limit specified for this field (80). Please edit and try again.',
       )
     cy.get('#houseNumber-error')
       .should('exist')
@@ -109,13 +113,13 @@ context('Add Alternate Address page', () => {
       .should('exist')
       .should(
         'contain.text',
-        'Street Name: The information entered is over the character limit specified for this field (35). Please edit and try again.',
+        'Street Name: The information entered is over the character limit specified for this field (80). Please edit and try again.',
       )
     cy.get('#district-error')
       .should('exist')
       .should(
         'contain.text',
-        'District: The information entered is over the character limit specified for this field (35). Please edit and try again.',
+        'District: The information entered is over the character limit specified for this field (80). Please edit and try again.',
       )
     cy.get('#townCity-error')
       .should('exist')
