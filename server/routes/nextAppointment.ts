@@ -507,7 +507,17 @@ export default function nextAppointmentRoutes(
   }
 
   function locationDisplayValue(address?: DeliusAddress): string {
-    return [address?.buildingNumber, address?.streetName].filter(item => item).join(' ')
+    return [
+      address?.officeDescription,
+      address?.buildingName,
+      address?.buildingNumber,
+      address?.streetName,
+      address?.district,
+      address?.townCity,
+      address?.postcode,
+    ]
+      .filter(item => item)
+      .join(' ')
   }
 
   function filterAppointments(appointments: Array<FutureAppointment>): Array<FutureAppointment> {
