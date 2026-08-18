@@ -191,7 +191,18 @@ export default function checkYourReportRoutes(
   }
 
   function locationDisplayValue(address?: BreachNoticeAddress): string {
-    return [address?.buildingNumber, address?.streetName].filter(item => item).join(' ')
+    return [
+      address?.officeDescription,
+      address?.buildingName,
+      address?.buildingNumber,
+      address?.streetName,
+      address?.district,
+      address?.townCity,
+      address?.county,
+      address?.postcode,
+    ]
+      .filter(item => item)
+      .join(', ')
   }
 
   return router

@@ -514,10 +514,11 @@ export default function nextAppointmentRoutes(
       address?.streetName,
       address?.district,
       address?.townCity,
+      address?.county,
       address?.postcode,
     ]
       .filter(item => item)
-      .join(' ')
+      .join(', ')
   }
 
   function filterAppointments(appointments: Array<FutureAppointment>): Array<FutureAppointment> {
