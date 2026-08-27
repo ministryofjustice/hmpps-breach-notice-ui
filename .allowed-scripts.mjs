@@ -9,6 +9,5 @@ export default configureAllowedScripts({
     'node_modules/fsevents@2.3.3': 'ALLOW',
     'node_modules/unrs-resolver@1.9.2': 'ALLOW',
     'node_modules/protobufjs@7.6.5': 'ALLOW',
-
   },
 })
