@@ -82,7 +82,7 @@
     "@aws-sdk/client-sqs": "^3.1119.0",
     "@js-joda/core": "^6.1.0",
     "@js-joda/timezone": "^2.25.2",
-    "@ministryofjustice/frontend": "^10.0.1",
+    "@ministryofjustice/frontend": "^11.0.0",
     "@ministryofjustice/hmpps-auth-clients": "^3.0.0",
     "@ministryofjustice/hmpps-monitoring": "^2.1.0",
     "@ministryofjustice/hmpps-npm-script-allowlist": "0.0.6",
