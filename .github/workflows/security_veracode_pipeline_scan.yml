@@ -6,7 +6,7 @@ on:
 jobs:
   security-veracode-pipeline-scan:
     name: Project security veracode pipeline scan
-    uses: ministryofjustice/hmpps-github-actions/.github/workflows/security_veracode_pipeline_scan.yml@cac1d8a3f24bb0126c763ab7f33529cd2dd0a7f6 # v2.21.2
+    uses: ministryofjustice/hmpps-github-actions/.github/workflows/security_veracode_pipeline_scan.yml@0eaf271d3179fb9946d49f3c02343e26342c159d # v2.21.3
     with:
       channel_id: breach-notice-notifications
     secrets: inherit
