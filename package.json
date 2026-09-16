@@ -78,8 +78,8 @@
     ]
   },
   "dependencies": {
-    "@aws-sdk/client-sns": "^3.1129.0",
-    "@aws-sdk/client-sqs": "^3.1129.0",
+    "@aws-sdk/client-sns": "^3.1130.0",
+    "@aws-sdk/client-sqs": "^3.1130.0",
     "@js-joda/core": "^6.1.0",
     "@js-joda/timezone": "^2.25.2",
     "@ministryofjustice/frontend": "^11.0.1",
@@ -93,7 +93,7 @@
     "body-parser": "^2.3.0",
     "bunyan": "^1.8.15",
     "bunyan-format": "^0.2.1",
-    "compression": "^1.8.1",
+    "compression": "^1.8.2",
     "connect-flash": "^0.1.1",
     "connect-redis": "^10.0.0",
     "csrf-sync": "^4.2.1",
