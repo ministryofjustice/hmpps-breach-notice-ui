@@ -78,8 +78,8 @@
     ]
   },
   "dependencies": {
-    "@aws-sdk/client-sns": "^3.1130.0",
-    "@aws-sdk/client-sqs": "^3.1130.0",
+    "@aws-sdk/client-sns": "^3.1131.0",
+    "@aws-sdk/client-sqs": "^3.1131.0",
     "@js-joda/core": "^6.1.0",
     "@js-joda/timezone": "^2.25.2",
     "@ministryofjustice/frontend": "^11.0.1",
