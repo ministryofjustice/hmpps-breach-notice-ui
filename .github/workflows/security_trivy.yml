@@ -6,7 +6,7 @@ on:
 jobs:
   security-kotlin-trivy-check:
     name: Project security trivy dependency check
-    uses: ministryofjustice/hmpps-github-actions/.github/workflows/security_trivy.yml@0eaf271d3179fb9946d49f3c02343e26342c159d # v2.21.3
+    uses: ministryofjustice/hmpps-github-actions/.github/workflows/security_trivy.yml@170627bc8c907cd068085c053acca71c74ce808e # v2.22.4
     with:
       channel_id: breach-notice-notifications
     secrets: inherit
