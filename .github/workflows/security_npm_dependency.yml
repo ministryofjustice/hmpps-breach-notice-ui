@@ -6,7 +6,7 @@ on:
 jobs:
   security-npm-dependency-check:
     name: Project security npm dependency check
-    uses: ministryofjustice/hmpps-github-actions/.github/workflows/security_npm_dependency.yml@3aa5e961949ee57f5c5e538c9a3e345402120ef3 # v2.22.7
+    uses: ministryofjustice/hmpps-github-actions/.github/workflows/security_npm_dependency.yml@b9440f7fef20233eabd05950d9f9355e24e4ea70 # v2.22.11
     with:
       channel_id: breach-notice-notifications
     secrets: inherit
