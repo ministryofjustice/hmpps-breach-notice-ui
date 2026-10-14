@@ -22,4 +22,3 @@ export default {
   ],
   moduleFileExtensions: ['web.js', 'js', 'json', 'node', 'ts'],
 }
-
