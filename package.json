@@ -31,7 +31,7 @@
     "npm": "^12"
   },
   "dependencies": {
-    "@aws-sdk/client-sqs": "^3.1155.0",
+    "@aws-sdk/client-sqs": "^3.1156.0",
     "@js-joda/core": "^6.3.0",
     "@js-joda/timezone": "^3.1.0",
     "@ministryofjustice/frontend": "^11.1.0",
