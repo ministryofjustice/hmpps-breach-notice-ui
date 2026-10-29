@@ -1,6 +1,6 @@
 {% extends "../partials/layout.njk" %}
 
-{% set pageTitle = applicationName + " - " + breachNotice.breachNoticeTypeDescription + " Details" %}
+{% set pageTitle = applicationName + " - Warning details - " + breachNotice.breachNoticeTypeDescription | lower %}
 {% set mainClasses = "app-container govuk-body" %}
 
 {% block content %}
@@ -39,14 +39,14 @@
         {% if not showEmbeddedError %}
         {% include "partials/review-required.njk" %}
         <h1
-          class="govuk-heading-l">{{ "Warning Details" + " - " + breachNotice.breachNoticeTypeDescription }}</h1>
+          class="govuk-heading-l">{{ "Warning details" + " - " + breachNotice.breachNoticeTypeDescription | lower }}</h1>
         <h2 class="govuk-heading-m">
           Condition being enforced
         </h2>
         <p id="condition-being-enforced"> {{ breachNotice.conditionBeingEnforced }}</p>
 
         <h2 class="govuk-heading-m">
-          Select the failures required on this order
+          Select the failures on this order
         </h2>
           {% if warningDetails.enforceableContacts | length > 0 %}
             <div class="govuk-form-group">
@@ -78,13 +78,13 @@
                             Requirements
                           </label>
                         {% set matchFound = false %}
-                        {% set buttonText = 'Save Changes and Add Requirement' %}
+                        {% set buttonText = 'Save changes and add requirements' %}
                         {% set requirement = null %}
 
                           {% for cr in contactRequirementList %}
                             {% if cr.contact.contactId == failure.id %}
                               {% set matchFound = true %}
-                              {% set buttonText = 'Save Changes and Update Requirement' %}
+                              {% set buttonText = 'Save changes and update requirements' %}
                               <p class="govuk-body govuk-!-margin-bottom-1">{{ cr.requirement.requirementTypeMainCategoryDescription }}, {{ cr.requirement.rejectionReason }} </p>
                             {% endif %}
                           {% endfor %}
@@ -188,7 +188,7 @@
           name: "responseRequiredByDate",
           value: warningDetailsResponseRequiredDate,
           label: {
-            text: "Response Required By",
+            text: "Response required by",
             classes: "govuk-fieldset__legend--m"
           },
           hint: {
@@ -210,7 +210,7 @@
           }) }}
 
           {{ govukButton({
-            text: "Refresh from Delius",
+            text: "Refresh from National Delius",
             preventDoubleClick: "true",
             type: "submit",
             name: "action",
@@ -222,7 +222,7 @@
           }) }}
 
           {{ govukButton({
-            text: "Save Progress and Close",
+            text: "Save progress and close",
             preventDoubleClick: "true",
             type: "submit",
             name: "action",

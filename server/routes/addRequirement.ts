@@ -344,7 +344,7 @@ export default function addRequirementRoutes(
       for (const id of selectedIds) {
         if (reqBody[`breachreason${id}`] === '-1') {
           errorMessages.nonSelectedReason = {
-            text: 'Please select a valid failure reason for each Requirement selected',
+            text: 'Please select a valid failure reason for each requirement selected',
           }
           return errorMessages
         }

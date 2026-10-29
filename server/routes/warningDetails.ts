@@ -88,7 +88,7 @@ export default function warningDetailsRoutes(
       for (const enfContact of warningDetails.enforceableContacts) {
         enfContact.rejectionReasons = [
           {
-            text: 'Please Select',
+            text: 'Please select',
             value: '-1',
             selected: true,
           },
@@ -119,7 +119,7 @@ export default function warningDetailsRoutes(
       if (enforceableContact) {
         enforceableContact.rejectionReasons = [
           {
-            text: 'Please Select',
+            text: 'Please select',
             value: '-1',
             selected: false,
           },
@@ -457,7 +457,7 @@ export default function warningDetailsRoutes(
 
             currentEnforceableContact.rejectionReasons = [
               {
-                text: 'Please Select',
+                text: 'Please select',
                 value: '-1',
                 selected: false,
               },

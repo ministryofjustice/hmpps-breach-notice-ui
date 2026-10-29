@@ -1,6 +1,6 @@
 {% extends "../partials/layout.njk" %}
 
-{% set pageTitle = applicationName + " - Basic Details" %}
+{% set pageTitle = applicationName + " - Basic details" %}
 {% set mainClasses = "app-container govuk-body" %}
 
 {% block content %}
@@ -62,15 +62,15 @@
               {% if not showEmbeddedError %}
 
                 {% include "partials/review-required.njk" %}
-                <h1 class="govuk-heading-l">Breach Notice - Basic Details</h1>
+                <h1 class="govuk-heading-l">Breach Notice - Basic details</h1>
 
-                <h2 class="govuk-heading-m">Title and Full Name</h2>
+                <h2 class="govuk-heading-m">Title and full name</h2>
                 <p id="title-and-full-name">{{ breachNotice.titleAndFullName }}</p>
 
                 <h2 class="govuk-heading-m">CRN</h2>
                 <p id="crn">{{ breachNotice.crn }}</p>
 
-                <h2 class="govuk-heading-m">Postal Address</h2>
+                <h2 class="govuk-heading-m">Postal address</h2>
 
                 {% if defaultOffenderAddress %}
                   <p id="postal-address">
@@ -119,7 +119,7 @@
                   }) }}
                 {% endif %}
                 {% if showOffenderAddressDeepLinkSection%}
-                  <p id="no-address-message">No Postal Address found in National Delius</p>
+                  <p id="no-address-message">No postal address found in National Delius</p>
                   <p id="no-address-supplementary-message">In order to complete a Breach Notice you must add an address to Delius.</p>
                   <p id="no-address-supplementary-message-2">Please use the below link to add an address.</p>
                   <p id="address-deeplink-message">
@@ -127,10 +127,10 @@
                       click this hyperlink to open a new tab to add an address to Delius
                     </a>
                   </p>
-                  <p id="no-address-suffix">Once this is completed, click the Refresh from Delius button.</p>
+                  <p id="no-address-suffix">Once this is completed, click the Refresh from National Delius button.</p>
                 {% endif %}
 
-                <h2 class="govuk-heading-m">Reply Address</h2>
+                <h2 class="govuk-heading-m">Reply address</h2>
 
               {% if defaultReplyAddress %}
                 <p id="reply-address">
@@ -182,7 +182,7 @@
                   id: "alternate-reply-address",
                   name: "alternateReplyAddress",
                   label: {
-                    text: "Please specify the reply address that the Person on Probation should contact.",
+                    text: "Please specify the reply address that the person on probation should contact.",
                     classes: "govuk-fieldset__legend--m"
                   },
                   items: replyAddressOptions
@@ -236,7 +236,7 @@
 
               {{ govukInput({
                   label: {
-                      text: "Office Reference (if any)",
+                      text: "Office reference",
                       classes: "govuk-label--m",
                       isPageHeading: false
                   },
@@ -259,7 +259,7 @@
                   }
                 }) }}
                 {{ govukButton({
-                  text: "Save Progress and Close",
+                  text: "Save progress and close",
                   type: "submit",
                   name: "action",
                   value: "saveProgressAndClose",
@@ -270,7 +270,7 @@
                 }) }}
 
                 {{ govukButton({
-                  text: "Refresh from Delius",
+                  text: "Refresh from National Delius",
                   preventDoubleClick: "true",
                   type: "submit",
                   name: "action",

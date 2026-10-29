@@ -46,7 +46,7 @@ context('Add Requirement page', () => {
       'include',
       '/add-requirement/4c3dbcf0-f95d-4b67-b925-a0a5da1c1cd4?contactId=00000000-0000-0000-0000-000000000002',
     )
-    cy.get('.govuk-heading-m').should('exist').should('contain.text', 'Please select the Requirements being enforced')
+    cy.get('.govuk-heading-m').should('exist').should('contain.text', 'Please select the requirements being enforced')
     cy.get('#no-requirements-message').should('exist').should('be.visible')
     cy.get('#no-requirements-message').should('contain.text', 'No failures being enforced to display')
     cy.get('#save-button').should('exist').should('be.visible')
@@ -68,7 +68,7 @@ context('Add Requirement page', () => {
     cy.get('.govuk-error-summary__title').should('exist').should('contain.text', 'There is a problem')
     cy.get('.govuk-error-summary__list a')
       .should('exist')
-      .should('contain.text', 'Please select a valid failure reason for each Requirement selected')
+      .should('contain.text', 'Please select a valid failure reason for each requirement selected')
   })
 
   it('should remember selected requirements and their failure reason', () => {
@@ -94,6 +94,6 @@ context('Add Requirement page', () => {
     cy.get('#breachreason0').select('Failed to comply')
     cy.get('#save-button').click()
     cy.url().should('include', '/warning-details/922a6990-ed9d-4687-86a4-30c62b1f2edf')
-    cy.get('.govuk-heading-l').should('exist').should('contain.text', 'Warning Details')
+    cy.get('.govuk-heading-l').should('exist').should('contain.text', 'Warning details')
   })
 })

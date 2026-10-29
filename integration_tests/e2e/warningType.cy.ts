@@ -5,7 +5,7 @@ context('Warning Type page', () => {
     cy.get('.govuk-error-summary__title').should('exist').should('contain.text', 'There is a problem')
     cy.get('#warningType-error')
       .should('exist')
-      .should('contain.text', 'You must select a Warning Type before you can continue.')
+      .should('contain.text', 'You must select a warning type before you can continue.')
   })
 
   it('will throw an error if sentence type is not selected', () => {
@@ -15,7 +15,7 @@ context('Warning Type page', () => {
     cy.get('.govuk-error-summary__title').should('exist').should('contain.text', 'There is a problem')
     cy.get('#sentence-type-error')
       .should('exist')
-      .should('contain.text', 'You must select a Sentence Type before you can continue.')
+      .should('contain.text', 'You must select a sentence type before you can continue.')
   })
 
   it('will default Sentence Type on page visit when not saved', () => {
