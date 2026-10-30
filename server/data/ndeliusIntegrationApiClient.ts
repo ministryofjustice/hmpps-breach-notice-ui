@@ -147,10 +147,10 @@ export interface BreachNoticeRequirement {
 export interface EnforceableContact {
   id: number
   datetime: string
-  description: string | null
+  description: string | null | undefined
   type: ReferenceData
   outcome: ReferenceData
-  notes: string | null
+  notes: string | null | undefined
 }
 
 export interface Requirement {
