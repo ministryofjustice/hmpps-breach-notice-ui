@@ -82,14 +82,9 @@ export default function basicDetailsRoutes(
     }
 
     if (await commonUtils.redirectRequired(breachNotice, res)) return
-    const defaultOffenderAddress: DeliusAddress | null | undefined = findDefaultAddressInAddressList(
-      basicDetails.addresses,
-    )
-    const defaultReplyAddress: DeliusAddress | null | undefined = findDefaultReplyAddressInAddressList(
-      basicDetails.replyAddresses,
-      breachNotice,
-    )
-    const basicDetailsDateOfLetter: string = toUserDate(breachNotice.dateOfLetter)
+    const defaultOffenderAddress = findDefaultAddressInAddressList(basicDetails.addresses)
+    const defaultReplyAddress = findDefaultReplyAddressInAddressList(basicDetails.replyAddresses, breachNotice)
+    const basicDetailsDateOfLetter = toUserDate(breachNotice.dateOfLetter)
 
     const alternateAddressOptions = addressListToSelectItemList(
       removeDeliusAddressFromDeliusAddressList(basicDetails.addresses, defaultOffenderAddress),
@@ -104,25 +99,22 @@ export default function basicDetailsRoutes(
     )
 
     // show a warning is a previously saved address is no longer returned from the integration
-    const errorMessages: ErrorMessages = validateAddressesPresent(
-      breachNotice.replyAddress?.addressId,
-      basicDetails.replyAddresses,
-    )
+    const errorMessages = validateAddressesPresent(breachNotice.replyAddress?.addressId, basicDetails.replyAddresses)
 
     const addAddressDeeplink = `${config.ndeliusDeeplink.url}?component=AddressandAccommodation&CRN=${breachNotice.crn}`
 
-    const showReplyAddressAddButton: boolean = determineIfAddAddressButtonIsShown(breachNotice, basicDetails)
+    const showReplyAddressAddButton = determineIfAddAddressButtonIsShown(breachNotice, basicDetails)
     const showReplyAddressUpdateButton = determineIfUpdateAddressButtonIsShown(breachNotice, basicDetails)
     const showAlternateOffenderAddressSection = basicDetails.addresses && basicDetails.addresses.length > 0
     // only show if we have something set for default and there are alternatives
-    const showAlternateReplyAddressSelectOptions: boolean | null | undefined =
+    const showAlternateReplyAddressSelectOptions =
       defaultReplyAddress && basicDetails.replyAddresses && basicDetails.replyAddresses.length > 0
     // we only show this if no addresses returned from integration
-    const showOffenderAddressDeepLinkSection: boolean = !(basicDetails.addresses && basicDetails.addresses.length > 0)
+    const showOffenderAddressDeepLinkSection = !(basicDetails.addresses && basicDetails.addresses.length > 0)
     // we only show the standalone reply address selector if theres no default address BUT we have alternatives to choose from
     // breach notice is what we hold
     // basic details is from integration
-    const showStandaloneReplyAddressSection: boolean =
+    const showStandaloneReplyAddressSection =
       !defaultReplyAddress && basicDetails.replyAddresses && basicDetails.replyAddresses.length > 0
 
     res.render('pages/basic-details', {
@@ -210,9 +202,9 @@ export default function basicDetailsRoutes(
         res.locals.user.username,
       )
     } catch (error) {
-      const errorMessages: ErrorMessages = handleIntegrationErrors(error, 'Breach Notice')
+      const errorMessages = handleIntegrationErrors(error, 'Breach Notice')
       const showEmbeddedError = true
-      const breachNotice: BreachNotice = createBlankBreachNoticeWithId(req.params.id)
+      const breachNotice = createBlankBreachNoticeWithId(req.params.id)
       // always stay on page and display the error when there are isssues retrieving the breach notice
       res.render(`pages/basic-details`, { errorMessages, showEmbeddedError, breachNotice })
       return
@@ -303,8 +295,8 @@ export default function basicDetailsRoutes(
     updatedBreachNotice.titleAndFullName = combinedName.trim().replace('  ', ' ')
 
     // validation
-    const errorMessages: ErrorMessages = validateBasicDetails(updatedBreachNotice, req.body.dateOfLetter)
-    const hasErrors: boolean = Object.keys(errorMessages).length > 0
+    const errorMessages = validateBasicDetails(updatedBreachNotice, req.body.dateOfLetter)
+    const hasErrors = Object.keys(errorMessages).length > 0
 
     // If we have no errors we are navigating to warning type
     // unless the user has clicked save and close
@@ -344,18 +336,18 @@ export default function basicDetailsRoutes(
 
       const basicDetailsDateOfLetter: string = req.body.dateOfLetter
       const addAddressDeeplink = `${config.ndeliusDeeplink.url}?component=AddressandAccommodation&CRN=${currentBreachNotice.crn}`
-      const showReplyAddressAddButton: boolean = determineIfAddAddressButtonIsShown(currentBreachNotice, basicDetails)
+      const showReplyAddressAddButton = determineIfAddAddressButtonIsShown(currentBreachNotice, basicDetails)
       const showReplyAddressUpdateButton = determineIfUpdateAddressButtonIsShown(currentBreachNotice, basicDetails)
       const showAlternateOffenderAddressSection = basicDetails.addresses && basicDetails.addresses.length > 0
       // only show if we have something set for default and there are alternatives
       const showAlternateReplyAddressSelectOptions =
         defaultReplyAddress && basicDetails.replyAddresses && basicDetails.replyAddresses.length > 0
       // we only show this if no addresses returned from integration
-      const showOffenderAddressDeepLinkSection: boolean = !(basicDetails.addresses && basicDetails.addresses.length > 0)
+      const showOffenderAddressDeepLinkSection = !(basicDetails.addresses && basicDetails.addresses.length > 0)
       // we only show the standalone reply address selector if theres no default address BUT we have alternatives to choose from
       // breach notice is what we hold
       // basic details is from integration
-      const showStandaloneReplyAddressSection: boolean =
+      const showStandaloneReplyAddressSection =
         !defaultReplyAddress && basicDetails.replyAddresses && basicDetails.replyAddresses.length > 0
 
       res.render(`pages/basic-details`, {
