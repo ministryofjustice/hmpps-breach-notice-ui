@@ -4,7 +4,6 @@ import AuditService, { Page } from '../services/auditService'
 import BreachNoticeApiClient, { BreachNotice, BreachNoticeAddress } from '../data/breachNoticeApiClient'
 import { ErrorMessages } from '../data/uiModels'
 import { handleIntegrationErrors } from '../utils/utils'
-import { IntegrationError } from '../data/ndeliusIntegrationApiClient'
 
 export default function addAlternateAppointmentAddressRoutes(
   router: Router,
@@ -20,10 +19,6 @@ export default function addAlternateAppointmentAddressRoutes(
     try {
       breachNotice = await breachNoticeApiClient.getBreachNoticeById(breachNoticeId, res.locals.user.username)
     } catch (error) {
-      if (!isIntegrationError(error)) {
-        throw error
-      }
-
       const errorMessages: ErrorMessages = handleIntegrationErrors(error, 'Breach Notice')
       const showEmbeddedError = true
       // always stay on page and display the error when there are isssues retrieving the breach notice
@@ -87,10 +82,6 @@ export default function addAlternateAppointmentAddressRoutes(
       }
     }
   })
-
-  function isIntegrationError(error: unknown): error is IntegrationError {
-    return typeof error === 'object' && error !== null && ('responseStatus' in error || 'data' in error)
-  }
 
   function validateAddress(address: BreachNoticeAddress): ErrorMessages {
     const errorMessages: ErrorMessages = {}
