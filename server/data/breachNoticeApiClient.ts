@@ -246,7 +246,7 @@ export default class BreachNoticeApiClient extends RestClient {
   async batchDeleteContactRequirements(crlinks: Array<ContactRequirement>, username: string): Promise<void> {
     const promises = []
     for (const crlink of crlinks) {
-      promises.push(this.deleteContactRequirementLink(crlink.id, username))
+      promises.push(this.deleteContactRequirementLink(<string>crlink.id, username))
     }
     await Promise.all(promises)
   }
@@ -272,16 +272,16 @@ export interface BreachNotice {
   nextAppointmentLocation: string
   nextAppointmentOfficer: string
   nextAppointmentId: number
-  completedDate: ZonedDateTime
-  offenderAddress: BreachNoticeAddress
-  replyAddress: BreachNoticeAddress
+  completedDate: ZonedDateTime | undefined
+  offenderAddress: BreachNoticeAddress | null | undefined
+  replyAddress: BreachNoticeAddress | undefined
   basicDetailsSaved: boolean
   warningTypeSaved: boolean
   warningDetailsSaved: boolean
   nextAppointmentSaved: boolean
-  useDefaultAddress: boolean
+  useDefaultAddress: boolean | null | undefined
   useDefaultReplyAddress: boolean
-  reviewRequiredDate: Date
+  reviewRequiredDate: Date | undefined
   reviewEvent: string
   breachNoticeContactList: BreachNoticeContact[]
   breachNoticeRequirementList: BreachNoticeRequirement[]
@@ -290,15 +290,15 @@ export interface BreachNotice {
   conditionBeingEnforced: string
   selectNextAppointment: boolean
   furtherReasonDetails: string
-  alternateNextAppointmentLocation: BreachNoticeAddress
-  alternateNextAppointmentLocationSelected: boolean
+  alternateNextAppointmentLocation: BreachNoticeAddress | undefined
+  alternateNextAppointmentLocationSelected: boolean | undefined
   terminated: boolean
-  terminatedUnterminatedDate: Date
+  terminatedUnterminatedDate: Date | undefined
 }
 
 export interface WarningDetailsWholeSentenceAndRequirement {
   description: string
-  wholeSentence: boolean
+  wholeSentence: boolean | undefined | null
 }
 
 export interface BreachNoticeContact {
@@ -310,8 +310,8 @@ export interface BreachNoticeContact {
   contactType: string
   contactOutcome: string
   contactId: number
-  wholeSentence?: boolean
-  rejectionReason?: string
+  wholeSentence?: boolean | null
+  rejectionReason?: string | null
   alternateNextAppointmentLocation?: BreachNoticeAddress
   alternateNextAppointmentLocationSelected?: boolean
 }
@@ -352,7 +352,7 @@ export interface RequirementSelectItem {
 
 export interface WholeSentenceContactRequirementReason {
   contactId: string
-  rejectionReason: string
+  rejectionReason: string | null
   wholeSentenceSelected: boolean
 }
 

@@ -10,14 +10,19 @@ import {
   combineName,
   createBlankBreachNoticeWithId,
   formatAddressForSelectMenuDisplay,
-  handleIntegrationErrors,
+  handleIntegrationErrors, isIntegrationError,
   mapDeliusAddressToBreachNoticeAddress,
   removeDeliusAddressFromDeliusAddressList,
 } from '../utils/utils'
 import BreachNoticeApiClient, { BreachNotice, BreachNoticeAddress } from '../data/breachNoticeApiClient'
-import NdeliusIntegrationApiClient, { BasicDetails, DeliusAddress } from '../data/ndeliusIntegrationApiClient'
+import NdeliusIntegrationApiClient, {
+  BasicDetails,
+  DeliusAddress,
+  IntegrationError
+} from '../data/ndeliusIntegrationApiClient'
 import { ErrorMessages, SelectItem } from '../data/uiModels'
 import config from '../config'
+import {HttpError} from "http-errors";
 
 export default function basicDetailsRoutes(
   router: Router,
@@ -32,8 +37,8 @@ export default function basicDetailsRoutes(
     const breachNoticeApiClient = new BreachNoticeApiClient(authenticationClient)
     const ndeliusIntegrationApiClient = new NdeliusIntegrationApiClient(authenticationClient)
 
-    let basicDetails: BasicDetails = null
-    let breachNotice: BreachNotice = null
+    let basicDetails: BasicDetails
+    let breachNotice: BreachNotice
 
     try {
       // get the existing breach notice
@@ -47,9 +52,13 @@ export default function basicDetailsRoutes(
         return
       }
     } catch (error) {
+      if (!isIntegrationError(error)) {
+        throw error
+      }
+
       const errorMessages: ErrorMessages = handleIntegrationErrors(
-        error.responseStatus,
-        error.data?.message,
+        error.responseStatus!!,
+        error.data?.message!!,
         'Breach Notice',
       )
       const showEmbeddedError = true
@@ -63,9 +72,13 @@ export default function basicDetailsRoutes(
       // get details from the integration service
       basicDetails = await ndeliusIntegrationApiClient.getBasicDetails(breachNotice.crn, res.locals.user.username)
     } catch (error) {
+      if (!isIntegrationError(error)) {
+        throw error
+      }
       const errorMessages: ErrorMessages = handleIntegrationErrors(
-        error.responseStatus,
-        error.data?.message,
+
+        error.responseStatus!!,
+        error.data?.message!!,
         'NDelius Integration',
       )
       // take the user to detailed error page for 400 type errors
@@ -85,8 +98,8 @@ export default function basicDetailsRoutes(
     }
 
     if (await commonUtils.redirectRequired(breachNotice, res)) return
-    const defaultOffenderAddress: DeliusAddress = findDefaultAddressInAddressList(basicDetails.addresses)
-    const defaultReplyAddress: DeliusAddress = findDefaultReplyAddressInAddressList(
+    const defaultOffenderAddress: DeliusAddress | null | undefined = findDefaultAddressInAddressList(basicDetails.addresses)
+    const defaultReplyAddress: DeliusAddress | null | undefined = findDefaultReplyAddressInAddressList(
       basicDetails.replyAddresses,
       breachNotice,
     )
@@ -113,10 +126,10 @@ export default function basicDetailsRoutes(
     const addAddressDeeplink = `${config.ndeliusDeeplink.url}?component=AddressandAccommodation&CRN=${breachNotice.crn}`
 
     const showReplyAddressAddButton: boolean = determineIfAddAddressButtonIsShown(breachNotice, basicDetails)
-    const showReplyAddressUpdateButton: boolean = determineIfUpdateAddressButtonIsShown(breachNotice, basicDetails)
+    const showReplyAddressUpdateButton: boolean | undefined = determineIfUpdateAddressButtonIsShown(breachNotice, basicDetails)
     const showAlternateOffenderAddressSection = basicDetails.addresses && basicDetails.addresses.length > 0
     // only show if we have something set for default and there are alternatives
-    const showAlternateReplyAddressSelectOptions: boolean =
+    const showAlternateReplyAddressSelectOptions: boolean | null | undefined =
       defaultReplyAddress && basicDetails.replyAddresses && basicDetails.replyAddresses.length > 0
     // we only show this if no addresses returned from integration
     const showOffenderAddressDeepLinkSection: boolean = !(basicDetails.addresses && basicDetails.addresses.length > 0)
@@ -160,7 +173,7 @@ export default function basicDetailsRoutes(
     return !(breachNotice.replyAddress && breachNotice.replyAddress.addressId === -1)
   }
 
-  function determineIfUpdateAddressButtonIsShown(breachNotice: BreachNotice, basicDetails: BasicDetails): boolean {
+  function determineIfUpdateAddressButtonIsShown(breachNotice: BreachNotice, basicDetails: BasicDetails): boolean | undefined{
     // having reply addresses returned from integrations trumps everything, we do not show the update address button
     // if any addresses are returned from integrations
     if (basicDetails.replyAddresses && basicDetails?.replyAddresses?.length > 0) {
@@ -172,7 +185,7 @@ export default function basicDetailsRoutes(
     return breachNotice.replyAddress && breachNotice.replyAddress.addressId === -1
   }
 
-  function validateAddressesPresent(selectedAddressId: number, replyAddresses: DeliusAddress[]): ErrorMessages {
+  function validateAddressesPresent(selectedAddressId: number | null | undefined, replyAddresses: DeliusAddress[]): ErrorMessages {
     const errorMessages: ErrorMessages = {}
     // Skip error message if added address is a custom address
     if (selectedAddressId && selectedAddressId !== -1) {
@@ -199,8 +212,8 @@ export default function basicDetailsRoutes(
     const ndeliusIntegrationApiClient = new NdeliusIntegrationApiClient(authenticationClient)
     const callingScreen: string = req.query.returnTo as string
     const { id } = req.params
-    let basicDetails: BasicDetails = null
-    let currentBreachNotice: BreachNotice = null
+    let basicDetails: BasicDetails
+    let currentBreachNotice: BreachNotice
 
     try {
       currentBreachNotice = await breachNoticeApiClient.getBreachNoticeById(
@@ -208,11 +221,7 @@ export default function basicDetailsRoutes(
         res.locals.user.username,
       )
     } catch (error) {
-      const errorMessages: ErrorMessages = handleIntegrationErrors(
-        error.responseStatus,
-        error.data?.message,
-        'Breach Notice',
-      )
+      const errorMessages: ErrorMessages = handleIntegrationErrors(error, 'Breach Notice')
       const showEmbeddedError = true
       const breachNotice: BreachNotice = createBlankBreachNoticeWithId(req.params.id)
       // always stay on page and display the error when there are isssues retrieving the breach notice
@@ -226,18 +235,15 @@ export default function basicDetailsRoutes(
         res.locals.user.username,
       )
     } catch (error) {
-      const errorMessages: ErrorMessages = handleIntegrationErrors(
-        error.responseStatus,
-        error.data?.message,
-        'NDelius Integration',
-      )
+      const httpError: IntegrationError = (error as unknown) as IntegrationError
+      const errorMessages: ErrorMessages = handleIntegrationErrors(error, 'NDelius Integration')
       // take the user to detailed error page for 400 type errors
-      if (error.responseStatus === 400) {
+      if (httpError.responseStatus === 400) {
         res.render(`pages/detailed-error`, { errorMessages })
         return
       }
       // stay on the current page for 500 errors
-      if (error.responseStatus === 500) {
+      if (httpError.responseStatus === 500) {
         const showEmbeddedError = true
         const breachNotice: BreachNotice = createBlankBreachNoticeWithId(req.params.id)
         res.render(`pages/basic-details`, { errorMessages, showEmbeddedError, breachNotice })
@@ -249,8 +255,8 @@ export default function basicDetailsRoutes(
 
     const updatedBreachNotice = applyDefaults(currentBreachNotice, basicDetails)
 
-    const defaultOffenderAddress: DeliusAddress = findDefaultAddressInAddressList(basicDetails.addresses)
-    const defaultReplyAddress: DeliusAddress = findDefaultReplyAddressInAddressList(
+    const defaultOffenderAddress = findDefaultAddressInAddressList(basicDetails.addresses)
+    const defaultReplyAddress = findDefaultReplyAddressInAddressList(
       basicDetails.replyAddresses,
       updatedBreachNotice,
     )
@@ -457,7 +463,7 @@ export default function basicDetailsRoutes(
   function addressListToSelectItemList(
     addresses: DeliusAddress[],
     breachNoticeSaved: boolean,
-    selectedAddressId: number,
+    selectedAddressId: number | undefined,
   ): SelectItem[] {
     const returnAddressList: SelectItem[] = [
       {
@@ -469,7 +475,7 @@ export default function basicDetailsRoutes(
     if (addresses) {
       const orderedAddressList: SelectItem[] = arrangeSelectItemListAlphabetically(
         addresses.map(address => ({
-          text: formatAddressForSelectMenuDisplay(address),
+          text: formatAddressForSelectMenuDisplay(address) ,
           value: `${address.id}`,
           selected: breachNoticeSaved && address.id === selectedAddressId,
         })),
@@ -481,7 +487,7 @@ export default function basicDetailsRoutes(
     return returnAddressList
   }
 
-  function findDefaultAddressInAddressList(addressList: Array<DeliusAddress>): DeliusAddress {
+  function findDefaultAddressInAddressList(addressList: Array<DeliusAddress>): DeliusAddress | null | undefined {
     if (addressList) {
       return (
         addressList.find(a => a.status === 'Default') ??
@@ -495,11 +501,11 @@ export default function basicDetailsRoutes(
   function findDefaultReplyAddressInAddressList(
     addressList: Array<DeliusAddress>,
     breachNotice: BreachNotice,
-  ): DeliusAddress {
+  ): DeliusAddress | null | undefined{
     if (
       addressList &&
       addressList.length > 0 &&
-      (breachNotice.replyAddress === null || breachNotice.replyAddress.addressId !== -1)
+      (breachNotice.replyAddress === null || breachNotice.replyAddress?.addressId !== -1)
     ) {
       return (
         addressList.find(a => a.status === 'Default') ??

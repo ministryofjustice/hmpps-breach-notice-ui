@@ -25,7 +25,7 @@ export default function warningTypeRoutes(
     const ndeliusIntegrationApiClient = new NdeliusIntegrationApiClient(authenticationClient)
     const { id } = req.params
 
-    let breachNotice: BreachNotice = null
+    let breachNotice: BreachNotice
     let warningTypes: WarningType[] = []
     let sentenceTypes: SentenceType[] = []
     let defaultSentenceTypeCode: string = null

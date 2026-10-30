@@ -71,6 +71,13 @@ export interface Name {
   surname: string
 }
 
+export interface IntegrationError {
+  responseStatus?: number
+  data?: {
+    message?: string
+  }
+}
+
 export interface BasicDetails {
   title: string
   name: Name
@@ -140,10 +147,10 @@ export interface BreachNoticeRequirement {
 export interface EnforceableContact {
   id: number
   datetime: string
-  description: string
+  description: string | null
   type: ReferenceData
   outcome: ReferenceData
-  notes: string
+  notes: string | null
 }
 
 export interface Requirement {
