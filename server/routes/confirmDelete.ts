@@ -34,7 +34,9 @@ export default function confirmDeleteRoutes(
         await breachNoticeApiClient.deleteBreachNotice(id as string, res.locals.user.username)
       } catch (error) {
         const errorMessages: ErrorMessages = handleIntegrationErrors(
+          // @ts-ignore
           error.responseStatus,
+          // @ts-ignore
           error.data?.message,
           'Breach Notice',
         )

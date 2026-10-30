@@ -4,6 +4,8 @@ import AuditService, { Page } from '../services/auditService'
 import BreachNoticeApiClient, { BreachNotice, BreachNoticeAddress } from '../data/breachNoticeApiClient'
 import { ErrorMessages } from '../data/uiModels'
 import { handleIntegrationErrors } from '../utils/utils'
+import {IntegrationError} from "../data/ndeliusIntegrationApiClient";
+
 
 export default function addAlternateAppointmentAddressRoutes(
   router: Router,
@@ -14,15 +16,20 @@ export default function addAlternateAppointmentAddressRoutes(
     await auditService.logPageView(Page.ADD_ADDRESS, { who: res.locals.user.username, correlationId: req.id })
     const { breachNoticeId } = req.params
     const breachNoticeApiClient = new BreachNoticeApiClient(authenticationClient)
-    let breachNotice: BreachNotice = null
-    let address: BreachNoticeAddress = null
+    let breachNotice: BreachNotice
+    let address: BreachNoticeAddress | undefined
 
     try {
       breachNotice = await breachNoticeApiClient.getBreachNoticeById(breachNoticeId, res.locals.user.username)
     } catch (error) {
+
+      if (!isIntegrationError(error)) {
+        throw error
+      }
+
       const errorMessages: ErrorMessages = handleIntegrationErrors(
-        error.responseStatus,
-        error.data?.message,
+        error.responseStatus!!,
+        error.data?.message!!,
         'Breach Notice',
       )
       const showEmbeddedError = true
@@ -38,7 +45,7 @@ export default function addAlternateAppointmentAddressRoutes(
   router.post('/add-alternate-appointment-address/:breachNoticeId', async (req, res) => {
     const breachNoticeApiClient = new BreachNoticeApiClient(authenticationClient)
     const { breachNoticeId } = req.params
-    let breachNotice: BreachNotice = null
+    let breachNotice: BreachNotice
 
     // if cancel selected skip right back
     if (req.body.action === 'cancel') {
@@ -73,9 +80,14 @@ export default function addAlternateAppointmentAddressRoutes(
           await breachNoticeApiClient.updateBreachNotice(breachNoticeId, breachNotice, res.locals.user.username)
           res.redirect(`/next-appointment/${breachNoticeId}`)
         } catch (error) {
+
+          if (!isIntegrationError(error)) {
+            throw error
+          }
+
           const integrationErrorMessages = handleIntegrationErrors(
-            error.responseStatus,
-            error.data?.message,
+            error.responseStatus!!,
+            error.data?.message!!,
             'Breach Notice',
           )
           const showEmbeddedError = true
@@ -91,6 +103,14 @@ export default function addAlternateAppointmentAddressRoutes(
       }
     }
   })
+
+  function isIntegrationError(error: unknown): error is IntegrationError {
+    return (
+      typeof error === 'object' &&
+      error !== null &&
+      ('responseStatus' in error || 'data' in error)
+    )
+  }
 
   function validateAddress(address: BreachNoticeAddress): ErrorMessages {
     const errorMessages: ErrorMessages = {}

@@ -35,8 +35,8 @@ export default function addRequirementRoutes(
     const ndeliusIntegrationApiClient = new NdeliusIntegrationApiClient(authenticationClient)
 
     let breachNotice: BreachNotice
-    let requirements: Requirements = null
-    let contactRequirementList: Array<ContactRequirement> = null
+
+    let contactRequirementList: Array<ContactRequirement>
 
     try {
       // get the existing breach notice
@@ -63,7 +63,25 @@ export default function addRequirementRoutes(
 
     try {
       // get details from the integration service
-      requirements = await ndeliusIntegrationApiClient.getRequirements(breachNotice.id, res.locals.user.username)
+      const requirements: Requirements = await ndeliusIntegrationApiClient.getRequirements(
+        breachNotice.id,
+        res.locals.user.username,
+      )
+      requirements.breachReasons.push({ code: '-1', description: '[Please Select]' })
+      const breachReasons = convertReferenceDataListToSelectItemList(requirements.breachReasons)
+
+      const requirementsList = createFailuresBeingEnforcedRequirementSelectList(
+        requirements.requirements,
+        requirements.breachReasons,
+        contactRequirementList,
+      )
+
+      res.render('pages/add-requirement', {
+        breachNotice,
+        breachReasons,
+        requirementsList,
+        callingScreen,
+      })
     } catch (error) {
       const errorMessages: ErrorMessages = handleIntegrationErrors(
         error.responseStatus,
@@ -83,24 +101,7 @@ export default function addRequirementRoutes(
         return
       }
       res.render(`pages/detailed-error`, { errorMessages })
-      return
     }
-
-    requirements.breachReasons.push({ code: '-1', description: '[Please Select]' })
-    const breachReasons = convertReferenceDataListToSelectItemList(requirements.breachReasons)
-
-    const requirementsList = createFailuresBeingEnforcedRequirementSelectList(
-      requirements.requirements,
-      requirements.breachReasons,
-      contactRequirementList,
-    )
-
-    res.render('pages/add-requirement', {
-      breachNotice,
-      breachReasons,
-      requirementsList,
-      callingScreen,
-    })
   })
 
   router.post('/add-requirement/:id', async (req, res) => {
@@ -118,8 +119,8 @@ export default function addRequirementRoutes(
       }
     } else {
       let breachNotice: BreachNotice
-      let requirements: Requirements = null
-      let contactRequirementList: Array<ContactRequirement> = null
+      let requirements: Requirements
+      let contactRequirementList: Array<ContactRequirement>
 
       try {
         // get the existing breach notice

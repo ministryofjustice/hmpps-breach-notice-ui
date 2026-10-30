@@ -18,7 +18,7 @@ import eventTerminatedRoutes from './eventTerminated'
 export default function routes({ auditService, hmppsAuthClient, commonUtils }: Services): Router {
   const router = Router()
 
-  router.get('/', async (req, res) => {
+  router.get('/', async (_req, res) => {
     res.render('pages/index')
   })
 
@@ -26,7 +26,7 @@ export default function routes({ auditService, hmppsAuthClient, commonUtils }: S
     res.redirect(`/basic-details/${req.params.id}`)
   })
 
-  router.get('/close', async (req, res) => {
+  router.get('/close', async (_req, res) => {
     res.send(
       `<p>You can now safely close this window</p><script nonce="${res.locals.cspNonce}">window.close()</script>`,
     )

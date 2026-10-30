@@ -70,8 +70,11 @@ export default function checkYourReportRoutes(
         })
       }
     } catch (error) {
+
       const errorMessages: ErrorMessages = handleIntegrationErrors(
+        // @ts-ignore
         error.responseStatus,
+        // @ts-ignore
         error.data?.message,
         'Breach Notice',
       )
@@ -94,10 +97,12 @@ export default function checkYourReportRoutes(
     const responseRequiredByDate: string = toUserDate(breachNotice.responseRequiredDate)
     const nextAppointmentDate: string = toUserDateFromDateTime(breachNotice.nextAppointmentDate)
     const nextAppointmentTime: string = toUserTimeFromDateTime(breachNotice.nextAppointmentDate)
-    let alternateAppointmentAddress: string
-
+    let alternateAppointmentAddress: string | null = null
     if (breachNotice.alternateNextAppointmentLocationSelected === true) {
       alternateAppointmentAddress = locationDisplayValue(breachNotice.alternateNextAppointmentLocation)
+    }
+    else {
+      alternateAppointmentAddress = null
     }
 
     await renderCheckYourReport(
@@ -124,7 +129,7 @@ export default function checkYourReportRoutes(
     responseRequiredByDate: string,
     nextAppointmentDate: string,
     nextAppointmentTime: string,
-    alternateAppointmentAddress: string,
+    alternateAppointmentAddress: string | null,
   ) {
     const reportValidated = validateCheckYourReport(breachNotice)
     const currentPage = 'check-your-report'
@@ -155,7 +160,7 @@ export default function checkYourReportRoutes(
   })
 
   function validateCheckYourReport(breachNotice: BreachNotice): boolean {
-    return (
+    return <boolean>(
       breachNotice.crn != null &&
       breachNotice.titleAndFullName != null &&
       breachNotice.offenderAddress != null &&
