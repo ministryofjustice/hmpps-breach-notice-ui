@@ -59,7 +59,7 @@ context('Next Appointment page', () => {
     cy.get('#contact-number').should('exist')
     cy.get('#contact-number')
       .should('be.visible')
-      .should('contain.text', 'No Contact Number found for this Responsible Officer')
+      .should('contain.text', 'No contact number found for this responsible officer')
   })
 
   it('should contain officeDescription in next appointment field', () => {

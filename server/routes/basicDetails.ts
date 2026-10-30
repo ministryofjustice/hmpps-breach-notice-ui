@@ -179,14 +179,14 @@ export default function basicDetailsRoutes(
       // we have a selected address but no addresses returned from the integration
       if (selectedAddressId && !replyAddresses) {
         errorMessages.replyAddress = {
-          text: 'Reply Address: The previously selected address is no longer available. Please select an alternative.',
+          text: 'Reply address: the previously selected address is no longer available. Please select an alternative.',
         }
       }
       // we have an address list returned and a previously saved address
       if (selectedAddressId && replyAddresses) {
         if (!replyAddresses.find(a => a.id === selectedAddressId)) {
           errorMessages.replyAddress = {
-            text: 'Reply Address: The previously selected address is no longer available. Please select an alternative.',
+            text: 'Reply address: the previously selected address is no longer available. Please select an alternative.',
           }
         }
       }
@@ -395,7 +395,7 @@ export default function basicDetailsRoutes(
     const currentDateAtStartOfTheDay: LocalDateTime = LocalDate.now().atStartOfDay()
     if (breachNotice.referenceNumber && breachNotice.referenceNumber.trim().length > 30) {
       errorMessages.officeReferenceNumber = {
-        text: 'Office Reference must be 30 characters or less',
+        text: 'Office reference must be 30 characters or less',
       }
     }
 
@@ -461,7 +461,7 @@ export default function basicDetailsRoutes(
   ): SelectItem[] {
     const returnAddressList: SelectItem[] = [
       {
-        text: 'Please Select',
+        text: 'Please select',
         value: 'please_select',
         selected: true,
       },

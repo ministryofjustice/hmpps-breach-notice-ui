@@ -2,7 +2,7 @@ context('Warning Details page', () => {
   it('page should load normally', () => {
     cy.visit('/warning-details/00000000-0000-0000-0000-000000000001')
     cy.url().should('include', '/warning-details/00000000-0000-0000-0000-000000000001')
-    cy.get('.govuk-heading-l').should('exist').should('contain.text', 'Warning Details')
+    cy.get('.govuk-heading-l').should('exist').should('contain.text', 'Warning details')
   })
 
   it('when existing contact checkbox is checked; notes, requirement details and update button shown', () => {
@@ -21,7 +21,7 @@ context('Warning Details page', () => {
 
     cy.get('#updatereq-button').should('exist').should('be.visible')
     cy.get('#updatereq-button')
-      .should('contain.text', 'Save Changes and Update Requirement')
+      .should('contain.text', 'Save changes and update requirements')
       .should('have.value', 'enforceablecontact_0')
     cy.get('#updatereq-button').click()
     cy.url().should('include', '/add-requirement')
@@ -85,7 +85,7 @@ context('Warning Details page', () => {
   it('should load when enforceable contacts have no notes specified', () => {
     cy.visit('/warning-details/d3333333-12e3-45ba-ba67-1b34bf7b3333')
     cy.url().should('include', '/warning-details/d3333333-12e3-45ba-ba67-1b34bf7b3333')
-    cy.get('.govuk-heading-l').should('exist').should('contain.text', 'Warning Details')
+    cy.get('.govuk-heading-l').should('exist').should('contain.text', 'Warning details')
   })
 
   it('should escape the text and show new lines correctly', () => {
@@ -155,7 +155,7 @@ context('Warning Details page', () => {
   it('should retain contact information when contact is no longer returned by api', () => {
     cy.visit('/warning-details/0adf652a-45eb-4203-8104-7bb4e62be6ce')
     cy.url().should('include', '/warning-details')
-    cy.get('.govuk-heading-l').should('exist').should('contain.text', 'Warning Details')
+    cy.get('.govuk-heading-l').should('exist').should('contain.text', 'Warning details')
     cy.get('#contact-0').should('exist')
     cy.get('#contact-0').should('be.checked')
     cy.get('#wholeSentence-0-2').should('be.checked')
@@ -165,14 +165,14 @@ context('Warning Details page', () => {
       .should('contain.text', 'Contact0SubType')
     cy.get('#updatereq-button').should('exist').should('be.visible')
     cy.get('#updatereq-button')
-      .should('contain.text', 'Save Changes and Add Requirement')
+      .should('contain.text', 'Save changes and add requirements')
       .should('have.value', 'enforceablecontact_0')
   })
 
   it('should show whole sentence radio buttons if a contact is selected', () => {
     cy.visit('/warning-details/1000000a-45eb-4203-8104-7bb98989845u')
     cy.url().should('include', '/warning-details')
-    cy.get('.govuk-heading-l').should('exist').should('contain.text', 'Warning Details')
+    cy.get('.govuk-heading-l').should('exist').should('contain.text', 'Warning details')
     cy.get('#contact-0').should('exist')
     cy.get('#contact-0').should('be.checked')
     cy.get('#wholeSentence-0-2').should('exist')
@@ -183,7 +183,7 @@ context('Warning Details page', () => {
   it('should fail validation if whole sentence is selected and no reason selected', () => {
     cy.visit('/warning-details/1000000a-45eb-4203-8104-7bb98989845u')
     cy.url().should('include', '/warning-details')
-    cy.get('.govuk-heading-l').should('exist').should('contain.text', 'Warning Details')
+    cy.get('.govuk-heading-l').should('exist').should('contain.text', 'Warning details')
     cy.get('#contact-0').should('exist')
     cy.get('#contact-0').should('be.checked')
     cy.get('#wholeSentence-0-2').should('exist')

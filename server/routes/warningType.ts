@@ -230,13 +230,13 @@ export default function warningTypeRoutes(
     const errorMessages: ErrorMessages = {}
     if (!breachNotice.breachNoticeTypeCode) {
       errorMessages.warningType = {
-        text: 'You must select a Warning Type before you can continue.',
+        text: 'You must select a warning type before you can continue.',
       }
     }
 
     if (breachNotice.breachSentenceTypeCode === '-1') {
       errorMessages.sentenceType = {
-        text: 'You must select a Sentence Type before you can continue.',
+        text: 'You must select a sentence type before you can continue.',
       }
     }
 
@@ -249,7 +249,7 @@ export default function warningTypeRoutes(
   ): RadioButton[] {
     return [
       ...warningTypes.map(warningType => ({
-        text: `${warningType.description}`,
+        text: `${warningType.description.charAt(0)}${warningType.description.slice(1).toLowerCase()}`,
         value: `${warningType.code}`,
         selected: false,
         checked: breachNotice.breachNoticeTypeCode && breachNotice.breachNoticeTypeCode === warningType.code,
@@ -264,7 +264,7 @@ export default function warningTypeRoutes(
   ): SelectItem[] {
     return [
       {
-        text: 'Please Select',
+        text: 'Please select',
         value: '-1',
         selected: true,
       },

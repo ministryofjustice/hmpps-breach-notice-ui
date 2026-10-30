@@ -57,7 +57,7 @@ context('Basic Details page', () => {
     cy.get('.govuk-error-summary__title').should('exist').should('contain.text', 'There is a problem')
     cy.get('#office-reference-error')
       .should('exist')
-      .should('contain.text', 'Office Reference must be 30 characters or less')
+      .should('contain.text', 'Office reference must be 30 characters or less')
   })
 
   it('return to screen after save and address no longer returned from integrations', () => {
@@ -66,16 +66,16 @@ context('Basic Details page', () => {
     cy.get('.govuk-error-summary__list > li > a').should('have.attr', 'href').and('include', 'reply-address')
     cy.get('.govuk-error-summary__list > li > a').should(
       'have.text',
-      'Reply Address: The previously selected address is no longer available. Please select an alternative.',
+      'Reply address: the previously selected address is no longer available. Please select an alternative.',
     )
   })
 
   it('ordered lists should always have please select first', () => {
     cy.visit('/basic-details/f1234567-12e3-45ba-ba67-1b34bf7b0099')
     cy.get('#alternate-address').should('exist')
-    cy.get('#alternate-address').children().first().should('have.text', 'Please Select')
+    cy.get('#alternate-address').children().first().should('have.text', 'Please select')
     cy.get('#alternate-reply-address').should('exist')
-    cy.get('#alternate-reply-address').children().first().should('have.text', 'Please Select')
+    cy.get('#alternate-reply-address').children().first().should('have.text', 'Please select')
   })
 
   it('should show error page with home area message if 400 error returned from integrations that contains home area', () => {
@@ -106,7 +106,7 @@ context('Basic Details page', () => {
   it('should show alternate Reply Address choices if no default but alternates to choose from', () => {
     cy.visit('/basic-details/92eb37f7-e315-47ea-870a-7fb6eb6e5b0f')
     cy.url().should('include', '/basic-details')
-    cy.contains('Please specify the reply address that the Person on Probation should contact.').should('exist')
+    cy.contains('Please specify the reply address that the person on probation should contact.').should('exist')
     cy.get('#reply-address').should('not.exist')
   })
 
@@ -182,7 +182,7 @@ context('Basic Details page', () => {
     cy.url().should('include', '/basic-details')
     cy.get('.govuk-error-summary__title').should('exist').should('contain.text', 'There is a problem')
     cy.contains(
-      'Reply Address: The previously selected address is no longer available. Please select an alternative.',
+      'Reply address: the previously selected address is no longer available. Please select an alternative.',
     ).should('exist')
     cy.get('#add-address-button').should('exist')
   })
@@ -192,7 +192,7 @@ context('Basic Details page', () => {
     cy.url().should('include', '/basic-details')
     cy.get('#no-address-message')
       .should('be.visible')
-      .should('contain.text', 'No Postal Address found in National Delius')
+      .should('contain.text', 'No postal address found in National Delius')
     cy.get('#no-address-supplementary-message')
       .should('be.visible')
       .should('contain.text', 'In order to complete a Breach Notice you must add an address to Delius.')

@@ -1,6 +1,6 @@
 {% extends "../partials/layout.njk" %}
 
-{% set pageTitle = applicationName + " - Warning Type" %}
+{% set pageTitle = applicationName + " - Warning type" %}
 {% set mainClasses = "app-container govuk-body" %}
 
 {% block content %}
@@ -37,14 +37,14 @@
         {% if not showEmbeddedError %}
         {% include "partials/review-required.njk" %}
 
-        <h1 class="govuk-heading-l">Breach Notice - Warning Type</h1>
+        <h1 class="govuk-heading-l">Breach Notice - Warning type</h1>
 
         {{ govukRadios({
           id: "warning-type",
           name: "warningType",
           fieldset: {
             legend: {
-              text: "Select a Warning Type",
+              text: "Select a warning type",
               isPageHeading: false,
               classes: "govuk-fieldset__legend--m"
             }
@@ -59,7 +59,7 @@
           id: "sentence-type",
           name: "sentenceType",
           label: {
-            text: "Select the Sentence Type being enforced",
+            text: "Select the sentence type being enforced",
             classes: "govuk-fieldset__legend--m"
           },
           items: sentenceTypeSelectItems,
@@ -78,7 +78,7 @@
             }
           }) }}
           {{ govukButton({
-            text: "Save Progress and Close",
+            text: "Save progress and close",
             type: "submit",
             name: "action",
             value: "saveProgressAndClose",

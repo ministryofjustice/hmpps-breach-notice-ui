@@ -1,6 +1,6 @@
 {% extends "../partials/layout.njk" %}
 
-{% set pageTitle = applicationName + " - Next Appointment" %}
+{% set pageTitle = applicationName + " - Next appointment" %}
 {% set mainClasses = "app-container govuk-body" %}
 
 {% block content %}
@@ -39,17 +39,17 @@
               {% if not showEmbeddedError %}
               {% include "partials/review-required.njk" %}
 
-                <h1 class="govuk-heading-l">Breach Notice - Next Appointment</h1>
+                <h1 class="govuk-heading-l">Breach Notice - Next appointment</h1>
 
-                <h2 class="govuk-heading-m">Responsible Officer</h2>
+                <h2 class="govuk-heading-m">Responsible officer</h2>
                 <p id="responsible-officer">{{ responsibleOfficerDisplayValue }}</p>
 
-                <h2 class="govuk-heading-m">Contact Number</h2>
+                <h2 class="govuk-heading-m">Contact number</h2>
                 <p id="contact-number">
                   {% if nextAppointmentDetails.responsibleOfficer.telephoneNumber %}
                     {{ nextAppointmentDetails.responsibleOfficer.telephoneNumber }}
                   {% else %}
-                    No Contact Number found for this Responsible Officer
+                    No contact number found for this responsible officer
                   {% endif %}
                 </p>
 
@@ -105,7 +105,7 @@
                               aria-describedby="appt-hint">
                       <legend class="govuk-fieldset__legend govuk-fieldset__legend--m">
                         <h1 class="govuk-fieldset__heading">
-                          Please Select an Appointment
+                          Please select an appointment
                         </h1>
                       </legend>
 
@@ -255,7 +255,7 @@
                 value: selectNextAppointment,
                 fieldset: {
                   legend: {
-                    text: "Do you want to select a Next Appointment?",
+                    text: "Do you want to select a next appointment?",
                     isPageHeading: false,
                     classes: "govuk-fieldset__legend--m"
                   }
@@ -288,7 +288,7 @@
                     }
                   }) }}
                   {{ govukButton({
-                    text: "Refresh from Delius",
+                    text: "Refresh from National Delius",
                     preventDoubleClick: "true",
                     type: "submit",
                     name: "action",
@@ -299,7 +299,7 @@
                     }
                   }) }}
                   {{ govukButton({
-                    text: "Save Progress and Close",
+                    text: "Save progress and close",
                     type: "submit",
                     name: "action",
                     value: "saveProgressAndClose",

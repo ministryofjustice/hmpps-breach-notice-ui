@@ -1,6 +1,6 @@
 {% extends "../partials/layout.njk" %}
 
-{% set pageTitle = applicationName + " - Check Your Answers" %}
+{% set pageTitle = applicationName + " - Check your answers" %}
 {% set mainClasses = "app-container govuk-body" %}
 
 {% block content %}
@@ -36,18 +36,18 @@
 
               {% include "partials/review-required.njk" %}
 
-                <h1 class="govuk-heading-l">Breach Notice - Check Your Answers</h1>
+                <h1 class="govuk-heading-l">Breach Notice - Check your answers</h1>
 
                 <div class="govuk-summary-card">
                     <div class="govuk-summary-card__title-wrapper">
                         <h2 class="govuk-summary-card__title">
-                            Basic Details
+                            Basic details
                         </h2>
                         <ul class="govuk-summary-card__actions">
                             <li class="govuk-summary-card__action">
                                 <a id="change-basic-details" class="govuk-link"
                                    href="/basic-details/{{ breachNotice.id }}?returnTo=check-your-report">Change<span
-                                            class="govuk-visually-hidden"> Basic Details</span></a>
+                                            class="govuk-visually-hidden"> Basic details</span></a>
                             </li>
                         </ul>
                     </div>
@@ -55,7 +55,7 @@
                         <dl class="govuk-summary-list">
                             <div class="govuk-summary-list__row">
                                 <dt class="govuk-summary-list__key">
-                                    Title and Full Name
+                                    Title and full name
                                 </dt>
                                 <dd class="govuk-summary-list__value">
                                     {% if breachNotice.titleAndFullName == null %}
@@ -85,12 +85,12 @@
                             </div>
                             <div class="govuk-summary-list__row">
                                 <dt class="govuk-summary-list__key">
-                                    Postal Address
+                                    Postal address
                                 </dt>
                                 <dd class="govuk-summary-list__value">
                                     {% if breachNotice.offenderAddress == null %}
                                         <a href="/basic-details/{{ breachNotice.id }}?returnTo=check-your-report" class="govuk-link">enter required
-                                            information<span class="govuk-visually-hidden"> for Postal Address</span></a>
+                                            information<span class="govuk-visually-hidden"> for Postal address</span></a>
                                     {% else %}
                                         {% if breachNotice.offenderAddress.officeDescription != null %} {{ breachNotice.offenderAddress.officeDescription }}
                                             <br> {% endif %}
@@ -117,12 +117,12 @@
                             </div>
                             <div class="govuk-summary-list__row">
                                 <dt class="govuk-summary-list__key">
-                                    Reply Address
+                                    Reply address
                                 </dt>
                                 <dd class="govuk-summary-list__value">
                                     {% if breachNotice.replyAddress == null %}
                                         <a href="/basic-details/{{ breachNotice.id }}?returnTo=check-your-report" class="govuk-link">enter required
-                                            information<span class="govuk-visually-hidden"> for Reply Address</span></a>
+                                            information<span class="govuk-visually-hidden"> for Reply address</span></a>
                                     {% else %}
                                         {% if breachNotice.replyAddress.officeDescription != null %} {{ breachNotice.replyAddress.officeDescription }}
                                             <br> {% endif %}
@@ -151,12 +151,12 @@
 
                             <div class="govuk-summary-list__row">
                                 <dt class="govuk-summary-list__key">
-                                    Date of Letter
+                                    Date of letter
                                 </dt>
                                 <dd class="govuk-summary-list__value">
                                     {% if breachNotice.dateOfLetter == null %}
                                         <a href="/basic-details/{{ breachNotice.id }}?returnTo=check-your-report" class="govuk-link">enter required
-                                            information<span class="govuk-visually-hidden"> for Date of Letter</span></a>
+                                            information<span class="govuk-visually-hidden"> for Date of letter</span></a>
                                     {% else %}
                                         {{ dateOfLetter }}
                                     {% endif %}
@@ -172,12 +172,12 @@
 
                             <div class="govuk-summary-list__row">
                                 <dt class="govuk-summary-list__key">
-                                    Office Reference
+                                    Office reference
                                 </dt>
                                 <dd class="govuk-summary-list__value">
                                     {% if breachNotice.referenceNumber == null %}
                                         <a href="/basic-details/{{ breachNotice.id }}?returnTo=check-your-report" class="govuk-link">enter required
-                                            information<span class="govuk-visually-hidden"> for Office Reference Number</span></a>
+                                            information<span class="govuk-visually-hidden"> for Office reference number</span></a>
                                     {% else %}
                                         {{ breachNotice.referenceNumber }}
                                     {% endif %}
@@ -198,14 +198,14 @@
                 <div class="govuk-summary-card">
                     <div class="govuk-summary-card__title-wrapper">
                         <h2 class="govuk-summary-card__title">
-                            Warning Type
+                            Warning type
                         </h2>
                         <ul class="govuk-summary-card__actions">
                             <li class="govuk-summary-card__action">
                                 {% if breachNotice.basicDetailsSaved %}
                                     <a id="change-warning-types" class="govuk-link"
                                        href="/warning-type/{{ breachNotice.id }}?returnTo=check-your-report">Change<span
-                                                class="govuk-visually-hidden"> Warning Type</span></a>
+                                                class="govuk-visually-hidden"> Warning type</span></a>
                                 {% endif %}
                             </li>
                         </ul>
@@ -214,12 +214,12 @@
                         <dl class="govuk-summary-list">
                             <div class="govuk-summary-list__row">
                                 <dt class="govuk-summary-list__key">
-                                    Warning Type
+                                    Warning type
                                 </dt>
                                 <dd class="govuk-summary-list__value">
                                     {% if breachNotice.breachNoticeTypeDescription == null and breachNotice.basicDetailsSaved %}
                                         <a href="/warning-type/{{ breachNotice.id }}?returnTo=check-your-report" class="govuk-link">enter required
-                                            information<span class="govuk-visually-hidden"> for Warning Type</span></a>
+                                            information<span class="govuk-visually-hidden"> for Warning type</span></a>
                                     {% else %}
                                         {{ breachNotice.breachNoticeTypeDescription }}
                                     {% endif %}
@@ -235,12 +235,12 @@
 
                             <div class="govuk-summary-list__row">
                                 <dt class="govuk-summary-list__key">
-                                    Sentence Type
+                                    Sentence type
                                 </dt>
                                 <dd class="govuk-summary-list__value">
                                     {% if breachNotice.breachSentenceTypeDescription == null and breachNotice.basicDetailsSaved %}
                                         <a href="/warning-type/{{ breachNotice.id }}?returnTo=check-your-report" class="govuk-link">enter required
-                                            information<span class="govuk-visually-hidden"> for Sentence Type</span></a>
+                                            information<span class="govuk-visually-hidden"> for Sentence type</span></a>
                                     {% else %}
                                         {{ breachNotice.breachSentenceTypeDescription }}
                                     {% endif %}
@@ -260,14 +260,14 @@
                 <div class="govuk-summary-card">
                     <div class="govuk-summary-card__title-wrapper">
                         <h2 class="govuk-summary-card__title">
-                            Warning Details
+                            Warning details
                         </h2>
                         <ul class="govuk-summary-card__actions">
                             <li class="govuk-summary-card__action">
                                 {% if breachNotice.warningTypeSaved %}
                                     <a id="change-warning-details" class="govuk-link"
                                        href="/warning-details/{{ breachNotice.id }}?returnTo=check-your-report">Change<span
-                                                class="govuk-visually-hidden"> Warning Details</span></a>
+                                                class="govuk-visually-hidden"> Warning details</span></a>
                                 {% endif %}
                             </li>
                         </ul>
@@ -300,12 +300,12 @@
                             </div>
                             <div class="govuk-summary-list__row">
                                 <dt class="govuk-summary-list__key">
-                                    Response Required By
+                                    Response required by
                                 </dt>
                                 <dd class="govuk-summary-list__value">
                                     {% if breachNotice.responseRequiredDate == null and breachNotice.warningDetailsSaved %}
                                         <a href="/warning-details/{{ breachNotice.id }}?returnTo=check-your-report" class="govuk-link">enter
-                                            required information<span class="govuk-visually-hidden"> for Response Required By date</span></a>
+                                            required information<span class="govuk-visually-hidden"> for Response required by date</span></a>
                                     {% else %}
                                         {{ responseRequiredByDate }}
                                     {% endif %}
@@ -326,14 +326,14 @@
                 <div class="govuk-summary-card">
                     <div class="govuk-summary-card__title-wrapper">
                         <h2 class="govuk-summary-card__title">
-                            Next Appointment
+                            Next appointment
                         </h2>
                         <ul class="govuk-summary-card__actions">
                             <li class="govuk-summary-card__action">
                                 {% if breachNotice.warningDetailsSaved %}
                                     <a id="change-next-appointment" class="govuk-link"
                                        href="/next-appointment/{{ breachNotice.id }}?returnTo=check-your-report">Change<span
-                                                class="govuk-visually-hidden"> Next Appointment</span></a>
+                                                class="govuk-visually-hidden"> Next appointment</span></a>
                                 {% endif %}
                             </li>
                         </ul>
@@ -342,12 +342,12 @@
                         <dl class="govuk-summary-list">
                             <div class="govuk-summary-list__row">
                                 <dt class="govuk-summary-list__key">
-                                    Responsible Officer
+                                    Responsible officer
                                 </dt>
                                 <dd class="govuk-summary-list__value">
                                     {% if breachNotice.responsibleOfficer == null and breachNotice.warningDetailsSaved %}
                                         <a href="/next-appointment/{{ breachNotice.id }}?returnTo=check-your-report" class="govuk-link">enter
-                                            required information<span class="govuk-visually-hidden"> for Responsible Officer</span></a>
+                                            required information<span class="govuk-visually-hidden"> for Responsible officer</span></a>
                                     {% else %}
                                         {{ breachNotice.responsibleOfficer }}
                                     {% endif %}
@@ -362,12 +362,12 @@
                             </div>
                             <div class="govuk-summary-list__row">
                                 <dt class="govuk-summary-list__key">
-                                    Contact Number
+                                    Contact number
                                 </dt>
                                 <dd class="govuk-summary-list__value">
                                     {% if breachNotice.contactNumber == null and breachNotice.warningDetailsSaved %}
                                         <a href="/next-appointment/{{ breachNotice.id }}?returnTo=check-your-report" class="govuk-link">enter
-                                            required information<span class="govuk-visually-hidden"> for Contact Number</span></a>
+                                            required information<span class="govuk-visually-hidden"> for Contact number</span></a>
                                     {% else %}
                                         {{ breachNotice.contactNumber }}
                                     {% endif %}
@@ -382,7 +382,7 @@
                             </div>
                             <div class="govuk-summary-list__row">
                                 <dt class="govuk-summary-list__key">
-                                    Next Appointment Type
+                                    Next appointment type
                                 </dt>
                                 <dd class="govuk-summary-list__value">
                                   {{ breachNotice.nextAppointmentType }}
@@ -392,7 +392,7 @@
                             </div>
                             <div class="govuk-summary-list__row">
                                 <dt class="govuk-summary-list__key">
-                                    Next Appointment Date
+                                    Next appointment date
                                 </dt>
                                 <dd class="govuk-summary-list__value">
                                   {{ nextAppointmentDate }}
@@ -402,7 +402,7 @@
                             </div>
                             <div class="govuk-summary-list__row">
                                 <dt class="govuk-summary-list__key">
-                                    Next Appointment Time
+                                    Next appointment time
                                 </dt>
                                 <dd class="govuk-summary-list__value">
                                   {{ nextAppointmentTime }}
@@ -412,7 +412,7 @@
                             </div>
                             <div class="govuk-summary-list__row">
                                 <dt class="govuk-summary-list__key">
-                                    Next Appointment Location
+                                    Next appointment location
                                 </dt>
                                 <dd class="govuk-summary-list__value">
                                   {% if breachNotice.alternateNextAppointmentLocationSelected %}
@@ -426,7 +426,7 @@
                             </div>
                             <div class="govuk-summary-list__row">
                                 <dt class="govuk-summary-list__key">
-                                    Next Appointment Officer
+                                    Next appointment officer
                                 </dt>
                                 <dd class="govuk-summary-list__value">
                                   {{ breachNotice.nextAppointmentOfficer }}
@@ -450,7 +450,7 @@
                             }
                         }) }}
                         {{ govukButton({
-                            text: "View Draft Report",
+                            text: "View draft report",
                             classes: "govuk-button--secondary",
                             preventDoubleClick: "true",
                             href: '/pdf/'+breachNotice.id,
@@ -472,7 +472,7 @@
                         }) }}
                 {% else %}
                         {{ govukButton({
-                            text: "View Draft Report",
+                            text: "View draft report",
                             classes: "govuk-button--secondary",
                             preventDoubleClick: "true",
                             href: '/pdf/'+breachNotice.id,
