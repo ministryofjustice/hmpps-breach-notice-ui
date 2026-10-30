@@ -73,10 +73,6 @@ export default function addAlternateAppointmentAddressRoutes(
           await breachNoticeApiClient.updateBreachNotice(breachNoticeId, breachNotice, res.locals.user.username)
           res.redirect(`/next-appointment/${breachNoticeId}`)
         } catch (error) {
-          if (!isIntegrationError(error)) {
-            throw error
-          }
-
           const integrationErrorMessages = handleIntegrationErrors(error, 'Breach Notice')
           const showEmbeddedError = true
           // always stay on page and display the error when there are isssues retrieving the breach notice
