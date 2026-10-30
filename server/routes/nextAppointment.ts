@@ -27,7 +27,7 @@ export default function nextAppointmentRoutes(
     const breachNoticeApiClient = new BreachNoticeApiClient(authenticationClient)
     const ndeliusIntegrationApiClient = new NdeliusIntegrationApiClient(authenticationClient)
     let breachNotice: BreachNotice
-    let nextAppointmentDetails: NextAppointmentDetails = null
+    let nextAppointmentDetails: NextAppointmentDetails
 
     const { id } = req.params
 
@@ -162,8 +162,8 @@ export default function nextAppointmentRoutes(
     const callingScreen: string = req.query.returnTo as string
     const submitAction: string = req.body.action
     let useRegularAddressValue: string = null
-    let originalNextAppointmentId: number = null
-    let selectedNextAppointmentId: number = null
+    let originalNextAppointmentId: number
+    let selectedNextAppointmentId: number
 
     const useRegularAddressSelections = Object.entries(req.body).filter(([key]) => key.startsWith('altAddressRadio_'))
 
@@ -190,7 +190,7 @@ export default function nextAppointmentRoutes(
 
     const { id } = req.params
     let breachNotice: BreachNotice = null
-    let nextAppointmentDetails: NextAppointmentDetails = null
+    let nextAppointmentDetails: NextAppointmentDetails
 
     try {
       breachNotice = await breachNoticeApiClient.getBreachNoticeById(id as string, res.locals.user.username)

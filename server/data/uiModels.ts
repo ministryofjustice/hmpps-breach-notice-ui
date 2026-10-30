@@ -1,6 +1,6 @@
 export interface SelectItem {
-  value: string
-  text: string
+  value: string | null
+  text: string | null
   selected: boolean
 }
 

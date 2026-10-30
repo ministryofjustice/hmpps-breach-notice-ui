@@ -70,11 +70,7 @@ export default function checkYourReportRoutes(
         })
       }
     } catch (error) {
-      const errorMessages: ErrorMessages = handleIntegrationErrors(
-        error.responseStatus,
-        error.data?.message,
-        'Breach Notice',
-      )
+      const errorMessages: ErrorMessages = handleIntegrationErrors(error, 'Breach Notice')
       const showEmbeddedError = true
       breachNotice = createBlankBreachNoticeWithId(req.params.id)
       // always stay on page and display the error when there are isssues retrieving the breach notice
@@ -94,10 +90,12 @@ export default function checkYourReportRoutes(
     const responseRequiredByDate: string = toUserDate(breachNotice.responseRequiredDate)
     const nextAppointmentDate: string = toUserDateFromDateTime(breachNotice.nextAppointmentDate)
     const nextAppointmentTime: string = toUserTimeFromDateTime(breachNotice.nextAppointmentDate)
-    let alternateAppointmentAddress: string
+    let alternateAppointmentAddress
 
     if (breachNotice.alternateNextAppointmentLocationSelected === true) {
       alternateAppointmentAddress = locationDisplayValue(breachNotice.alternateNextAppointmentLocation)
+    } else {
+      alternateAppointmentAddress = null
     }
 
     await renderCheckYourReport(
@@ -124,7 +122,7 @@ export default function checkYourReportRoutes(
     responseRequiredByDate: string,
     nextAppointmentDate: string,
     nextAppointmentTime: string,
-    alternateAppointmentAddress: string,
+    alternateAppointmentAddress: string | null,
   ) {
     const reportValidated = validateCheckYourReport(breachNotice)
     const currentPage = 'check-your-report'
@@ -155,18 +153,18 @@ export default function checkYourReportRoutes(
   })
 
   function validateCheckYourReport(breachNotice: BreachNotice): boolean {
-    return (
-      breachNotice.crn != null &&
-      breachNotice.titleAndFullName != null &&
-      breachNotice.offenderAddress != null &&
-      breachNotice.dateOfLetter != null &&
-      breachNotice.replyAddress != null &&
-      breachNotice.breachNoticeTypeDescription != null &&
-      breachNotice.breachSentenceTypeDescription &&
-      checkForRequirementsOrWholeSentenceSelections(breachNotice) &&
-      breachNotice.responseRequiredDate != null &&
-      breachNotice.responsibleOfficer != null &&
-      breachNotice.contactNumber != null
+    return <boolean>(
+      (breachNotice.crn != null &&
+        breachNotice.titleAndFullName != null &&
+        breachNotice.offenderAddress != null &&
+        breachNotice.dateOfLetter != null &&
+        breachNotice.replyAddress != null &&
+        breachNotice.breachNoticeTypeDescription != null &&
+        breachNotice.breachSentenceTypeDescription &&
+        checkForRequirementsOrWholeSentenceSelections(breachNotice) &&
+        breachNotice.responseRequiredDate != null &&
+        breachNotice.responsibleOfficer != null &&
+        breachNotice.contactNumber != null)
     )
   }
 

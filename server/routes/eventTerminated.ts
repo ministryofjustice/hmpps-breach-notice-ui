@@ -37,11 +37,7 @@ export default function eventTerminatedRoutes(
         }
         await breachNoticeApiClient.deleteBreachNotice(id as string, res.locals.user.username)
       } catch (error) {
-        const errorMessages: ErrorMessages = handleIntegrationErrors(
-          error.responseStatus,
-          error.data?.message,
-          'Breach Notice',
-        )
+        const errorMessages: ErrorMessages = handleIntegrationErrors(error, 'Breach Notice')
         const showEmbeddedError = true
         // always stay on page and display the error when there are isssues retrieving the breach notice
         res.render(`pages/detailed-error`, { errorMessages, showEmbeddedError })
