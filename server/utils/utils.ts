@@ -1,8 +1,7 @@
 import { ParsedQs } from 'qs'
-import {DeliusAddress, IntegrationError, Name} from '../data/ndeliusIntegrationApiClient'
+import { DeliusAddress, IntegrationError, Name } from '../data/ndeliusIntegrationApiClient'
 import { BreachNotice, BreachNoticeAddress } from '../data/breachNoticeApiClient'
 import { ErrorMessages, SelectItem } from '../data/uiModels'
-import type { HTTPError } from 'superagent'
 
 const properCase = (word: string): string =>
   word.length >= 1 ? word[0].toUpperCase() + word.toLowerCase().slice(1) : word
@@ -38,14 +37,12 @@ export default function asArray(param: undefined | string | ParsedQs | (string |
 }
 
 export function isIntegrationError(error: unknown): error is IntegrationError {
-  return (
-    typeof error === 'object' &&
-    error !== null &&
-    ('responseStatus' in error || 'data' in error)
-  )
+  return typeof error === 'object' && error !== null && ('responseStatus' in error || 'data' in error)
 }
 
-export function mapDeliusAddressToBreachNoticeAddress(deliusAddress: DeliusAddress): BreachNoticeAddress | null {
+export function mapDeliusAddressToBreachNoticeAddress(
+  deliusAddress: DeliusAddress | null | undefined,
+): BreachNoticeAddress | null | undefined {
   if (deliusAddress) {
     return {
       addressId: deliusAddress.id,
@@ -85,7 +82,11 @@ export function formatAddressForSelectMenuDisplay(deliusAddress: DeliusAddress):
 
 export function arrangeSelectItemListAlphabetically(selectItemsToSort: SelectItem[]): SelectItem[] {
   if (selectItemsToSort) {
-    return selectItemsToSort.sort((a, b) => a?.text!!.localeCompare(b?.text!!, 'en', { numeric: true }))
+    return selectItemsToSort.sort((a, b) => {
+      const textA = a?.text ?? ''
+      const textB = b?.text ?? ''
+      return textA.localeCompare(textB, 'en', { numeric: true })
+    })
   }
   return selectItemsToSort
 }
@@ -101,7 +102,7 @@ export function removeDeliusAddressFromDeliusAddressList(
 }
 
 export function handleIntegrationErrors(error: unknown, integrationService: string): ErrorMessages {
-  const httpError: IntegrationError = (error as unknown) as IntegrationError
+  const httpError: IntegrationError = error as unknown as IntegrationError
   const status = httpError.responseStatus
   const message = httpError.data?.message
 
