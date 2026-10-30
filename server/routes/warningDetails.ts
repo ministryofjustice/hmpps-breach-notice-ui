@@ -104,10 +104,10 @@ export default function warningDetailsRoutes(
         warningDetails.enforceableContacts.push({
           id: bnContact.contactId,
           datetime: bnContact.contactDate,
-          description: '',
+          description: undefined,
           type: { code: '-1', description: bnContact.contactType },
           outcome: { code: '-1', description: bnContact.contactOutcome },
-          notes: '',
+          notes: undefined,
         })
       }
 
@@ -149,7 +149,7 @@ export default function warningDetailsRoutes(
     selectedContactList: string[],
     wholeSentenceInformationList: [string, unknown][],
     rejectionReasonWholeSentenceList: [string, unknown][],
-  ): Array<WholeSentenceContactRequirementReason> | null {
+  ) {
     const wholeSentenceContactRequirementReasonList: Array<WholeSentenceContactRequirementReason> = []
 
     // if we have no enforceable contacts selected then return null
@@ -207,13 +207,13 @@ export default function warningDetailsRoutes(
       key.startsWith('failureReasonWholeTermContact_'),
     )
 
-    const filteredContactWholeSentenceRejectionReasonList: Array<WholeSentenceContactRequirementReason> | null =
+    const filteredContactWholeSentenceRejectionReasonList =
       filterSelectedWholeSentenceValuesAndAddWholeSentenceRejectionInformation(
         selectedContactList,
         rawEnforceableContactWholeSentenceBooleanValues,
         wholeSentenceContactsAndReasons,
       )
-    const hasWholeSentenceSelectedContacts: null | boolean =
+    const hasWholeSentenceSelectedContacts =
       filteredContactWholeSentenceRejectionReasonList &&
       Object.keys(filteredContactWholeSentenceRejectionReasonList).length > 0
     const { id } = req.params
