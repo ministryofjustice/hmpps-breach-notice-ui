@@ -274,7 +274,7 @@ export interface BreachNotice {
   nextAppointmentId: number
   completedDate: ZonedDateTime | undefined
   offenderAddress: BreachNoticeAddress | null | undefined
-  replyAddress: BreachNoticeAddress | undefined
+  replyAddress: BreachNoticeAddress | null | undefined
   basicDetailsSaved: boolean
   warningTypeSaved: boolean
   warningDetailsSaved: boolean

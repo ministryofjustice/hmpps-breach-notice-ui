@@ -14,17 +14,13 @@ export default function addAddressRoutes(
     await auditService.logPageView(Page.ADD_ADDRESS, { who: res.locals.user.username, correlationId: req.id })
     const { id } = req.params
     const breachNoticeApiClient = new BreachNoticeApiClient(authenticationClient)
-    let breachNotice: BreachNotice = null
+    let breachNotice: BreachNotice
 
     try {
       // get the existing breach notice
       breachNotice = await breachNoticeApiClient.getBreachNoticeById(id as string, res.locals.user.username)
     } catch (error) {
-      const errorMessages: ErrorMessages = handleIntegrationErrors(
-        error.responseStatus,
-        error.data?.message,
-        'Breach Notice',
-      )
+      const errorMessages: ErrorMessages = handleIntegrationErrors(error, 'Breach Notice')
       const showEmbeddedError = true
       // always stay on page and display the error when there are isssues retrieving the breach notice
       res.render(`pages/add-address`, { errorMessages, showEmbeddedError })
@@ -72,11 +68,7 @@ export default function addAddressRoutes(
           await breachNoticeApiClient.updateBreachNotice(id, breachNotice, res.locals.user.username)
           res.redirect(`/basic-details/${id}`)
         } catch (error) {
-          const integrationErrorMessages = handleIntegrationErrors(
-            error.responseStatus,
-            error.data?.message,
-            'Breach Notice',
-          )
+          const integrationErrorMessages = handleIntegrationErrors(error, 'Breach Notice')
           const showEmbeddedError = true
           // always stay on page and display the error when there are isssues retrieving the breach notice
           res.render(`pages/add-address`, { errorMessages, showEmbeddedError, integrationErrorMessages })

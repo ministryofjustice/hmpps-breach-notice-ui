@@ -1,5 +1,5 @@
 import jwt from 'jsonwebtoken'
-import type { Response } from 'express'
+import type { Request, Response } from 'express'
 
 import authorisationMiddleware from './authorisationMiddleware'
 
@@ -17,6 +17,7 @@ function createToken(authorities: string[]) {
 }
 
 describe('authorisationMiddleware', () => {
+  const req: Request = {} as jest.Mocked<Request>
   const next = jest.fn()
 
   function createResWithToken({ authorities }: { authorities: string[] }): Response {
@@ -37,7 +38,7 @@ describe('authorisationMiddleware', () => {
   it('should return next when no required roles', () => {
     const res = createResWithToken({ authorities: [] })
 
-    authorisationMiddleware()(null, res, next)
+    authorisationMiddleware()(req, res, next)
 
     expect(next).toHaveBeenCalled()
     expect(res.redirect).not.toHaveBeenCalled()
@@ -46,7 +47,7 @@ describe('authorisationMiddleware', () => {
   it('should redirect when user has no authorised roles', () => {
     const res = createResWithToken({ authorities: [] })
 
-    authorisationMiddleware(['SOME_REQUIRED_ROLE'])(null, res, next)
+    authorisationMiddleware(['SOME_REQUIRED_ROLE'])(req, res, next)
 
     expect(next).not.toHaveBeenCalled()
     expect(res.redirect).toHaveBeenCalledWith('/authError')
@@ -55,7 +56,7 @@ describe('authorisationMiddleware', () => {
   it('should return next when user has authorised role', () => {
     const res = createResWithToken({ authorities: ['ROLE_SOME_REQUIRED_ROLE'] })
 
-    authorisationMiddleware(['SOME_REQUIRED_ROLE'])(null, res, next)
+    authorisationMiddleware(['SOME_REQUIRED_ROLE'])(req, res, next)
 
     expect(next).toHaveBeenCalled()
     expect(res.redirect).not.toHaveBeenCalled()
@@ -64,7 +65,7 @@ describe('authorisationMiddleware', () => {
   it('should return next when user has authorised role and middleware created with ROLE_ prefix', () => {
     const res = createResWithToken({ authorities: ['ROLE_SOME_REQUIRED_ROLE'] })
 
-    authorisationMiddleware(['ROLE_SOME_REQUIRED_ROLE'])(null, res, next)
+    authorisationMiddleware(['ROLE_SOME_REQUIRED_ROLE'])(req, res, next)
 
     expect(next).toHaveBeenCalled()
     expect(res.redirect).not.toHaveBeenCalled()

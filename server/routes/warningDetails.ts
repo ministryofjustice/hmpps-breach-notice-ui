@@ -11,7 +11,11 @@ import AuditService, { Page } from '../services/auditService'
 import { fromUserDate, toUserDate } from '../utils/dateUtils'
 import CommonUtils from '../services/commonUtils'
 import asArray, { createBlankBreachNoticeWithId, handleIntegrationErrors } from '../utils/utils'
-import NdeliusIntegrationApiClient, { EnforceableContact, WarningDetails } from '../data/ndeliusIntegrationApiClient'
+import NdeliusIntegrationApiClient, {
+  EnforceableContact,
+  IntegrationError,
+  WarningDetails,
+} from '../data/ndeliusIntegrationApiClient'
 import { ErrorMessages } from '../data/uiModels'
 import config from '../config'
 
@@ -38,13 +42,7 @@ export default function warningDetailsRoutes(
         res.locals.user.username,
       )
     } catch (error) {
-      const errorMessages: ErrorMessages = handleIntegrationErrors(
-        // @ts-ignore
-        error.responseStatus,
-        // @ts-ignore
-        error.data?.message,
-        'Breach Notice',
-      )
+      const errorMessages: ErrorMessages = handleIntegrationErrors(error, 'Breach Notice')
       const showEmbeddedError = true
       breachNotice = createBlankBreachNoticeWithId(req.id)
       // always stay on page and display the error when there are isssues retrieving the breach notice
@@ -61,22 +59,15 @@ export default function warningDetailsRoutes(
         res.locals.user.username,
       )
     } catch (error) {
-      const errorMessages: ErrorMessages = handleIntegrationErrors(
-        // @ts-ignore
-        error.responseStatus,
-        // @ts-ignore
-        error.data?.message,
-        'NDelius Integration',
-      )
+      const errorMessages: ErrorMessages = handleIntegrationErrors(error, 'NDelius Integration')
+      const httpError: IntegrationError = error as unknown as IntegrationError
       // take the user to detailed error page for 400 type errors
-      // @ts-ignore
-      if (error.responseStatus === 400) {
+      if (httpError.responseStatus === 400) {
         res.render(`pages/detailed-error`, { errorMessages })
         return
       }
       // stay on the current page for 500 errors
-      // @ts-ignore
-      if (error.responseStatus === 500) {
+      if (httpError.responseStatus === 500) {
         const showEmbeddedError = true
         breachNotice = createBlankBreachNoticeWithId(req.id)
         res.render(`pages/warning-details`, { errorMessages, showEmbeddedError, breachNotice })
@@ -113,10 +104,10 @@ export default function warningDetailsRoutes(
         warningDetails.enforceableContacts.push({
           id: bnContact.contactId,
           datetime: bnContact.contactDate,
-          description: "",
+          description: '',
           type: { code: '-1', description: bnContact.contactType },
           outcome: { code: '-1', description: bnContact.contactOutcome },
-          notes: "",
+          notes: '',
         })
       }
 
@@ -135,7 +126,7 @@ export default function warningDetailsRoutes(
             selected: bnContact.rejectionReason === r.description,
           })),
         ]
-        enforceableContact.wholeSentence = bnContact.wholeSentence!!
+        enforceableContact.wholeSentence = bnContact.wholeSentence!
       }
     }
 
@@ -183,11 +174,11 @@ export default function warningDetailsRoutes(
 
           // Locate the matching reason item using .find()
           const matchingReason = rejectionReasonWholeSentenceList.find(
-            reasonItem => reasonItem[0].split('_')[1] === selectedContactId
-          );
+            reasonItem => reasonItem[0].split('_')[1] === selectedContactId,
+          )
 
           if (matchingReason) {
-            transmittedRejectionReason = String(matchingReason[1]);
+            transmittedRejectionReason = String(matchingReason[1])
           }
 
           wholeSentenceContactRequirementReasonList.push({
@@ -241,13 +232,7 @@ export default function warningDetailsRoutes(
         res.locals.user.username,
       )
     } catch (error) {
-      const errorMessages: ErrorMessages = handleIntegrationErrors(
-        // @ts-ignore
-        error.responseStatus,
-        // @ts-ignore
-        error.data?.message,
-        'Breach Notice',
-      )
+      const errorMessages: ErrorMessages = handleIntegrationErrors(error, 'Breach Notice')
       const showEmbeddedError = true
       breachNotice = createBlankBreachNoticeWithId(id)
       // always stay on page and display the error when there are isssues retrieving the breach notice
@@ -262,22 +247,15 @@ export default function warningDetailsRoutes(
         res.locals.user.username,
       )
     } catch (error) {
-      const errorMessages: ErrorMessages = handleIntegrationErrors(
-        // @ts-ignore
-        error.responseStatus,
-        // @ts-ignore
-        error.data?.message,
-        'NDelius Integration',
-      )
+      const errorMessages: ErrorMessages = handleIntegrationErrors(error, 'NDelius Integration')
+      const httpError: IntegrationError = error as unknown as IntegrationError
       // take the user to detailed error page for 400 type errors
-      // @ts-ignore
-      if (error.responseStatus === 400) {
+      if (httpError.responseStatus === 400) {
         res.render(`pages/detailed-error`, { errorMessages })
         return
       }
       // stay on the current page for 500 errors
-      // @ts-ignore
-      if (error.responseStatus === 500) {
+      if (httpError.responseStatus === 500) {
         const showEmbeddedError = true
         breachNotice = createBlankBreachNoticeWithId(req.params.id)
         res.render(`pages/warning-details`, { errorMessages, showEmbeddedError, breachNotice })
@@ -312,7 +290,7 @@ export default function warningDetailsRoutes(
     const errorMessages: ErrorMessages = validateWarningDetails(
       breachNotice,
       req.body.responseRequiredByDate,
-      filteredContactWholeSentenceRejectionReasonList!!,
+      filteredContactWholeSentenceRejectionReasonList!,
     )
     const hasErrors: boolean = Object.keys(errorMessages).length > 0
 
@@ -328,7 +306,7 @@ export default function warningDetailsRoutes(
       // Deal with WHole Sentence Contacts first
       if (hasWholeSentenceSelectedContacts) {
         // Convert default export to named
-        for (const wholeSentenceContactRequirementReason of filteredContactWholeSentenceRejectionReasonList!!) {
+        for (const wholeSentenceContactRequirementReason of filteredContactWholeSentenceRejectionReasonList!) {
           if (breachNoticeContactIds.includes(wholeSentenceContactRequirementReason.contactId)) {
             const existingBreachNoticeContactListMatchingContactId: BreachNoticeContact[] =
               breachNotice.breachNoticeContactList.filter(
@@ -354,7 +332,7 @@ export default function warningDetailsRoutes(
             const selectedContact = warningDetails.enforceableContacts.find(
               c => c.id.toString() === wholeSentenceContactRequirementReason.contactId,
             )
-            const convertedBreachNoticeContact = enforceableContactToContact(breachNotice, selectedContact!!)
+            const convertedBreachNoticeContact = enforceableContactToContact(breachNotice, selectedContact!)
             // set the user defined information
             convertedBreachNoticeContact.wholeSentence = wholeSentenceContactRequirementReason.wholeSentenceSelected
             convertedBreachNoticeContact.rejectionReason = wholeSentenceContactRequirementReason.rejectionReason
@@ -418,7 +396,7 @@ export default function warningDetailsRoutes(
           const selectedContact = warningDetails.enforceableContacts?.find(c => c.id.toString() === contactId)
           const returnedContact = await breachNoticeApiClient.getBreachNoticeContact(
             breachNotice.id,
-            selectedContact!!.id,
+            selectedContact!.id,
             res.locals.user.username,
           )
           if (callingScreen) {
@@ -552,9 +530,10 @@ export default function warningDetailsRoutes(
     enforceableContact: EnforceableContact,
   ): BreachNoticeContact {
     return {
-      id: (breachNotice.breachNoticeContactList ?? [])
-        .filter(c => c.contactId === enforceableContact.id)
-        .map(c => c.id)[0] ?? null,
+      id:
+        (breachNotice.breachNoticeContactList ?? [])
+          .filter(c => c.contactId === enforceableContact.id)
+          .map(c => c.id)[0] ?? null,
       contactId: enforceableContact.id,
       breachNoticeId: breachNotice.id,
       contactDate: enforceableContact.datetime.toString(),

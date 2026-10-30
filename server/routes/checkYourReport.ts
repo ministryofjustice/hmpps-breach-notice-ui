@@ -70,14 +70,7 @@ export default function checkYourReportRoutes(
         })
       }
     } catch (error) {
-
-      const errorMessages: ErrorMessages = handleIntegrationErrors(
-        // @ts-ignore
-        error.responseStatus,
-        // @ts-ignore
-        error.data?.message,
-        'Breach Notice',
-      )
+      const errorMessages: ErrorMessages = handleIntegrationErrors(error, 'Breach Notice')
       const showEmbeddedError = true
       breachNotice = createBlankBreachNoticeWithId(req.params.id)
       // always stay on page and display the error when there are isssues retrieving the breach notice
@@ -97,11 +90,11 @@ export default function checkYourReportRoutes(
     const responseRequiredByDate: string = toUserDate(breachNotice.responseRequiredDate)
     const nextAppointmentDate: string = toUserDateFromDateTime(breachNotice.nextAppointmentDate)
     const nextAppointmentTime: string = toUserTimeFromDateTime(breachNotice.nextAppointmentDate)
-    let alternateAppointmentAddress: string | null = null
+    let alternateAppointmentAddress
+
     if (breachNotice.alternateNextAppointmentLocationSelected === true) {
       alternateAppointmentAddress = locationDisplayValue(breachNotice.alternateNextAppointmentLocation)
-    }
-    else {
+    } else {
       alternateAppointmentAddress = null
     }
 
@@ -161,17 +154,17 @@ export default function checkYourReportRoutes(
 
   function validateCheckYourReport(breachNotice: BreachNotice): boolean {
     return <boolean>(
-      breachNotice.crn != null &&
-      breachNotice.titleAndFullName != null &&
-      breachNotice.offenderAddress != null &&
-      breachNotice.dateOfLetter != null &&
-      breachNotice.replyAddress != null &&
-      breachNotice.breachNoticeTypeDescription != null &&
-      breachNotice.breachSentenceTypeDescription &&
-      checkForRequirementsOrWholeSentenceSelections(breachNotice) &&
-      breachNotice.responseRequiredDate != null &&
-      breachNotice.responsibleOfficer != null &&
-      breachNotice.contactNumber != null
+      (breachNotice.crn != null &&
+        breachNotice.titleAndFullName != null &&
+        breachNotice.offenderAddress != null &&
+        breachNotice.dateOfLetter != null &&
+        breachNotice.replyAddress != null &&
+        breachNotice.breachNoticeTypeDescription != null &&
+        breachNotice.breachSentenceTypeDescription &&
+        checkForRequirementsOrWholeSentenceSelections(breachNotice) &&
+        breachNotice.responseRequiredDate != null &&
+        breachNotice.responsibleOfficer != null &&
+        breachNotice.contactNumber != null)
     )
   }
 
