@@ -20,8 +20,8 @@ describe('convert to title case', () => {
     ['Leading spaces', '  RobeRT', '  Robert'],
     ['Trailing spaces', 'RobeRT  ', 'Robert  '],
     ['Hyphenated', 'Robert-John SmiTH-jONes-WILSON', 'Robert-John Smith-Jones-Wilson'],
-  ])('%s convertToTitleCase(%s, %s)', (_: string, a: string, expected: string) => {
-    expect(convertToTitleCase(a)).toEqual(expected)
+  ])('%s convertToTitleCase(%s, %s)', (_: string | null, a: string | null, expected: string) => {
+    expect(convertToTitleCase(a!)).toEqual(expected)
   })
 })
 
@@ -33,20 +33,20 @@ describe('initialise name', () => {
     ['Two words', 'Robert James', 'R. James'],
     ['Three words', 'Robert James Smith', 'R. Smith'],
     ['Double barrelled', 'Robert-John Smith-Jones-Wilson', 'R. Smith-Jones-Wilson'],
-  ])('%s initialiseName(%s, %s)', (_: string, a: string, expected: string) => {
-    expect(initialiseName(a)).toEqual(expected)
+  ])('%s initialiseName(%s, %s)', (_: string | null, a: string | null, expected: string | null) => {
+    expect(initialiseName(a!)).toEqual(expected)
   })
 })
 
 describe('Combine name', () => {
-  it.each([
+  it.each<[string | null, Name | null, string | null]>([
     ['Mr', { forename: 'Test', middleName: null, surname: 'Test' }, 'Mr Test Test'],
     ['Mr', { forename: 'Test', middleName: 'Test', surname: 'Test' }, 'Mr Test Test Test'],
     [null, { forename: 'Test', middleName: 'Test', surname: 'Test' }, 'Test Test Test'],
-  ])('%s combineName(%s, %s)', (_: string, a: Name, expected: string) => {
-    expect(combineName(_, a)).toEqual(expected)
-  })
-})
+  ])('should combine prefix %s with name object to equal %s', (prefix, nameObj, expected) => {
+    expect(combineName(prefix!, nameObj!)).toEqual(expected);
+  });
+});
 
 describe('Should Arrange SelectItem List Alphabetically', () => {
   test('Should arrange select item list Alphabetically', () => {

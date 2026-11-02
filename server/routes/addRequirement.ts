@@ -14,6 +14,7 @@ import asArray, {
   handleIntegrationErrors,
 } from '../utils/utils'
 import NdeliusIntegrationApiClient, {
+  IntegrationError,
   ReferenceData,
   Requirement,
   RequirementList,
@@ -47,11 +48,7 @@ export default function addRequirementRoutes(
         res.locals.user.username,
       )
     } catch (error) {
-      const errorMessages: ErrorMessages = handleIntegrationErrors(
-        error.responseStatus,
-        error.data?.message,
-        'Breach Notice',
-      )
+      const errorMessages: ErrorMessages = handleIntegrationErrors(error, 'Breach Notice')
       const showEmbeddedError = true
       breachNotice = createBlankBreachNoticeWithId(req.params.id)
       // always stay on page and display the error when there are isssues retrieving the breach notice
@@ -83,18 +80,15 @@ export default function addRequirementRoutes(
         callingScreen,
       })
     } catch (error) {
-      const errorMessages: ErrorMessages = handleIntegrationErrors(
-        error.responseStatus,
-        error.data?.message,
-        'NDelius Integration',
-      )
+      const errorMessages: ErrorMessages = handleIntegrationErrors(error, 'NDelius Integration')
+      const httpError: IntegrationError = error as unknown as IntegrationError
       // take the user to detailed error page for 400 type errors
-      if (error.responseStatus === 400) {
+      if (httpError.responseStatus === 400) {
         res.render(`pages/detailed-error`, { errorMessages })
         return
       }
       // stay on the current page for 500 errors
-      if (error.responseStatus === 500) {
+      if (httpError.responseStatus === 500) {
         const showEmbeddedError = true
         breachNotice = createBlankBreachNoticeWithId(req.params.id)
         res.render(`pages/add-requirement`, { errorMessages, showEmbeddedError, breachNotice })
@@ -134,11 +128,7 @@ export default function addRequirementRoutes(
           res.locals.user.username,
         )
       } catch (error) {
-        const errorMessages: ErrorMessages = handleIntegrationErrors(
-          error.responseStatus,
-          error.data?.message,
-          'Breach Notice',
-        )
+        const errorMessages: ErrorMessages = handleIntegrationErrors(error,'Breach Notice')
         const showEmbeddedError = true
         breachNotice = createBlankBreachNoticeWithId(req.params.id)
         // always stay on page and display the error when there are isssues retrieving the breach notice
@@ -150,18 +140,15 @@ export default function addRequirementRoutes(
         // get details from the integration service
         requirements = await ndeliusIntegrationApiClient.getRequirements(breachNotice.id, res.locals.user.username)
       } catch (error) {
-        const errorMessages: ErrorMessages = handleIntegrationErrors(
-          error.responseStatus,
-          error.data?.message,
-          'NDelius Integration',
-        )
+        const errorMessages: ErrorMessages = handleIntegrationErrors(error, 'NDelius Integration')
+        const httpError: IntegrationError = error as unknown as IntegrationError
         // take the user to detailed error page for 400 type errors
-        if (error.responseStatus === 400) {
+        if (httpError.responseStatus === 400) {
           res.render(`pages/detailed-error`, { errorMessages })
           return
         }
         // stay on the current page for 500 errors
-        if (error.responseStatus === 500) {
+        if (httpError.responseStatus === 500) {
           const showEmbeddedError = true
           breachNotice = createBlankBreachNoticeWithId(req.params.id)
           res.render(`pages/add-requirement`, { errorMessages, showEmbeddedError, breachNotice })
@@ -196,7 +183,7 @@ export default function addRequirementRoutes(
             const rejectionReasonCode = req.body[`breachreason${requirement.id}`]
             const rejectionReasonDescription = requirements.breachReasons.find(
               rd => rd.code === rejectionReasonCode,
-            ).description
+            )?.description
             let storedRequirement = breachNotice.breachNoticeRequirementList.find(
               r => r.requirementId === requirement.id,
             )
@@ -222,7 +209,7 @@ export default function addRequirementRoutes(
               storedRequirement.rejectionReason = rejectionReasonDescription
               // eslint-disable-next-line no-await-in-loop
               await breachNoticeApiClient.updateBreachNoticeRequirement(
-                storedRequirement.id,
+                storedRequirement.id!,
                 storedRequirement,
                 res.locals.user.username,
               )
@@ -286,14 +273,14 @@ export default function addRequirementRoutes(
   ): RequirementSelectItem[] {
     if (requirements) {
       return requirements.map((requirement: Requirement) => {
-        let contactLink: ContactRequirement = null
+        let contactLink
         if (filteredContactRequirements && filteredContactRequirements.length > 0) {
           contactLink = filteredContactRequirements.find(
-            savedRequirement => savedRequirement.requirement?.requirementId.toString() === requirement.id?.toString(),
+            savedRequirement => savedRequirement?.requirement?.requirementId?.toString() === requirement.id?.toString(),
           )
         }
         const itemSubText = requirement.subType ? `- ${requirement.subType.description}` : ''
-        const breachReasonSelectItems = craftTheBreachReasonSelectItems(breachReasons, contactLink)
+        const breachReasonSelectItems = craftTheBreachReasonSelectItems(breachReasons, contactLink!)
         return {
           text: `${requirement.type?.description} ${itemSubText}`,
           value: requirement.id.toString(),

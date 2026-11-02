@@ -36,10 +36,6 @@ export default function asArray(param: undefined | string | ParsedQs | (string |
   return Array.isArray(param) ? (param as string[]) : [param as string]
 }
 
-export function isIntegrationError(error: unknown): error is IntegrationError {
-  return typeof error === 'object' && error !== null && ('responseStatus' in error || 'data' in error)
-}
-
 export function mapDeliusAddressToBreachNoticeAddress(
   deliusAddress: DeliusAddress | null | undefined,
 ): BreachNoticeAddress | null | undefined {

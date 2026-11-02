@@ -8,11 +8,11 @@ import { createBlankBreachNoticeWithId, handleIntegrationErrors } from '../utils
 import { toUserDate, toUserTime } from '../utils/dateUtils'
 import NdeliusIntegrationApiClient, {
   DeliusAddress,
-  FutureAppointment,
+  FutureAppointment, IntegrationError,
   Name,
   NextAppointmentDetails,
 } from '../data/ndeliusIntegrationApiClient'
-import { ErrorMessages, RadioButton } from '../data/uiModels'
+import { ErrorMessages } from '../data/uiModels'
 
 export default function nextAppointmentRoutes(
   router: Router,
@@ -35,11 +35,7 @@ export default function nextAppointmentRoutes(
       // get the existing breach notice
       breachNotice = await breachNoticeApiClient.getBreachNoticeById(id as string, res.locals.user.username)
     } catch (error) {
-      const errorMessages: ErrorMessages = handleIntegrationErrors(
-        error.responseStatus,
-        error.data?.message,
-        'Breach Notice',
-      )
+      const errorMessages: ErrorMessages = handleIntegrationErrors(error, 'Breach Notice')
       const showEmbeddedError = true
       breachNotice = createBlankBreachNoticeWithId(req.params.id)
       // always stay on page and display the error when there are isssues retrieving the breach notice
@@ -53,18 +49,15 @@ export default function nextAppointmentRoutes(
         res.locals.user.username,
       )
     } catch (error) {
-      const errorMessages: ErrorMessages = handleIntegrationErrors(
-        error.responseStatus,
-        error.data?.message,
-        'NDelius Integration',
-      )
+      const errorMessages: ErrorMessages = handleIntegrationErrors(error, 'NDelius Integration')
+      const httpError: IntegrationError = error as unknown as IntegrationError
       // take the user to detailed error page for 400 type errors
-      if (error.responseStatus === 400) {
+      if (httpError.responseStatus === 400) {
         res.render('pages/detailed-error', { errorMessages })
         return
       }
       // stay on the current page for 500 errors
-      if (error.responseStatus === 500) {
+      if (httpError.responseStatus === 500) {
         const showEmbeddedError = true
         breachNotice = createBlankBreachNoticeWithId(req.params.id)
         res.render('pages/next-appointment', { errorMessages, showEmbeddedError, breachNotice })
@@ -75,20 +68,20 @@ export default function nextAppointmentRoutes(
     }
 
     nextAppointmentDetails.futureAppointments = filterAppointments(nextAppointmentDetails.futureAppointments)
-    const appointmentRadioButtons: Array<RadioButton> = initiateNextAppointmentRadioButtonsAndApplySavedSelections(
+    const appointmentRadioButtons = initiateNextAppointmentRadioButtonsAndApplySavedSelections(
       nextAppointmentDetails.futureAppointments,
       breachNotice,
     )
     const responsibleOfficerDisplayValue = officerDisplayValue(nextAppointmentDetails.responsibleOfficer.name)
     if (await commonUtils.redirectRequired(breachNotice, res)) return
     const useContactNumber = breachNotice.optionalNumberChecked ? 'No' : 'Yes'
-    const testBoolean: string = null
+    const testBoolean = null
     const selectNextAppointment =
       breachNotice.selectNextAppointment === null || !breachNotice.selectNextAppointment ? 'No' : 'Yes'
 
-    let useAboveAddress: boolean = null
-    let showAddAddress: boolean = null
-    let showUpdateAddress: boolean = null
+    let useAboveAddress
+    let showAddAddress
+    let showUpdateAddress
 
     if (
       breachNotice.alternateNextAppointmentLocationSelected !== null &&
@@ -105,7 +98,7 @@ export default function nextAppointmentRoutes(
 
       if (
         breachNotice.alternateNextAppointmentLocation === null ||
-        breachNotice.alternateNextAppointmentLocation.addressId === null
+        breachNotice.alternateNextAppointmentLocation?.addressId === null
       ) {
         showUpdateAddress = false
         showAddAddress = true
@@ -128,7 +121,7 @@ export default function nextAppointmentRoutes(
 
       if (
         breachNotice.alternateNextAppointmentLocation === null ||
-        breachNotice.alternateNextAppointmentLocation.addressId === null
+        breachNotice.alternateNextAppointmentLocation?.addressId === null
       ) {
         showUpdateAddress = false
         showAddAddress = true
@@ -161,8 +154,8 @@ export default function nextAppointmentRoutes(
     const breachNoticeApiClient = new BreachNoticeApiClient(authenticationClient)
     const callingScreen: string = req.query.returnTo as string
     const submitAction: string = req.body.action
-    let useRegularAddressValue: string = null
-    let originalNextAppointmentId: number
+    let useRegularAddressValue: string
+    let originalNextAppointmentId: number | null
     let selectedNextAppointmentId: number
 
     const useRegularAddressSelections = Object.entries(req.body).filter(([key]) => key.startsWith('altAddressRadio_'))
@@ -189,7 +182,7 @@ export default function nextAppointmentRoutes(
     }
 
     const { id } = req.params
-    let breachNotice: BreachNotice = null
+    let breachNotice: BreachNotice
     let nextAppointmentDetails: NextAppointmentDetails
 
     try {
@@ -219,12 +212,12 @@ export default function nextAppointmentRoutes(
                 break
               }
             }
-            const appointmentIdOfRadioButton: number = Number(useRegAddressListItem[0].split('altAddressRadio_', 2)[1])
+            const appointmentIdOfRadioButton: number = Number(useRegAddressListItem![0].split('altAddressRadio_', 2)[1])
 
             // check it matrches appointment - find selected appointment
             if (appointmentIdOfRadioButton === Number(req.body.appointmentSelection)) {
-              const newUseRegularAddressValue = useRegAddressListItem[1] as unknown as string
-              let savedUsedRegularAddressValue: boolean = null
+              const newUseRegularAddressValue = useRegAddressListItem![1] as unknown as string
+              let savedUsedRegularAddressValue = false
 
               if (newUseRegularAddressValue === 'Yes') {
                 // to get the old value we need to flip the saved one - only concerned where alternate address was used and now its not
@@ -243,7 +236,7 @@ export default function nextAppointmentRoutes(
                 }
 
                 // we have switched from use alternate address to use above address which requires address deletion
-                if (savedUsedRegularAddressValue === false) {
+                if (!savedUsedRegularAddressValue) {
                   breachNotice.alternateNextAppointmentLocation = null
                   breachNotice.alternateNextAppointmentLocationSelected = null
                 }
@@ -253,11 +246,7 @@ export default function nextAppointmentRoutes(
         }
       }
     } catch (error) {
-      const errorMessages: ErrorMessages = handleIntegrationErrors(
-        error.responseStatus,
-        error.data?.message,
-        'Breach Notice',
-      )
+      const errorMessages: ErrorMessages = handleIntegrationErrors(error,'Breach Notice')
       const showEmbeddedError = true
       breachNotice = createBlankBreachNoticeWithId(req.params.id)
       // always stay on page and display the error when there are isssues retrieving the breach notice
@@ -271,18 +260,15 @@ export default function nextAppointmentRoutes(
         res.locals.user.username,
       )
     } catch (error) {
-      const errorMessages: ErrorMessages = handleIntegrationErrors(
-        error.responseStatus,
-        error.data?.message,
-        'NDelius Integration',
-      )
+      const errorMessages: ErrorMessages = handleIntegrationErrors(error, 'NDelius Integration')
+      const httpError: IntegrationError = error as unknown as IntegrationError
       // take the user to detailed error page for 400 type errors
-      if (error.responseStatus === 400) {
+      if (httpError.responseStatus === 400) {
         res.render('pages/detailed-error', { errorMessages })
         return
       }
       // stay on the current page for 500 errors
-      if (error.responseStatus === 500) {
+      if (httpError.responseStatus === 500) {
         const showEmbeddedError = true
         breachNotice = createBlankBreachNoticeWithId(req.params.id)
         res.render('pages/next-appointment', { errorMessages, showEmbeddedError, breachNotice })
@@ -325,7 +311,7 @@ export default function nextAppointmentRoutes(
     breachNotice.responsibleOfficer = officerDisplayValue(nextAppointmentDetails.responsibleOfficer.name)
 
     // we need to invert the boolean value so Yes = No, No = Yes
-    if (useRegularAddressValue) {
+    if (useRegularAddressValue!) {
       if (useRegularAddressValue === 'Yes') {
         breachNotice.alternateNextAppointmentLocationSelected = false
       }
@@ -355,7 +341,7 @@ export default function nextAppointmentRoutes(
       }
     } else {
       nextAppointmentDetails.futureAppointments = filterAppointments(nextAppointmentDetails.futureAppointments)
-      const appointmentRadioButtons: Array<RadioButton> = initiateNextAppointmentRadioButtonsAndApplySavedSelections(
+      const appointmentRadioButtons = initiateNextAppointmentRadioButtonsAndApplySavedSelections(
         nextAppointmentDetails.futureAppointments,
         breachNotice,
       )
@@ -364,9 +350,9 @@ export default function nextAppointmentRoutes(
       const selectNextAppointment =
         breachNotice.selectNextAppointment === null || !breachNotice.selectNextAppointment ? 'No' : 'Yes'
 
-      let useAboveAddress: boolean = null
-      let showAddAddress: boolean = null
-      let showUpdateAddress: boolean = null
+      let useAboveAddress
+      let showAddAddress
+      let showUpdateAddress
 
       if (
         breachNotice.alternateNextAppointmentLocationSelected !== null &&
@@ -384,7 +370,7 @@ export default function nextAppointmentRoutes(
 
         if (
           breachNotice.alternateNextAppointmentLocation === null ||
-          breachNotice.alternateNextAppointmentLocation.addressId === null
+          breachNotice.alternateNextAppointmentLocation?.addressId === null
         ) {
           showUpdateAddress = false
           showAddAddress = true
@@ -407,7 +393,7 @@ export default function nextAppointmentRoutes(
 
         if (
           breachNotice.alternateNextAppointmentLocation === null ||
-          breachNotice.alternateNextAppointmentLocation.addressId === null
+          breachNotice.alternateNextAppointmentLocation?.addressId === null
         ) {
           showUpdateAddress = false
           showAddAddress = true
@@ -461,14 +447,14 @@ export default function nextAppointmentRoutes(
             text: 'Please enter a value for Do you want to use the address above?',
           }
         }
-        const addAddressSubmitAction: boolean = submitAction && submitAction.includes('alternateAddressForAppointment_')
+        const addAddressSubmitAction= submitAction && submitAction.includes('alternateAddressForAppointment_')
         // perform the alternate address validation only if the submit action is not add address
         if (!addAddressSubmitAction) {
           if (breachNotice.alternateNextAppointmentLocationSelected === true) {
             // check if we have an alternate address stored
             if (
               breachNotice.alternateNextAppointmentLocation === null ||
-              breachNotice.alternateNextAppointmentLocation.id === null
+              breachNotice.alternateNextAppointmentLocation?.id === null
             ) {
               errorMessages.alternateAppoinmentNoAlternateAddress = {
                 text: 'Please enter an alternate address using the Save Progress and Add Address button',
@@ -485,7 +471,7 @@ export default function nextAppointmentRoutes(
   function initiateNextAppointmentRadioButtonsAndApplySavedSelections(
     futureAppointments: Array<FutureAppointment>,
     breachNotice: BreachNotice,
-  ): RadioButton[] {
+  ){
     return futureAppointments.map(futureAppointment => ({
       text: [
         futureAppointment.description,

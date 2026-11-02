@@ -6,7 +6,7 @@ import logger from '../../logger'
 export default function setUpCurrentUser() {
   const router = express.Router()
 
-  router.use((req, res, next) => {
+  router.use((_req, res, next) => {
     try {
       const {
         name,
@@ -18,15 +18,20 @@ export default function setUpCurrentUser() {
         authorities?: string[]
       }
 
+
       res.locals.user = {
         ...res.locals.user,
+        // @ts-expect-error
         userId,
+        // @ts-expect-error
         name,
+        // @ts-expect-error
         displayName: convertToTitleCase(name),
         userRoles: roles.map(role => role.substring(role.indexOf('_') + 1)),
       }
 
       if (res.locals.user.authSource === 'nomis') {
+        // @ts-expect-error
         res.locals.user.staffId = parseInt(userId, 10) || undefined
       }
 
