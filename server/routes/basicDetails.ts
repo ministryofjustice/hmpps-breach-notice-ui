@@ -463,11 +463,12 @@ export default function basicDetailsRoutes(
   }
 
   function findDefaultAddressInAddressList(addressList: Array<DeliusAddress>) {
-      return (
-        addressList.find(a => a.status === 'Default') ??
-        addressList.find(a => a.status === 'Postal') ??
-        addressList.find(a => a.status === 'Main') ?? null
-      )
+    return (
+      addressList.find(a => a.status === 'Default') ??
+      addressList.find(a => a.status === 'Postal') ??
+      addressList.find(a => a.status === 'Main') ??
+      null
+    )
   }
 
   function findDefaultReplyAddressInAddressList(

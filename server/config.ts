@@ -43,7 +43,11 @@ const auditConfig = () => {
       'http://localhost:4566/000000000000/mainQueue',
       auditEnabled && requiredInProduction ? requiredInProduction : undefined,
     ),
-    serviceName: get('AUDIT_SERVICE_NAME', 'UNASSIGNED', auditEnabled && requiredInProduction ? requiredInProduction : undefined),
+    serviceName: get(
+      'AUDIT_SERVICE_NAME',
+      'UNASSIGNED',
+      auditEnabled && requiredInProduction ? requiredInProduction : undefined,
+    ),
     region: get('AUDIT_SQS_REGION', 'eu-west-2'),
   }
 }

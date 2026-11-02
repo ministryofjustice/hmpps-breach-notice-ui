@@ -44,9 +44,9 @@ describe('Combine name', () => {
     ['Mr', { forename: 'Test', middleName: 'Test', surname: 'Test' }, 'Mr Test Test Test'],
     [null, { forename: 'Test', middleName: 'Test', surname: 'Test' }, 'Test Test Test'],
   ])('should combine prefix %s with name object to equal %s', (prefix, nameObj, expected) => {
-    expect(combineName(prefix!, nameObj!)).toEqual(expected);
-  });
-});
+    expect(combineName(prefix!, nameObj!)).toEqual(expected)
+  })
+})
 
 describe('Should Arrange SelectItem List Alphabetically', () => {
   test('Should arrange select item list Alphabetically', () => {

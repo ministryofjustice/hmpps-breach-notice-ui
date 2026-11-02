@@ -8,7 +8,7 @@ describe('Audit service', () => {
   let auditService: AuditService
 
   beforeEach(() => {
-    // @ts-expect-error
+    // @ts-expect-error: Should always have everything required
     hmppsAuditClient = new HmppsAuditClient(null) as jest.Mocked<HmppsAuditClient>
     auditService = new AuditService(hmppsAuditClient)
   })

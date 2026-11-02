@@ -8,7 +8,8 @@ import { createBlankBreachNoticeWithId, handleIntegrationErrors } from '../utils
 import { toUserDate, toUserTime } from '../utils/dateUtils'
 import NdeliusIntegrationApiClient, {
   DeliusAddress,
-  FutureAppointment, IntegrationError,
+  FutureAppointment,
+  IntegrationError,
   Name,
   NextAppointmentDetails,
 } from '../data/ndeliusIntegrationApiClient'
@@ -246,7 +247,7 @@ export default function nextAppointmentRoutes(
         }
       }
     } catch (error) {
-      const errorMessages: ErrorMessages = handleIntegrationErrors(error,'Breach Notice')
+      const errorMessages: ErrorMessages = handleIntegrationErrors(error, 'Breach Notice')
       const showEmbeddedError = true
       breachNotice = createBlankBreachNoticeWithId(req.params.id)
       // always stay on page and display the error when there are isssues retrieving the breach notice
@@ -447,7 +448,7 @@ export default function nextAppointmentRoutes(
             text: 'Please enter a value for Do you want to use the address above?',
           }
         }
-        const addAddressSubmitAction= submitAction && submitAction.includes('alternateAddressForAppointment_')
+        const addAddressSubmitAction = submitAction && submitAction.includes('alternateAddressForAppointment_')
         // perform the alternate address validation only if the submit action is not add address
         if (!addAddressSubmitAction) {
           if (breachNotice.alternateNextAppointmentLocationSelected === true) {
@@ -471,7 +472,7 @@ export default function nextAppointmentRoutes(
   function initiateNextAppointmentRadioButtonsAndApplySavedSelections(
     futureAppointments: Array<FutureAppointment>,
     breachNotice: BreachNotice,
-  ){
+  ) {
     return futureAppointments.map(futureAppointment => ({
       text: [
         futureAppointment.description,

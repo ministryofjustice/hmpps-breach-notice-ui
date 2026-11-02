@@ -128,7 +128,7 @@ export default function addRequirementRoutes(
           res.locals.user.username,
         )
       } catch (error) {
-        const errorMessages: ErrorMessages = handleIntegrationErrors(error,'Breach Notice')
+        const errorMessages: ErrorMessages = handleIntegrationErrors(error, 'Breach Notice')
         const showEmbeddedError = true
         breachNotice = createBlankBreachNoticeWithId(req.params.id)
         // always stay on page and display the error when there are isssues retrieving the breach notice

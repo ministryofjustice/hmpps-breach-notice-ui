@@ -24,9 +24,9 @@ export default function setUpWebSecurity(): Router {
           // <link href="http://example.com/" rel="stylesheet" nonce="{{ cspNonce }}">
           // This ensures only scripts we trust are loaded, and not anything injected into the
           // page by an attacker.
-          // @ts-expect-error
+          // @ts-expect-error: Should always have cpsNonce
           scriptSrc: ["'self'", (_req: Request, res: Response) => `'nonce-${res.locals.cspNonce}'`],
-          // @ts-expect-error
+          // @ts-expect-error: Should always have cpsNonce
           styleSrc: ["'self'", (_req: Request, res: Response) => `'nonce-${res.locals.cspNonce}'`],
           fontSrc: ["'self'"],
           formAction: [`'self' ${config.apis.hmppsAuth.externalUrl}`],

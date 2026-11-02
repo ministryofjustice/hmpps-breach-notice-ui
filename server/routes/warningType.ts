@@ -106,10 +106,7 @@ export default function warningTypeRoutes(
     try {
       breachNotice = await breachNoticeApiClient.getBreachNoticeById(id as string, res.locals.user.username)
     } catch (error) {
-      const errorMessages: ErrorMessages = handleIntegrationErrors(
-        error,
-        'Breach Notice'
-      )
+      const errorMessages: ErrorMessages = handleIntegrationErrors(error, 'Breach Notice')
       const showEmbeddedError = true
       breachNotice = createBlankBreachNoticeWithId(req.params.id)
       // always stay on page and display the error when there are isssues retrieving the breach notice
@@ -131,10 +128,7 @@ export default function warningTypeRoutes(
         defaultSentenceTypeCode = warningTypeWrapper.defaultSentenceTypeCode
       }
     } catch (error) {
-      const errorMessages: ErrorMessages = handleIntegrationErrors(
-        error,
-        'NDelius Integration',
-      )
+      const errorMessages: ErrorMessages = handleIntegrationErrors(error, 'NDelius Integration')
       const httpError: IntegrationError = error as unknown as IntegrationError
       // take the user to detailed error page for 400 type errors
       if (httpError.responseStatus === 400) {

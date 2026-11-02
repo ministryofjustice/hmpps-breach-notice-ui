@@ -1,7 +1,7 @@
 import { mockClient } from 'aws-sdk-client-mock'
 import { SendMessageCommand, SendMessageCommandInput, SQSClient } from '@aws-sdk/client-sqs'
 
-import HmppsAuditClient, { SqsMessage } from './hmppsAuditClient'
+import HmppsAuditClient from './hmppsAuditClient'
 
 describe('hmppsAuditClient', () => {
   const sqsMock = mockClient(SQSClient)

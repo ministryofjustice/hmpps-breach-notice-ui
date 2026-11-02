@@ -75,7 +75,7 @@ export default function setupAuthentication() {
 
   router.use('/account-details', (req, res) => {
     const params = new URLSearchParams(authParameters)
-    if(req.query.redirect_uri){
+    if (req.query.redirect_uri) {
       params.set('redirect_uri', req.query.redirect_uri.toString())
     }
     res.redirect(`${authUrl}/account-details?${params}`)

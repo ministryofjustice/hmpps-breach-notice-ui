@@ -20,7 +20,7 @@ export function initialiseAppInsights(): void {
 export function buildAppInsightsClient(
   { applicationName, buildNumber }: ApplicationInfo,
   overrideName?: string,
-): TelemetryClient | null{
+): TelemetryClient | null {
   if (process.env.APPLICATIONINSIGHTS_CONNECTION_STRING) {
     defaultClient.context.tags['ai.cloud.role'] = overrideName || applicationName
     defaultClient.context.tags['ai.application.ver'] = buildNumber

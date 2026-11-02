@@ -18,20 +18,19 @@ export default function setUpCurrentUser() {
         authorities?: string[]
       }
 
-
       res.locals.user = {
         ...res.locals.user,
-        // @ts-expect-error
+        // @ts-expect-error: Should always have a user id
         userId,
-        // @ts-expect-error
+        // @ts-expect-error: Should always have a name
         name,
-        // @ts-expect-error
+        // @ts-expect-error: Should always have a name
         displayName: convertToTitleCase(name),
         userRoles: roles.map(role => role.substring(role.indexOf('_') + 1)),
       }
 
       if (res.locals.user.authSource === 'nomis') {
-        // @ts-expect-error
+        // @ts-expect-error: Should always have a user
         res.locals.user.staffId = parseInt(userId, 10) || undefined
       }
 

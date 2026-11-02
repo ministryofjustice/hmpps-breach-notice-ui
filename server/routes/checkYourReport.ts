@@ -58,9 +58,13 @@ export default function checkYourReportRoutes(
       if (breachNotice.breachNoticeRequirementList && Object.keys(breachNotice.breachNoticeContactList).length > 0) {
         breachNotice.breachNoticeRequirementList.forEach(it => {
           if (it.rejectionReason) {
-            let recDesc: string = it.requirementTypeMainCategoryDescription ? ` - ${it.requirementTypeMainCategoryDescription}` : ''
-              .concat(it.requirementTypeSubCategoryDescription ? `, ${it.requirementTypeSubCategoryDescription}` : '')
-              .concat(` - ${it.rejectionReason}`)
+            const recDesc: string = it.requirementTypeMainCategoryDescription
+              ? ` - ${it.requirementTypeMainCategoryDescription}`
+              : ''
+                  .concat(
+                    it.requirementTypeSubCategoryDescription ? `, ${it.requirementTypeSubCategoryDescription}` : '',
+                  )
+                  .concat(` - ${it.rejectionReason}`)
 
             warningDetailsFailureList.push({
               description: recDesc,
