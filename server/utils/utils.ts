@@ -89,7 +89,7 @@ export function arrangeSelectItemListAlphabetically(selectItemsToSort: SelectIte
 
 export function removeDeliusAddressFromDeliusAddressList(
   deliusAddressList: DeliusAddress[],
-  defaultAddress: DeliusAddress | null | undefined,
+  defaultAddress?: DeliusAddress | null,
 ): DeliusAddress[] {
   if (defaultAddress && deliusAddressList) {
     return deliusAddressList.filter(obj => obj.id !== defaultAddress.id)

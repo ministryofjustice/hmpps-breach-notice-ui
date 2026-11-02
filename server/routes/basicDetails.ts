@@ -438,7 +438,7 @@ export default function basicDetailsRoutes(
   function addressListToSelectItemList(
     addresses: DeliusAddress[],
     breachNoticeSaved: boolean,
-    selectedAddressId: number | undefined,
+    selectedAddressId: number | undefined | null,
   ): SelectItem[] {
     const returnAddressList: SelectItem[] = [
       {
@@ -462,15 +462,12 @@ export default function basicDetailsRoutes(
     return returnAddressList
   }
 
-  function findDefaultAddressInAddressList(addressList: Array<DeliusAddress>): DeliusAddress | null | undefined {
-    if (addressList) {
+  function findDefaultAddressInAddressList(addressList: Array<DeliusAddress>) {
       return (
         addressList.find(a => a.status === 'Default') ??
         addressList.find(a => a.status === 'Postal') ??
-        addressList.find(a => a.status === 'Main')
+        addressList.find(a => a.status === 'Main') ?? null
       )
-    }
-    return null
   }
 
   function findDefaultReplyAddressInAddressList(

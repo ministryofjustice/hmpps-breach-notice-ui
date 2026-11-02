@@ -58,7 +58,7 @@ export default function checkYourReportRoutes(
       if (breachNotice.breachNoticeRequirementList && Object.keys(breachNotice.breachNoticeContactList).length > 0) {
         breachNotice.breachNoticeRequirementList.forEach(it => {
           if (it.rejectionReason) {
-            const recDesc: string = it.requirementTypeMainCategoryDescription
+            let recDesc: string = it.requirementTypeMainCategoryDescription ? ` - ${it.requirementTypeMainCategoryDescription}` : ''
               .concat(it.requirementTypeSubCategoryDescription ? `, ${it.requirementTypeSubCategoryDescription}` : '')
               .concat(` - ${it.rejectionReason}`)
 
@@ -73,7 +73,7 @@ export default function checkYourReportRoutes(
       const errorMessages: ErrorMessages = handleIntegrationErrors(error, 'Breach Notice')
       const showEmbeddedError = true
       breachNotice = createBlankBreachNoticeWithId(req.params.id)
-      // always stay on page and display the error when there are isssues retrieving the breach notice
+      // always stay on page and display the error when there are issues retrieving the breach notice
       res.render(`pages/check-your-report`, { errorMessages, showEmbeddedError, breachNotice })
       return
     }
@@ -188,7 +188,7 @@ export default function checkYourReportRoutes(
     return hasRequirements || hasWholeSentenceContacts
   }
 
-  function locationDisplayValue(address?: BreachNoticeAddress): string {
+  function locationDisplayValue(address?: BreachNoticeAddress | null): string {
     return [
       address?.officeDescription,
       address?.buildingName,
