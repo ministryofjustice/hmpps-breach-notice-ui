@@ -41,9 +41,13 @@ const auditConfig = () => {
     queueUrl: get(
       'AUDIT_SQS_QUEUE_URL',
       'http://localhost:4566/000000000000/mainQueue',
-      auditEnabled && requiredInProduction,
+      auditEnabled && requiredInProduction ? requiredInProduction : undefined,
     ),
-    serviceName: get('AUDIT_SERVICE_NAME', 'UNASSIGNED', auditEnabled && requiredInProduction),
+    serviceName: get(
+      'AUDIT_SERVICE_NAME',
+      'UNASSIGNED',
+      auditEnabled && requiredInProduction ? requiredInProduction : undefined,
+    ),
     region: get('AUDIT_SQS_REGION', 'eu-west-2'),
   }
 }
@@ -55,7 +59,7 @@ const snsConfig = () => {
     topicArn: get(
       'HMPPS_DOMAIN_EVENTS_TOPIC_ARN',
       'arn:aws:sns:we-west-2:000000000000:domainevents',
-      snsEnabled && requiredInProduction,
+      snsEnabled && requiredInProduction ? requiredInProduction : undefined,
     ),
     endpoint: process.env.HMPPS_DOMAIN_EVENTS_ENDPOINT,
   }
@@ -72,7 +76,7 @@ export default {
   redis: {
     enabled: get('REDIS_ENABLED', 'false', requiredInProduction) === 'true',
     host: get('REDIS_HOST', 'localhost', requiredInProduction),
-    port: parseInt(process.env.REDIS_PORT, 10) || 6379,
+    port: parseInt(process.env.REDIS_PORT ? process.env.REDIS_PORT : '6379', 10) || 6379,
     password: process.env.REDIS_AUTH_TOKEN,
     tls_enabled: get('REDIS_TLS_ENABLED', 'false'),
   },

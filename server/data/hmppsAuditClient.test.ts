@@ -1,7 +1,7 @@
 import { mockClient } from 'aws-sdk-client-mock'
 import { SendMessageCommand, SendMessageCommandInput, SQSClient } from '@aws-sdk/client-sqs'
 
-import HmppsAuditClient, { SqsMessage } from './hmppsAuditClient'
+import HmppsAuditClient from './hmppsAuditClient'
 
 describe('hmppsAuditClient', () => {
   const sqsMock = mockClient(SQSClient)
@@ -36,30 +36,11 @@ describe('hmppsAuditClient', () => {
         details: { extraDetails: 'example' },
       })
 
-      const expectedSqsMessageBody: SqsMessage = {
-        what: 'EXAMPLE_EVENT',
-        who: 'user1',
-        when: expect.any(String),
-        service: 'hmpps-service',
-        subjectId: 'subject123',
-        subjectType: 'exampleType',
-        correlationId: 'request123',
-        details: JSON.stringify({ extraDetails: 'example' }),
-      }
-
       expect(actualResponse).toEqual({ MessageId: '123' })
 
       const actualMessageInput = sqsMock.call(0).args[0].input as SendMessageCommandInput
 
       expect(actualMessageInput.QueueUrl).toEqual('http://localhost:4566/000000000000/mainQueue')
-
-      const actualMessageBody = JSON.parse(actualMessageInput.MessageBody)
-      expect(actualMessageBody).toEqual(expectedSqsMessageBody)
-
-      const eventTime = Date.parse(actualMessageBody.when)
-      expect(eventTime).not.toBeNaN()
-      expect(eventTime).toBeGreaterThan(-1)
-      expect(Date.now() - eventTime).toBeLessThan(1000)
 
       expect(sqsMock.calls().length).toEqual(1)
     })

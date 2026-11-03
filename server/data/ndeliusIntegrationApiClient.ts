@@ -66,9 +66,16 @@ export default class NdeliusIntegrationApiClient extends RestClient {
 }
 
 export interface Name {
-  forename: string
-  middleName: string
-  surname: string
+  forename: string | null
+  middleName: string | null
+  surname: string | null
+}
+
+export interface IntegrationError {
+  responseStatus?: number
+  data?: {
+    message?: string
+  }
 }
 
 export interface BasicDetails {
@@ -140,10 +147,10 @@ export interface BreachNoticeRequirement {
 export interface EnforceableContact {
   id: number
   datetime: string
-  description: string
+  description: string | null | undefined
   type: ReferenceData
   outcome: ReferenceData
-  notes: string
+  notes: string | null | undefined
 }
 
 export interface Requirement {
@@ -177,16 +184,16 @@ export interface Officer {
 }
 
 export interface DeliusAddress {
-  id: number
-  status: string
-  officeDescription?: string
-  buildingName: string
-  buildingNumber: string
-  streetName: string
-  townCity: string
-  district: string
-  county: string
-  postcode: string
+  id: number | null | undefined
+  status: string | null
+  officeDescription?: string | null
+  buildingName: string | null
+  buildingNumber: string | null
+  streetName: string | null
+  townCity: string | null
+  district: string | null
+  county: string | null
+  postcode: string | null
 }
 
 export type EnforceableContactList = Array<EnforceableContact>

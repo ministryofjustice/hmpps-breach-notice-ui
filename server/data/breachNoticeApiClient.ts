@@ -246,7 +246,7 @@ export default class BreachNoticeApiClient extends RestClient {
   async batchDeleteContactRequirements(crlinks: Array<ContactRequirement>, username: string): Promise<void> {
     const promises = []
     for (const crlink of crlinks) {
-      promises.push(this.deleteContactRequirementLink(crlink.id, username))
+      promises.push(this.deleteContactRequirementLink(<string>crlink.id, username))
     }
     await Promise.all(promises)
   }
@@ -264,41 +264,41 @@ export interface BreachNotice {
   breachConditionTypeCode: string
   breachConditionTypeDescription: string
   breachSentenceTypeCode: string
-  breachSentenceTypeDescription: string
+  breachSentenceTypeDescription: string | null
   responsibleOfficer: string
   contactNumber: string
-  nextAppointmentType: string
-  nextAppointmentDate: string
-  nextAppointmentLocation: string
-  nextAppointmentOfficer: string
-  nextAppointmentId: number
-  completedDate: ZonedDateTime
-  offenderAddress: BreachNoticeAddress
-  replyAddress: BreachNoticeAddress
+  nextAppointmentType: string | null
+  nextAppointmentDate: string | null
+  nextAppointmentLocation: string | null
+  nextAppointmentOfficer: string | null
+  nextAppointmentId: number | null
+  completedDate: ZonedDateTime | undefined
+  offenderAddress: BreachNoticeAddress | null | undefined
+  replyAddress: BreachNoticeAddress | null | undefined
   basicDetailsSaved: boolean
   warningTypeSaved: boolean
   warningDetailsSaved: boolean
   nextAppointmentSaved: boolean
-  useDefaultAddress: boolean
+  useDefaultAddress: boolean | null | undefined
   useDefaultReplyAddress: boolean
-  reviewRequiredDate: Date
+  reviewRequiredDate: Date | undefined
   reviewEvent: string
   breachNoticeContactList: BreachNoticeContact[]
   breachNoticeRequirementList: BreachNoticeRequirement[]
   optionalNumberChecked: boolean
-  optionalNumber: string
+  optionalNumber: string | null
   conditionBeingEnforced: string
-  selectNextAppointment: boolean
+  selectNextAppointment: boolean | null
   furtherReasonDetails: string
-  alternateNextAppointmentLocation: BreachNoticeAddress
-  alternateNextAppointmentLocationSelected: boolean
+  alternateNextAppointmentLocation: BreachNoticeAddress | undefined | null
+  alternateNextAppointmentLocationSelected: boolean | undefined | null
   terminated: boolean
-  terminatedUnterminatedDate: Date
+  terminatedUnterminatedDate: Date | undefined
 }
 
 export interface WarningDetailsWholeSentenceAndRequirement {
   description: string
-  wholeSentence: boolean
+  wholeSentence: boolean | undefined | null
 }
 
 export interface BreachNoticeContact {
@@ -310,35 +310,35 @@ export interface BreachNoticeContact {
   contactType: string
   contactOutcome: string
   contactId: number
-  wholeSentence?: boolean
-  rejectionReason?: string
-  alternateNextAppointmentLocation?: BreachNoticeAddress
+  wholeSentence?: boolean | null
+  rejectionReason?: string | null
+  alternateNextAppointmentLocation?: BreachNoticeAddress | null | undefined
   alternateNextAppointmentLocationSelected?: boolean
 }
 
 export interface BreachNoticeRequirement {
-  id: string
-  breachNoticeId: string
-  requirementId: number
-  requirementTypeMainCategoryDescription: string
-  requirementTypeSubCategoryDescription: string
-  rejectionReason: string
-  fromDate: string
-  toDate: string
+  id: string | null | undefined
+  breachNoticeId: string | null | undefined
+  requirementId: number | null | undefined
+  requirementTypeMainCategoryDescription: string | null | undefined
+  requirementTypeSubCategoryDescription: string | null | undefined
+  rejectionReason: string | null | undefined
+  fromDate: string | null | undefined
+  toDate: string | null | undefined
 }
 
 export interface BreachNoticeAddress {
-  id?: string
-  addressId: number
-  status: string
-  officeDescription?: string
-  buildingName: string
-  buildingNumber: string
-  streetName: string
-  townCity: string
-  district: string
-  county: string
-  postcode: string
+  id?: string | null | undefined
+  addressId: number | null | undefined
+  status: string | null
+  officeDescription?: string | null
+  buildingName: string | null
+  buildingNumber: string | null
+  streetName: string | null
+  townCity: string | null
+  district: string | null
+  county: string | null
+  postcode: string | null
 }
 
 export interface RequirementSelectItem {
@@ -352,15 +352,15 @@ export interface RequirementSelectItem {
 
 export interface WholeSentenceContactRequirementReason {
   contactId: string
-  rejectionReason: string
+  rejectionReason: string | null
   wholeSentenceSelected: boolean
 }
 
 export interface ContactRequirement {
   id?: string
-  breachNoticeId: string
-  contactId: string
-  contact: BreachNoticeContact
-  requirementId: string
-  requirement: BreachNoticeRequirement
+  breachNoticeId: string | null
+  contactId: string | null
+  contact: BreachNoticeContact | null
+  requirementId: string | null | undefined
+  requirement: BreachNoticeRequirement | null
 }

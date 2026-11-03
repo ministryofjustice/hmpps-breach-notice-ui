@@ -59,8 +59,12 @@ export default function checkYourReportRoutes(
         breachNotice.breachNoticeRequirementList.forEach(it => {
           if (it.rejectionReason) {
             const recDesc: string = it.requirementTypeMainCategoryDescription
-              .concat(it.requirementTypeSubCategoryDescription ? `, ${it.requirementTypeSubCategoryDescription}` : '')
-              .concat(` - ${it.rejectionReason}`)
+              ? ` - ${it.requirementTypeMainCategoryDescription}`
+              : ''
+                  .concat(
+                    it.requirementTypeSubCategoryDescription ? `, ${it.requirementTypeSubCategoryDescription}` : '',
+                  )
+                  .concat(` - ${it.rejectionReason}`)
 
             warningDetailsFailureList.push({
               description: recDesc,
@@ -70,14 +74,10 @@ export default function checkYourReportRoutes(
         })
       }
     } catch (error) {
-      const errorMessages: ErrorMessages = handleIntegrationErrors(
-        error.responseStatus,
-        error.data?.message,
-        'Breach Notice',
-      )
+      const errorMessages: ErrorMessages = handleIntegrationErrors(error, 'Breach Notice')
       const showEmbeddedError = true
       breachNotice = createBlankBreachNoticeWithId(req.params.id)
-      // always stay on page and display the error when there are isssues retrieving the breach notice
+      // always stay on page and display the error when there are issues retrieving the breach notice
       res.render(`pages/check-your-report`, { errorMessages, showEmbeddedError, breachNotice })
       return
     }
@@ -94,10 +94,12 @@ export default function checkYourReportRoutes(
     const responseRequiredByDate: string = toUserDate(breachNotice.responseRequiredDate)
     const nextAppointmentDate: string = toUserDateFromDateTime(breachNotice.nextAppointmentDate)
     const nextAppointmentTime: string = toUserTimeFromDateTime(breachNotice.nextAppointmentDate)
-    let alternateAppointmentAddress: string
+    let alternateAppointmentAddress
 
     if (breachNotice.alternateNextAppointmentLocationSelected === true) {
       alternateAppointmentAddress = locationDisplayValue(breachNotice.alternateNextAppointmentLocation)
+    } else {
+      alternateAppointmentAddress = null
     }
 
     await renderCheckYourReport(
@@ -124,7 +126,7 @@ export default function checkYourReportRoutes(
     responseRequiredByDate: string,
     nextAppointmentDate: string,
     nextAppointmentTime: string,
-    alternateAppointmentAddress: string,
+    alternateAppointmentAddress: string | null,
   ) {
     const reportValidated = validateCheckYourReport(breachNotice)
     const currentPage = 'check-your-report'
@@ -155,18 +157,18 @@ export default function checkYourReportRoutes(
   })
 
   function validateCheckYourReport(breachNotice: BreachNotice): boolean {
-    return (
-      breachNotice.crn != null &&
-      breachNotice.titleAndFullName != null &&
-      breachNotice.offenderAddress != null &&
-      breachNotice.dateOfLetter != null &&
-      breachNotice.replyAddress != null &&
-      breachNotice.breachNoticeTypeDescription != null &&
-      breachNotice.breachSentenceTypeDescription &&
-      checkForRequirementsOrWholeSentenceSelections(breachNotice) &&
-      breachNotice.responseRequiredDate != null &&
-      breachNotice.responsibleOfficer != null &&
-      breachNotice.contactNumber != null
+    return <boolean>(
+      (breachNotice.crn != null &&
+        breachNotice.titleAndFullName != null &&
+        breachNotice.offenderAddress != null &&
+        breachNotice.dateOfLetter != null &&
+        breachNotice.replyAddress != null &&
+        breachNotice.breachNoticeTypeDescription != null &&
+        breachNotice.breachSentenceTypeDescription &&
+        checkForRequirementsOrWholeSentenceSelections(breachNotice) &&
+        breachNotice.responseRequiredDate != null &&
+        breachNotice.responsibleOfficer != null &&
+        breachNotice.contactNumber != null)
     )
   }
 
@@ -190,7 +192,7 @@ export default function checkYourReportRoutes(
     return hasRequirements || hasWholeSentenceContacts
   }
 
-  function locationDisplayValue(address?: BreachNoticeAddress): string {
+  function locationDisplayValue(address?: BreachNoticeAddress | null): string {
     return [
       address?.officeDescription,
       address?.buildingName,

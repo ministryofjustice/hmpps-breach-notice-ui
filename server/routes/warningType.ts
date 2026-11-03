@@ -3,6 +3,7 @@ import { AuthenticationClient } from '@ministryofjustice/hmpps-auth-clients'
 import AuditService, { Page } from '../services/auditService'
 import BreachNoticeApiClient, { BreachNotice } from '../data/breachNoticeApiClient'
 import NdeliusIntegrationApiClient, {
+  IntegrationError,
   SentenceType,
   WarningType,
   WarningTypeWrapper,
@@ -25,20 +26,16 @@ export default function warningTypeRoutes(
     const ndeliusIntegrationApiClient = new NdeliusIntegrationApiClient(authenticationClient)
     const { id } = req.params
 
-    let breachNotice: BreachNotice = null
+    let breachNotice: BreachNotice
     let warningTypes: WarningType[] = []
     let sentenceTypes: SentenceType[] = []
-    let defaultSentenceTypeCode: string = null
+    let defaultSentenceTypeCode
 
     try {
       // get the existing breach notice
       breachNotice = await breachNoticeApiClient.getBreachNoticeById(req.params.id as string, res.locals.user.username)
     } catch (error) {
-      const errorMessages: ErrorMessages = handleIntegrationErrors(
-        error.responseStatus,
-        error.data?.message,
-        'Breach Notice',
-      )
+      const errorMessages: ErrorMessages = handleIntegrationErrors(error, 'Breach Notice')
       const showEmbeddedError = true
       breachNotice = createBlankBreachNoticeWithId(req.params.id)
       // always stay on page and display the error when there are isssues retrieving the breach notice
@@ -60,18 +57,15 @@ export default function warningTypeRoutes(
         defaultSentenceTypeCode = warningTypeWrapper.defaultSentenceTypeCode
       }
     } catch (error) {
-      const errorMessages: ErrorMessages = handleIntegrationErrors(
-        error.responseStatus,
-        error.data?.message,
-        'NDelius Integration',
-      )
+      const errorMessages: ErrorMessages = handleIntegrationErrors(error, 'NDelius Integration')
+      const httpError: IntegrationError = error as unknown as IntegrationError
       // take the user to detailed error page for 400 type errors
-      if (error.responseStatus === 400) {
+      if (httpError.responseStatus === 400) {
         res.render(`pages/detailed-error`, { errorMessages })
         return
       }
       // stay on the current page for 500 errors
-      if (error.responseStatus === 500) {
+      if (httpError.responseStatus === 500) {
         const showEmbeddedError = true
         breachNotice = createBlankBreachNoticeWithId(req.params.id)
         res.render(`pages/warning-type`, { errorMessages, showEmbeddedError, breachNotice })
@@ -86,9 +80,9 @@ export default function warningTypeRoutes(
       breachNotice,
     )
 
-    const sentenceTypeSelectItems: Array<SelectItem> = initiateSentenceTypeSelectItemsAndApplySavedSelections(
+    const sentenceTypeSelectItems = initiateSentenceTypeSelectItemsAndApplySavedSelections(
       sentenceTypes,
-      defaultSentenceTypeCode,
+      <string>defaultSentenceTypeCode,
       breachNotice,
     )
 
@@ -104,19 +98,15 @@ export default function warningTypeRoutes(
     const breachNoticeApiClient = new BreachNoticeApiClient(authenticationClient)
     const ndeliusIntegrationApiClient = new NdeliusIntegrationApiClient(authenticationClient)
     const { id } = req.params
-    let breachNotice: BreachNotice = null
+    let breachNotice: BreachNotice
     let warningTypes: WarningType[] = []
     let sentenceTypes: SentenceType[] = []
-    let defaultSentenceTypeCode: string = null
+    let defaultSentenceTypeCode
 
     try {
       breachNotice = await breachNoticeApiClient.getBreachNoticeById(id as string, res.locals.user.username)
     } catch (error) {
-      const errorMessages: ErrorMessages = handleIntegrationErrors(
-        error.responseStatus,
-        error.data?.message,
-        'Breach Notice',
-      )
+      const errorMessages: ErrorMessages = handleIntegrationErrors(error, 'Breach Notice')
       const showEmbeddedError = true
       breachNotice = createBlankBreachNoticeWithId(req.params.id)
       // always stay on page and display the error when there are isssues retrieving the breach notice
@@ -138,18 +128,15 @@ export default function warningTypeRoutes(
         defaultSentenceTypeCode = warningTypeWrapper.defaultSentenceTypeCode
       }
     } catch (error) {
-      const errorMessages: ErrorMessages = handleIntegrationErrors(
-        error.responseStatus,
-        error.data?.message,
-        'NDelius Integration',
-      )
+      const errorMessages: ErrorMessages = handleIntegrationErrors(error, 'NDelius Integration')
+      const httpError: IntegrationError = error as unknown as IntegrationError
       // take the user to detailed error page for 400 type errors
-      if (error.responseStatus === 400) {
+      if (httpError.responseStatus === 400) {
         res.render(`pages/detailed-error`, { errorMessages })
         return
       }
       // stay on the current page for 500 errors
-      if (error.responseStatus === 500) {
+      if (httpError.responseStatus === 500) {
         const showEmbeddedError = true
         breachNotice = createBlankBreachNoticeWithId(req.params.id)
         res.render(`pages/warning-type`, { errorMessages, showEmbeddedError, breachNotice })
@@ -161,7 +148,7 @@ export default function warningTypeRoutes(
 
     const sentenceTypeList: SelectItem[] = initiateSentenceTypeSelectItemsAndApplySavedSelections(
       sentenceTypes,
-      defaultSentenceTypeCode,
+      <string>defaultSentenceTypeCode,
       breachNotice,
     )
     const warningTypeRadioButtons: Array<RadioButton> = initiateWarningTypeRadioButtonsAndApplySavedSelections(
@@ -173,14 +160,14 @@ export default function warningTypeRoutes(
     breachNotice.breachNoticeTypeCode = req.body.warningType
     breachNotice.breachSentenceTypeCode = req.body.sentenceType
     // find the condition Being Enforced
-    const conditionBeingEnforced: SentenceType = sentenceTypes.find(
+    const conditionBeingEnforced = sentenceTypes.find(
       sentenceType => sentenceType.code === breachNotice.breachSentenceTypeCode,
     )
     if (conditionBeingEnforced) {
       breachNotice.conditionBeingEnforced = conditionBeingEnforced.conditionBeingEnforced
     }
 
-    const checkedButton: RadioButton = warningTypeRadioButtons.find(r => r.value === req.body.warningType)
+    const checkedButton = warningTypeRadioButtons.find(r => r.value === req.body.warningType)
     if (checkedButton) {
       breachNotice.breachNoticeTypeDescription = checkedButton.text
     }
@@ -212,7 +199,7 @@ export default function warningTypeRoutes(
     } else {
       const sentenceTypeSelectItems: Array<SelectItem> = initiateSentenceTypeSelectItemsAndApplySavedSelections(
         sentenceTypes,
-        defaultSentenceTypeCode,
+        <string>defaultSentenceTypeCode,
         breachNotice,
       )
 

@@ -14,31 +14,26 @@ export default function addAlternateAppointmentAddressRoutes(
     await auditService.logPageView(Page.ADD_ADDRESS, { who: res.locals.user.username, correlationId: req.id })
     const { breachNoticeId } = req.params
     const breachNoticeApiClient = new BreachNoticeApiClient(authenticationClient)
-    let breachNotice: BreachNotice = null
-    let address: BreachNoticeAddress = null
+    let breachNotice: BreachNotice
 
     try {
       breachNotice = await breachNoticeApiClient.getBreachNoticeById(breachNoticeId, res.locals.user.username)
     } catch (error) {
-      const errorMessages: ErrorMessages = handleIntegrationErrors(
-        error.responseStatus,
-        error.data?.message,
-        'Breach Notice',
-      )
+      const errorMessages: ErrorMessages = handleIntegrationErrors(error, 'Breach Notice')
       const showEmbeddedError = true
       // always stay on page and display the error when there are isssues retrieving the breach notice
       res.render(`pages/add-alternate-appointment-address`, { errorMessages, showEmbeddedError })
       return
     }
 
-    address = breachNotice.alternateNextAppointmentLocation
+    const address = breachNotice.alternateNextAppointmentLocation
     res.render('pages/add-alternate-appointment-address', { address })
   })
 
   router.post('/add-alternate-appointment-address/:breachNoticeId', async (req, res) => {
     const breachNoticeApiClient = new BreachNoticeApiClient(authenticationClient)
     const { breachNoticeId } = req.params
-    let breachNotice: BreachNotice = null
+    let breachNotice: BreachNotice
 
     // if cancel selected skip right back
     if (req.body.action === 'cancel') {
@@ -73,11 +68,7 @@ export default function addAlternateAppointmentAddressRoutes(
           await breachNoticeApiClient.updateBreachNotice(breachNoticeId, breachNotice, res.locals.user.username)
           res.redirect(`/next-appointment/${breachNoticeId}`)
         } catch (error) {
-          const integrationErrorMessages = handleIntegrationErrors(
-            error.responseStatus,
-            error.data?.message,
-            'Breach Notice',
-          )
+          const integrationErrorMessages = handleIntegrationErrors(error, 'Breach Notice')
           const showEmbeddedError = true
           // always stay on page and display the error when there are isssues retrieving the breach notice
           res.render(`pages/add-alternate-appointment-address`, {

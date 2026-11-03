@@ -28,7 +28,7 @@ passport.use(
       state: true,
       customHeaders: { Authorization: generateOauthClientToken() },
     },
-    (token, refreshToken, params, profile, done) => {
+    (token, _refreshToken, params, _profile, done) => {
       return done(null, { token, username: params.user_name, authSource: params.auth_source })
     },
   ),
@@ -41,7 +41,7 @@ export default function setupAuthentication() {
   router.use(passport.session())
   router.use(flash())
 
-  router.get('/autherror', (req, res) => {
+  router.get('/autherror', (_req, res) => {
     res.status(401)
     return res.render('autherror')
   })
@@ -75,7 +75,9 @@ export default function setupAuthentication() {
 
   router.use('/account-details', (req, res) => {
     const params = new URLSearchParams(authParameters)
-    params.set('redirect_uri', req.query.redirect_uri.toString())
+    if (req.query.redirect_uri) {
+      params.set('redirect_uri', req.query.redirect_uri.toString())
+    }
     res.redirect(`${authUrl}/account-details?${params}`)
   })
 

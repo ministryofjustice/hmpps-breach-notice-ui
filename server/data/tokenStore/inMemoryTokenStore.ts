@@ -9,9 +9,12 @@ export default class InMemoryTokenStore implements TokenStore {
   }
 
   public async getToken(key: string): Promise<string> {
+    // @ts-expect-error: Should always have a token
     if (!this.map.has(key) || this.map.get(key).expiry.getTime() < Date.now()) {
+      // @ts-expect-error: Should always have a promise
       return Promise.resolve(null)
     }
+    // @ts-expect-error: Should always have a promise
     return Promise.resolve(this.map.get(key).token)
   }
 }

@@ -4,7 +4,7 @@ import logger from '../logger'
 import { ErrorMessages } from './data/uiModels'
 
 export default function createErrorHandler() {
-  return (error: HTTPError, req: Request, res: Response, next: NextFunction): void => {
+  return (error: HTTPError, req: Request, res: Response, _next: NextFunction): void => {
     logger.error(`Error handling request for '${req.originalUrl}', user '${res.locals.user?.username}'`, error)
 
     if (error.status === 401 || error.status === 403) {
