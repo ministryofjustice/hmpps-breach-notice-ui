@@ -19,6 +19,3 @@ generic-service:
       - unilink_staff
       - probation # for production staff
       - mod-platform-live
-
-generic-prometheus-alerts:
-  alertSeverity: PROD_ALERTS_SEVERITY_LABEL

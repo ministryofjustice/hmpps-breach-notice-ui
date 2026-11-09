@@ -21,6 +21,3 @@ generic-service:
       - internal
       - unilink_staff
       - mod-platform-live
-
-generic-prometheus-alerts:
-  alertSeverity: NON_PROD_ALERTS_SEVERITY_LABEL
