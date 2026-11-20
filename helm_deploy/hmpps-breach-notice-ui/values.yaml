@@ -63,6 +63,7 @@ generic-service:
     groups:
       - internal
       - unilink_staff
+      - accessibility-testing-1
 
 generic-prometheus-alerts:
   targetApplication: hmpps-breach-notice-ui
