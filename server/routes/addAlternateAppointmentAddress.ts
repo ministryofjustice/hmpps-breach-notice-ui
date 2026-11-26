@@ -95,19 +95,19 @@ export default function addAlternateAppointmentAddressRoutes(
 
     if (address.buildingName && address.buildingName.length > 80) {
       errorMessages.buildingName = {
-        text: 'Building Name: The information entered is over the character limit specified for this field (80). Please edit and try again.',
+        text: 'Building name: The information entered is over the character limit specified for this field (80). Please edit and try again.',
       }
     }
 
     if (address.buildingNumber && address.buildingNumber.length > 35) {
       errorMessages.buildingNumber = {
-        text: 'House Number: The information entered is over the character limit specified for this field (35). Please edit and try again.',
+        text: 'House number: The information entered is over the character limit specified for this field (35). Please edit and try again.',
       }
     }
 
     if (address.streetName && address.streetName.length > 80) {
       errorMessages.streetName = {
-        text: 'Street Name: The information entered is over the character limit specified for this field (80). Please edit and try again.',
+        text: 'Street name: The information entered is over the character limit specified for this field (80). Please edit and try again.',
       }
     }
 
@@ -142,13 +142,13 @@ export default function addAlternateAppointmentAddressRoutes(
       (!address.buildingNumber || address.buildingNumber.trim() === '')
     ) {
       errorMessages.identifier = {
-        text: 'At least 1 out of [Description, Building Name, House Number] must be present',
+        text: 'At least 1 out of [Description, Building name, House number] must be present',
       }
     }
 
     if (!address.streetName || address.streetName.trim() === '') {
       errorMessages.streetName = {
-        text: 'Street Name : This is a required field, please enter a value',
+        text: 'Street name : This is a required field, please enter a value',
       }
     }
 
